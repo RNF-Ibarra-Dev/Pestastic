@@ -1,0 +1,19 @@
+<IfModule mod_headers.c>
+Header set X-Frame-Options "DENY"
+Header set X-XSS-Protection "1; mode=block"
+Header set X-Content-Type-Options "nosniff"
+# Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+Header set Referrer-Policy "same-origin"
+Header set Feature-Policy "geolocation 'self'; vibrate 'none'"
+# Header set Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' https://trusted-cdn.com; connect-src 'self';"
+
+# RewriteEngine On
+# RewriteCond %{THE_REQUEST} /([^.]+)\.php [NC]
+# RewriteRule ^ /%1 [NC,L,R]
+
+# RewriteCond %{REQUEST_FILENAME}.php -f
+# RewriteRule ^ %{REQUEST_URI}.php [NC,L]
+
+
+
+</IfModule>
