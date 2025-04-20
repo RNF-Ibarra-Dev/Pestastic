@@ -6,13 +6,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager - Chemical Stock</title>
+    <title>Operations Supervisor | Transactions</title>
     <?php include('header.links.php'); ?>
     <style>
-         #sortstatus  option {
+        #sortstatus option {
             /* background: rgb(17 71 84) !important; */
             color: black;
-        } 
+        }
     </style>
 </head>
 
@@ -36,7 +36,8 @@
                     placeholder="Search transactions . . ." id="searchbar" name="searchTrans"
                     autocomplete="one-time-code">
                 <div class="vr"></div>
-                <select class="form-select select-transparent bg-transparent border border-light text-light w-25" id="sortstatus" aria-label="Default select example">
+                <select class="form-select select-transparent bg-transparent border border-light text-light w-25"
+                    id="sortstatus" aria-label="Default select example">
                     <option value='' selected>Sort Status</option>
                     <option value="Pending">Pending</option>
                     <option value="Accepted">Accepted</option>
@@ -577,13 +578,68 @@
             <?php
         }
         ?>
-        
+
         $(document).on('click', '#pendingbtn', function () {
             let chemId = $(this).data('pending-id');
             console.log(chemId);
             $('#chemidinput').val(chemId);
             $('#approvemodal').modal('show');
-        })
+        });
+
+        // clear form every modal exit
+        function clear_form(form, modal1, modal2) {
+            let modal1hidden = true;
+            let modal2hidden = true;
+
+            $(modal1).on('hidden.bs.modal', function () {
+                modal1hidden = true;
+                console.log(modal1 + 'hidden and cleared.');
+                empty_form();
+            });
+
+            $(modal1).on('shown.bs.modal', function () {
+                modal1hidden = false;
+                console.log(modal1 + 'hidden');
+            });
+
+            $(modal2).on('hidden.bs.modal', function () {
+                modal2hidden = true;
+                console.log(modal2 + 'hidden and cleared.');
+                empty_form();
+            });
+
+            $(modal2).on('shown.bs.modal', function () {
+                modal2hidden = false;
+                console.log(modal2 + 'hidden');
+            });
+
+            function empty_form() {
+                if (modal1hidden && modal2hidden) {
+                    $(form)[0].reset();
+                    $('#add-technicianName').empty();
+                    $('#addTechContainer').empty();
+                    $('#add-probCheckbox').empty();
+                    $('#add-chemBrandUsed').empty();
+                    $('#edit-technicianName').empty();
+                    $('#view-technicians').empty();
+                    $('#view-treatment').empty();
+                    $('#view-probCheckbox').empty();
+                    $('#edit-probCheckbox').empty();
+                    $('#edit-chemBrandUsed').empty();
+                    $('#view-chemUsed').empty();
+                    $('#view-status').empty();
+                    $('#edit-chemContainer').empty();
+                    console.log(form + ' cleared.');
+
+                }
+            }
+        }
+
+        $(document).ready(function () {
+            clear_form('#addTransaction', '#addModal', '#confirmation');
+            clear_form('#viewEditForm', '#details-modal', '#confirmAdd');
+        });
+
 
         $('#approvependingtransactions').on('submit', async function (e) {
             e.preventDefault();
@@ -602,14 +658,14 @@
                     $('#approvemodal').modal('hide');
                     loadpage(1, status);
                     $("#tableAlert").removeClass('visually-hidden').html(approve.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                    
+
                 }
 
             } catch (error) {
                 console.log(error.responseJSON);
                 // let err = error.responseText;
                 let err = error.responseJSON;
-            
+
                 switch (err.type) {
                     case 'wrongpwd':
                         $("#approve-alert").removeClass('visually-hidden').html(err.error).hide().fadeIn(400).delay(2000).fadeOut(1000);

@@ -237,7 +237,6 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $rows = mysqli_num_rows($result);
 
 
-    // echo "<caption class='text-light'>List of all shit.</caption>";
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
@@ -272,6 +271,6 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='6' class='text-center'>No data exist.</td></tr>";
+        echo "<tr><td scope='row' colspan='6' class='text-center'>No data found.</td></tr>";
     }
 }

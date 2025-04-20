@@ -8,6 +8,46 @@ $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
+if (isset($_GET['search'])) {
+    $search = $_GET['search'];
+    $sql = "SELECT * FROM transactions WHERE id LIKE '%$search%' OR treatment_date LIKE '%$search%' OR customer_name LIKE '%$search%'
+    OR treatment LIKE '%$search%' OR transaction_status LIKE '%$search%';";
+    
+    $result = mysqli_query($conn, $sql);
+    $rows = mysqli_num_rows($result);
+
+    if ($rows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $customerName = $row['customer_name'];
+            $treatmentDate = $row['treatment_date'];
+            $treatment = $row['treatment'];
+            $createdAt = $row['created_at'];
+            $updatedAt = $row['updated_at'];
+            $status = $row['transaction_status'];
+            ?>
+            <tr class="text-center">
+                <td scope="row"><?= $id ?></td>
+                <td><?= htmlspecialchars($customerName) ?></td>
+                <td><?= htmlspecialchars($treatmentDate) ?></td>
+                <td><?= htmlspecialchars($treatment) ?></td>
+                <td><?= htmlspecialchars($status) ?></td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <button id="tableDetails" disable-data-bs-toggle="modal" disabled-data-bs-target="#details-modal"
+                            data-trans-id="<?= $id ?>" class="btn btn-sidebar me-2">Details</button>
+                    </div>
+                </td>
+            </tr>
+
+
+            <?php
+        }
+    } else {
+        echo "<tr><td scope='row' colspan='6' class='text-center'>Search not found.</td></tr>";
+    }
+}
+
 if (isset($_GET['paginate']) && $_GET['paginate'] == 'true') {
     ?>
     <nav aria-label="Page navigation">
@@ -111,24 +151,25 @@ if (isset($_GET['paginate']) && $_GET['paginate'] == 'true') {
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
-    // $active = 
-
-    // if ($current == 'last') {
-    //     $current = null;
-    //     $current = $totalPages;
-    //     echo json_encode(["lastpage" => "$current"]);
-    // }
+    $status = $_GET['status'];
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT * FROM transactions LIMIT " . $limitstart
-        . ", " . $pageRows . ";";
+    $sql = "SELECT * FROM transactions ";
+
+    if ($status != '') {
+        $sql .= "WHERE transaction_status = '$status' ";
+        $sql .= "ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
+
+    } else {
+        $sql .= "ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
+
+    }
+
 
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
 
-
-    // echo "<caption class='text-light'>List of all shit.</caption>";
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
@@ -145,7 +186,12 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td><?= htmlspecialchars($customerName) ?></td>
                 <td><?= htmlspecialchars($treatmentDate) ?></td>
                 <td><?= htmlspecialchars($treatment) ?></td>
-                <td><?= htmlspecialchars($status) ?></td>
+                <td>
+                    <?=
+                        $status === 'Pending' ? "<button type='button' id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-tarsget='#approvemodal'
+                             class='btn btn-sidebar me-2'>Pending</button>" : htmlspecialchars($status)
+                        ?>
+                </td>
                 <td>
                     <div class="d-flex justify-content-center">
                         <button id="tableDetails" disable-data-bs-toggle="modal" disabled-data-bs-target="#details-modal"
@@ -158,6 +204,6 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='5' class='text-center'>Search does not exist.</td></tr>";
+        echo "<tr><td scope='row' colspan='5' class='text-center'>No data found.</td></tr>";
     }
 }

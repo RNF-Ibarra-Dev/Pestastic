@@ -39,45 +39,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'table') {
     }
 }
 
-if (isset($_GET['search'])) {
-    $search = $_GET['search'];
-    $sql = "SELECT * FROM transactions WHERE id LIKE '%$search%' OR treatment_date LIKE '%$search%' OR customer_name LIKE '%$search%'
-    OR treatment LIKE '%$search%' OR transaction_status LIKE '%$search%';";
-    
-    $result = mysqli_query($conn, $sql);
-    $rows = mysqli_num_rows($result);
 
-    if ($rows > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $customerName = $row['customer_name'];
-            $treatmentDate = $row['treatment_date'];
-            $treatment = $row['treatment'];
-            $createdAt = $row['created_at'];
-            $updatedAt = $row['updated_at'];
-            $status = $row['transaction_status'];
-            ?>
-            <tr class="text-center">
-                <td scope="row"><?= $id ?></td>
-                <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= htmlspecialchars($treatmentDate) ?></td>
-                <td><?= htmlspecialchars($treatment) ?></td>
-                <td><?= htmlspecialchars($status) ?></td>
-                <td>
-                    <div class="d-flex justify-content-center">
-                        <button id="tableDetails" disable-data-bs-toggle="modal" disabled-data-bs-target="#details-modal"
-                            data-trans-id="<?= $id ?>" class="btn btn-sidebar me-2">Details</button>
-                    </div>
-                </td>
-            </tr>
-
-
-            <?php
-        }
-    } else {
-        echo "<tr><td scope='row' colspan='6' class='text-center'>Search not found.</td></tr>";
-    }
-}
 
 if (isset($_GET['getChem']) && $_GET['getChem'] == 'add') {
     // $activeChem = $_GET['active'];
