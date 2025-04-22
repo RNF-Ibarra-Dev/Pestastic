@@ -8,14 +8,56 @@ $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
+
+function row_status($conn, $status = '')
+{
+    if ($status != '') {
+        $rowCount = "SELECT * FROM transactions WHERE transaction_status = '$status'";
+    } else {
+        $rowCount = 'SELECT * FROM transactions';
+    }
+    $countResult = mysqli_query($conn, $rowCount);
+    $totalRows = mysqli_num_rows($countResult);
+    $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
+
+    return ['pages' => $totalPages, 'rows' => $totalRows];
+}
+
+
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
-    $sql = "SELECT * FROM transactions WHERE id LIKE '%$search%' OR treatment_date LIKE '%$search%' OR customer_name LIKE '%$search%'
-    OR treatment LIKE '%$search%' OR transaction_status LIKE '%$search%';";
-    
-    $result = mysqli_query($conn, $sql);
-    $rows = mysqli_num_rows($result);
+    $status = $_GET['status'];
 
+    if ($status != '') {
+        $sql = "SELECT * FROM transactions 
+                WHERE (id LIKE ? OR treatment_date LIKE ? OR customer_name LIKE ?
+                    OR treatment LIKE ?) 
+                AND transaction_status = ? 
+                ORDER BY id DESC;";
+    } else {
+        $sql = "SELECT * FROM transactions 
+                WHERE id LIKE ? OR treatment_date LIKE ? OR customer_name LIKE ?
+                    OR treatment LIKE ? OR transaction_status LIKE ? 
+                ORDER BY id DESC;";
+    }
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo 'ERROR STMT';
+        exit();
+    }
+
+    $ssearch = "%" . $search . "%";
+    // $sstatus = "%" . $status . "%";
+
+    if ($status != '') {
+        mysqli_stmt_bind_param($stmt, 'sssss', $ssearch, $ssearch, $ssearch, $ssearch, $status);
+    } else {
+        mysqli_stmt_bind_param($stmt, 'sssss', $ssearch, $ssearch, $ssearch, $ssearch, $ssearch);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $rows = mysqli_num_rows($result);
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
@@ -49,6 +91,22 @@ if (isset($_GET['search'])) {
 }
 
 if (isset($_GET['paginate']) && $_GET['paginate'] == 'true') {
+    $status = $_GET['status'];
+    load_pagination($conn, $status);
+}
+
+
+function load_pagination($conn, $status) {
+    
+    if ($status != '') {
+        $rowstatus = row_status($conn, $status);
+        $totalRows = $rowstatus['rows'];
+        $totalPages = $rowstatus['pages'];
+    } else {
+        $totalPages = $GLOBALS['totalPages'];
+    }
+    
+    
     ?>
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">

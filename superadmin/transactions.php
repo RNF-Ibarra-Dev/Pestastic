@@ -194,7 +194,7 @@
                                             <option value="#" selected>Select Status</option>
                                             <option value="Pending">Pending</option>
                                             <option value="Accepted">Accepted</option>
-                                            <option value="Voided">Void</option>
+                                            <option value="Voided">Voided</option>
                                             <option value="Completed">Completed </option>
                                         </select>
                                     </div>
@@ -253,8 +253,7 @@
             <!-- view/edit -->
             <form id="viewEditForm">
                 <div class="row g-2 text-dark">
-                    <div class="modal modal-lg fade text-dark modal-edit" id="details-modal" tabindex="-1"
-                        aria-labelledby="create" aria-hidden="true">
+                    <div class="modal modal-lg fade text-dark modal-edit" id="details-modal" tabindex="-1">
                         <div class="modal-dialog">
                             <div class="modal-content">
 
@@ -439,7 +438,7 @@
                                             <option value="#" selected>Select Status</option>
                                             <option value="Pending">Pending</option>
                                             <option value="Accepted">Accepted</option>
-                                            <option value="Voided">Void</option>
+                                            <option value="Voided">Voided</option>
                                             <option value="Completed">Completed </option>
                                         </select>
                                     </div>
@@ -520,60 +519,6 @@
         const transUrl = 'tablecontents/trans.data.php';
         const submitUrl = 'tablecontents/transconfig.php';
 
-        // clear form when modal closes
-        function clear_form(form, modal1, modal2) {
-            let modal1hidden = true;
-            let modal2hidden = true;
-
-            $(modal1).on('hidden.bs.modal', function () {
-                modal1hidden = true;
-                console.log(modal1 + 'hidden and cleared.');
-                empty_form();
-            });
-
-            $(modal1).on('shown.bs.modal', function () {
-                modal1hidden = false;
-                console.log(modal1 + 'hidden');
-            });
-
-            $(modal2).on('hidden.bs.modal', function () {
-                modal2hidden = true;
-                console.log(modal2 + 'hidden and cleared.');
-                empty_form();
-            });
-
-            $(modal2).on('shown.bs.modal', function () {
-                modal2hidden = false;
-                console.log(modal2 + 'hidden');
-            });
-
-            function empty_form() {
-                if (modal1hidden && modal2hidden) {
-                    $(form)[0].reset();
-                    $('#add-technicianName').empty();
-                    $('#addTechContainer').empty();
-                    $('#add-probCheckbox').empty();
-                    $('#add-chemBrandUsed').empty();
-                    $('#edit-technicianName').empty();
-                    $('#view-technicians').empty();
-                    $('#view-treatment').empty();
-                    $('#view-probCheckbox').empty();
-                    $('#edit-probCheckbox').empty();
-                    $('#edit-chemBrandUsed').empty();
-                    $('#view-chemUsed').empty();
-                    $('#view-status').empty();
-                    $('#edit-chemContainer').empty();
-                    console.log(form + ' cleared.');
-
-                }
-            }
-        }
-
-        $(document).ready(function () {
-            clear_form('#addTransaction', '#addModal', '#confirmation');
-            clear_form('#viewEditForm', '#details-modal', '#confirmAdd');
-        });
-
         $(document).on('click', '#addbtn', async function () {
             let form = 'add';
             try {
@@ -586,13 +531,13 @@
                 ]);
                 if (load) {
                     $('#addModal').modal('show');
+                    // await clear_form('#viewEditForm', '#details-modal', '#confirmAdd');
                 }
+
             } catch (error) {
                 console.log('add get error.')
             }
         })
-
-
 
         // add / delete more technicians
         async function add_more_tech() {
@@ -758,12 +703,15 @@
         }
 
         $(document).on('click', '#tableDetails', async function () {
-            $('#viewEditForm')[0].reset();
-            $(`#edit-chemBrandUsed`).empty();
-            let transId = $(this).data('trans-id');
-            console.log(transId);
-            await view_transaction(transId);
-            // $('#details-modal').modal('show');
+            const clearform = await empty_form();
+            if (clearform) {
+                $('#viewEditForm')[0].reset();
+                $(`#edit-chemBrandUsed`).empty();
+                let transId = $(this).data('trans-id');
+                await view_transaction(transId);
+            } else {
+                alert('Modal Error. Refresh Page.');
+            }
         })
 
         async function view_transaction(transId) {
@@ -781,17 +729,13 @@
                 if (details.success) {
                     console.log(details);
                     let data = details.success;
-                    // console.log('id ' + data.id);
                     $('#view-transId').val(data.id);
                     $('#view-customerName').val(data.customer_name);
-                    // let pprob = get_problems('view');
-                    // $('#view-probCheckbox').val(pprob);
                     $('#view-treatmentDate').val(data.treatment_date);
                     $('#list-status').empty();
-                    $('#list-status').html(data.transaction_status);
-                    $(`#edit-status option[value=${data.transaction_status}]`).attr('selected', 'selected')
-                    $(`#edit-treatment option[value='${data.treatment}']`).attr('selected', 'selected');
-                    // console.log(data.transaction_status);
+                    $('#view-status').html(data.transaction_status);
+                    $(`#edit-status option[value=${data.transaction_status}]`).attr('selected', true);
+                    $(`#edit-treatment option[value='${data.treatment}']`).attr('selected', true);
                     $('#view-time').html('Created at: ' + data.created_at + '<br>Updated at: ' + data.updated_at);
                     const functions = await Promise.all([
                         await view_technician(data.id),
@@ -811,6 +755,7 @@
                     }
 
                 }
+
             } catch (error) {
                 alert(JSON.stringify(error.responseJSON));
             }
@@ -888,9 +833,31 @@
             }
         });
 
+        async function empty_form() {
+            $('#viewEditForm')[0].reset();
+            $('#add-technicianName').empty();
+            $('#addTechContainer').empty();
+            $('#add-probCheckbox').empty();
+            $('#add-chemBrandUsed').empty();
+            $('#edit-technicianName').empty();
+            $('#view-technicians').empty();
+            $('#view-treatment').empty();
+            $('#view-probCheckbox').empty();
+            $('#edit-probCheckbox').empty();
+            $('#edit-chemBrandUsed').empty();
+            $('#view-chemUsed').empty();
+            // $('#edit-status').val('#').change();
+            // $('#edit-treatment').val('#').change();
+            $('#view-status').empty();
+            $('#edit-chemContainer').empty();
+            console.log('modal cleared');
+            return true;
+        }
+
         let toggled = false;
 
         async function toggle() {
+
             console.log('toggle: ' + toggled);
             $("#view-customerName").attr("readonly", function (i, attr) {
                 if (attr) {
@@ -1174,13 +1141,15 @@
 
                 delay = setTimeout(async function () {
                     var search = $('#searchbar').val();
+                    let status = $('#sortstatus').val();
                     try {
                         const searchtransaction = await $.ajax({
                             url: 'tablecontents/trans.pagination.php',
                             type: 'GET',
                             dataType: 'html',
                             data: {
-                                search: search
+                                search: search,
+                                status: status
                             }
                         });
                         if (searchtransaction) {
@@ -1188,9 +1157,10 @@
                                 $('#table').empty();
                                 $('#loader').addClass('visually-hidden');
                                 $('#table').append(searchtransaction);
+                                $('#pagination').empty();
                             } else {
                                 $('#loader').addClass('visually-hidden');
-                                await load_paginated_table();
+                                await loadpage(1, status);
                             }
                         }
                     } catch (error) {
