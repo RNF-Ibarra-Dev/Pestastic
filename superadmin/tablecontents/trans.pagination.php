@@ -209,7 +209,7 @@ function load_pagination($conn, $status) {
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
-    $status = $_GET['status'];
+    $status = $_GET['status'] == '' ? '' : $_GET['status'];
 
     $limitstart = ($current - 1) * $pageRows;
 
