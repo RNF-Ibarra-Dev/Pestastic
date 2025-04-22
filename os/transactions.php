@@ -38,7 +38,7 @@
                 <div class="vr"></div>
                 <select class="form-select select-transparent bg-transparent border border-light text-light w-25"
                     id="sortstatus" aria-label="Default select example">
-                    <option value='' selected>Sort Status</option>
+                    <option value='' selected>Show All Status</option>
                     <option value="Pending">Pending</option>
                     <option value="Accepted">Accepted</option>
                     <option value="Completed">Completed</option>
@@ -557,11 +557,6 @@
         const transUrl = 'contents/trans.data.php';
         const submitUrl = 'contents/transconfig.php';
 
-        // $(document).ready(function() {
-        //     clear_form('#addTransaction', '#addModal', '#confirmation');
-        //     clear_form('#viewEditForm', '#details-modal', '#confirmAdd');
-        // });
-
         <?php
         if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
             ?>
@@ -586,59 +581,26 @@
             $('#approvemodal').modal('show');
         });
 
-        // clear form every modal exit
-        function clear_form(form, modal1, modal2) {
-            let modal1hidden = true;
-            let modal2hidden = true;
 
-            $(modal1).on('hidden.bs.modal', function () {
-                modal1hidden = true;
-                console.log(modal1 + 'hidden and cleared.');
-                empty_form();
-            });
 
-            $(modal1).on('shown.bs.modal', function () {
-                modal1hidden = false;
-                console.log(modal1 + 'hidden');
-            });
-
-            $(modal2).on('hidden.bs.modal', function () {
-                modal2hidden = true;
-                console.log(modal2 + 'hidden and cleared.');
-                empty_form();
-            });
-
-            $(modal2).on('shown.bs.modal', function () {
-                modal2hidden = false;
-                console.log(modal2 + 'hidden');
-            });
-
-            function empty_form() {
-                if (modal1hidden && modal2hidden) {
-                    $(form)[0].reset();
-                    $('#add-technicianName').empty();
-                    $('#addTechContainer').empty();
-                    $('#add-probCheckbox').empty();
-                    $('#add-chemBrandUsed').empty();
-                    $('#edit-technicianName').empty();
-                    $('#view-technicians').empty();
-                    $('#view-treatment').empty();
-                    $('#view-probCheckbox').empty();
-                    $('#edit-probCheckbox').empty();
-                    $('#edit-chemBrandUsed').empty();
-                    $('#view-chemUsed').empty();
-                    $('#view-status').empty();
-                    $('#edit-chemContainer').empty();
-                    console.log(form + ' cleared.');
-
-                }
-            }
+        async function empty_form() {
+            $('#viewEditForm')[0].reset();
+            $('#add-technicianName').empty();
+            $('#addTechContainer').empty();
+            $('#add-probCheckbox').empty();
+            $('#add-chemBrandUsed').empty();
+            $('#edit-technicianName').empty();
+            $('#view-technicians').empty();
+            $('#view-treatment').empty();
+            $('#view-probCheckbox').empty();
+            $('#edit-probCheckbox').empty();
+            $('#edit-chemBrandUsed').empty();
+            $('#view-chemUsed').empty();
+            $('#view-status').empty();
+            $('#edit-chemContainer').empty();
+            console.log('modal cleared');
+            return true;
         }
-
-        $(document).ready(function () {
-            clear_form('#addTransaction', '#addModal', '#confirmation');
-            clear_form('#viewEditForm', '#details-modal', '#confirmAdd');
-        });
 
 
         $('#approvependingtransactions').on('submit', async function (e) {
@@ -692,6 +654,9 @@
                     add_more_tech()
                 ]);
                 if (load) {
+                    $('#addTransaction')[0].reset();
+                    $('#addTechContainer').empty();
+                    $('add-chemContainer').empty();
                     $('#addModal').modal('show');
                 }
             } catch (error) {
@@ -863,13 +828,22 @@
         }
 
         $(document).on('click', '#tableDetails', async function () {
-            $('#viewEditForm')[0].reset();
-            $(`#edit-chemBrandUsed`).empty();
-            let transId = $(this).data('trans-id');
-            console.log(transId);
-            await view_transaction(transId);
-            // $('#details-modal').modal('show');
-        })
+            const clearform = await empty_form();
+            if (clearform) {
+                $('#viewEditForm')[0].reset();
+                $(`#edit-chemBrandUsed`).empty();
+                let transId = $(this).data('trans-id');
+                if (toggled) {
+                    await toggle();
+                    toggled = false;
+                    $('#editbtn').html('Edit/Delete Transaction');
+                }
+                await view_transaction(transId);
+            } else {
+                alert('Modal Error. Refresh Page.');
+            }
+
+        });
 
         async function view_transaction(transId) {
             try {
@@ -893,9 +867,9 @@
                     // $('#view-probCheckbox').val(pprob);
                     $('#view-treatmentDate').val(data.treatment_date);
                     $('#list-status').empty();
-                    $('#list-status').html(data.transaction_status);
-                    $(`#edit-status option[value=${data.transaction_status}]`).attr('selected', 'selected')
-                    $(`#edit-treatment option[value='${data.treatment}']`).attr('selected', 'selected');
+                    $('#view-status').html(data.transaction_status);
+                    $(`#edit-status option[value=${data.transaction_status}]`).attr('selected', true);
+                    $(`#edit-treatment option[value='${data.treatment}']`).attr('selected', true);
                     // console.log(data.transaction_status);
                     $('#view-time').html('Created at: ' + data.created_at + '<br>Updated at: ' + data.updated_at);
                     const functions = await Promise.all([
@@ -907,12 +881,10 @@
                         await edit('probCheckbox', data.id),
                         await get_chemical_brand('edit', data.id)
                     ]);
-                    if (functions && toggled == true) {
-                        await toggle();
-                        toggled = false;
+                    if (functions) {
                         $('#details-modal').modal('show');
                     } else {
-                        $('#details-modal').modal('show');
+                        alert('Details Modal Error. Refresh Page.');
                     }
 
                 }
@@ -982,21 +954,19 @@
         })
 
         $(document).on('click', '#editbtn', async function () {
-            if (toggled == false) {
-                toggled = true;
+            if (toggled) {
                 await toggle();
-                $(this).html('Close Edit/Delete');
-            } else {
                 toggled = false;
                 $(this).html('Edit/Delete Transaction');
+            } else {
                 await toggle();
+                $(this).html('Close Edit/Delete');
             }
         });
 
         let toggled = false;
 
         async function toggle() {
-            console.log('toggle: ' + toggled);
             $("#view-customerName").attr("readonly", function (i, attr) {
                 if (attr) {
                     $(this).removeClass('form-control-plaintext');
@@ -1020,7 +990,6 @@
             $('#view-technicians').toggleClass('visually-hidden');
             $('#view-treatment-label').toggleClass('visually-hidden');
             $('#view-treatment').toggleClass('visually-hidden');
-            // $('#view-chemUsed-label').toggleClass('visually-hidden');
             $('#view-chemUsedContainer').toggleClass('visually-hidden');
             $('#view-probCheckbox').toggleClass('visually-hidden');
             $('#view-probCheckbox-label').toggleClass('visually-hidden');
@@ -1034,13 +1003,12 @@
             $('#edit-treatment').toggleClass('visually-hidden');
             $('#edit-treatment-label').toggleClass('visually-hidden');
             $('#row-pestProblems').toggleClass('visually-hidden');
-            // $('#edit-chemBrandUsed-label').toggleClass('visually-hidden');
             $('#edit-chemBrandUsed').toggleClass('visually-hidden');
-            // $('#edit-amountUsed-label').toggleClass('visually-hidden');
             $('#edit-techContainer').toggleClass('visually-hidden');
             $('#btn-amountUsed').toggleClass('visually-hidden');
             $('#edit-status-col').toggleClass('visually-hidden');
             $('#editbtns').toggleClass('visually-hidden');
+            return toggled = true;
         }
 
 

@@ -37,7 +37,7 @@
                 <div class="vr"></div>
                 <select class="form-select select-transparent bg-transparent border border-light text-light w-25"
                     id="sortstatus" aria-label="Default select example">
-                    <option value='' selected>Default</option>
+                    <option value='' selected>Show All Status</option>
                     <option value="Pending">Pending</option>
                     <option value="Accepted">Accepted</option>
                     <option value="Completed">Completed</option>
@@ -788,7 +788,7 @@
                     if (functions) {
                         $('#details-modal').modal('show');
                     } else {
-                        alert('Details Modal Error. Refresh Browser.');
+                        alert('Details Modal Error. Refresh Page.');
                     }
                 }
             } catch (error) {
@@ -897,8 +897,6 @@
             $('#edit-probCheckbox').empty();
             $('#edit-chemBrandUsed').empty();
             $('#view-chemUsed').empty();
-            // $('#edit-status').val('#').change();
-            // $('#edit-treatment').val('#').change();
             $('#view-status').empty();
             $('#edit-chemContainer').empty();
             console.log('modal cleared');
