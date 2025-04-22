@@ -797,7 +797,7 @@
         }
 
         // open details
-        $(document).on('click', '#tableDetails', async function () {
+        $(document).on('click', '#tableDetails', async function () {  
             const clearform = await empty_form();
             if (clearform) {
                 $('#viewEditForm')[0].reset();
