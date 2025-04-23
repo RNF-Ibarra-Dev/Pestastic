@@ -516,9 +516,28 @@
     </div>
 
     <script>
+
         const transUrl = 'tablecontents/trans.data.php';
         const submitUrl = 'tablecontents/transconfig.php';
         // addTechContainer | add-chemContainer
+
+        <?php
+        if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
+            ?>
+            $('#viewEditForm')[0].reset();
+            let id = <?= $_GET['id']; ?>;
+            console.log(id);
+            view_transaction(id);
+            $('#details-modal').on('hidden.bs.modal', function (e) {
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.delete('openmodal');
+                currentUrl.searchParams.delete('id');
+                window.history.pushState(null, "", currentUrl.pathname + currentUrl.search);
+            });
+            <?php
+        }
+        ?>
+
 
 
         $(document).on('click', '#addbtn', async function () {
@@ -793,11 +812,12 @@
                 }
             } catch (error) {
                 alert(JSON.stringify(error.responseJSON));
+                alert(error);
             }
         }
 
         // open details
-        $(document).on('click', '#tableDetails', async function () {  
+        $(document).on('click', '#tableDetails', async function () {
             const clearform = await empty_form();
             if (clearform) {
                 $('#viewEditForm')[0].reset();

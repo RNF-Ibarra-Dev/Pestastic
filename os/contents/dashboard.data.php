@@ -9,7 +9,8 @@ if (isset($_GET['getChart']) && $_GET['getChart'] == 'status') {
   $status = [];
 
   while ($row = mysqli_fetch_assoc($result)) {
-    $status[] = $row;
+    $status[] = $row['transaction_status'];
+    // $status[] = $row['count'];
   }
 
   echo json_encode($status);

@@ -35,7 +35,7 @@ require("startsession.php");
             <div class="row m-2 gap-2">
                 <div class="col-5 bg-light bg-opacity-25 border rounded p-3 shadow">
                     <h1 class=" display-6 mx-auto">Welcome back Manager <strong style="text-transform: capitalize;">
-                                <?= $_SESSION['saUsn'] ?></strong>
+                            <?= $_SESSION['saUsn'] ?></strong>
                     </h1>
                     <p class="fs-3"></p>
                 </div>
@@ -46,11 +46,12 @@ require("startsession.php");
                     </div>
                 </div>
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <p class="text-center align-text-center fs-3 mx-auto"><i class="bi bi-exclamation-circle"></i> Pending Transactions</p>
+                    <p class="text-center align-text-center fs-3 mx-auto"><i class="bi bi-exclamation-circle"></i>
+                        Pending Transactions</p>
                     <table class="table-hover rounded overflow-hidden table">
-                        <caption class="mt-auto">Check your <a href="transactions.php"
+                        <caption class="mt-auto">Check <a href="transactions.php"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
-                            for more.</caption>
+                            for more. Click approve to accept transaction.</caption>
                         <thead>
                             <tr class="text-center">
                                 <th scope="col">ID</th>
@@ -67,7 +68,7 @@ require("startsession.php");
             <div class="row m-2 gap-2">
 
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <p class="text-center fs-3 mx-auto">Pending Chemical Requests</p>
+                    <p class="text-center fs-3 mx-auto">Pending Stock Entries</p>
                     <table class="table-hover rounded overflow-hidden table">
                         <caption>Recently requested addition of chemicals. Check <a href="inventory.php"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
@@ -135,9 +136,101 @@ require("startsession.php");
     </div>
 
 
-    <?php
-    include("footer.links.php");
-    ?>
+    <?php include("footer.links.php"); ?>
+
+    <script>
+        const dataurl = 'tablecontents/index.data.php';
+
+        $(document).ready(async function () {
+            await append_table('pendingtrans');
+            await append_table('pendingchem');
+            await append_table('lowchemicals');
+        })
+
+        async function append_table(container) {
+            try {
+                const append = await $.ajax({
+                    method: 'GET',
+                    dataType: 'html',
+                    url: dataurl,
+                    data: {
+                        append: container
+                    }
+                });
+
+                if (append) {
+                    $(`#${container}`).empty();
+                    $(`#${container}`).append(append);
+                }
+            } catch (error) {
+                alert(error);
+            }
+        }
+
+
+        // charts
+        async function get_chart_data(data) {
+            try {
+                const chartData = await $.ajax({
+                    method: 'GET',
+                    type: 'json',
+                    url: dataurl,
+                    data: {
+                        getChart: data
+                    }
+                });
+
+                if (chartData) {
+                    data = JSON.parse(chartData);
+                    console.log(data);
+                    create_chart('transPie', data.count);
+                }
+            } catch (error) {
+                console.log(error.responseText);
+            }
+        }
+
+        const transPie = $('#transPie');
+        console.log(transPie);
+        $(function () {
+            // create_chart('transPie', yes);
+            get_chart_data('status');
+        })
+
+        let yes = {
+            pen: 2,
+            acc: 4,
+            comp: 4,
+            voids: 2
+        };
+
+        Chart.defaults.color = '#000';
+
+        // function trans_chart(canvasid, pending, accepted, completed, voided)
+        function create_chart(canvasid, data) {
+            const ctx = $(`#${canvasid}`);
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pending', 'Accepted', 'Voided', 'Completed'],
+                    datasets: [{
+                        // label: ['Pending', 'Accepted', 'Completed', 'Voided'],
+                        data: [data[0], data[1], data[2], data[3]],
+                        // data: [pending, accepted, completed, voided],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>
