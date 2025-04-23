@@ -1,4 +1,6 @@
 {
     "editor.parameterHints.cycle": true,
-    "editor.parameterHints.enabled": true
+    "editor.parameterHints.enabled": true,
+    "git.enabled": true,
+    "git.path": "C:/xampp/htdocs/PortableGit/cmd/git.exe"
 }
