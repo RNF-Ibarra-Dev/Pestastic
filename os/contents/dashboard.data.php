@@ -7,13 +7,14 @@ if (isset($_GET['getChart']) && $_GET['getChart'] == 'status') {
   $result = mysqli_query($conn, $sql);
 
   $status = [];
+  $count = [];
 
   while ($row = mysqli_fetch_assoc($result)) {
     $status[] = $row['transaction_status'];
-    // $status[] = $row['count'];
+    $count[] = $row['count'];
   }
 
-  echo json_encode($status);
+  echo json_encode(['status' => $status, 'count' => $count]);
 }
 
 if (isset($_GET['append']) && $_GET['append'] === 'pendingtrans') {
