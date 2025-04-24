@@ -5,7 +5,7 @@ require_once('../../includes/functions.inc.php');
 
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
-    $sql = "SELECT * FROM chemicals WHERE name LIKE '%" . $search . "%' OR brand LIKE '%" . $search . "%' OR chemLevel LIKE '%" . $search . "%' OR expiryDate LIKE '%" . $search . "%'" ;
+    $sql = "SELECT * FROM chemicals WHERE name LIKE '%" . $search . "%' OR brand LIKE '%" . $search . "%' OR chemLevel LIKE '%" . $search . "%' OR expiryDate LIKE '%" . $search . "%'";
 
     $result = mysqli_query($conn, $sql);
     $numrows = mysqli_num_rows($result);
@@ -17,9 +17,14 @@ if (isset($_GET['search'])) {
             $brand = $row["brand"];
             $level = $row["chemLevel"];
             $expDate = $row["expiryDate"];
-        ?>
+            $request = $row['request'];
+            ?>
             <tr>
-                <td scope="row"><?= htmlspecialchars($name) ?></td>
+                <td scope="row">
+                    <?=
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval! Contact manager for more information.'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
+                    ?>
+                </td>
                 <td><?= htmlspecialchars($brand) ?></td>
                 <td><?= htmlspecialchars($level) ?></td>
                 <td><?= htmlspecialchars($expDate) ?></td>
@@ -57,7 +62,7 @@ if (isset($_POST['chemicalsTable'])) {
                 $brand = $row["brand"];
                 $level = $row["chemLevel"];
                 $expDate = $row["expiryDate"];
-            ?>
+                ?>
                 <tr>
                     <td scope="row"><?= htmlspecialchars($name) ?></td>
                     <td><?= htmlspecialchars($brand) ?></td>
@@ -75,7 +80,7 @@ if (isset($_POST['chemicalsTable'])) {
                     </td>
                 </tr>
 
-<?php
+                <?php
             }
         } else {
             echo "<tr><td colspan='5'>No data found</td></tr>";
