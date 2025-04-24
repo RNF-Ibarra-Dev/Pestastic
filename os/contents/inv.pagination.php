@@ -114,13 +114,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
-    // $active = 
-
-    // if ($current == 'last') {
-    //     $current = null;
-    //     $current = $totalPages;
-    //     echo json_encode(["lastpage" => "$current"]);
-    // }
+    
 
     $limitstart = ($current - 1) * $pageRows;
 

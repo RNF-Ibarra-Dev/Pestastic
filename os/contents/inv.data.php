@@ -48,59 +48,8 @@ if (isset($_GET['search'])) {
     }
 }
 
-if (isset($_POST['chemicalsTable'])) {
 
-    $sql = "SELECT * FROM chemicals;";
-    $result = mysqli_query($conn, $sql);
-    $resultCheck = mysqli_num_rows($result);
 
-    if ($result) {
-        if ($resultCheck > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $id = $row['id'];
-                $name = $row["name"];
-                $brand = $row["brand"];
-                $level = $row["chemLevel"];
-                $expDate = $row["expiryDate"];
-                $request = $row['request'];
-                ?>
-                <tr>
-                    <td scope="row"><?php
-                    // $request == 0 ? htmlspecialchars($name) : 'tite'
-                    var_dump($request);
-                    ?></td>
-                    <td><?= htmlspecialchars($brand) ?></td>
-                    <td><?= htmlspecialchars($level) ?></td>
-                    <td><?= htmlspecialchars($expDate) ?></td>
-                    <td>
-                        <div class="d-flex justify-content-center">
-                            <button type="button" id="editbtn" class="btn btn-sidebar me-2" data-bs-toggle="modal"
-                                data-bs-target="#editModal" data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>"
-                                data-brand="<?= htmlspecialchars($brand) ?>" data-level="<?= htmlspecialchars($level) ?>"
-                                data-expdate="<?= htmlspecialchars($expDate) ?>"><i class="bi bi-person-gear me-1"></i>Edit</button>
-                            <button type="button" id="delbtn" class="btn btn-sidebar me-2" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-person-gear me-1"></i>Delete</button>
-                        </div>
-                    </td>
-                </tr>
-
-                <?php
-            }
-        } else {
-            echo "<tr><td colspan='5'>No data found</td></tr>";
-        }
-    } else {
-        echo "<tr><td colspan='5'>Database error</td></tr>";
-    }
-} else {
-    error_log(mysqli_error($conn));
-}
-
-// get manager ID for verification in modifying the chemical table
-// if (isset($_POST["managerId"])) {
-//     require_once "../../includes/functions.inc.php";
-//     echo $_SESSION['saID'];
-// }
 
 // edit
 if (isset($_POST['action']) && $_POST['action'] == 'edit') {

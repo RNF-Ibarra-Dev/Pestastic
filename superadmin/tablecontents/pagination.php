@@ -124,7 +124,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT * FROM chemicals LIMIT " . $limitstart
+    $sql = "SELECT * FROM chemicals ORDER BY id DESC LIMIT " . $limitstart
         . ", " . $pageRows . ";";
 
     $result = mysqli_query($conn, $sql);
@@ -140,20 +140,34 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $brand = $row["brand"];
             $level = $row["chemLevel"];
             $expDate = $row["expiryDate"];
+            $request = $row['request'];
             ?>
-            <tr>
-                <td scope="row"><?= htmlspecialchars($name) ?></td>
+            <tr class="text-center">
+                <td scope="row">
+                    <?=
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval! Contact manager for more information.'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
+                    ?>
+                </td>
                 <td><?= htmlspecialchars($brand) ?></td>
                 <td><?= htmlspecialchars($level) ?></td>
                 <td><?= htmlspecialchars($expDate) ?></td>
                 <td>
                     <div class="d-flex justify-content-center">
+                        <?php
+                        if ($request === '1') {
+                            ?>
+                            <button type="button" id="delbtn" class="btn btn-sidebar me-2" data-bs-toggle="modal"
+                                data-bs-target="#approveModal" data-id="<?= $id ?>"><i
+                                    class="bi bi-person-gear me-1"></i>Approve</button>
+                            <?php
+                        }
+                        ?>
                         <button type="button" id="editbtn" class="btn btn-sidebar me-2" data-bs-toggle="modal"
                             data-bs-target="#editModal" data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>"
                             data-brand="<?= htmlspecialchars($brand) ?>" data-level="<?= htmlspecialchars($level) ?>"
-                            data-expdate="<?= htmlspecialchars($expDate) ?>"><i class="bi bi-person-gear me-1"></i>Edit</button>
+                            data-expdate="<?= htmlspecialchars($expDate) ?>"><i class="bi bi-person-gear me-1"></i><br>Edit</button>
                         <button type="button" id="delbtn" class="btn btn-sidebar me-2" data-bs-toggle="modal"
-                            data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-person-gear me-1"></i>Delete</button>
+                            data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-person-gear me-1"></i><br>Delete</button>
                     </div>
                 </td>
             </tr>

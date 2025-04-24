@@ -29,11 +29,11 @@ include('tablecontents/tables.php');
             <div class="hstack gap-3 mt-5 mx-4">
                 <input class="form-control form-custom me-auto p-2 text-light" type="search" placeholder="Search . . ."
                     id="searchbar" name="searchforafuckingchemical" autocomplete="one-time-code">
-                <!-- <button type="button" id="searchbtn" class="btn btn-sidebar py-3 text-light" data-bs-toggle="tooltip"
-                    data-bs-title="Search"><i class="bi bi-arrow-clockwise"></i></button> -->
+                <button type="button" id="approvemulti" class="btn btn-sidebar py-3 px-4 text-light"
+                    data-bs-toggle="tooltip" title="Multiple Approval"><i class="bi bi-list-check"></i></button>
                 <div class="vr"></div>
                 <button type="button" id="loadChem" class="btn btn-sidebar text-light py-3 px-4" data-bs-toggle="modal"
-                    data-bs-target="#addModal"><i class="bi bi-plus-square"></i></button>
+                    data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i class="bi bi-plus-square"></i></button>
             </div>
 
             <!-- edit chemical -->
@@ -90,8 +90,6 @@ include('tablecontents/tables.php');
                 <!-- edit confirmation -->
                 <div class="modal fade text-dark modal-edit" id="confirmEdit" tabindex="0"
                     aria-labelledby="verifyChanges" aria-hidden="true">
-                    <!-- <input type="hidden" id="idForDeletion" name="id">
-                <input type="hidden" id="delChemId" name="chemid"> -->
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
@@ -258,7 +256,7 @@ include('tablecontents/tables.php');
             <div class="table-responsive-sm d-flex justify-content-center">
                 <table class="table align-middle table-hover m-4 os-table w-100 text-light">
                     <thead>
-                        <tr>
+                        <tr class="text-center">
                             <th scope="col">Name</th>
                             <th>Brand</th>
                             <th>Current Level</th>
@@ -281,7 +279,8 @@ include('tablecontents/tables.php');
 
             <div id="pagination"></div>
 
-            <p class='text-center alert alert-success w-25 mx-auto' style="display: none !important;" id="tableAlert"></p>
+            <p class='text-center alert alert-success w-25 mx-auto' style="display: none !important;" id="tableAlert">
+            </p>
 
         </main>
 
@@ -289,6 +288,7 @@ include('tablecontents/tables.php');
 
 
     <script>
+       
         $(document).ready(async function () {
             // get_data();
             // get_id();
