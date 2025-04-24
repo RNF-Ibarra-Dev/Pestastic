@@ -46,8 +46,6 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
             ?>
             <li class="page-item">
                 <a class="page-link" data-page="1" href=""><i class="bi bi-caret-left-fill"></i></a>
-                </a>
-
             </li>
             <li class="page-item">
                 <?php
