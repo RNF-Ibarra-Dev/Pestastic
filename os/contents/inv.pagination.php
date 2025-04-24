@@ -45,17 +45,17 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
         
             ?>
             <li class="page-item">
-                <a class="page-link" data-page="1" href="">First</a>
+                <a class="page-link" data-page="1" href=""><i class="bi bi-caret-left-fill"></i></a>
 
             </li>
             <li class="page-item">
                 <?php
                 if ($prev > 0) {
                     ?>
-                    <a class="page-link" data-page="<?= $prev ?>">Previous</a>
+                    <a class="page-link" data-page="<?= $prev ?>"><i class="bi bi-caret-left"></a>
                     <?php
                 } else { ?>
-                    <a class="page-link" data-page="1">Previous</a>
+                    <a class="page-link" data-page="1"><i class="bi bi-caret-left"></a>
                     <?php
                 }
                 ?>
@@ -95,16 +95,16 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
                 <?php
                 if ($next <= $totalPages) {
                     ?>
-                    <a class="page-link" data-page="<?= $next ?>" href="">Next</a>
+                    <a class="page-link" data-page="<?= $next ?>" href=""><i class="bi bi-caret-right"></a>
                     <?php
                 } else { ?>
-                    <a class="page-link" data-page="<?= $totalPages ?>">Next</a>
+                    <a class="page-link" data-page="<?= $totalPages ?>"><i class="bi bi-caret-right"></a>
                     <?php
                 }
                 ?>
             </li>
             <li class="page-item">
-                <a class="page-link" data-page="<?= $totalPages ?>" href="">Last</a>
+                <a class="page-link" data-page="<?= $totalPages ?>" href=""><i class="bi bi-caret-right-fill"></a>
             </li>
         </ul>
     </nav>

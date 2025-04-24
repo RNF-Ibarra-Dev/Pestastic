@@ -45,17 +45,18 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
         
             ?>
             <li class="page-item">
-                <a class="page-link" data-page="1" href="">First</a>
+                <a class="page-link" data-page="1" href=""><i class="bi bi-caret-left-fill"></i></a>
+                </a>
 
             </li>
             <li class="page-item">
                 <?php
                 if ($prev > 0) {
                     ?>
-                    <a class="page-link" data-page="<?= $prev ?>">Previous</a>
+                    <a class="page-link" data-page="<?= $prev ?>"><i class="bi bi-caret-left"></i></a>
                     <?php
                 } else { ?>
-                    <a class="page-link" data-page="1">Previous</a>
+                    <a class="page-link" data-page="1"><i class="bi bi-caret-left"></i></a>
                     <?php
                 }
                 ?>
@@ -84,7 +85,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
                         <li class="page-item">
                             <a class="page-link" data-page="<?= $totalPages ?>"><?= $totalPages ?></a>
                         </li>
-                    <?php
+                        <?php
                     }
                     break;
                 }
@@ -95,20 +96,20 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
                 <?php
                 if ($next <= $totalPages) {
                     ?>
-                    <a class="page-link" data-page="<?= $next ?>" href="">Next</a>
+                    <a class="page-link" data-page="<?= $next ?>" href=""><i class="bi bi-caret-right"></i></a>
                     <?php
                 } else { ?>
-                    <a class="page-link" data-page="<?= $totalPages ?>">Next</a>
+                    <a class="page-link" data-page="<?= $totalPages ?>"><i class="bi bi-caret-right"></i></a>
                     <?php
                 }
                 ?>
             </li>
             <li class="page-item">
-                <a class="page-link" data-page="<?= $totalPages ?>" href="">Last</a>
+                <a class="page-link" data-page="<?= $totalPages ?>" href=""><i class="bi bi-caret-right-fill"></i></a>
             </li>
         </ul>
     </nav>
-    
+
     <?php
 
 }
@@ -131,7 +132,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
 
-                   
+
     // echo "<caption class='text-light'>List of all shit.</caption>";
 
     if ($rows > 0) {
