@@ -690,23 +690,48 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
     }
 }
 
-function approve_transaction($conn, $id){
+function approve_stock($conn, $id)
+{
+    try {
+        $sql = "UPDATE chemicals SET request = 0 WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception('Stmt Failed');
+        }
+
+        mysqli_stmt_bind_param($stmt, 'i', $id);
+        mysqli_stmt_execute($stmt);
+        if (mysqli_stmt_affected_rows($stmt) > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (\Throwable $e) {
+        return [
+            'msg' => $e->getMessage()
+        ];
+    }
+}
+
+function approve_transaction($conn, $id)
+{
     $sql = "UPDATE transactions SET transaction_status = 'Accepted' WHERE id = ?;";
     $stmt = mysqli_stmt_init($conn);
 
-    if(!mysqli_stmt_prepare($stmt, $sql)){
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
         echo 'STMT FAILED.';
         exit();
     }
 
     mysqli_stmt_bind_param($stmt, 'i', $id);
     mysqli_stmt_execute($stmt);
-    if(mysqli_stmt_affected_rows($stmt) > 0){
+    if (mysqli_stmt_affected_rows($stmt) > 0) {
         return true;
-    } else{
+    } else {
         return false;
     }
-    
+
 }
 
 function emptyInputLogin($uidEmail, $pwd)
@@ -831,9 +856,9 @@ function editChem($conn, $id, $name, $brand, $level, $expDate, $request = 0)
         exit();
     }
 
-    if($request != 0){
+    if ($request != 0) {
         mysqli_stmt_bind_param($stmt, "ssssii", $name, $brand, $level, $expDate, $request, $id);
-    } else{
+    } else {
         mysqli_stmt_bind_param($stmt, "ssssi", $name, $brand, $level, $expDate, $id);
     }
     mysqli_stmt_execute($stmt);

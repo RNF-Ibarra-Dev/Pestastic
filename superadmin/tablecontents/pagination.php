@@ -117,7 +117,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT * FROM chemicals ORDER BY id DESC LIMIT " . $limitstart
+    $sql = "SELECT * FROM chemicals ORDER BY request DESC, id DESC LIMIT " . $limitstart
         . ", " . $pageRows . ";";
 
     $result = mysqli_query($conn, $sql);

@@ -5,7 +5,7 @@ require_once('../../includes/functions.inc.php');
 
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
-    $sql = "SELECT * FROM chemicals WHERE name LIKE '%" . $search . "%' OR brand LIKE '%" . $search . "%' OR chemLevel LIKE '%" . $search . "%' OR expiryDate LIKE '%" . $search . "%'";
+    $sql = "SELECT * FROM chemicals WHERE name LIKE '%" . $search . "%' OR brand LIKE '%" . $search . "%' OR chemLevel LIKE '%" . $search . "%' OR expiryDate LIKE '%" . $search . "%' ORDER BY request DESC, id DESC;";
 
     $result = mysqli_query($conn, $sql);
     $numrows = mysqli_num_rows($result);
@@ -29,13 +29,26 @@ if (isset($_GET['search'])) {
                 <td><?= htmlspecialchars($level) ?></td>
                 <td><?= htmlspecialchars($expDate) ?></td>
                 <td>
-                    <div class="d-flex justify-content-center">
-                        <button type="button" id="editbtn" class="btn btn-sidebar me-2" data-bs-toggle="modal"
-                            data-bs-target="#editModal" data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>"
-                            data-brand="<?= htmlspecialchars($brand) ?>" data-level="<?= htmlspecialchars($level) ?>"
-                            data-expdate="<?= htmlspecialchars($expDate) ?>"><i class="bi bi-person-gear me-1"></i>Edit</button>
-                        <button type="button" id="delbtn" class="btn btn-sidebar me-2" data-bs-toggle="modal"
-                            data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-person-gear me-1"></i>Delete</button>
+                <div class="d-flex justify-content-center">
+                        <?php
+                        if ($request === "1") {
+                        ?>
+                            <button type="button" id="approvebtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?=$name?>"><i
+                                    class="bi bi-check-circle"></i></button>
+                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i
+                                    class="bi bi-x-octagon"></i></button>
+                        <?php
+                        } else {
+                        ?>
+                            <button type="button" id="editbtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#editModal" data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>"
+                                data-brand="<?= htmlspecialchars($brand) ?>" data-level="<?= htmlspecialchars($level) ?>"
+                                data-expdate="<?= htmlspecialchars($expDate) ?>"><i class="bi bi-pencil-square"></i></button>
+                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
+                        <?php } ?>
                     </div>
                 </td>
             </tr>
@@ -167,7 +180,44 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete') {
 
 
 if(isset($_POST['approve']) && $_POST['approve'] === 'true'){
-    echo json_encode(['success' => 'Yes']);
+    $id = $_POST['id'];
+    $pwd = $_POST['saPwd'];
+
+    if(empty($id) || empty($pwd)){
+        http_response_code(400);
+        if(empty($id)){
+            echo json_encode(['error' => 'emptyfield', 'msg' => 'Empty Id.']);
+            exit();
+        } else{
+            echo json_encode(['error' => 'emptyfield', 'msg' => 'Empty Password.']);
+            exit();
+        }
+    }
+
+    if(!validate($conn, $pwd)){
+        http_response_code(400);
+        echo json_encode(['error' => 'wrongpwd', 'msg' => 'Wrong Password.']);
+        exit();
+    }
+
+    $approve = approve_stock($conn, $id);
+    if(!$approve){
+        echo json_encode(['error' => 'function', 'msg' => $approve['msg']]);
+        exit();
+    }
+
+    echo json_encode(['success' => 'Stock approved and added to inventory officially.']);
+    exit();
+
 }
+
+
+if(isset($_POST['approvemultiple']) && $_POST['approvemultiple'] === 'true'){
+    echo json_encode(['success' => 'Yes']);
+    // get ids to delete
+    $ids[] = $_POST['ids'];
+}
+
+
 
 ?>

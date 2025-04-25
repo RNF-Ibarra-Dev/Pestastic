@@ -10,7 +10,7 @@ include('tablecontents/tables.php');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager - Chemical Stock</title>
+    <title>Manager - Inventory</title>
     <!-- <link rel="stylesheet" href="../../css/style.css"> -->
     <?php include('header.links.php'); ?>
 
@@ -33,7 +33,8 @@ include('tablecontents/tables.php');
                     data-bs-toggle="tooltip" title="Multiple Approval"><i class="bi bi-list-check"></i></button>
                 <div class="vr"></div>
                 <button type="button" id="loadChem" class="btn btn-sidebar text-light py-3 px-4" data-bs-toggle="modal"
-                    data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i class="bi bi-plus-square"></i></button>
+                    data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
+                        class="bi bi-plus-square"></i></button>
             </div>
 
             <!-- edit chemical -->
@@ -266,15 +267,16 @@ include('tablecontents/tables.php');
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="manPass" class="form-label fw-light">Approve Stock <span id="chemname"></span>? Enter manager
+                                    <label for="manPass" class="form-label fw-light">Approve Stock <span
+                                            id="chemname"></span>? Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="hidden" name="id" id="approve-id">
-                                        <input type="password" name="saPwd" class="form-control" id="manPass">
+                                        <input type="password" name="saPwd" class="form-control" id="approve-inputpwd">
                                     </div>
                                 </div>
                                 <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
-                                    id="approve-emptyInput">
+                                    id="approve-errmsg">
                                 </p>
                             </div>
                             <div class="modal-footer">
@@ -327,14 +329,14 @@ include('tablecontents/tables.php');
         const pageurl = 'tablecontents/pagination.php';
         const dataurl = 'tablecontents/chemicals.php';
 
-        $(document).on('click', '#approvebtn', async function(){
+        $(document).on('click', '#approvebtn', async function () {
             let chemId = $(this).data('id');
             let name = $(this).data('name');
             $("#approve-id").val(chemId);
-            $('#chemname').html(name); 
+            $('#chemname').html(name);
         });
 
-        $(document).on('submit', '#confirmapprove', async function(e){
+        $(document).on('submit', '#confirmapprove', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -345,18 +347,36 @@ include('tablecontents/tables.php');
                     data: $(this).serialize() + '&approve=true'
                 });
 
-                if(approve){
-                    let approved = JSON.parse(approve);
-                    console.log(approved);
+                if (approve) {
+                    console.log(approve.success);
+                    $('#tableAlert').css('display', 'block').html(approve.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                    await loadpage(1);
+                    $('#approveModal').modal('hide');
                 }
             } catch (error) {
-                console.log(error);
+                let err = error.responseJSON;
+                switch (err.error) {
+                    case 'emptyfield':
+                        $('input#approve-inputpwd').addClass('border border-warning-subtle').fadeIn(400);
+                        $('#approve-errmsg').removeClass('visually-hidden').html(err.msg).hide().fadeIn(400).delay(1500).fadeOut(1000);
+                        break;
+                    case 'wrongpwd':
+                        $('input#approve-inputpwd').addClass('border border-danger-subtle').fadeIn(400);
+                        $('#approve-errmsg').removeClass('visually-hidden').html(err.msg).hide().fadeIn(400).delay(1500).fadeOut(1000);
+                        break;
+                    case 'function':
+                        // console.log(error.responseJSON.pwd);
+                        $('input#approve-inputpwd').addClass('border border-danger-subtle').fadeIn(400);
+                        $('#approve-errmsg').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(1500).fadeOut(1000);
+                        break;
+                    default:
+                        alert('unknown error. Please contact administration.');
+                        break;
+                }
             }
         });
 
-        $(document).ready(async function() {
-            // get_data();
-            // get_id();
+        $(document).ready(async function () {
             get_sa_id();
             await loadpage(1);
         });
@@ -370,7 +390,7 @@ include('tablecontents/tables.php');
                         pagenav: 'true',
                         active: pageno
                     },
-                    success: async function(res) {
+                    success: async function (res) {
                         $('#pagination').empty();
                         $('#pagination').append(res);
                         // set active page
@@ -399,11 +419,11 @@ include('tablecontents/tables.php');
                         // sends the current page no.
                         currentpage: page
                     },
-                    success: function(data) {
+                    success: function (data) {
                         $('#chemicalTable').empty();
                         $('#chemicalTable').append(data);
                     },
-                    error: function(err) {
+                    error: function (err) {
                         alert('loadtable func error:' + err);
                     }
                 });
@@ -414,7 +434,7 @@ include('tablecontents/tables.php');
 
         }
 
-        $('#pagination').on('click', '.page-link', async function(e) {
+        $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
 
             let currentpage = $(this).data('page');
@@ -436,17 +456,17 @@ include('tablecontents/tables.php');
 
 
         // search
-        $(function() {
+        $(function () {
             let timeout = null;
 
-            $('#searchbar').keyup(function() {
+            $('#searchbar').keyup(function () {
                 clearTimeout(timeout);
                 $('#chemicalTable').empty();
                 // $('#chemicalTable').append($('#loader'))
                 // $('#loader').removeClass('visually-hidden');
                 $('#loader').css('display', 'block');
 
-                timeout = setTimeout(async function() {
+                timeout = setTimeout(async function () {
                     var search = $('#searchbar').val();
                     try {
                         const searchChem = await $.ajax({
@@ -456,7 +476,7 @@ include('tablecontents/tables.php');
                             data: {
                                 search: search
                             },
-                            success: async function(searchChem, status) {
+                            success: async function (searchChem, status) {
                                 if (!search == '') {
                                     $('#chemicalTable').empty();
                                     // $('#loader').addClass('visually-hidden');
@@ -485,7 +505,7 @@ include('tablecontents/tables.php');
         function get_sa_id() {
             $.post(dataurl, {
                 managerId: true
-            }, function(data, status) {
+            }, function (data, status) {
                 // console.log(data + ' status ' + status);
                 $('#idForDeletion').val(data);
                 // var saID = data;
@@ -496,8 +516,8 @@ include('tablecontents/tables.php');
         }
 
         // edit chemical
-        $(function() {
-            $('#editChemForm').on('submit', async function(e) {
+        $(function () {
+            $('#editChemForm').on('submit', async function (e) {
                 e.preventDefault();
                 try {
                     const data = await $.ajax({
@@ -610,7 +630,7 @@ include('tablecontents/tables.php');
         }
 
         // delete item
-        $(document).on('click', '#delbtn', async function() {
+        $(document).on('click', '#delbtn', async function () {
             $('#deleteForm')[0].reset();
             get_sa_id();
             var chemID = $(this).data('id');
@@ -618,7 +638,7 @@ include('tablecontents/tables.php');
             // $('#manPass').disableAutoFill();
             // $('#delChemId').val(chemID);
             var saID = $('#idForDeletion').val();
-            $('#delsub').off('click').on('click', async function() {
+            $('#delsub').off('click').on('click', async function () {
                 try {
                     var saPass = $('#manPass').val();
                     console.log(chemID + saID + saPass);
@@ -631,7 +651,7 @@ include('tablecontents/tables.php');
 
         })
 
-        $('#addForm').on('submit', async function(e) {
+        $('#addForm').on('submit', async function (e) {
             e.preventDefault();
             // var chemId = $('#add-id').val();
             // var name = $('#add-name').val();
@@ -681,7 +701,7 @@ include('tablecontents/tables.php');
                         $('input.form-add').addClass('border border-warning').fadeIn(400);
                         $('#emptyInput').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
                         break;
-                        // confirmation modal part:
+                    // confirmation modal part:
                     case 'wrongPwd':
                         console.log(error.responseJSON.error);
                         $('#addPwd').addClass('border border-warning').fadeIn(400);
@@ -700,7 +720,7 @@ include('tablecontents/tables.php');
         })
 
         // get specific chemical information when edit btn is clicked
-        $(document).on('click', '#editbtn', function() {
+        $(document).on('click', '#editbtn', function () {
             var chemId = $(this).data('id');
             var name = $(this).data('name');
             var brand = $(this).data('brand');
