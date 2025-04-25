@@ -166,4 +166,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete') {
 
 
 
+if(isset($_POST['approve']) && $_POST['approve'] === 'true'){
+    echo json_encode(['success' => 'Yes']);
+}
+
 ?>

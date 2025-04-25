@@ -252,6 +252,41 @@ include('tablecontents/tables.php');
                 </div>
             </form>
 
+            <form id="multiapprove"></form>
+
+            <!-- single approval modal | acts as confirmation modal (?) -->
+            <form id="confirmapprove">
+                <div class="modal fade text-dark modal-edit" id="approveModal" tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5" id="verifyChanges">Chemical Approval</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="manPass" class="form-label fw-light">Approve Stock <span id="chemname"></span>? Enter manager
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="hidden" name="id" id="approve-id">
+                                        <input type="password" name="saPwd" class="form-control" id="manPass">
+                                    </div>
+                                </div>
+                                <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
+                                    id="approve-emptyInput">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-grad" id="approvechem">Approve
+                                    Chemical</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
             <!-- tabble -->
             <div class="table-responsive-sm d-flex justify-content-center">
                 <table class="table align-middle table-hover m-4 os-table w-100 text-light">
@@ -288,8 +323,38 @@ include('tablecontents/tables.php');
 
 
     <script>
-       
-        $(document).ready(async function () {
+
+        const pageurl = 'tablecontents/pagination.php';
+        const dataurl = 'tablecontents/chemicals.php';
+
+        $(document).on('click', '#approvebtn', async function(){
+            let chemId = $(this).data('id');
+            let name = $(this).data('name');
+            $("#approve-id").val(chemId);
+            $('#chemname').html(name); 
+        });
+
+        $(document).on('submit', '#confirmapprove', async function(e){
+            e.preventDefault();
+            console.log($(this).serialize());
+            try {
+                const approve = await $.ajax({
+                    method: 'POST',
+                    dataType: 'json',
+                    url: dataurl,
+                    data: $(this).serialize() + '&approve=true'
+                });
+
+                if(approve){
+                    let approved = JSON.parse(approve);
+                    console.log(approved);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+
+        $(document).ready(async function() {
             // get_data();
             // get_id();
             get_sa_id();
@@ -300,12 +365,12 @@ include('tablecontents/tables.php');
             try {
                 return $.ajax({
                     type: 'GET',
-                    url: 'tablecontents/pagination.php',
+                    url: pageurl,
                     data: {
                         pagenav: 'true',
                         active: pageno
                     },
-                    success: async function (res) {
+                    success: async function(res) {
                         $('#pagination').empty();
                         $('#pagination').append(res);
                         // set active page
@@ -328,17 +393,17 @@ include('tablecontents/tables.php');
             try {
                 return $.ajax({
                     type: 'GET',
-                    url: 'tablecontents/pagination.php',
+                    url: pageurl,
                     data: {
                         table: 'true',
                         // sends the current page no.
                         currentpage: page
                     },
-                    success: function (data) {
+                    success: function(data) {
                         $('#chemicalTable').empty();
                         $('#chemicalTable').append(data);
                     },
-                    error: function (err) {
+                    error: function(err) {
                         alert('loadtable func error:' + err);
                     }
                 });
@@ -349,7 +414,7 @@ include('tablecontents/tables.php');
 
         }
 
-        $('#pagination').on('click', '.page-link', async function (e) {
+        $('#pagination').on('click', '.page-link', async function(e) {
             e.preventDefault();
 
             let currentpage = $(this).data('page');
@@ -371,27 +436,27 @@ include('tablecontents/tables.php');
 
 
         // search
-        $(function () {
+        $(function() {
             let timeout = null;
 
-            $('#searchbar').keyup(function () {
+            $('#searchbar').keyup(function() {
                 clearTimeout(timeout);
                 $('#chemicalTable').empty();
                 // $('#chemicalTable').append($('#loader'))
                 // $('#loader').removeClass('visually-hidden');
                 $('#loader').css('display', 'block');
 
-                timeout = setTimeout(async function () {
+                timeout = setTimeout(async function() {
                     var search = $('#searchbar').val();
                     try {
                         const searchChem = await $.ajax({
-                            url: 'tablecontents/chemicals.php',
+                            url: dataurl,
                             type: 'GET',
                             dataType: 'html',
                             data: {
                                 search: search
                             },
-                            success: async function (searchChem, status) {
+                            success: async function(searchChem, status) {
                                 if (!search == '') {
                                     $('#chemicalTable').empty();
                                     // $('#loader').addClass('visually-hidden');
@@ -418,9 +483,9 @@ include('tablecontents/tables.php');
 
 
         function get_sa_id() {
-            $.post('tablecontents/chemicals.php', {
+            $.post(dataurl, {
                 managerId: true
-            }, function (data, status) {
+            }, function(data, status) {
                 // console.log(data + ' status ' + status);
                 $('#idForDeletion').val(data);
                 // var saID = data;
@@ -431,13 +496,13 @@ include('tablecontents/tables.php');
         }
 
         // edit chemical
-        $(function () {
-            $('#editChemForm').on('submit', async function (e) {
+        $(function() {
+            $('#editChemForm').on('submit', async function(e) {
                 e.preventDefault();
                 try {
                     const data = await $.ajax({
                         type: 'POST',
-                        url: 'tablecontents/chemicals.php',
+                        url: dataurl,
                         data: $(this).serialize() + '&action=edit',
                         dataType: 'json'
                     });
@@ -497,7 +562,7 @@ include('tablecontents/tables.php');
             try {
                 const del = await $.ajax({
                     type: 'POST',
-                    url: 'tablecontents/chemicals.php',
+                    url: dataurl,
                     data: {
                         action: 'delete',
                         saID: id,
@@ -545,7 +610,7 @@ include('tablecontents/tables.php');
         }
 
         // delete item
-        $(document).on('click', '#delbtn', async function () {
+        $(document).on('click', '#delbtn', async function() {
             $('#deleteForm')[0].reset();
             get_sa_id();
             var chemID = $(this).data('id');
@@ -553,7 +618,7 @@ include('tablecontents/tables.php');
             // $('#manPass').disableAutoFill();
             // $('#delChemId').val(chemID);
             var saID = $('#idForDeletion').val();
-            $('#delsub').off('click').on('click', async function () {
+            $('#delsub').off('click').on('click', async function() {
                 try {
                     var saPass = $('#manPass').val();
                     console.log(chemID + saID + saPass);
@@ -566,7 +631,7 @@ include('tablecontents/tables.php');
 
         })
 
-        $('#addForm').on('submit', async function (e) {
+        $('#addForm').on('submit', async function(e) {
             e.preventDefault();
             // var chemId = $('#add-id').val();
             // var name = $('#add-name').val();
@@ -578,7 +643,7 @@ include('tablecontents/tables.php');
             try {
                 const add = await $.ajax({
                     type: 'POST',
-                    url: 'tablecontents/chemicals.php',
+                    url: dataurl,
                     data: $(this).serialize() + '&action=add',
                     dataType: 'json'
                 });
@@ -616,7 +681,7 @@ include('tablecontents/tables.php');
                         $('input.form-add').addClass('border border-warning').fadeIn(400);
                         $('#emptyInput').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
                         break;
-                    // confirmation modal part:
+                        // confirmation modal part:
                     case 'wrongPwd':
                         console.log(error.responseJSON.error);
                         $('#addPwd').addClass('border border-warning').fadeIn(400);
@@ -635,7 +700,7 @@ include('tablecontents/tables.php');
         })
 
         // get specific chemical information when edit btn is clicked
-        $(document).on('click', '#editbtn', function () {
+        $(document).on('click', '#editbtn', function() {
             var chemId = $(this).data('id');
             var name = $(this).data('name');
             var brand = $(this).data('brand');
@@ -648,7 +713,6 @@ include('tablecontents/tables.php');
             $('#chemLevel').val(level);
             $('#expDate').val(expdate);
         })
-
     </script>
     <?php include('footer.links.php'); ?>
 </body>

@@ -10,7 +10,7 @@ $totalPages = ceil($totalRows / $pageRows);
 
 
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
-    ?>
+?>
 
 
     <nav aria-label="Page navigation">
@@ -42,7 +42,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
             $lastpages = $totalPages;
             // var_dump($lastpages);
-        
+
             ?>
             <li class="page-item">
                 <a class="page-link" data-page="1" href=""><i class="bi bi-caret-left-fill"></i></a>
@@ -50,12 +50,12 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
             <li class="page-item">
                 <?php
                 if ($prev > 0) {
-                    ?>
+                ?>
                     <a class="page-link" data-page="<?= $prev ?>"><i class="bi bi-caret-left"></i></a>
-                    <?php
+                <?php
                 } else { ?>
                     <a class="page-link" data-page="1"><i class="bi bi-caret-left"></i></a>
-                    <?php
+                <?php
                 }
                 ?>
             </li>
@@ -75,7 +75,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
                     $limitreached = true;
 
                     if ($currentPage != $lastpages && $currentPage <= $lastpages) {
-                        ?>
+                ?>
                         <li class="page-item disabled">
                             <a class="page-link">...</a>
                         </li>
@@ -83,7 +83,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
                         <li class="page-item">
                             <a class="page-link" data-page="<?= $totalPages ?>"><?= $totalPages ?></a>
                         </li>
-                        <?php
+            <?php
                     }
                     break;
                 }
@@ -93,12 +93,12 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
             <li class="page-item">
                 <?php
                 if ($next <= $totalPages) {
-                    ?>
+                ?>
                     <a class="page-link" data-page="<?= $next ?>" href=""><i class="bi bi-caret-right"></i></a>
-                    <?php
+                <?php
                 } else { ?>
                     <a class="page-link" data-page="<?= $totalPages ?>"><i class="bi bi-caret-right"></i></a>
-                    <?php
+                <?php
                 }
                 ?>
             </li>
@@ -114,13 +114,6 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
-    // $active = 
-
-    // if ($current == 'last') {
-    //     $current = null;
-    //     $current = $totalPages;
-    //     echo json_encode(["lastpage" => "$current"]);
-    // }
 
     $limitstart = ($current - 1) * $pageRows;
 
@@ -131,8 +124,6 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $rows = mysqli_num_rows($result);
 
 
-    // echo "<caption class='text-light'>List of all shit.</caption>";
-
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
@@ -141,11 +132,11 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $level = $row["chemLevel"];
             $expDate = $row["expiryDate"];
             $request = $row['request'];
-            ?>
+    ?>
             <tr class="text-center">
                 <td scope="row">
                     <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval! Contact manager for more information.'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
+                    $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
@@ -154,25 +145,29 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
-                        if ($request === '1') {
-                            ?>
-                            <button type="button" id="delbtn" class="btn btn-sidebar me-2" data-bs-toggle="modal"
-                                data-bs-target="#approveModal" data-id="<?= $id ?>"><i
-                                    class="bi bi-person-gear me-1"></i>Approve</button>
-                            <?php
-                        }
+                        if ($request === "1") {
                         ?>
-                        <button type="button" id="editbtn" class="btn btn-sidebar me-2" data-bs-toggle="modal"
-                            data-bs-target="#editModal" data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>"
-                            data-brand="<?= htmlspecialchars($brand) ?>" data-level="<?= htmlspecialchars($level) ?>"
-                            data-expdate="<?= htmlspecialchars($expDate) ?>"><i class="bi bi-person-gear me-1"></i><br>Edit</button>
-                        <button type="button" id="delbtn" class="btn btn-sidebar me-2" data-bs-toggle="modal"
-                            data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-person-gear me-1"></i><br>Delete</button>
+                            <button type="button" id="approvebtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?=$name?>"><i
+                                    class="bi bi-check-circle"></i></button>
+                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i
+                                    class="bi bi-x-octagon"></i></button>
+                        <?php
+                        } else {
+                        ?>
+                            <button type="button" id="editbtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#editModal" data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>"
+                                data-brand="<?= htmlspecialchars($brand) ?>" data-level="<?= htmlspecialchars($level) ?>"
+                                data-expdate="<?= htmlspecialchars($expDate) ?>"><i class="bi bi-pencil-square"></i></button>
+                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
+                        <?php } ?>
                     </div>
                 </td>
             </tr>
 
-            <?php
+<?php
         }
     } else {
         // echo json_encode(['']);
