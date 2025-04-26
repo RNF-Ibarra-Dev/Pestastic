@@ -29,19 +29,18 @@ if (isset($_GET['search'])) {
                 <td><?= htmlspecialchars($level) ?></td>
                 <td><?= htmlspecialchars($expDate) ?></td>
                 <td>
-                <div class="d-flex justify-content-center">
+                    <div class="d-flex justify-content-center">
                         <?php
                         if ($request === "1") {
-                        ?>
+                            ?>
                             <button type="button" id="approvebtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?=$name?>"><i
+                                data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?= $name ?>"><i
                                     class="bi bi-check-circle"></i></button>
                             <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i
-                                    class="bi bi-x-octagon"></i></button>
-                        <?php
+                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-x-octagon"></i></button>
+                            <?php
                         } else {
-                        ?>
+                            ?>
                             <button type="button" id="editbtn" class="btn btn-sidebar" data-bs-toggle="modal"
                                 data-bs-target="#editModal" data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>"
                                 data-brand="<?= htmlspecialchars($brand) ?>" data-level="<?= htmlspecialchars($level) ?>"
@@ -179,29 +178,29 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete') {
 
 
 
-if(isset($_POST['approve']) && $_POST['approve'] === 'true'){
+if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
     $id[] = $_POST['id'];
     $pwd = $_POST['saPwd'];
 
-    if(empty($id) || empty($pwd)){
+    if (empty($id) || empty($pwd)) {
         http_response_code(400);
-        if(empty($id)){
+        if (empty($id)) {
             echo json_encode(['error' => 'emptyfield', 'msg' => 'Empty Id.']);
             exit();
-        } else{
+        } else {
             echo json_encode(['error' => 'emptyfield', 'msg' => 'Empty Password.']);
             exit();
         }
     }
 
-    if(!validate($conn, $pwd)){
+    if (!validate($conn, $pwd)) {
         http_response_code(400);
         echo json_encode(['error' => 'wrongpwd', 'msg' => 'Wrong Password.']);
         exit();
     }
 
     $approve = approve_stock($conn, $id);
-    if(!$approve){
+    if (!$approve) {
         echo json_encode(['error' => 'function', 'msg' => $approve['msg']]);
         exit();
     }
@@ -212,10 +211,62 @@ if(isset($_POST['approve']) && $_POST['approve'] === 'true'){
 }
 
 
-if(isset($_POST['approvemultiple']) && $_POST['approvemultiple'] === 'true'){
+if (isset($_POST['approvemultiple']) && $_POST['approvemultiple'] === 'true') {
     echo json_encode(['success' => 'Yes']);
     // get ids to delete
     $ids[] = $_POST['ids'];
+}
+
+if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
+    $sql = "SELECT * FROM chemicals WHERE request = 1 ORDER BY id DESC;";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $name = $row["name"];
+            $brand = $row["brand"];
+            $level = $row["chemLevel"];
+            $expDate = $row["expiryDate"];
+            $request = $row['request'];
+            ?>
+            <tr class="text-center">
+                <td scope="row">
+                    <?=
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                    ?>
+                </td>
+                <td><?= htmlspecialchars($brand) ?></td>
+                <td><?= htmlspecialchars($level) ?></td>
+                <td><?= htmlspecialchars($expDate) ?></td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <?php
+                        if ($request === "1") {
+                            ?>
+                            <button type="button" id="approvebtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?= $name ?>"><i
+                                    class="bi bi-check-circle"></i></button>
+                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-x-octagon"></i></button>
+                            <?php
+                        } else {
+                            ?>
+                            <button type="button" id="editbtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#editModal" data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>"
+                                data-brand="<?= htmlspecialchars($brand) ?>" data-level="<?= htmlspecialchars($level) ?>"
+                                data-expdate="<?= htmlspecialchars($expDate) ?>"><i class="bi bi-pencil-square"></i></button>
+                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
+                        <?php } ?>
+                    </div>
+                </td>
+            </tr>
+            <?php
+        }
+    } else {
+        echo "<tr><td scope='row' colspan='5' class='text-center'>Your search does not exist.</td></tr>";
+    }
 }
 
 

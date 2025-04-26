@@ -13,7 +13,17 @@ include('tablecontents/tables.php');
     <title>Manager - Inventory</title>
     <!-- <link rel="stylesheet" href="../../css/style.css"> -->
     <?php include('header.links.php'); ?>
+    <style>
+        table#approvechemtable tr td,
+        table#approvechemtable tr th {
+            background-color:unset !important;
+            color: unset !important;
+        }
 
+        table#approvechemtable tr td button {
+            color: unset !important;
+        }
+    </style>
 </head>
 
 <body class="bg-official text-light">
@@ -30,7 +40,8 @@ include('tablecontents/tables.php');
                 <input class="form-control form-custom me-auto p-2 text-light" type="search" placeholder="Search . . ."
                     id="searchbar" name="searchforafuckingchemical" autocomplete="one-time-code">
                 <button type="button" id="approvemulti" class="btn btn-sidebar py-3 px-4 text-light"
-                    data-bs-toggle="tooltip" title="Multiple Approval"><i class="bi bi-list-check"></i></button>
+                    data-bs-toggle="modal" data-bs-toggle="tooltip" data-bs-target="#multiapproveModal"
+                    title="Multiple Approval"><i class="bi bi-list-check"></i></button>
                 <div class="vr"></div>
                 <button type="button" id="loadChem" class="btn btn-sidebar text-light py-3 px-4" data-bs-toggle="modal"
                     data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
@@ -40,8 +51,8 @@ include('tablecontents/tables.php');
             <!-- edit chemical -->
             <form id="editChemForm">
                 <div class="row g-2 text-dark">
-                    <div class="modal fade text-dark modal-edit" id="editModal" tabindex="-1" aria-labelledby="edit"
-                        aria-hidden="true">
+                    <div class="modal fade text-dark modal-edit" id="editModal" data-bs-backdrop="static" tabindex="-1"
+                        aria-labelledby="edit" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
@@ -55,7 +66,7 @@ include('tablecontents/tables.php');
                                     <div class="row mb-2">
 
                                         <div class="col-lg-6 mb-2">
-                                            <label for="name" class="form-label fw-light">Chemical Name</label>
+                                            <label for="nam" class="form-label fw-light">Chemical Name</label>
                                             <input type="text" name="name" id="name" class="form-control"
                                                 autocomplete="off">
                                         </div>
@@ -89,7 +100,7 @@ include('tablecontents/tables.php');
                 </div>
 
                 <!-- edit confirmation -->
-                <div class="modal fade text-dark modal-edit" id="confirmEdit" tabindex="0"
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="confirmEdit" tabindex="0"
                     aria-labelledby="verifyChanges" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -126,8 +137,8 @@ include('tablecontents/tables.php');
             <!-- add new chemical -->
             <form id="addForm">
                 <div class="row g-2 text-dark">
-                    <div class="modal fade text-dark modal-edit" id="addModal" tabindex="-1" aria-labelledby="create"
-                        aria-hidden="true">
+                    <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="addModal" tabindex="-1"
+                        aria-labelledby="create" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
@@ -178,8 +189,8 @@ include('tablecontents/tables.php');
                     </div>
                 </div>
                 <!-- add confirmation -->
-                <div class="modal fade text-dark modal-edit" id="confirmAdd" tabindex="0" aria-labelledby="confirmAdd"
-                    aria-hidden="true">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="confirmAdd" tabindex="0"
+                    aria-labelledby="confirmAdd" aria-hidden="true">
                     <!-- <input type="hidden" id="idForDeletion" name="id">
                 <input type="hidden" id="delChemId" name="chemid"> -->
                     <div class="modal-dialog">
@@ -216,7 +227,7 @@ include('tablecontents/tables.php');
 
             <!-- delete modal -->
             <form id="deleteForm">
-                <div class="modal fade text-dark modal-edit" id="deleteModal" tabindex="0"
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="deleteModal" tabindex="0"
                     aria-labelledby="verifyChanges" aria-hidden="true">
                     <input type="hidden" id="idForDeletion" name="id">
                     <input type="hidden" id="delChemId" name="chemid">
@@ -253,11 +264,88 @@ include('tablecontents/tables.php');
                 </div>
             </form>
 
-            <form id="multiapprove"></form>
+            <form id="multiapprove">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="multiapproveModal"
+                    tabindex="0" aria-labelledby="confirmAdd" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title">
+                                <h1 class="modal-title fs-5 text-light">Stock Requests</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x"></i></button>
+                            </div>
+
+                            <div class="modal-body text-dark">
+                                <div class="table-responsive-sm d-flex justify-content-center">
+                                    <table class="table align-middle table-hover m-4 w-100" id="approvechemtable">
+                                        <thead>
+                                            <tr class="text-center">
+                                                <th scope="col">Name</th>
+                                                <th>Brand</th>
+                                                <th>Level</th>
+                                                <th>Expiry Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody id="approve-chemtable">
+                                            <!-- ajax chem table -->
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#confirmmultiapprove">Continue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="confirmmultiapprove"
+                    tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Chemical Approval</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Approve all stock?
+                                        Enter manager
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="hidden" name="id" id="approve-id">
+                                        <input type="password" name="saPwd" class="form-control"
+                                            id="confirmapprove-inputpwd">
+                                    </div>
+                                </div>
+                                <div id="passwordHelpBlock" class="form-text">
+                                    Note: Approving stock requests will officially make the chemicals a part of the
+                                    inventory.
+                                </div>
+                                <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
+                                    id="approve-errmsg">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal" data-bs-target="#multiapproveModal">Go Back</button>
+                                <button type="submit" class="btn btn-grad" id="approvemultichem">Approve
+                                    Stocks</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
 
             <!-- single approval modal | acts as confirmation modal (?) -->
             <form id="confirmapprove">
-                <div class="modal fade text-dark modal-edit" id="approveModal" tabindex="0">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="approveModal" tabindex="0">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
@@ -267,13 +355,17 @@ include('tablecontents/tables.php');
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="manPass" class="form-label fw-light">Approve Stock <span
+                                    <label for="approve-inputpwd" class="form-label fw-light">Approve Stock <span
                                             id="chemname"></span>? Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="hidden" name="id" id="approve-id">
                                         <input type="password" name="saPwd" class="form-control" id="approve-inputpwd">
                                     </div>
+                                </div>
+                                <div id="passwordHelpBlock" class="form-text">
+                                    Note: Approving stock requests will officially make the chemicals a part of the
+                                    inventory.
                                 </div>
                                 <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
                                     id="approve-errmsg">
@@ -329,7 +421,40 @@ include('tablecontents/tables.php');
         const pageurl = 'tablecontents/pagination.php';
         const dataurl = 'tablecontents/chemicals.php';
 
+        $(document).on('click', '#approvemulti', async function () {
+            $('#multiapprove')[0].reset();
+            const reqlist = await stock_requests();
+            if (reqlist) {
+                $('#multiapproveModal').modal('show');
+            }
+        })
+
+        async function stock_requests() {
+            try {
+                const stock = await $.ajax({
+                    method: 'GET',
+                    url: dataurl,
+                    dataType: 'html',
+                    data: '&stock=true'
+                });
+
+                if (stock) {
+                    $('#approve-chemtable').append(stock);
+                } else {
+                    alert('append err');
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        $(document).on('submit', '#multiapprove', async function () {
+
+        })
+
+
         $(document).on('click', '#approvebtn', async function () {
+            $('#confirmapprove')[0].reset();
             let chemId = $(this).data('id');
             let name = $(this).data('name');
             $("#approve-id").val(chemId);

@@ -170,7 +170,6 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 <?php
         }
     } else {
-        // echo json_encode(['']);
         echo "<tr><td scope='row' colspan='5' class='text-center'>Your search does not exist.</td></tr>";
     }
 }
