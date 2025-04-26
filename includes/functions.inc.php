@@ -692,20 +692,23 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
 function approve_stock($conn, $id)
 {
+    $questionmarks = array_fill(0, count($id), '?');
     try {
-        $sql = "UPDATE chemicals SET request = 0 WHERE id = ?;";
+        $sql = "UPDATE chemicals SET request = 0 WHERE id IN (" . implode(',', $questionmarks) . ");";
         $stmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($stmt, $sql)) {
-            throw new Exception('Stmt Failed');
+            throw new Exception('Stmt Failed' . mysqli_stmt_error($stmt));
         }
 
-        mysqli_stmt_bind_param($stmt, 'i', $id);
+        $ints = str_repeat('i', count($id));
+        mysqli_stmt_bind_param($stmt, $ints, ...$id);
         mysqli_stmt_execute($stmt);
-        if (mysqli_stmt_affected_rows($stmt) > 0) {
+
+        if (1 > mysqli_stmt_affected_rows($stmt)) {
             return true;
         } else {
-            return false;
+            throw new Exception('Error Inserting.' . mysqli_stmt_error($stmt));
         }
     } catch (\Throwable $e) {
         return [

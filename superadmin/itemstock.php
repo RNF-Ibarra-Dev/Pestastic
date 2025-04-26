@@ -355,6 +355,7 @@ include('tablecontents/tables.php');
                 }
             } catch (error) {
                 let err = error.responseJSON;
+                console.log(error.responseText);
                 switch (err.error) {
                     case 'emptyfield':
                         $('input#approve-inputpwd').addClass('border border-warning-subtle').fadeIn(400);
@@ -373,6 +374,7 @@ include('tablecontents/tables.php');
                         alert('unknown error. Please contact administration.');
                         break;
                 }
+
             }
         });
 

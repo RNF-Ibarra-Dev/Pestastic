@@ -180,7 +180,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete') {
 
 
 if(isset($_POST['approve']) && $_POST['approve'] === 'true'){
-    $id = $_POST['id'];
+    $id[] = $_POST['id'];
     $pwd = $_POST['saPwd'];
 
     if(empty($id) || empty($pwd)){
