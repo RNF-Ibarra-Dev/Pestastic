@@ -16,8 +16,13 @@ include('tablecontents/tables.php');
     <style>
         table#approvechemtable tr td,
         table#approvechemtable tr th {
-            background-color:unset !important;
+            background-color: unset !important;
             color: unset !important;
+            padding: 1.25rem !important;
+        }
+
+        table#approvechemtable tr th {
+            padding: 0.75rem 0.5rem;
         }
 
         table#approvechemtable tr td button {
@@ -41,7 +46,7 @@ include('tablecontents/tables.php');
                     id="searchbar" name="searchforafuckingchemical" autocomplete="one-time-code">
                 <button type="button" id="approvemulti" class="btn btn-sidebar py-3 px-4 text-light"
                     data-bs-toggle="modal" data-bs-toggle="tooltip" data-bs-target="#multiapproveModal"
-                    title="Multiple Approval"><i class="bi bi-list-check"></i></button>
+                    title="Approve multiple stocks"><i class="bi bi-list-check"></i></button>
                 <div class="vr"></div>
                 <button type="button" id="loadChem" class="btn btn-sidebar text-light py-3 px-4" data-bs-toggle="modal"
                     data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
@@ -265,30 +270,37 @@ include('tablecontents/tables.php');
             </form>
 
             <form id="multiapprove">
-                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="multiapproveModal"
+                <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static" id="multiapproveModal"
                     tabindex="0" aria-labelledby="confirmAdd" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title">
-                                <h1 class="modal-title fs-5 text-light">Stock Requests</h1>
-                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                <h1 class="modal-title fs-5 text-light">Stock Entries</h1>
+                                <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x"></i></button>
                             </div>
 
-                            <div class="modal-body text-dark">
-                                <div class="table-responsive-sm d-flex justify-content-center">
-                                    <table class="table align-middle table-hover m-4 w-100" id="approvechemtable">
+                            <div class="modal-body text-dark p-3">
+                                <div class="table-responsive-sm  d-flex justify-content-center">
+                                    <table class="table align-middle table-hover w-100" id="approvechemtable">
+                                        <caption class="fw-light text-muted">List of stocks added by the Operations
+                                            Supervisor.</captio>
                                         <thead>
-                                            <tr class="text-center">
+                                            <tr class="text-center align-middle">
                                                 <th scope="col">Name</th>
                                                 <th>Brand</th>
                                                 <th>Level</th>
                                                 <th>Expiry Date</th>
-                                                <th>Actions</th>
+                                                <th>
+                                                    <input type="checkbox" class="btn-check"
+                                                        id="checkall" autocomplete="off">
+                                                    <label class="btn fw-bold" for="checkall">Check All <i id="checkicon"
+                                                            class="bi bi-square ms-2"></i></label>
+                                                </th>
                                             </tr>
                                         </thead>
 
-                                        <tbody id="approve-chemtable">
+                                        <tbody id="approve-chemtable" class="table-group-divider">
                                             <!-- ajax chem table -->
                                         </tbody>
 
@@ -310,7 +322,7 @@ include('tablecontents/tables.php');
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Chemical Approval</h1>
+                                <h1 class="modal-title fs-5">Stock Entry Approval</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
@@ -320,7 +332,6 @@ include('tablecontents/tables.php');
                                         Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
-                                        <input type="hidden" name="id" id="approve-id">
                                         <input type="password" name="saPwd" class="form-control"
                                             id="confirmapprove-inputpwd">
                                     </div>
@@ -334,7 +345,8 @@ include('tablecontents/tables.php');
                                 </p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-grad" data-bs-toggle="modal" data-bs-target="#multiapproveModal">Go Back</button>
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#multiapproveModal">Go Back</button>
                                 <button type="submit" class="btn btn-grad" id="approvemultichem">Approve
                                     Stocks</button>
                             </div>
@@ -349,7 +361,7 @@ include('tablecontents/tables.php');
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5" id="verifyChanges">Chemical Approval</h1>
+                                <h1 class="modal-title fs-5" id="verifyChanges">Stock Approval</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
@@ -364,7 +376,7 @@ include('tablecontents/tables.php');
                                     </div>
                                 </div>
                                 <div id="passwordHelpBlock" class="form-text">
-                                    Note: Approving stock requests will officially make the chemicals a part of the
+                                    Note: Approving stock entries will officially make the stocks a part of the
                                     inventory.
                                 </div>
                                 <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
@@ -383,14 +395,17 @@ include('tablecontents/tables.php');
 
             <!-- tabble -->
             <div class="table-responsive-sm d-flex justify-content-center">
+
                 <table class="table align-middle table-hover m-4 os-table w-100 text-light">
+                    <caption>Chemicals with <i class="bi bi-exclamation-diamond"></i> are stock entries made by
+                        Operation Supervisors.</caption>
                     <thead>
                         <tr class="text-center">
                             <th scope="col">Name</th>
                             <th>Brand</th>
                             <th>Current Level</th>
                             <th>Expiry Date</th>
-                            <th>Actions</th>
+                            <th>Approve</th>
                         </tr>
                     </thead>
 
@@ -427,7 +442,13 @@ include('tablecontents/tables.php');
             if (reqlist) {
                 $('#multiapproveModal').modal('show');
             }
-        })
+        });
+
+        $(document).on('change', '#checkall', function () {
+            $('#checkicon').toggleClass('bi-square bi-check-square');
+            var checked = $(this).prop('checked');
+            $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
+        });
 
         async function stock_requests() {
             try {
@@ -439,6 +460,7 @@ include('tablecontents/tables.php');
                 });
 
                 if (stock) {
+                    $('#approve-chemtable').empty();
                     $('#approve-chemtable').append(stock);
                 } else {
                     alert('append err');
@@ -448,8 +470,23 @@ include('tablecontents/tables.php');
             }
         }
 
-        $(document).on('submit', '#multiapprove', async function () {
+        $(document).on('submit', '#multiapprove', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            try {
+                const approve = await $.ajax({
+                    method: 'POST',
+                    url: dataurl,
+                    dataType: 'json',
+                    data: $(this).serialize() + '&approvemultiple=true'
+                });
 
+                if(approve){
+                    console.log(approve);
+                }
+            } catch (error) {
+                console.log(error);
+            }
         })
 
 

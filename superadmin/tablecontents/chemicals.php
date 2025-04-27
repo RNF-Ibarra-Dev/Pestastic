@@ -212,9 +212,15 @@ if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
 
 
 if (isset($_POST['approvemultiple']) && $_POST['approvemultiple'] === 'true') {
-    echo json_encode(['success' => 'Yes']);
     // get ids to delete
-    $ids[] = $_POST['ids'];
+    $stocks[] = $_POST['stocks'];
+    $pwd = $_POST['saPwd'];
+
+    if(empty($stocks) || empty($pwd)){
+        http_response_code(400);
+        echo json_encode(['']);
+    }
+   
 }
 
 if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
@@ -233,7 +239,7 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
             <tr class="text-center">
                 <td scope="row">
                     <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
@@ -244,20 +250,12 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
                         <?php
                         if ($request === "1") {
                             ?>
-                            <button type="button" id="approvebtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?= $name ?>"><i
-                                    class="bi bi-check-circle"></i></button>
-                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-x-octagon"></i></button>
+                            <input type="checkbox" class="btn-check" value="<?=$id?>" name="stocks[]" id="c-<?= $id ?>" autocomplete="off">
+                            <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i class="bi bi-check-circle me-2"></i>Approve</label>
                             <?php
                         } else {
                             ?>
-                            <button type="button" id="editbtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#editModal" data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>"
-                                data-brand="<?= htmlspecialchars($brand) ?>" data-level="<?= htmlspecialchars($level) ?>"
-                                data-expdate="<?= htmlspecialchars($expDate) ?>"><i class="bi bi-pencil-square"></i></button>
-                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
+                            <p class="text-muted">Approved.</p>
                         <?php } ?>
                     </div>
                 </td>
