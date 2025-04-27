@@ -292,10 +292,10 @@ include('tablecontents/tables.php');
                                                 <th>Level</th>
                                                 <th>Expiry Date</th>
                                                 <th>
-                                                    <input type="checkbox" class="btn-check"
-                                                        id="checkall" autocomplete="off">
-                                                    <label class="btn fw-bold" for="checkall">Check All <i id="checkicon"
-                                                            class="bi bi-square ms-2"></i></label>
+                                                    <input type="checkbox" class="btn-check" id="checkall"
+                                                        autocomplete="off">
+                                                    <label class="btn fw-bold" for="checkall">Check All <i
+                                                            id="checkicon" class="bi bi-square ms-2"></i></label>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -341,7 +341,7 @@ include('tablecontents/tables.php');
                                     inventory.
                                 </div>
                                 <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
-                                    id="approve-errmsg">
+                                    id="approvemulti-errmsg">
                                 </p>
                             </div>
                             <div class="modal-footer">
@@ -481,11 +481,34 @@ include('tablecontents/tables.php');
                     data: $(this).serialize() + '&approvemultiple=true'
                 });
 
-                if(approve){
+                if (approve) {
                     console.log(approve);
+                    console.log(approve.success);
+                    $('#tableAlert').css('display', 'block').html(approve.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                    await loadpage(1);
+                    $('#confirmmultiapprove').modal('hide');
                 }
             } catch (error) {
-                console.log(error);
+                let err = error.responseJSON;
+                console.log(error.responseText);
+                switch (err.error) {
+                    case 'emptyfield':
+                        $('input#confirmapprove-inputpwd').addClass('border border-warning-subtle').fadeIn(400);
+                        $('#approvemulti-errmsg').removeClass('visually-hidden').html(err.msg).hide().fadeIn(400).delay(1500).fadeOut(1000);
+                        break;
+                    case 'wrongpwd':
+                        $('input#confirmapprove-inputpwd').addClass('border border-danger-subtle').fadeIn(400);
+                        $('#approvemulti-errmsg').removeClass('visually-hidden').html(err.msg).hide().fadeIn(400).delay(1500).fadeOut(1000);
+                        break;
+                    case 'function':
+                        // console.log(error.responseJSON.pwd);
+                        $('input#confirmapprove-inputpwd').addClass('border border-danger-subtle').fadeIn(400);
+                        $('#approvemulti-errmsg').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(1500).fadeOut(1000);
+                        break;
+                    default:
+                        alert('unknown error. Please contact administration.');
+                        break;
+                }
             }
         })
 

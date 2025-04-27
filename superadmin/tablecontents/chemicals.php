@@ -195,7 +195,7 @@ if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
 
     if (!validate($conn, $pwd)) {
         http_response_code(400);
-        echo json_encode(['error' => 'wrongpwd', 'msg' => 'Wrong Password.']);
+        echo json_encode(['error' => 'wrongpwd', 'msg' => 'Incorrect Password.']);
         exit();
     }
 
@@ -213,14 +213,33 @@ if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
 
 if (isset($_POST['approvemultiple']) && $_POST['approvemultiple'] === 'true') {
     // get ids to delete
-    $stocks[] = $_POST['stocks'];
+    $stocks = $_POST['stocks'];
     $pwd = $_POST['saPwd'];
 
-    if(empty($stocks) || empty($pwd)){
+    if (empty($stocks) || empty($pwd)) {
         http_response_code(400);
-        echo json_encode(['']);
+        if (empty($stocks)) {
+            echo json_encode(['error' => 'emptyfield', 'msg' => 'Select at least one stock to approve.']);
+        } else {
+            echo json_encode(['error' => 'emptyfield', 'msg' => 'Empty password.']);
+        }
+        exit();
     }
-   
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'pwd', 'msg' => 'Incorrect Password.']);
+        exit();
+    }
+
+    $approve = approve_stock($conn, $stocks);
+    if (!isset($approve['success'])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'function', 'msg' => $approve['msg'] . $approve['ids']]);
+    } else {
+        echo json_encode(['success' => 'Stock approved and added to inventory officially.']);
+    }
+    exit();
 }
 
 if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
@@ -250,8 +269,10 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
                         <?php
                         if ($request === "1") {
                             ?>
-                            <input type="checkbox" class="btn-check" value="<?=$id?>" name="stocks[]" id="c-<?= $id ?>" autocomplete="off">
-                            <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i class="bi bi-check-circle me-2"></i>Approve</label>
+                            <input type="checkbox" class="btn-check" value="<?= $id ?>" name="stocks[]" id="c-<?= $id ?>"
+                                autocomplete="off">
+                            <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i
+                                    class="bi bi-check-circle me-2"></i>Approve</label>
                             <?php
                         } else {
                             ?>

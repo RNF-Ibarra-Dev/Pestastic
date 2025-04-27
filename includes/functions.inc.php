@@ -705,14 +705,15 @@ function approve_stock($conn, $id)
         mysqli_stmt_bind_param($stmt, $ints, ...$id);
         mysqli_stmt_execute($stmt);
 
-        if (1 > mysqli_stmt_affected_rows($stmt)) {
-            return true;
+        if (0 < mysqli_stmt_affected_rows($stmt)) {
+            return ['success' => 'no error'];
         } else {
-            throw new Exception('Error Inserting.' . mysqli_stmt_error($stmt));
+            throw new Exception(mysqli_stmt_error($stmt));
         }
     } catch (\Throwable $e) {
         return [
-            'msg' => $e->getMessage()
+            'msg' => $e->getMessage(),
+            'ids' => 'question marks: ' . json_encode($questionmarks) . 'ids: ' . json_encode($id)
         ];
     }
 }
