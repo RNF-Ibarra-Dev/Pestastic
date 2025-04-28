@@ -502,6 +502,40 @@
                 </div>
             </form>
 
+            <!-- approve modal -->
+            <form id="approvependingtransactions">
+                <div class="modal fade text-dark modal-edit" id="approvemodal" tabindex="0"
+                    aria-labelledby="confirmDelete" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Pending Transaction Approval</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="addPwd" class="form-label fw-light">Approve Pending Transaction? <span
+                                            id="transidspan"></span> Enter Manager
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="approve-pwd" class="form-control">
+                                    </div>
+                                    <input type="hidden" id="transidinput" name="transid">
+                                </div>
+                                <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
+                                    id="approve-alert">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close Modal</button>
+                                <button type="submit" class="btn btn-grad" id="approvebtn">Approve Transaction</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
             <!-- modals end -->
 
             <div class="d-flex justify-content-center mb-5 visually-hidden" id="loader">
@@ -538,7 +572,54 @@
         }
         ?>
 
+        $(document).on('click', '#pendingbtn', function () {
+            let transId = $(this).data('pending-id');
+            console.log(transId);
+            $('#transidinput').val(transId);
+            $('#transidspan').val(transId);
+            $('#approvependingtransactions')[0].reset();
+            $('#approvemodal').modal('show');
+        });
 
+        $('#approvependingtransactions').on('submit', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            let status = $('#sortstatus option:selected').val();
+            try {
+                const approve = await $.ajax({
+                    method: 'POST',
+                    dataType: 'json',
+                    url: submitUrl,
+                    data: $(this).serialize() + '&approve=true'
+                });
+
+                if (approve) {
+                    console.log(approve);
+                    $('#approvemodal').modal('hide');
+                    loadpage(1, status);
+                    $("#tableAlert").removeClass('visually-hidden').html(approve.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
+
+                }
+
+            } catch (error) {
+                console.log(error);
+                // let err = error.responseText;
+                let err = error.responseJSON;
+
+                switch (err.type) {
+                    case 'wrongpwd':
+                        $("#approve-alert").removeClass('visually-hidden').html(err.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                        break;
+                    case 'function':
+                        $("#approve-alert").removeClass('visually-hidden').html(err.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                        break;
+                    default:
+                        console.log(err.type);
+                        break;
+                }
+
+            }
+        })
 
         $(document).on('click', '#addbtn', async function () {
             let form = 'add';

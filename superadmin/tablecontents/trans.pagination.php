@@ -246,7 +246,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td><?= htmlspecialchars($treatment) ?></td>
                 <td>
                     <?=
-                        $status === 'Pending' ? "<button type='button' id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-tarsget='#approvemodal'
+                        $status === 'Pending' ? "<button type='button' id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
                              class='btn btn-sidebar me-2'>Pending</button>" : htmlspecialchars($status)
                         ?>
                 </td>

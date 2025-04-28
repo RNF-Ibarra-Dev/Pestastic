@@ -565,7 +565,6 @@
         });
 
         
-
         <?php
         if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
             ?>
@@ -588,6 +587,7 @@
             console.log(transId);
             $('#transidinput').val(transId);
             $('#transidspan').val(transId);
+            $('#approvependingtransactions')[0].reset();
             $('#approvemodal').modal('show');
         });
 

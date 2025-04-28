@@ -140,3 +140,26 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         ]);
     }
 }
+
+if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
+    $pwd = $_POST['approve-pwd'];
+    $transId = $_POST['transid'];
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'wrongpwd', 'error' => 'Wrong Password']);
+        exit();
+    }
+
+    $approve = approve_transaction($conn, $transId);
+    if ($approve) {
+        http_response_code(200);
+        echo json_encode(['success' => 'Transaction Accepted!']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo json_encode(['type' => 'function', 'error' => $approve]);
+        exit();
+    }
+
+}
