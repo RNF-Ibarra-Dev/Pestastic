@@ -325,7 +325,7 @@
                                             </label>
                                             <ul class="list-group list-group-flush" id="view-technicians"></ul>
 
-                                           
+
                                         </div>
                                     </div>
 
@@ -442,6 +442,8 @@
                                             <option value="Completed">Completed </option>
                                             <option value="Voided">Voided </option>
                                         </select>
+                                        <p class="text-muted ps-1 pt-2 fw-light visually-hidden" id="edit-voidwarning">
+                                        </p>
                                     </div>
 
                                     <!-- toggle visually hidden when edit -->
@@ -529,7 +531,8 @@
                     </div>
                     <div class="modal-body">
                         <div class="row mb-2">
-                            <label for="addPwd" class="form-label fw-light">Approve Pending Transaction? <span id="transidspan"></span> Enter
+                            <label for="addPwd" class="form-label fw-light">Approve Pending Transaction? <span
+                                    id="transidspan"></span> Enter
                                 <?= $_SESSION['fname'] . '\'s password to proceed.' ?></label>
                             <div class="col-lg-6 mb-2">
                                 <input type="password" name="approve-pwd" class="form-control">
@@ -564,7 +567,17 @@
             }
         });
 
-        
+        $(document).on('change', '#edit-status', function () {
+            if ($(this).val() === 'Voided') {
+                $('#edit-voidwarning').removeClass("visually-hidden");
+                $('#edit-voidwarning').html('Note: Only Managers can void transactions. This transaction will be up for review. Disregard to continue.');
+            } else {
+                $('#edit-voidwarning').addClass("visually-hidden");
+                $('#edit-voidwarning').html('');
+            }
+        })
+
+
         <?php
         if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
             ?>
