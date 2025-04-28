@@ -405,7 +405,7 @@ include('tablecontents/tables.php');
                             <th>Brand</th>
                             <th>Current Level</th>
                             <th>Expiry Date</th>
-                            <th>Approve</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
 

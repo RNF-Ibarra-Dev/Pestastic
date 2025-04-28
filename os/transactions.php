@@ -197,14 +197,13 @@
                                             <option value="#" selected>Select Status</option>
                                             <option value="Pending">Pending</option>
                                             <option value="Accepted">Accepted</option>
-                                            <option value="Voided">Void</option>
                                             <option value="Completed">Completed </option>
+                                            <option value="Voided">Voided</option>
                                         </select>
-                                    </div>
+                                        <p class="text-muted ps-1 pt-2 fw-light visually-hidden" id="add-voidwarning">
+                                        </p>
 
-                                    <!-- <div class="row mb-2">
-                                        
-                                    </div> -->
+                                    </div>
                                     <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
                                         id="emptyInput"></p>
                                 </div>
@@ -230,8 +229,9 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="addPwd" class="form-label fw-light">Add transaction? Enter manager
-                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                    <label for="addPwd" class="form-label fw-light">Add transaction? Enter Operation
+                                        Supervisor
+                                        <?= $_SESSION['fname'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
@@ -325,10 +325,7 @@
                                             </label>
                                             <ul class="list-group list-group-flush" id="view-technicians"></ul>
 
-                                            <!-- <select id="edit-technicianName" name="edit-technicianName[]"
-                                                class="form-select visually-hidden" aria-label="Default select example">
-                                                <option value="#" selected>Select Technician</option>
-                                            </select> -->
+                                           
                                         </div>
                                     </div>
 
@@ -442,8 +439,8 @@
                                             <option value="#" selected>Select Status</option>
                                             <option value="Pending">Pending</option>
                                             <option value="Accepted">Accepted</option>
-                                            <option value="Voided">Void</option>
                                             <option value="Completed">Completed </option>
+                                            <option value="Voided">Voided </option>
                                         </select>
                                     </div>
 
@@ -488,7 +485,7 @@
                             <div class="modal-body">
                                 <div class="row mb-2">
                                     <label for="addPwd" class="form-label fw-light">Enter manager
-                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['fname'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="edit-saPwd" class="form-control" id="editPwd">
                                     </div>
@@ -526,18 +523,18 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header bg-modal-title text-light">
-                        <h1 class="modal-title fs-5">Technician's Transaction Approval</h1>
+                        <h1 class="modal-title fs-5">Pending Transaction Approval</h1>
                         <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
                                 class="bi bi-x text-light"></i></button>
                     </div>
                     <div class="modal-body">
                         <div class="row mb-2">
-                            <label for="addPwd" class="form-label fw-light">Approve Pending Transaction? Enter
-                                <?= $_SESSION['fname'] . ' ' . $_SESSION['lname'] . '\'s password to proceed.' ?></label>
+                            <label for="addPwd" class="form-label fw-light">Approve Pending Transaction? <span id="transidspan"></span> Enter
+                                <?= $_SESSION['fname'] . '\'s password to proceed.' ?></label>
                             <div class="col-lg-6 mb-2">
                                 <input type="password" name="approve-pwd" class="form-control">
                             </div>
-                            <input type="hidden" id="chemidinput" name="chemid">
+                            <input type="hidden" id="transidinput" name="transid">
                         </div>
                         <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
                             id="approve-alert">
@@ -557,6 +554,18 @@
         const transUrl = 'contents/trans.data.php';
         const submitUrl = 'contents/transconfig.php';
 
+        $(document).on('change', '#add-status', function () {
+            if ($(this).val() === 'Voided') {
+                $('#add-voidwarning').removeClass("visually-hidden");
+                $('#add-voidwarning').html('Note: Only Managers can void transactions. This transaction will be up for review. Disregard to continue.');
+            } else {
+                $('#add-voidwarning').addClass("visually-hidden");
+                $('#add-voidwarning').html('');
+            }
+        });
+
+        
+
         <?php
         if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
             ?>
@@ -575,9 +584,10 @@
         ?>
 
         $(document).on('click', '#pendingbtn', function () {
-            let chemId = $(this).data('pending-id');
-            console.log(chemId);
-            $('#chemidinput').val(chemId);
+            let transId = $(this).data('pending-id');
+            console.log(transId);
+            $('#transidinput').val(transId);
+            $('#transidspan').val(transId);
             $('#approvemodal').modal('show');
         });
 
@@ -624,7 +634,7 @@
                 }
 
             } catch (error) {
-                console.log(error.responseJSON);
+                console.log(error);
                 // let err = error.responseText;
                 let err = error.responseJSON;
 

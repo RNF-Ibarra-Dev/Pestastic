@@ -284,7 +284,7 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='5' class='text-center'>Your search does not exist.</td></tr>";
+        echo "<tr><td scope='row' colspan='5' class='text-center'>No Stock Requests.</td></tr>";
     }
 }
 

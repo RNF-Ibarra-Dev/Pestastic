@@ -2,8 +2,6 @@
 session_start();
 require_once '../../includes/dbh.inc.php';
 require_once '../../includes/functions.inc.php';
-// var_dump($_POST);
-// require_once 'arrays.php';
 
 if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     // echo 'success';
@@ -17,11 +15,11 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $status = $_POST['add-status'];
     $saPwd = $_POST['saPwd'];
 
-    // if(!in_array($problems, $allPestProblems)){
-    //     http_response_code(400);
-    //     echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Not in pest problems array']);
-    //     exit();
-    // }
+    if ($status === 'Voided') {
+        http_response_code(400);
+        echo json_encode(['type' => 'voided', 'errorMessage' => 'Status not valid. Voiding is restricted. Please refresh the page and try again.']);
+        exit();
+    }
 
     if (!in_array($status, $allStatus)) {
         http_response_code(400);
@@ -119,7 +117,13 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         'status' => $status
     ];
 
-    if(!validate($conn, $saPwd)){
+    if ($status === 'Voided') {
+        http_response_code(400);
+        echo json_encode(['type' => 'voided', 'errorMessage' => 'Status not valid. Voiding is restricted. Please refresh the page and try again.']);
+        exit();
+    }
+
+    if (!validate($conn, $saPwd)) {
         http_response_code(400);
         echo json_encode(['error' => 'Invalid Password.']);
         exit();
@@ -131,7 +135,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         echo json_encode(['error' => $update['errorMessage'] . $update['line'] . $update['file'] . $update['stringTrace']]);
     } else {
         echo json_encode([
-            'success' => 'function success ' . $update['success'], 
+            'success' => 'function success ' . $update['success'],
             'techs' => $update['ids'],
             'diffs' => $update['diffs'],
             'ftech' => $update['ftech'],
@@ -141,22 +145,22 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     }
 }
 
-if(isset($_POST['approve']) && $_POST['approve'] === 'true'){
+if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
     $pwd = $_POST['approve-pwd'];
-    $chemId = $_POST['chemid'];
+    $transId = $_POST['transid'];
 
-    if(!validateOS($conn, $pwd)){
+    if (!validateOS($conn, $pwd)) {
         http_response_code(400);
         echo json_encode(['type' => 'wrongpwd', 'error' => 'Wrong Password']);
         exit();
     }
 
-    $approve = approve_transaction($conn, $chemId);
-    if($approve){
+    $approve = approve_transaction($conn, $transId);
+    if ($approve) {
         http_response_code(200);
         echo json_encode(['success' => 'Transaction Accepted!']);
         exit();
-    }else{
+    } else {
         http_response_code(400);
         echo json_encode(['type' => 'function', 'error' => $approve]);
         exit();
