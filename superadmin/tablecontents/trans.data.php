@@ -2,6 +2,48 @@
 require_once("../../includes/dbh.inc.php");
 require_once("../../includes/functions.inc.php");
 
+if (isset($_GET['voidreqs']) && $_GET['voidreqs'] === 'true') {
+    $sql = "SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC;";
+    $result = mysqli_query($conn, $sql);
+    $rows = mysqli_num_rows($result);
+
+    if ($rows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $customerName = $row['customer_name'];
+            $treatmentDate = $row['treatment_date'];
+            $request = $row['void_request'];
+            ?>
+            <tr class="text-center">
+                <td scope="row"><?= htmlspecialchars($id) ?></td>
+                <td><?= htmlspecialchars($customerName) ?></td>
+                <td><?= htmlspecialchars($treatmentDate) ?></td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <?php
+                        if ($request === "1") {
+                            ?>
+                            <input type="checkbox" class="btn-check" value="<?= $id ?>" name="stocks[]" id="c-<?= $id ?>"
+                                autocomplete="off">
+                            <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i class="bi bi-check-circle me-2"></i>Void
+                                Transaction</label>
+                            <?php
+                        } else {
+                            ?>
+                            <p class="text-muted">Voided.</p>
+                        <?php } ?>
+                    </div>
+                </td>
+            </tr>
+
+
+            <?php
+        }
+    } else {
+        echo "<tr><td scope='row' colspan='4' class='text-center'>No Void Requests.</td></tr>";
+    }
+}
+
 if (isset($_GET['table']) && $_GET['table'] == 'table') {
     $sql = "SELECT * FROM transactions;";
     $result = mysqli_query($conn, $sql);
@@ -390,7 +432,7 @@ if (isset($_GET['edit']) && $_GET['edit'] == 'technicianName') {
                     get_tech($conn, $id);
                     ?>
                 </select>
-                <button type="button" id="edit-deleteTech" data-row-id="<?=$id?>" class="btn btn-grad mt-auto py-2 px-3"><i
+                <button type="button" id="edit-deleteTech" data-row-id="<?= $id ?>" class="btn btn-grad mt-auto py-2 px-3"><i
                         class="bi bi-dash-circle text-light"></i></button>
             </div>
             <?php
