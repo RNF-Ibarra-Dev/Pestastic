@@ -217,10 +217,10 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     if ($status != '') {
         $sql .= "WHERE transaction_status = '$status' ";
-        $sql .= "ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
+        $sql .= "AND void_request = 0 ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 
     } else {
-        $sql .= "ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
+        $sql .= "WHERE void_request = 0 ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 
     }
 

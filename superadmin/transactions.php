@@ -12,6 +12,21 @@
         #sortstatus option {
             color: black;
         }
+
+        table#approvechemtable tr td,
+        table#approvechemtable tr th {
+            background-color: unset !important;
+            color: unset !important;
+            padding: 1.25rem !important;
+        }
+
+        table#approvechemtable tr th {
+            padding: 0.75rem 0.5rem;
+        }
+
+        table#approvechemtable tr td button {
+            color: unset !important;
+        }
     </style>
 </head>
 
@@ -34,8 +49,8 @@
                 <input class="form-control form-custom me-auto p-2 text-light" type="search"
                     placeholder="Search transactions . . ." id="searchbar" name="searchTrans"
                     autocomplete="one-time-code">
-                <div class="vr"></div>
-                <select class="form-select select-transparent bg-transparent border border-light text-light w-25"
+                <!-- <div class="vr"></div> -->
+                <select class="form-select select-transparent bg-transparent border border-light text-light w-50"
                     id="sortstatus" aria-label="Default select example">
                     <option value='' selected>Show All Status</option>
                     <option value="Pending">Pending</option>
@@ -43,6 +58,11 @@
                     <option value="Completed">Completed</option>
                     <option value="Voided">Voided</option>
                 </select>
+                <!-- <button type="button" id="voidreqbtn" class="btn btn-sidebar text-light py-3 px-4"
+                    data-bs-toggle="modal" data-bs-target="#voidrequestmodal"><i
+                        class="bi bi-list-check"></i></button> -->
+                <button class="btn btn-sidebar text-light py-1 px-4" data-bs-toggle="modal" data-bs-target="#voidrequestmodal">Void Requests</button>
+                <div class="vr"></div>
                 <button type="button" id="addbtn" class="btn btn-sidebar text-light py-3 px-4"
                     disabled-data-bs-toggle="modal" disabled-data-bs-target="#addModal"><i
                         class="bi bi-file-earmark-plus"></i></button>
@@ -536,6 +556,89 @@
                 </div>
             </form>
 
+            <form id="voidrequestform">
+                <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static" id="voidrequestmodal"
+                    tabindex="0" aria-labelledby="confirmAdd" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title">
+                                <h1 class="modal-title fs-5 text-light">Void Requests</h1>
+                                <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x"></i></button>
+                            </div>
+
+                            <div class="modal-body text-dark p-3">
+                                <div class="table-responsive-sm  d-flex justify-content-center">
+                                    <table class="table align-middle table-hover w-100" id="approvechemtable">
+                                        <caption class="fw-light text-muted">List of stocks added by the Operations
+                                            Supervisor.</captio>
+                                        <thead>
+                                            <tr class="text-center align-middle">
+                                                <th scope="col">Transaction ID</th>
+                                                <th>Customer Name</th>
+                                                <th>Treatment Date</th>
+                                                <th>
+                                                    <input type="checkbox" class="btn-check" id="checkall"
+                                                        autocomplete="off">
+                                                    <label class="btn fw-bold" for="checkall">Check All <i
+                                                            id="checkicon" class="bi bi-square ms-2"></i></label>
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody id="voidrequesttable" class="table-group-divider">
+                                            <!-- ajax chem table -->
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#confirmvoidrequest">Continue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="confirmvoidrequest"
+                    tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Void Request Confirmation</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Approve Selected Transactions?
+                                        Enter manager
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="saPwd" class="form-control"
+                                            id="confirmapprove-inputpwd">
+                                    </div>
+                                </div>
+                                <div id="passwordHelpBlock" class="form-text">
+                                    Note: Approving requests will officially make the transaction voided. This action cannot be undone.
+                                </div>
+                                <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
+                                    id="approvemulti-errmsg">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#multiapproveModal">Go Back</button>
+                                <button type="submit" class="btn btn-grad" id="approvemultichem">Void Transaction</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
             <!-- modals end -->
 
             <div class="d-flex justify-content-center mb-5 visually-hidden" id="loader">
@@ -550,29 +653,28 @@
     </div>
 
     <script>
-
         const transUrl = 'tablecontents/trans.data.php';
         const submitUrl = 'tablecontents/transconfig.php';
         // addTechContainer | add-chemContainer
 
         <?php
         if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
-            ?>
+        ?>
             $('#viewEditForm')[0].reset();
             let id = <?= $_GET['id']; ?>;
             console.log(id);
             view_transaction(id);
-            $('#details-modal').on('hidden.bs.modal', function (e) {
+            $('#details-modal').on('hidden.bs.modal', function(e) {
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.delete('openmodal');
                 currentUrl.searchParams.delete('id');
                 window.history.pushState(null, "", currentUrl.pathname + currentUrl.search);
             });
-            <?php
+        <?php
         }
         ?>
 
-        $(document).on('click', '#pendingbtn', function () {
+        $(document).on('click', '#pendingbtn', function() {
             let transId = $(this).data('pending-id');
             console.log(transId);
             $('#transidinput').val(transId);
@@ -581,7 +683,7 @@
             $('#approvemodal').modal('show');
         });
 
-        $('#approvependingtransactions').on('submit', async function (e) {
+        $('#approvependingtransactions').on('submit', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             let status = $('#sortstatus option:selected').val();
@@ -621,7 +723,7 @@
             }
         })
 
-        $(document).on('click', '#addbtn', async function () {
+        $(document).on('click', '#addbtn', async function() {
             let form = 'add';
             try {
                 const load = await Promise.all([
@@ -647,13 +749,13 @@
         async function add_more_tech() {
             let num = 2;
 
-            $('#addMoreTech', '#addModal').off('click').on('click', async function () {
+            $('#addMoreTech', '#addModal').off('click').on('click', async function() {
                 // console.log('tite' + num);
                 await get_more_tech(num);
                 num++;
                 console.log('tech add number: ' + num);
             });
-            $('#deleteTech').off('click').on('click', function () {
+            $('#deleteTech').off('click').on('click', function() {
                 if (num > 2) {
                     num--;
                     let row = `#row-${num}`;
@@ -670,13 +772,13 @@
             // let moreChemTemp = $('#add-chemicalData').html();
             let num = 2;
 
-            $('#addMoreChem', '#addModal').off('click').on('click', async function () {
+            $('#addMoreChem', '#addModal').off('click').on('click', async function() {
                 await add_used_chem(num);
                 num++;
                 console.log(num);
 
             });
-            $('#deleteChemRow').off('click').on('click', function () {
+            $('#deleteChemRow').off('click').on('click', function() {
                 // console.log(num);
                 if (num > 2) {
                     num--;
@@ -809,7 +911,7 @@
         let toggled = false;
 
         async function toggle() {
-            $("#view-customerName").attr("readonly", function (i, attr) {
+            $("#view-customerName").attr("readonly", function(i, attr) {
                 if (attr) {
                     $(this).removeClass('form-control-plaintext');
                     $(this).addClass('form-control');
@@ -819,7 +921,7 @@
                 }
                 return attr ? null : "readonly";
             });
-            $("#view-treatmentDate").attr("readonly", function (i, attr) {
+            $("#view-treatmentDate").attr("readonly", function(i, attr) {
                 $(this).removeAttr('style');
                 if (attr) {
                     $(this).removeAttr('style');
@@ -898,7 +1000,7 @@
         }
 
         // open details
-        $(document).on('click', '#tableDetails', async function () {
+        $(document).on('click', '#tableDetails', async function() {
             const clearform = await empty_form();
             if (clearform) {
                 $('#viewEditForm')[0].reset();
@@ -918,7 +1020,7 @@
         function get_addrow(row) {
             $.get(transUrl, {
                 addrow: 'true'
-            }, function (data) {
+            }, function(data) {
                 $(`#edit-${row}`).append(data);
                 console.log(status);
             })
@@ -933,7 +1035,7 @@
             }
         }
 
-        $(document).on('click', '#edit-deleteTech', async function () {
+        $(document).on('click', '#edit-deleteTech', async function() {
             let rowId = $(this).data('row-id');
             let row = $('#edit-technicianName > div').length;
             if (row === 1) {
@@ -945,7 +1047,7 @@
             }
         })
 
-        $(document).on('click', '#edit-deleteChemRow', async function () {
+        $(document).on('click', '#edit-deleteChemRow', async function() {
             let rowId = $(this).data('row-id');
             let row = $('#edit-chemBrandUsed > div').length;
             if (row === 1) {
@@ -963,18 +1065,18 @@
             }
         })
 
-        $(document).on('click', '#edit-addTech', async function () {
+        $(document).on('click', '#edit-addTech', async function() {
             // $.get(transUrl, { editTechAdd: 'true' }, function (data) {
             //     $('#edit-technicianName').append(data);
             // })
             await edit('technicianName');
         })
 
-        $(document).on('click', '#edit-addMoreChem', async function () {
+        $(document).on('click', '#edit-addMoreChem', async function() {
             get_addrow('chemBrandUsed');
         })
 
-        $(document).on('click', '#editbtn', async function () {
+        $(document).on('click', '#editbtn', async function() {
             if (toggled) {
                 await toggle();
                 toggled = false;
@@ -1081,8 +1183,8 @@
 
 
         // submit
-        $(function () {
-            $('#addTransaction').on('submit', async function (e) {
+        $(function() {
+            $('#addTransaction').on('submit', async function(e) {
                 e.preventDefault();
                 try {
                     const trans = await $.ajax({
@@ -1116,7 +1218,7 @@
         });
 
         // edit section
-        $(document).on('click', '#confirmUpdate', function () {
+        $(document).on('click', '#confirmUpdate', function() {
             $('#confirmation #verifyAdd').text('Verify Transaction Update');
             $('#confirmation #edit-confirm').text('Update Transaction');
             $('#confirmation #edit-confirm').attr('data-update', 'update');
@@ -1124,7 +1226,7 @@
         })
 
         // edit section
-        $(document).on('click', '#confirmDelete', function () {
+        $(document).on('click', '#confirmDelete', function() {
             $('#confirmation #verifyAdd').text('Verify Transaction Deletion');
             $('#confirmation #edit-confirm').text('Delete Transaction');
             $('#confirmation #edit-confirm').attr('data-update', 'delete');
@@ -1132,7 +1234,7 @@
         })
 
         // submit section | confirmation modal
-        $(document).on('click', '#edit-confirm', async function () {
+        $(document).on('click', '#edit-confirm', async function() {
             let update = $(this).attr('data-update');
             // console.log(update);
             if (update === 'delete') {
@@ -1226,15 +1328,15 @@
 
 
         // search function
-        $(function () {
+        $(function() {
             let delay = null;
 
-            $('#searchbar').keyup(function () {
+            $('#searchbar').keyup(function() {
                 clearTimeout(delay);
                 $('#table').empty();
                 $('#loader').removeClass('visually-hidden');
 
-                delay = setTimeout(async function () {
+                delay = setTimeout(async function() {
                     var search = $('#searchbar').val();
                     let status = $('#sortstatus').val();
                     try {
@@ -1312,11 +1414,11 @@
             }
         }
 
-        $(document).ready(async function () {
+        $(document).ready(async function() {
             await loadpage();
         })
 
-        $("#sortstatus").on('change', async function () {
+        $("#sortstatus").on('change', async function() {
             let status = $("#sortstatus option:selected").val();
             $("#searchbar").val('');
             if (status != '') {
@@ -1331,7 +1433,7 @@
             await load_paginated_table(page, status);
         }
 
-        $('#pagination').on('click', '.page-link', async function (e) {
+        $('#pagination').on('click', '.page-link', async function(e) {
             e.preventDefault();
             let status = $("#sortstatus option:selected").val();
 
