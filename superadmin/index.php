@@ -106,6 +106,23 @@ require("startsession.php");
                     </table>
                 </div>
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
+                    <p class="text-center fs-3 mx-auto">Void Requests</p>
+                    <table class="table-hover rounded overflow-hidden table">
+                        <caption>Check <a href="transaction.php"
+                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transaction</a>
+                            to review and approve void requests.</caption>
+                        <thead>
+                            <tr class="text-center align-middle">
+                                <th scope="col">ID</th>
+                                <th scope="col">Customer Name</th>
+                                <th scope="col">Treatment Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="voidreqtable">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
                     <p class="text-center fs-3 mx-auto">Available Equipments</p>
                     <table class="table-hover rounded overflow-hidden table">
                         <caption>Check your <a href="equipments.php"
@@ -151,6 +168,7 @@ require("startsession.php");
             await append_table('pendingtrans');
             await append_table('pendingchem');
             await append_table('lowchemicals');
+            await append_table('voidreqtable');
         })
 
         async function append_table(container) {

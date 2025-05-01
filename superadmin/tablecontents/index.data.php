@@ -3,95 +3,119 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 if (isset($_GET['getChart']) && $_GET['getChart'] == 'status') {
-    $sql = "SELECT transaction_status, COUNT(*) as count FROM transactions GROUP BY transaction_status;";
-    $result = mysqli_query($conn, $sql);
-  
-    $status = [];
-    $count = [];
-  
-    while ($row = mysqli_fetch_assoc($result)) {
-      $status[] = $row['transaction_status'];
-      $count[] = $row['count'];
-    }
-  
-    echo json_encode(['status' => $status, 'count' => $count]);
-  } 
+  $sql = "SELECT transaction_status, COUNT(*) as count FROM transactions GROUP BY transaction_status;";
+  $result = mysqli_query($conn, $sql);
+
+  $status = [];
+  $count = [];
+
+  while ($row = mysqli_fetch_assoc($result)) {
+    $status[] = $row['transaction_status'];
+    $count[] = $row['count'];
+  }
+
+  echo json_encode(['status' => $status, 'count' => $count]);
+}
 
 if (isset($_GET['append']) && $_GET['append'] === 'pendingtrans') {
-    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Pending' ORDER BY id DESC LIMIT 5;";
-    $result = mysqli_query($conn, $sql);
-    $rows = mysqli_num_rows($result);
+  $sql = "SELECT * FROM transactions WHERE transaction_status = 'Pending' ORDER BY id DESC LIMIT 5;";
+  $result = mysqli_query($conn, $sql);
+  $rows = mysqli_num_rows($result);
 
-    if ($rows > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $customer = $row['customer_name'];
-            $date = $row['treatment_date'];
+  if ($rows > 0) {
+    while ($row = mysqli_fetch_assoc($result)) {
+      $id = $row['id'];
+      $customer = $row['customer_name'];
+      $date = $row['treatment_date'];
 
-            ?>
-            <tr class="text-center align-middle">
-                <td><?= htmlspecialchars($id) ?></td>
-                <td><?= htmlspecialchars($customer) ?></td>
-                <td>
-                    <div class="d-flex justify-content-center">
-                        <button id="tableDetails" data-trans-id="<?= htmlspecialchars($id) ?>"
-                            class="btn border border-light btn-sidebar me-2"><a href="transactions.php?openmodal=true&id=<?= $id ?>"
-                                class="link-underline text-light link-underline-opacity-0">Approve</a></button>
-                    </div>
-                </td>
-            </tr>
+      ?>
+      <tr class="text-center align-middle">
+        <td><?= htmlspecialchars($id) ?></td>
+        <td><?= htmlspecialchars($customer) ?></td>
+        <td>
+          <div class="d-flex justify-content-center">
+            <button id="tableDetails" data-trans-id="<?= htmlspecialchars($id) ?>"
+              class="btn border border-light btn-sidebar me-2"><a href="transactions.php?openmodal=true&id=<?= $id ?>"
+                class="link-underline text-light link-underline-opacity-0">Approve</a></button>
+          </div>
+        </td>
+      </tr>
 
-            <?php
-        }
-    } else {
-        echo "<tr><td scope='row' colspan='3' class='text-center'>No pending requests.</td></tr>";
-        exit();
+      <?php
     }
+  } else {
+    echo "<tr><td scope='row' colspan='3' class='text-center'>No pending requests.</td></tr>";
+    exit();
+  }
 }
 
 if (isset($_GET['append']) && $_GET['append'] == 'pendingchem') {
-    $sql = "SELECT * FROM chemicals WHERE request = 1 ORDER BY id DESC LIMIT 5;";
-    $results = mysqli_query($conn, $sql);
-    $rows = mysqli_num_rows($results);
+  $sql = "SELECT * FROM chemicals WHERE request = 1 ORDER BY id DESC LIMIT 5;";
+  $results = mysqli_query($conn, $sql);
+  $rows = mysqli_num_rows($results);
 
-    if ($rows > 0) {
-        while ($row = mysqli_fetch_assoc($results)) {
-            $name = $row['name'];
-            $brand = $row['brand'];
-            ?>
-            <tr class="text-center align-middle">
-                <td><?= htmlspecialchars($name) ?></td>
-                <td><?= htmlspecialchars($brand) ?></td>
-                <td>Under Review</td>
-            </tr>
-            <?php
-        }
-    } else {
-        echo "<tr><td scope='row' colspan='3' class='text-center'>No pending requests.</td></tr>";
-        exit();
+  if ($rows > 0) {
+    while ($row = mysqli_fetch_assoc($results)) {
+      $name = $row['name'];
+      $brand = $row['brand'];
+      ?>
+      <tr class="text-center align-middle">
+        <td><?= htmlspecialchars($name) ?></td>
+        <td><?= htmlspecialchars($brand) ?></td>
+        <td>Under Review</td>
+      </tr>
+      <?php
     }
+  } else {
+    echo "<tr><td scope='row' colspan='3' class='text-center'>No pending requests.</td></tr>";
+    exit();
+  }
 }
 
 if (isset($_GET['append']) && $_GET['append'] == 'lowchemicals') {
-    $sql = "SELECT * FROM chemicals WHERE chemLevel <= 5 ORDER BY chemLevel ASC LIMIT 5;";
-    $results = mysqli_query($conn, $sql);
-    $rows = mysqli_num_rows($results);
-  
-    if ($rows > 0) {
-      while ($row = mysqli_fetch_assoc($results)) {
-        $name = $row['name'];
-        $brand = $row['brand'];
-        $level = $row['chemLevel']
-          ?>
-        <tr class="text-center align-middle">
-          <td><?= htmlspecialchars($name) ?></td>
-          <td><?= htmlspecialchars($brand) ?></td>
-          <td class='text-danger'><?= htmlspecialchars($level) ?></td>
-        </tr>
-        <?php
-      }
-    } else {
-      echo "<tr><td scope='row' colspan='3' class='text-center'>No pending requests.</td></tr>";
-      exit();
+  $sql = "SELECT * FROM chemicals WHERE chemLevel <= 5 ORDER BY chemLevel ASC LIMIT 5;";
+  $results = mysqli_query($conn, $sql);
+  $rows = mysqli_num_rows($results);
+
+  if ($rows > 0) {
+    while ($row = mysqli_fetch_assoc($results)) {
+      $name = $row['name'];
+      $brand = $row['brand'];
+      $level = $row['chemLevel']
+        ?>
+      <tr class="text-center align-middle">
+        <td><?= htmlspecialchars($name) ?></td>
+        <td><?= htmlspecialchars($brand) ?></td>
+        <td class='text-danger'><?= htmlspecialchars($level) ?></td>
+      </tr>
+      <?php
     }
+  } else {
+    echo "<tr><td scope='row' colspan='3' class='text-center'>No pending requests.</td></tr>";
+    exit();
   }
+}
+
+if (isset($_GET['append']) && $_GET['append'] === 'voidreqtable') {
+  $sql = "SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC LIMIT 5;";
+  $results = mysqli_query($conn, $sql);
+  $rows = mysqli_num_rows($results);
+
+  if ($rows > 0) {
+    while ($row = mysqli_fetch_assoc($results)) {
+      $name = $row['customer_name'];
+      $id = $row['id'];
+      $date = $row['treatment_date'];
+      ?>
+      <tr class="text-center align-middle">
+        <td><?= htmlspecialchars($id) ?></td>
+        <td><?= htmlspecialchars($name) ?></td>
+        <td><?= htmlspecialchars($date) ?></td>
+      </tr>
+      <?php
+    }
+  } else {
+    echo "<tr><td scope='row' colspan='3' class='text-center'>No Void Requests.</td></tr>";
+    exit();
+  }
+}
