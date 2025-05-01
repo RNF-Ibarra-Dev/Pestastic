@@ -119,7 +119,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         'status' => $status
     ];
 
-    if(!validate($conn, $saPwd)){
+    if (!validate($conn, $saPwd)) {
         http_response_code(400);
         echo json_encode(['error' => 'Invalid Password.']);
         exit();
@@ -131,7 +131,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         echo json_encode(['error' => $update['errorMessage'] . $update['line'] . $update['file'] . $update['stringTrace']]);
     } else {
         echo json_encode([
-            'success' => 'function success ' . $update['success'], 
+            'success' => 'function success ' . $update['success'],
             'techs' => $update['ids'],
             'diffs' => $update['diffs'],
             'ftech' => $update['ftech'],
@@ -161,5 +161,35 @@ if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
         echo json_encode(['type' => 'function', 'error' => $approve]);
         exit();
     }
+
+}
+
+if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
+    $trans = $_POST['trans'];
+    $pwd = $_POST['saPwd'];
+
+    if (empty($trans) || empty($pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Empty Inputs.']);
+        exit();
+    }
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Wrong Password.']);
+        exit();
+    }
+
+    $voidreq = void_transaction($conn, $trans);
+
+    if (isset($voidreq['msg'])) {
+        http_response_code(400);
+        echo json_encode(['error' => $voidreq['msg'] . $voidreq['id']]);
+        exit();
+    }
+
+    http_response_code(200);
+    echo json_encode(['success' => $voidreq['success']]);
+    exit();
 
 }

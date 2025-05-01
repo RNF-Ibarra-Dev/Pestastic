@@ -704,8 +704,8 @@
                 });
 
                 if (voidreqs) {
+                    $('#voidrequesttable').empty();
                     $('#voidrequesttable').append(voidreqs);
-                    console.log('appended');
                     return true;
                 }
             } catch (error) {
@@ -726,7 +726,11 @@
                 });
 
                 if (voidreq) {
-                    console.log(voidreq);
+                    console.log(voidreq.success);
+                    await void_req_table();
+                    loadpage(1, status);
+                    $("#tableAlert").removeClass('visually-hidden').html(voidreq.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                    $('#confirmvoidrequest').modal('hide');
                 }
             } catch (error) {
                 console.log(error);

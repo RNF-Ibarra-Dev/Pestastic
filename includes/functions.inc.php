@@ -690,6 +690,37 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
     }
 }
 
+function void_transaction($conn, $id)
+{
+    $questionmarks = array_fill(0, count($id), '?');
+    try {
+        $sql = "UPDATE transactions SET void_request = 0, transaction_status = 'Voided' WHERE id IN (" . implode(',', $questionmarks) . ");";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception('Stmt Failed' . mysqli_stmt_error($stmt));
+        }
+
+        $ints = str_repeat('i', count($id));
+        mysqli_stmt_bind_param($stmt, $ints, ...$id);
+        mysqli_stmt_execute($stmt);
+
+        if (0 < mysqli_stmt_affected_rows($stmt)) {
+            return [
+                'success' => 'Transaction Voided.'
+            ];
+        } else {
+            throw new Exception('Void Failed. Contact Administration.');
+        }
+
+    } catch (Exception $e) {
+        return [
+            'msg' => $e->getMessage(),
+            'id' => json_encode($id) . ' ' . json_encode($questionmarks)
+        ];
+    }
+}
+
 function approve_stock($conn, $id)
 {
     $questionmarks = array_fill(0, count($id), '?');
@@ -710,7 +741,7 @@ function approve_stock($conn, $id)
         } else {
             throw new Exception(mysqli_stmt_error($stmt));
         }
-    } catch (\Throwable $e) {
+    } catch (Exception $e) {
         return [
             'msg' => $e->getMessage(),
             'ids' => 'question marks: ' . json_encode($questionmarks) . 'ids: ' . json_encode($id)

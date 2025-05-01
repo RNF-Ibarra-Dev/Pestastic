@@ -23,7 +23,7 @@ if (isset($_GET['voidreqs']) && $_GET['voidreqs'] === 'true') {
                         <?php
                         if ($request === "1") {
                             ?>
-                            <input type="checkbox" class="btn-check" value="<?= $id ?>" name="stocks[]" id="c-<?= $id ?>"
+                            <input type="checkbox" class="btn-check" value="<?= $id ?>" name="trans[]" id="c-<?= $id ?>"
                                 autocomplete="off">
                             <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i class="bi bi-check-circle me-2"></i>Void
                                 Transaction</label>
