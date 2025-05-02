@@ -10,6 +10,7 @@ if (isset($_GET['equipments']) && $_GET['equipments'] === 'true') {
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($results)) {
+            $id = $row['id'];
             $ename = $row['equipment'];
             $avail = $row['availability'];
             $img = $row['equipment_image'];
@@ -21,7 +22,9 @@ if (isset($_GET['equipments']) && $_GET['equipments'] === 'true') {
                         <h5 class="card-title"><?= htmlspecialchars($ename) ?></h5>
                         <p class="card-text">Availability: <?= htmlspecialchars($avail) ?></p>
                     </div>
-                    <div class="card-footer border-light bg-transparent">Footer</div>
+                    <div class="card-footer border-light bg-transparent">
+                        <button type="button" data-id="<?=htmlspecialchars($id)?>" class="btn text-light border-light">Edit</button>
+                    </div>
                 </div>
             </div>
 <?php

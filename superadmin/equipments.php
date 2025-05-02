@@ -47,7 +47,7 @@ require("startsession.php");
                 </div>
             </div>
 
-            <form id="addTransaction" enctype="multipart/form-data">
+            <form id="addequipment" enctype="multipart/form-data">
                 <div class="row g-2 text-dark">
                     <div class="modal modal-lg fade text-dark modal-edit" id="addModal" tabindex="-1"
                         aria-labelledby="create" aria-hidden="true">
@@ -79,7 +79,18 @@ require("startsession.php");
                                         </div>
                                     </div>
                                     <div class="row mb-2">
-                                   
+                                        <div class="col-lg-6 mb-2">
+                                            <label for="desc" class="form-label fw-light">Equipment Description
+                                            </label>
+                                            <textarea name="desc" id="desc" class="form-control"></textarea>
+                                        </div>
+                                        <div class="col-lg-6 mb-2">
+                                            <label for="eimg" class="form-label fw-light">Equipment Image
+                                            </label>
+                                            <input type="file" name="eimage" id="eimg"
+                                                class="form-control form-add" autocomplete="one-time-code">
+                                            <p class="text-muted fw-light">Only .jpg .jpeg .png format is allowed.</p>
+                                        </div>
                                     </div>
 
                                     <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
@@ -135,10 +146,11 @@ require("startsession.php");
     </div>
     <script>
         const dataUrl = "tablecontents/equipments.data.php";
+        const submitUrl = "tablecontents/equipments.config.php";
 
         $(document).ready(async function() {
             try {
-                const shit = await $.ajax({
+                const load = await $.ajax({
                     method: "GET",
                     url: dataUrl,
                     dataType: 'html',
@@ -147,15 +159,39 @@ require("startsession.php");
                     }
                 });
 
-                if (shit) {
-                    console.log(shit);
+                if (load) {
                     // $('#cardcontainer').empty();
-                    $('#cardcontainer').append(shit);
+                    $('#cardcontainer').append(load);
                 }
             } catch (error) {
                 console.log(error);
             }
         });
+
+        $(document).on('submit', '#addequipment', async function (e) {
+            e.preventDefault();
+            var img = new FormData(this);
+            for(const data of img.entries()){
+                console.log(data[0], data[1]);
+            }
+            console.log(img);
+            try {
+                const add = await $.ajax({
+                    method: 'POST',
+                    url: submitUrl,
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    data: img + '&add=true'
+                });
+
+                if(add){
+                    console.log(add);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        })
     </script>
     <?php include('footer.links.php'); ?>
 </body>
