@@ -17,7 +17,7 @@ if (isset($_GET['equipments']) && $_GET['equipments'] === 'true') {
 ?>
             <div class="col">
                 <div class="card h-100 text-bg-dark border-light">
-                    <img src="../img/<?= $img ?>" class="card-img-top h-75" alt="...">
+                    <img src="../img/<?= $img ?>" class="card-img-top h-75" id="<?=str_replace(' ', '', $ename) . $id?>"  onerror="altimg('<?=str_replace(' ', '', $ename) . $id?>')" alt="<?=htmlspecialchars($ename)?>">
                     <div class="card-body border-light">
                         <h5 class="card-title"><?= htmlspecialchars($ename) ?></h5>
                         <p class="card-text">Availability: <?= htmlspecialchars($avail) ?></p>

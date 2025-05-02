@@ -34,16 +34,7 @@ require("startsession.php");
 
             <div class="container">
                 <div class="row row-cols-1 row-cols-md-3 g-4 mt-2 mb-4 px-4" id="cardcontainer">
-                    <div class="col">
-                        <div class="card h-100 text-bg-dark border-light">
-                            <img src="../img/template.jpg" class="card-img-top h-75" alt="...">
-                            <div class="card-body border-light">
-                                <h5 class="card-title">TITLE</h5>
-                                <p class="card-text">Desc</p>
-                            </div>
-                            <div class="card-footer border-light bg-transparent">Footer</div>
-                        </div>
-                    </div>
+                   <!-- ajax -->
                 </div>
             </div>
 
@@ -171,6 +162,7 @@ require("startsession.php");
         $(document).on('submit', '#addequipment', async function (e) {
             e.preventDefault();
             var img = new FormData(this);
+            img.append('add', 'true');
             for(const data of img.entries()){
                 console.log(data[0], data[1]);
             }
@@ -182,16 +174,20 @@ require("startsession.php");
                     dataType: 'json',
                     processData: false,
                     contentType: false,
-                    data: img + '&add=true'
+                    data: img 
                 });
 
                 if(add){
                     console.log(add);
                 }
             } catch (error) {
-                console.log(error);
+                console.log(error.responseText);
             }
-        })
+        });
+
+        function altimg(id){
+            $(`#${id}`).attr('src', '../img/template.jpg');
+        }
     </script>
     <?php include('footer.links.php'); ?>
 </body>
