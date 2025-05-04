@@ -148,13 +148,13 @@ require("startsession.php");
                                         <div class="col-lg-6 mb-2">
                                             <label for="ename" class="form-label fw-light">Equipment Name
                                             </label>
-                                            <input type="text" name="eqname" id="ename" class="form-control form-add"
+                                            <input type="text" name="eqname" id="edit-ename" class="form-control form-add"
                                                 autocomplete="one-time-code">
                                         </div>
                                         <div class="col-lg-6 dropdown-center mb-2">
                                             <label for="avail" class="form-label fw-light">Set Availability
                                             </label>
-                                            <select name="avail" class="form-select" id="avail">
+                                            <select name="avail" class="form-select" id="edit-avail">
                                                 <option value="">----</option>
                                                 <option value="Available">Available</option>
                                                 <option value="Unavailable">Unavailable</option>
@@ -167,14 +167,14 @@ require("startsession.php");
                                         <div class="col-lg-6 mb-2">
                                             <label for="desc" class="form-label fw-light">Equipment Description
                                             </label>
-                                            <textarea name="desc" id="desc" class="form-control" placeholder="You can add more equipment information here . . ."></textarea>
+                                            <textarea name="desc" id="edit-desc" class="form-control" placeholder="You can add more equipment information here . . ."></textarea>
                                         </div>
                                         <div class="col-lg-6 mb-2">
                                             <label for="eimg" class="form-label fw-light">Equipment Image
                                             </label>
                                             <input type="file" name="eimage" id="eimg" class="form-control form-add"
                                                 autocomplete="one-time-code">
-                                            <p class="text-muted fw-light">Only .jpg .jpeg .png format is allowed.</p>
+                                            <p class="text-muted fw-light">Only .jpg .jpeg .png format is allowed. Upload only when changing photo is necessary, leave if not.</p>
                                         </div>
                                     </div>
 
@@ -235,9 +235,34 @@ require("startsession.php");
         $(document).on('click', '#editbtn', async function(){
             let eid = $(this).data('id');
             console.log(eid);
+            await edit_modal(eid);
             $('#editModal').modal('show');
         });
 
+        async function edit_modal(id){
+            try {
+                const load = await $.ajax({
+                    method: 'GET',
+                    url:dataUrl,
+                    dataType: 'json',
+                    data: {
+                        eid: id,
+                        editmodal: 'true'
+                    }
+                });
+
+                if(load){
+                    console.log(load);
+                    let data = load.success;
+                    $('#edit-ename').val(data.equipment);
+                    $(`#edit-avail option[value=${data.availability}]`).attr('selected', true);
+                    $('#edit-desc').val(data.description);
+                    
+                }
+            } catch (error) {
+                console.log(error.responseText);
+            }
+        }
 
         $(document).ready(async function () {
             await load();

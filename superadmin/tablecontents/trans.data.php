@@ -229,7 +229,7 @@ function add_more_tech($conn, $num, $active)
 }
 
 if (isset($_GET['details']) && $_GET['details'] === 'true') {
-    $id = $_GET['transId'];
+    $id = htmlspecialchars($_GET['transId']);
     if (!is_numeric($id)) {
         http_response_code(400);
         echo json_encode(['type' => 'id', 'message' => 'ID not numeric.']);
