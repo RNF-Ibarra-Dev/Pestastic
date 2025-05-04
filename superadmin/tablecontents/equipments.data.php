@@ -3,7 +3,7 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 if (isset($_GET['equipments']) && $_GET['equipments'] === 'true') {
-    $sql = "SELECT * FROM equipments;";
+    $sql = "SELECT * FROM equipments ORDER BY id DESC;";
     $results = mysqli_query($conn, $sql);
 
     $rows = mysqli_num_rows($results);
@@ -17,13 +17,13 @@ if (isset($_GET['equipments']) && $_GET['equipments'] === 'true') {
 ?>
             <div class="col">
                 <div class="card h-100 text-bg-dark border-light">
-                    <img src="../img/<?= $img ?>" class="card-img-top h-75" id="<?=str_replace(' ', '', $ename) . $id?>"  onerror="altimg('<?=str_replace(' ', '', $ename) . $id?>')" alt="<?=htmlspecialchars($ename)?>">
+                    <img src="Pestastic/<?= $img ?>" class="object-fit-cover card-img-top h-75" id="<?=str_replace(' ', '', $ename) . $id?>"  onerror="altimg('<?=str_replace(' ', '', $ename) . $id?>')" alt="<?=htmlspecialchars($ename)?>">
                     <div class="card-body border-light">
                         <h5 class="card-title"><?= htmlspecialchars($ename) ?></h5>
                         <p class="card-text">Availability: <?= htmlspecialchars($avail) ?></p>
                     </div>
                     <div class="card-footer border-light bg-transparent">
-                        <button type="button" data-id="<?=htmlspecialchars($id)?>" class="btn text-light border-light">Edit</button>
+                        <button type="button" data-id="<?=htmlspecialchars($id)?>" id="editbtn" class="btn text-light border-light">Edit</button>
                     </div>
                 </div>
             </div>

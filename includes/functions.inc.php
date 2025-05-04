@@ -1138,3 +1138,23 @@ function editOSAccount($conn, $id, $firstName, $lastName, $username, $email, $pw
     header("location: ../superadmin/os.acc.php?error=none");
     exit();
 }
+
+
+function addequipment($conn, $name, $description, $availability, $destination){
+
+    $sql = "INSERT INTO equipments (equipment, availability, equipment_image, description) VALUES (?, ?, ?, ?);";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt, $sql)){
+        return json_encode(['error' => 'STMT FAILED.']);
+    }
+
+    mysqli_stmt_bind_param($stmt, 'ssss', $name, $availability, $destination, $description);
+    
+    if(!mysqli_execute($stmt)){
+        return json_encode(['error' => 'exec err' . mysqli_stmt_error($stmt)]);
+    }
+
+    mysqli_stmt_close($stmt);
+    return json_encode(['success' => 'Equipment Added']);
+}
