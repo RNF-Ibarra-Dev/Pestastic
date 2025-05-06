@@ -110,7 +110,7 @@ require("startsession.php");
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="addPwd" class="form-label fw-light">Add transaction? Enter manager
+                                    <label for="addPwd" class="form-label fw-light">Add new equipment? Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
@@ -118,9 +118,6 @@ require("startsession.php");
                                 </div>
                                 <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
                                     id="add-alert"></p>
-                                <!-- <div id="passwordHelpBlock" class="form-text">
-                                Note: deletion of chemicals are irreversible.
-                            </div> -->
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-target="#addModal"
@@ -131,6 +128,7 @@ require("startsession.php");
                     </div>
                 </div>
             </form>
+
             <form id="editequipment" enctype="multipart/form-data">
                 <div class="row g-2 text-dark">
                     <div class="modal modal-lg fade text-dark modal-edit" id="editModal" tabindex="-1"
@@ -138,7 +136,7 @@ require("startsession.php");
                         <div class="modal-dialog modal-dialog-scrollable">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
-                                    <h1 class="modal-title fs-5">Edit Equipment</h1>
+                                    <h1 class="modal-title fs-5">Edit Equipment Information</h1>
                                     <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                             class="bi text-light bi-x"></i></button>
                                 </div>
@@ -183,40 +181,42 @@ require("startsession.php");
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="button" class="btn btn-grad" disabled-id="submitAdd"
-                                        data-bs-toggle="modal" data-bs-target="#confirmAdd">Proceed &
+                                    <button type="button" class="btn btn-grad"
+                                        data-bs-toggle="modal" data-bs-target="#confirmEdit">Proceed &
                                         Confirm</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- add confirmation -->
-                <div class="modal fade text-dark modal-edit" id="confirmAdd" tabindex="0" aria-labelledby="confirmAdd"
+                <!-- edit confirmation -->
+                <div class="modal fade text-dark modal-edit" id="confirmEdit" tabindex="0" aria-labelledby="confirmAdd"
                     aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5" id="verifyAdd">Verification</h1>
+                                <h1 class="modal-title fs-5">Verification</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="addPwd" class="form-label fw-light">Add transaction? Enter manager
+                                    <label for="addPwd" class="form-label fw-light">Edit equipment information? Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
+                                        <input type="hidden" name="eid" id="edit-eid">
+                                        <input type="hidden" name="oldimgpath" id="eimg-hidden">
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
                                 </div>
                                 <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
                                     id="add-alert"></p>
-                                <!-- <div id="passwordHelpBlock" class="form-text">
-                                Note: deletion of chemicals are irreversible.
-                            </div> -->
+                                <div id="passwordHelpBlock" class="form-text">
+                                Note: Changes can not be reverted. Proceed with caution and make sure to double check.
+                            </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-grad" data-bs-target="#addModal"
+                                <button type="button" class="btn btn-grad" data-bs-target="#editModal"
                                     data-bs-toggle="modal">Go back</button>
                                 <button type="submit" class="btn btn-grad" id="submitAdd">Add Transaction</button>
                             </div>
@@ -232,11 +232,38 @@ require("startsession.php");
         const dataUrl = "tablecontents/equipments.data.php";
         const submitUrl = "tablecontents/equipments.config.php";
 
+        $(document).on('submit', '#editequipment', async function(e){
+            e.preventDefault();
+            var editdata = new FormData(this);
+            editdata.append('edit', 'true');
+            for(const data of editdata.entries()){
+                console.log(data[0] + ': ' + data[1]);
+            }
+
+            try {
+                const edit = await $.ajax({
+                    method: 'POST',
+                    url: submitUrl,
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    data: editdata
+                });
+                if(edit){
+                    console.log(edit);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        })
+
         $(document).on('click', '#editbtn', async function(){
             let eid = $(this).data('id');
             console.log(eid);
-            await edit_modal(eid);
-            $('#editModal').modal('show');
+            const modal = await edit_modal(eid);
+            if(modal){
+                $('#editModal').modal('show');
+            } 
         });
 
         async function edit_modal(id){
@@ -254,13 +281,15 @@ require("startsession.php");
                 if(load){
                     console.log(load);
                     let data = load.success;
+                    $('#edit-eid').val(data.id);
                     $('#edit-ename').val(data.equipment);
                     $(`#edit-avail option[value=${data.availability}]`).attr('selected', true);
                     $('#edit-desc').val(data.description);
-                    
+                    $('#eimg-hidden').val(data.equipment_image);
+                    return true;
                 }
             } catch (error) {
-                console.log(error.responseText);
+                console.log(error);
             }
         }
 

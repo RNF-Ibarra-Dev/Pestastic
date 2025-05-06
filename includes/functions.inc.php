@@ -1158,3 +1158,36 @@ function addequipment($conn, $name, $description, $availability, $destination){
     mysqli_stmt_close($stmt);
     return json_encode(['success' => 'Equipment Added']);
 }
+
+function update_equipment($conn, $name, $desc, $avail, $id, $path = NULL){
+    $sql = "UPDATE equipments SET equipment = ?, availability = ?, description = ?";
+    $stmt = mysqli_stmt_init($conn);
+
+    if($path === NULL){
+        $sql .= "WHERE id = ?;";
+    } else{
+        $sql .= "equipment_image = ? WHERE id = ?;";
+    }
+
+    if (!mysqli_stmt_prepare($stmt, $sql)){
+        return ['error' => 'STMT ERROR' . mysqli_error($conn)];
+    }
+
+    if($path === NULL){
+        mysqli_stmt_bind_param($stmt, 'sssi', $name, $avail, $desc, $id);
+    } else{
+        mysqli_stmt_bind_param($stmt, 'ssssi', $name, $avail, $desc, $path, $id);
+    }
+
+    mysqli_stmt_execute($stmt);
+
+    if(mysqli_stmt_affected_rows($stmt) > 0){
+        return ['success' => 'Equipment information updated.'];
+    } else{
+        return ['error' => mysqli_stmt_error($stmt)];
+    }
+}
+
+function get_img_path($conn, $id){
+    
+}
