@@ -261,9 +261,9 @@ input[type="number"] {
   opacity: 0.5;
 }
 
-.modal-edit {
+/* .modal-edit {
   backdrop-filter: blur(1px);
-}
+} */
 
 .btn-login {
   background: rgba(255, 255, 255, 0.1);
