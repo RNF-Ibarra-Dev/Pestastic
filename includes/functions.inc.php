@@ -515,7 +515,6 @@ function get_existing($conn, $target_id, $table, $trans_id)
     }
 
     return $rowRes;
-
 }
 
 function delete_old_ids($conn, $table, $trans_id, $target_id, $ids)
@@ -712,7 +711,6 @@ function void_transaction($conn, $id)
         } else {
             throw new Exception('Void Failed. Contact Administration.');
         }
-
     } catch (Exception $e) {
         return [
             'msg' => $e->getMessage(),
@@ -766,7 +764,6 @@ function approve_transaction($conn, $id)
     } else {
         return false;
     }
-
 }
 
 function emptyInputLogin($uidEmail, $pwd)
@@ -1140,18 +1137,19 @@ function editOSAccount($conn, $id, $firstName, $lastName, $username, $email, $pw
 }
 
 
-function addequipment($conn, $name, $description, $availability, $destination){
+function addequipment($conn, $name, $description, $availability, $destination)
+{
 
     $sql = "INSERT INTO equipments (equipment, availability, equipment_image, description) VALUES (?, ?, ?, ?);";
     $stmt = mysqli_stmt_init($conn);
 
-    if(!mysqli_stmt_prepare($stmt, $sql)){
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
         return json_encode(['error' => 'STMT FAILED.']);
     }
 
     mysqli_stmt_bind_param($stmt, 'ssss', $name, $availability, $destination, $description);
-    
-    if(!mysqli_execute($stmt)){
+
+    if (!mysqli_execute($stmt)) {
         return json_encode(['error' => 'exec err' . mysqli_stmt_error($stmt)]);
     }
 
@@ -1159,35 +1157,34 @@ function addequipment($conn, $name, $description, $availability, $destination){
     return json_encode(['success' => 'Equipment Added']);
 }
 
-function update_equipment($conn, $name, $desc, $avail, $id, $path = NULL){
+function update_equipment($conn, $name, $desc, $avail, $id, $path = NULL)
+{
     $sql = "UPDATE equipments SET equipment = ?, availability = ?, description = ?";
     $stmt = mysqli_stmt_init($conn);
 
-    if($path === NULL){
-        $sql .= "WHERE id = ?;";
-    } else{
-        $sql .= "equipment_image = ? WHERE id = ?;";
+    if ($path === NULL) {
+        $sql .= " WHERE id = ?;";
+    } else {
+        $sql .= ", equipment_image = ? WHERE id = ?;";
     }
 
-    if (!mysqli_stmt_prepare($stmt, $sql)){
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
         return ['error' => 'STMT ERROR' . mysqli_error($conn)];
     }
 
-    if($path === NULL){
+    if ($path === NULL) {
         mysqli_stmt_bind_param($stmt, 'sssi', $name, $avail, $desc, $id);
-    } else{
+        mysqli_stmt_execute($stmt);
+    } else {
         mysqli_stmt_bind_param($stmt, 'ssssi', $name, $avail, $desc, $path, $id);
+        mysqli_stmt_execute($stmt);
     }
 
-    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
-    if(mysqli_stmt_affected_rows($stmt) > 0){
+    if (mysqli_stmt_affected_rows($stmt) > 0) {
         return ['success' => 'Equipment information updated.'];
-    } else{
-        return ['error' => mysqli_stmt_error($stmt)];
+    } else {
+        return ['error' => mysqli_stmt_errno($stmt) . mysqli_stmt_error($stmt) . mysqli_error($conn) . mysqli_stmt_affected_rows($stmt)];
     }
-}
-
-function get_img_path($conn, $id){
-    
 }

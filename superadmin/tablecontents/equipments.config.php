@@ -96,9 +96,9 @@ if (isset($_POST['edit']) && $_POST['edit'] === 'true') {
 
     // image handling:
     $fsize = $_FILES['eimage']['size'];
+    $oldimg = $_POST['oldimgpath'];
 
-    if (!$fsize === 0) {
-        $oldimg = $_POST['oldimgpath'];
+    if ($_FILES['eimage']['error'] === UPLOAD_ERR_OK) {
 
         $eimg = strtolower(basename($_FILES['eimage']['name']));
         $ext = strtolower(pathinfo($eimg, PATHINFO_EXTENSION));
@@ -123,22 +123,28 @@ if (isset($_POST['edit']) && $_POST['edit'] === 'true') {
             echo json_encode(['error' => 'Possible attack. Filename: ' . $_FILES['eimage']['tmp_name']]);
             exit();
         }
-        $update = update_equipment($conn, $name, $desc, $avail, $id, $filename);
-    }else{
-        $update = update_equipment($conn, $name, $desc, $avail, $id);
+        $update = update_equipment($conn, $name, $desc, $avail, $eid, $filename);
+    } else {
+        $update = update_equipment($conn, $name, $desc, $avail, $eid);
     }
 
-    if(isset($update['error'])){
+    if (isset($update['error'])) {
         http_response_code(400);
-        echo json_encode(['error' => $update['error']]);
+        echo json_encode(['error' => 'function error: ' . $update['error']]);
         exit();
-    } else{
-        if(!$fsize === 0){
-            unlink($oldimg);
+    } else {
+        if (!$fsize === 0) {
+            if (file_exists($oldimg)) {
+                unlink($oldimg);
+            } else {
+                http_response_code(400);
+                json_encode(['error' => 'Database updated (File deletion failed). Please Contact administration.']);
+                exit();
+            }
         }
 
+        http_response_code(200);
+        echo json_encode(['success' => $update['success']]);
+        exit();
     }
-
- 
-
 }

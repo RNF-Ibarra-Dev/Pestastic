@@ -141,6 +141,8 @@ require("startsession.php");
                                             class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
+
+
                                     <p class="fs-6 fw-light">Provide the details of the equipment below.</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
@@ -175,6 +177,11 @@ require("startsession.php");
                                             <p class="text-muted fw-light">Only .jpg .jpeg .png format is allowed. Upload only when changing photo is necessary, leave if not.</p>
                                         </div>
                                     </div>
+                                    <div id="editspinner" class="text-center align-middle" style="display: none;">
+                                        <div class="spinner-border text-dark" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
 
                                     <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
                                         id="emptyInput"></p>
@@ -182,7 +189,7 @@ require("startsession.php");
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
                                     <button type="button" class="btn btn-grad"
-                                        data-bs-toggle="modal" data-bs-target="#confirmEdit">Proceed &
+                                        data-bs-toggle="modal" data-bs-target="#confirmEdit" id="editproceedbtn">Proceed &
                                         Confirm</button>
                                 </div>
                             </div>
@@ -212,8 +219,8 @@ require("startsession.php");
                                 <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
                                     id="add-alert"></p>
                                 <div id="passwordHelpBlock" class="form-text">
-                                Note: Changes can not be reverted. Proceed with caution and make sure to double check.
-                            </div>
+                                    Note: Changes can not be reverted. Proceed with caution and make sure to double check.
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-target="#editModal"
@@ -232,72 +239,11 @@ require("startsession.php");
         const dataUrl = "tablecontents/equipments.data.php";
         const submitUrl = "tablecontents/equipments.config.php";
 
-        $(document).on('submit', '#editequipment', async function(e){
-            e.preventDefault();
-            var editdata = new FormData(this);
-            editdata.append('edit', 'true');
-            for(const data of editdata.entries()){
-                console.log(data[0] + ': ' + data[1]);
-            }
-
-            try {
-                const edit = await $.ajax({
-                    method: 'POST',
-                    url: submitUrl,
-                    dataType: 'json',
-                    processData: false,
-                    contentType: false,
-                    data: editdata
-                });
-                if(edit){
-                    console.log(edit);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        })
-
-        $(document).on('click', '#editbtn', async function(){
-            let eid = $(this).data('id');
-            console.log(eid);
-            const modal = await edit_modal(eid);
-            if(modal){
-                $('#editModal').modal('show');
-            } 
-        });
-
-        async function edit_modal(id){
-            try {
-                const load = await $.ajax({
-                    method: 'GET',
-                    url:dataUrl,
-                    dataType: 'json',
-                    data: {
-                        eid: id,
-                        editmodal: 'true'
-                    }
-                });
-
-                if(load){
-                    console.log(load);
-                    let data = load.success;
-                    $('#edit-eid').val(data.id);
-                    $('#edit-ename').val(data.equipment);
-                    $(`#edit-avail option[value=${data.availability}]`).attr('selected', true);
-                    $('#edit-desc').val(data.description);
-                    $('#eimg-hidden').val(data.equipment_image);
-                    return true;
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        }
-
-        $(document).ready(async function () {
+        $(document).ready(async function() {
             await load();
         });
 
-        async function load(){
+        async function load() {
             try {
                 const load = await $.ajax({
                     method: "GET",
@@ -317,7 +263,84 @@ require("startsession.php");
             }
         }
 
-        $(document).on('submit', '#addequipment', async function (e) {
+        $(document).on('submit', '#editequipment', async function(e) {
+            e.preventDefault();
+            var editdata = new FormData(this);
+            editdata.append('edit', 'true');
+            for (const data of editdata.entries()) {
+                console.log(data[0] + ': ' + data[1]);
+            }
+
+            try {
+                const edit = await $.ajax({
+                    method: 'POST',
+                    url: submitUrl,
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    data: editdata
+                });
+                if (edit) {
+                    console.log(edit);
+                    await load();
+                    $('#confirmEdit').modal('hide');
+
+                }
+            } catch (error) {
+                console.log(error);
+                console.log(error.responseText);
+            }
+        })
+
+        $(document).on('click', '#editbtn', async function() {
+            let eid = $(this).data('id');
+            console.log(eid);
+            $('#editequipment')[0].reset();
+            $('#editModal').modal('show');
+            $('#editproceedbtn').attr('disabled', true);
+            $('#editspinner').attr('style', 'display: block !important');
+            $('#editModal :input').attr('disabled', true);
+            $('#editModal').on('shown.bs.modal', async function() {
+                setTimeout(async function() {
+                    const modal = await edit_modal(eid);
+                    if (modal) {
+                        $('#editproceedbtn').attr('disabled', false);
+                        $('#editModal :input').attr('disabled', false);
+                        $('#editspinner').attr('style', 'display: none !important;');
+                    }
+                }, 500);
+            })
+        });
+
+        async function edit_modal(id) {
+            try {
+                const load = await $.ajax({
+                    method: 'GET',
+                    url: dataUrl,
+                    dataType: 'json',
+                    data: {
+                        eid: id,
+                        editmodal: 'true'
+                    }
+                });
+
+                if (load) {
+                    console.log(load);
+                    let data = load.success;
+                    $('#edit-eid').val(data.id);
+                    $('#edit-ename').val(data.equipment);
+                    $(`#edit-avail option[value='${data.availability}']`).attr('selected', true);
+                    $('#edit-desc').val(data.description);
+                    $('#eimg-hidden').val(data.equipment_image);
+                    return true;
+                }
+            } catch (error) {
+                console.log(error.responseText);
+            }
+        }
+
+
+        $(document).on('submit', '#addequipment', async function(e) {
             e.preventDefault();
             var adddata = new FormData(this);
             adddata.append('add', 'true');
