@@ -60,7 +60,7 @@ input:focus {
 }
 
 .bg-dash {
-  background: #2a7b9b;  
+  background: #2a7b9b;
   background: -webkit-linear-gradient(
     308deg,
     rgba(42, 123, 155, 1) 0%,
@@ -105,15 +105,34 @@ input:focus {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e3cf93", endColorstr="#0d495b", GradientType=1);
 }
 
+.img-round{
+  border-radius: 1.2rem 1.2rem 0 0 !important;
+}
+
+.left-btn-rounded{
+  border-radius: 0 0 0 1.2rem !important;
+}
+
+.right-btn-rounded{
+  border-radius: 0 0 1.2rem 0 !important;
+}
+
+.card-bg {
+  background: #6a9167;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to bottom, #010211,#0d495b, #6a9167);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom, #010211, #0d495b, #6a9167); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  border-radius: 1.2rem !important;
+}
+
 .bg-official-login {
   background: rgb(227, 207, 147);
   background: -moz-linear-gradient(
     0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 11%,
-    rgba(13, 73, 91, 1) 58%,
+    #e3cf93 0%,
+    rgb(106, 145, 103) 11%,
+    rgb(13, 73, 91) 58%,
     rgba(2, 21, 34, 1) 86%,
-    rgba(1, 2, 17, 1) 95%
+    rgb(1, 2, 17) 95%
   );
   background: -webkit-linear-gradient(
     0deg,
@@ -258,7 +277,7 @@ input[type="number"] {
     rgba(1, 2, 17, 1) 95%
   );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e3cf93", endColorstr="#010211", GradientType=1);
-  opacity: 0.5;
+  /* opacity: 0.5; */
 }
 
 /* .modal-edit {

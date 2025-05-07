@@ -17,19 +17,21 @@ if (isset($_GET['equipments']) && $_GET['equipments'] === 'true') {
             $img = $row['equipment_image'];
             ?>
             <div class="col">
-                <div class="card h-100 text-bg-dark border-light">
-                    <img src="Pestastic/<?= $img ?>" class="object-fit-cover card-img-top h-75"
+                <div class="card h-100 card-bg rounded-3 border-0 text-light">
+                    <img src="Pestastic/<?= $img ?>" class="object-fit-cover img-round h-75"
                         id="<?= str_replace(' ', '', $ename) . $id ?>" onerror="altimg('<?= str_replace(' ', '', $ename) . $id ?>')"
                         alt="<?= htmlspecialchars($ename) ?>">
-                    <div class="card-body border-light">
-                        <h5 class="card-title"><?= htmlspecialchars($ename) ?></h5>
+                    <div class="card-body px-2 border-top border-light ">
+                        <h5 class="card-title py-2 fs-4 text-center"><?= htmlspecialchars(ucwords($ename)) ?></h5>
                         <hr>
-                        <p class="card-text">Availability: <?= htmlspecialchars($avail) ?></p>
+                        <p class="card-text mb-2"><strong>Availability:</strong> <?= htmlspecialchars($avail) ?></p>
                         <p class="card-text text-light"><?= $desc == NULL ? 'No Description.' : htmlspecialchars($desc) ?></p>
                     </div>
-                    <div class="card-footer border-light bg-transparent">
+                    <div class="card-footer bg-transparent p-0 d-flex justify-content-around border-top border-light">
                         <button type="button" data-id="<?= htmlspecialchars($id) ?>" id="editbtn"
-                            class="btn text-light border-light">Edit</button>
+                            class="btn btn-sidebar left-btn-rounded text-light w-50 py-3">Edit</button>
+                        <button type="button" data-id="<?= htmlspecialchars($id) ?>" id="deletebtn"
+                            class="btn btn-sidebar right-btn-rounded text-light w-50 py-3">Delete</button>
                     </div>
                 </div>
             </div>
