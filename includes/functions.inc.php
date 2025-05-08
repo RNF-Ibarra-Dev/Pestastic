@@ -1188,3 +1188,25 @@ function update_equipment($conn, $name, $desc, $avail, $id, $path = NULL)
         return ['error' => mysqli_stmt_errno($stmt) . mysqli_stmt_error($stmt) . mysqli_error($conn) . mysqli_stmt_affected_rows($stmt)];
     }
 }
+
+// function ($conn, $id){
+//     $sql = 
+// }
+
+function delete_equipment($conn, $id){
+    $sql = "DELETE FROM equipments WHERE id =?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt, $sql)){
+        return ['error' => 'STMT FAILED'];
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+
+    if(mysqli_stmt_affected_rows($stmt) > 0){
+        return ['success'=> 'Equipment Deleted'];
+    } else{
+        return ['error' => mysqli_stmt_error($stmt)];
+    }
+}

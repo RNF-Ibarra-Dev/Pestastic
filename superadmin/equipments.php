@@ -33,7 +33,7 @@ require("startsession.php");
             </div>
 
             <div class="container">
-                <div class="row row-cols-1 row-cols-md-3 g-4 mt-2 mb-4 px-4" id="cardcontainer">
+                <div class="row row-cols-1 row-cols-md-4 g-4 mt-2 mb-4 px-4" id="cardcontainer">
                     <!-- ajax -->
                 </div>
             </div>
@@ -67,14 +67,16 @@ require("startsession.php");
                                                 <option value="Unavailable">Unavailable</option>
                                                 <option value="In Repair">Repair In Progress</option>
                                             </select>
-                                            <p class="text-muted fw-light">If left blank, this will automatically set to 'Unavailable'.</p>
+                                            <p class="text-muted fw-light">If left blank, this will automatically set to
+                                                'Unavailable'.</p>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
                                             <label for="desc" class="form-label fw-light">Equipment Description
                                             </label>
-                                            <textarea name="desc" id="desc" class="form-control" placeholder="You can add more equipment information here . . ."></textarea>
+                                            <textarea name="desc" id="desc" class="form-control"
+                                                placeholder="You can add more equipment information here . . ."></textarea>
                                         </div>
                                         <div class="col-lg-6 mb-2">
                                             <label for="eimg" class="form-label fw-light">Equipment Image
@@ -122,7 +124,7 @@ require("startsession.php");
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-target="#addModal"
                                     data-bs-toggle="modal">Go back</button>
-                                <button type="submit" class="btn btn-grad" id="submitAdd">Add Transaction</button>
+                                <button type="submit" class="btn btn-grad" id="submitAdd">Add equipment</button>
                             </div>
                         </div>
                     </div>
@@ -148,8 +150,8 @@ require("startsession.php");
                                         <div class="col-lg-6 mb-2">
                                             <label for="ename" class="form-label fw-light">Equipment Name
                                             </label>
-                                            <input type="text" name="eqname" id="edit-ename" class="form-control form-add"
-                                                autocomplete="one-time-code">
+                                            <input type="text" name="eqname" id="edit-ename"
+                                                class="form-control form-add" autocomplete="one-time-code">
                                         </div>
                                         <div class="col-lg-6 dropdown-center mb-2">
                                             <label for="avail" class="form-label fw-light">Set Availability
@@ -160,21 +162,24 @@ require("startsession.php");
                                                 <option value="Unavailable">Unavailable</option>
                                                 <option value="In Repair">Repair In Progress</option>
                                             </select>
-                                            <p class="text-muted fw-light">If left blank, this will automatically set to 'Unavailable'.</p>
+                                            <p class="text-muted fw-light">If left blank, this will automatically set to
+                                                'Unavailable'.</p>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
                                             <label for="desc" class="form-label fw-light">Equipment Description
                                             </label>
-                                            <textarea name="desc" id="edit-desc" class="form-control" placeholder="You can add more equipment information here . . ."></textarea>
+                                            <textarea name="desc" id="edit-desc" class="form-control"
+                                                placeholder="You can add more equipment information here . . ."></textarea>
                                         </div>
                                         <div class="col-lg-6 mb-2">
                                             <label for="eimg" class="form-label fw-light">Equipment Image
                                             </label>
                                             <input type="file" name="eimage" id="eimg" class="form-control form-add"
                                                 autocomplete="one-time-code">
-                                            <p class="text-muted fw-light">Only .jpg .jpeg .png format is allowed. Upload only when changing photo is necessary, leave if not.</p>
+                                            <p class="text-muted fw-light">Only .jpg .jpeg .png format is allowed.
+                                                Upload only when changing photo is necessary, leave if not.</p>
                                         </div>
                                     </div>
                                     <div id="editspinner" class="text-center align-middle" style="display: none;">
@@ -188,8 +193,8 @@ require("startsession.php");
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="button" class="btn btn-grad"
-                                        data-bs-toggle="modal" data-bs-target="#confirmEdit" id="editproceedbtn">Proceed &
+                                    <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                        data-bs-target="#confirmEdit" id="editproceedbtn">Proceed &
                                         Confirm</button>
                                 </div>
                             </div>
@@ -208,7 +213,8 @@ require("startsession.php");
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="addPwd" class="form-label fw-light">Edit equipment information? Enter manager
+                                    <label for="addPwd" class="form-label fw-light">Edit equipment information? Enter
+                                        manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="hidden" name="eid" id="edit-eid">
@@ -219,13 +225,53 @@ require("startsession.php");
                                 <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
                                     id="add-alert"></p>
                                 <div id="passwordHelpBlock" class="form-text">
-                                    Note: Changes can not be reverted. Proceed with caution and make sure to double check.
+                                    Note: Changes can not be reverted. Proceed with caution and make sure to double
+                                    check.
                                 </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-target="#editModal"
                                     data-bs-toggle="modal">Go back</button>
-                                <button type="submit" class="btn btn-grad" id="submitAdd">Add Transaction</button>
+                                <button type="submit" class="btn btn-grad" id="submitAdd">Edit equipment</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form id="deleteequipment">
+                <div class="modal fade text-dark modal-edit" id="deletemodal" tabindex="0" aria-labelledby="confirmAdd"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Deletion Verification</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="addPwd" class="form-label fw-light">You will delete equipment '<span
+                                            id="eqname-delete">---</span>'. Enter
+                                        manager
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="hidden" name="eid" id="delete-id">
+                                        <input type="hidden" name="eimg" id="delete-img">
+                                        <input type="password" name="saPwd" class="form-control" id="addPwd">
+                                    </div>
+                                </div>
+                                <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
+                                    id="add-alert"></p>
+                                <div id="passwordHelpBlock" class="form-text">
+                                    Note: Deleting is permanent. Please proceed with caution and make sure to double
+                                    check.
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-target="#deletemodal"
+                                    data-bs-toggle="modal">Cancel</button>
+                                <button type="submit" class="btn btn-grad">Delete Equipment</button>
                             </div>
                         </div>
                     </div>
@@ -239,7 +285,37 @@ require("startsession.php");
         const dataUrl = "tablecontents/equipments.data.php";
         const submitUrl = "tablecontents/equipments.config.php";
 
-        $(document).ready(async function() {
+        $(document).on('submit', '#deleteequipment', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            try {
+                const del = await $.ajax({
+                    method:'POST',
+                    url: submitUrl,
+                    dataType: 'json',
+                    data: $(this).serialize() + '&delete=true'
+                });
+
+                if(del){
+                    console.log(del);
+                    await load();
+                    $('#deletemodal').modal('hide');
+                }
+            } catch (error) {
+                let err = error.responseText;
+                console.log(err);
+            }
+        })
+
+        $(document).on('click', '#deletebtn', async function () {
+            const data = $('#deletebtn').data('del');
+            $('#eqname-delete').html(data.name);
+            $('#delete-id').val(data.id);
+            $('#delete-img').val(data.img);
+            $('#deletemodal').modal('show');
+        })
+
+        $(document).ready(async function () {
             await load();
         });
 
@@ -263,7 +339,7 @@ require("startsession.php");
             }
         }
 
-        $(document).on('submit', '#editequipment', async function(e) {
+        $(document).on('submit', '#editequipment', async function (e) {
             e.preventDefault();
             var editdata = new FormData(this);
             editdata.append('edit', 'true');
@@ -292,7 +368,7 @@ require("startsession.php");
             }
         })
 
-        $(document).on('click', '#editbtn', async function() {
+        $(document).on('click', '#editbtn', async function () {
             let eid = $(this).data('id');
             console.log(eid);
             $('#editequipment')[0].reset();
@@ -300,8 +376,8 @@ require("startsession.php");
             $('#editproceedbtn').attr('disabled', true);
             $('#editspinner').attr('style', 'display: block !important');
             $('#editModal :input').attr('disabled', true);
-            $('#editModal').on('shown.bs.modal', async function() {
-                setTimeout(async function() {
+            $('#editModal').on('shown.bs.modal', async function () {
+                setTimeout(async function () {
                     const modal = await edit_modal(eid);
                     if (modal) {
                         $('#editproceedbtn').attr('disabled', false);
@@ -340,7 +416,7 @@ require("startsession.php");
         }
 
 
-        $(document).on('submit', '#addequipment', async function(e) {
+        $(document).on('submit', '#addequipment', async function (e) {
             e.preventDefault();
             var adddata = new FormData(this);
             adddata.append('add', 'true');

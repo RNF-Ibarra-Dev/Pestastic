@@ -15,6 +15,11 @@ if (isset($_GET['equipments']) && $_GET['equipments'] === 'true') {
             $desc = $row['description'];
             $avail = $row['availability'];
             $img = $row['equipment_image'];
+            $delarr = json_encode([
+                'id' => $id,
+                'img' => $img,
+                'name' => $ename
+            ]);
             ?>
             <div class="col">
                 <div class="card h-100 card-bg rounded-3 border-0 text-light">
@@ -30,7 +35,7 @@ if (isset($_GET['equipments']) && $_GET['equipments'] === 'true') {
                     <div class="card-footer bg-transparent p-0 d-flex justify-content-around border-top border-light">
                         <button type="button" data-id="<?= htmlspecialchars($id) ?>" id="editbtn"
                             class="btn btn-sidebar left-btn-rounded text-light w-50 py-3">Edit</button>
-                        <button type="button" data-id="<?= htmlspecialchars($id) ?>" id="deletebtn"
+                        <button type="button" data-del="<?= htmlspecialchars($delarr, ENT_QUOTES, 'UTF-8') ?>" id="deletebtn"
                             class="btn btn-sidebar right-btn-rounded text-light w-50 py-3">Delete</button>
                     </div>
                 </div>
@@ -41,7 +46,7 @@ if (isset($_GET['equipments']) && $_GET['equipments'] === 'true') {
 }
 
 if (isset($_GET['editmodal']) && $_GET['editmodal'] === 'true') {
-    $eid = htmlspecialchars($_GET ['eid']);
+    $eid = htmlspecialchars($_GET['eid']);
 
     $sql = "SELECT * FROM equipments WHERE id = ?;";
     $stmt = mysqli_stmt_init($conn);

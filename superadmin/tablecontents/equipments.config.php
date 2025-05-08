@@ -47,6 +47,12 @@ if (isset($_POST['add']) && $_POST['add'] === 'true') {
         exit();
     }
 
+    if(strlen($filename) > 255){
+        http_response_code(400);
+        echo json_encode(['error' => 'File name too long. Filename: ' . $_FILES['eimage']['tmp_name']]);
+        exit();
+    }
+
 
     $addeqp = addequipment($conn, $name, $desc, $avail, $filename);
 
@@ -147,4 +153,48 @@ if (isset($_POST['edit']) && $_POST['edit'] === 'true') {
         echo json_encode(['success' => $update['success']]);
         exit();
     }
+}
+
+
+if(isset($_POST['delete']) && $_POST['delete'] === 'true'){
+    $eid = $_POST['eid'];
+    $pwd = $_POST['saPwd'];
+    $imgpath = $_POST['eimg'];
+
+    if(empty($eid)){
+        http_response_code(400);
+        echo 'Empty ID. Please contact administration.';
+        exit();
+    }
+
+    if(!validate($conn, $pwd)){
+        http_response_code(400);
+        echo 'Wrong Password';
+        exit();
+    }
+
+    if(!file_exists($imgpath)){
+        http_response_code(400);
+        echo 'Img file does not exist.';
+        exit();
+    }
+
+    $del = delete_equipment($conn, $eid);
+
+    if(isset($del['error'])){
+        http_response_code(400);
+        echo $del['error'];
+        exit();
+    }
+
+    if(isset($del['success'])){
+        unlink($imgpath);
+        http_response_code(200);
+        echo $del['success'];
+        exit();
+    }
+
+    http_response_code(400);
+    echo 'Unknown Error';
+    exit();
 }
