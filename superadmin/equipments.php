@@ -277,7 +277,14 @@ require("startsession.php");
                     </div>
                 </div>
             </form>
-
+            <div class="toast align-items-center bottom-0 end-0" role="alert" id="toast" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body" id="toastmsg">
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
         </main>
 
     </div>
@@ -290,13 +297,13 @@ require("startsession.php");
             console.log($(this).serialize());
             try {
                 const del = await $.ajax({
-                    method:'POST',
+                    method: 'POST',
                     url: submitUrl,
                     dataType: 'json',
                     data: $(this).serialize() + '&delete=true'
                 });
 
-                if(del){
+                if (del) {
                     console.log(del);
                     await load();
                     $('#deletemodal').modal('hide');
@@ -313,6 +320,7 @@ require("startsession.php");
             $('#delete-id').val(data.id);
             $('#delete-img').val(data.img);
             $('#deletemodal').modal('show');
+            $('#toast').show();
         })
 
         $(document).ready(async function () {
