@@ -262,7 +262,7 @@ require("startsession.php");
                                     </div>
                                 </div>
                                 <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
-                                    id="add-alert"></p>
+                                    id="deletealert"></p>
                                 <div id="passwordHelpBlock" class="form-text">
                                     Note: Deleting is permanent. Please proceed with caution and make sure to double
                                     check.
@@ -277,12 +277,14 @@ require("startsession.php");
                     </div>
                 </div>
             </form>
-            <div class="toast align-items-center bottom-0 end-0" role="alert" id="toast" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body" id="toastmsg">
+            <div class="toast-container m-2 me-3 bottom-0 end-0">
+                <div class="toast align-items-center" role="alert" id="toast" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body text-dark ps-4" id="toastmsg">
+                        </div>
+                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"
+                            aria-label="Close"></button>
                     </div>
-                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
                 </div>
             </div>
         </main>
@@ -303,16 +305,22 @@ require("startsession.php");
                     data: $(this).serialize() + '&delete=true'
                 });
 
-                if (del) {
+                if (del.success) {
                     console.log(del);
                     await load();
                     $('#deletemodal').modal('hide');
+                    show_toast(del.success);
                 }
             } catch (error) {
                 let err = error.responseText;
                 console.log(err);
+                $('#delete-alert').html(err).show(300).hide(300).fadeOut(200);
             }
         })
+
+        function alert(tagid, message = ''){
+            $(`#${tagid}`).html(message);
+        }
 
         $(document).on('click', '#deletebtn', async function () {
             const data = $('#deletebtn').data('del');
@@ -320,8 +328,14 @@ require("startsession.php");
             $('#delete-id').val(data.id);
             $('#delete-img').val(data.img);
             $('#deletemodal').modal('show');
-            $('#toast').show();
-        })
+        });
+
+        function show_toast(message){
+            $('#toastmsg').html(message);
+            var toastid = $('#toast');
+            var toast = new bootstrap.Toast(toastid);
+            toast.show();
+        }
 
         $(document).ready(async function () {
             await load();
