@@ -33,10 +33,15 @@ require("startsession.php");
             </div>
 
             <div class="container">
+                <div class="spinner-border text-light mt-4 mx-auto" style="display: none;" id="loader" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
                 <div class="row row-cols-1 row-cols-md-4 g-4 mt-2 mb-4 px-4" id="cardcontainer">
                     <!-- ajax -->
+
                 </div>
             </div>
+
 
             <form id="addequipment" enctype="multipart/form-data">
                 <div class="row g-2 text-dark">
@@ -118,8 +123,8 @@ require("startsession.php");
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
                                 </div>
-                                <p class='text-center alert alert-info p-3 w-75 mx-auto my-0'
-                                    id="addalert" style="display: none;"></p>
+                                <p class='text-center alert alert-info p-3 w-75 mx-auto my-0' id="addalert"
+                                    style="display: none;"></p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-target="#addModal"
@@ -325,7 +330,7 @@ require("startsession.php");
             $('#deletemodal').modal('show');
         });
 
-        function show_toast(message){
+        function show_toast(message) {
             $('#toastmsg').html(message);
             var toastid = $('#toast');
             var toast = new bootstrap.Toast(toastid);
@@ -463,6 +468,43 @@ require("startsession.php");
         function altimg(id) {
             $(`#${id}`).attr('src', '../img/template.jpg');
         }
+
+        $(function () {
+            let delay = null;
+
+            $('#searchbar').keyup(function () {
+                clearTimeout(delay);
+                $('#cardcontainer').empty();
+                $('#loader').attr('style', 'display: block !important');
+
+                delay = setTimeout(async function () {
+                    var search = $('#searchbar').val();
+                    try {
+                        const searcheq = await $.ajax({
+                            url: dataUrl,
+                            type: 'GET',
+                            dataType: 'html',
+                            data: {
+                                search: search,
+                            }
+                        });
+                        if (searcheq) {
+                            if (!search == '') {
+                                $('#cardcontainer').empty();
+                                $('#loader').attr('style', 'display: none !important');
+                                $('#cardcontainer').append(searcheq);
+                            } else {
+                                $('#loader').attr('style', 'display: none !important');
+                                await load();
+                            }
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }, 250);
+            });
+
+        });
     </script>
     <?php include('footer.links.php'); ?>
 </body>
