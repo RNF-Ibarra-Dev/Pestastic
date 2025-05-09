@@ -118,8 +118,8 @@ require("startsession.php");
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
                                 </div>
-                                <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
-                                    id="add-alert"></p>
+                                <p class='text-center alert alert-info p-3 w-75 mx-auto my-0'
+                                    id="addalert" style="display: none;"></p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-target="#addModal"
@@ -222,8 +222,8 @@ require("startsession.php");
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
                                 </div>
-                                <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
-                                    id="add-alert"></p>
+                                <p class='text-center alert alert-info p-3 w-75 mx-auto my-0' style="display: none;"
+                                    id="editalert"></p>
                                 <div id="passwordHelpBlock" class="form-text">
                                     Note: Changes can not be reverted. Proceed with caution and make sure to double
                                     check.
@@ -261,7 +261,7 @@ require("startsession.php");
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
                                 </div>
-                                <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
+                                <p class='text-center alert alert-info p-3 w-75 mx-auto my-0' style="display: none;"
                                     id="deletealert"></p>
                                 <div id="passwordHelpBlock" class="form-text">
                                     Note: Deleting is permanent. Please proceed with caution and make sure to double
@@ -280,7 +280,7 @@ require("startsession.php");
             <div class="toast-container m-2 me-3 bottom-0 end-0">
                 <div class="toast align-items-center" role="alert" id="toast" aria-live="assertive" aria-atomic="true">
                     <div class="d-flex">
-                        <div class="toast-body text-dark ps-4" id="toastmsg">
+                        <div class="toast-body text-dark ps-4 text-success-emphasis" id="toastmsg">
                         </div>
                         <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"
                             aria-label="Close"></button>
@@ -306,21 +306,16 @@ require("startsession.php");
                 });
 
                 if (del.success) {
-                    console.log(del);
                     await load();
                     $('#deletemodal').modal('hide');
                     show_toast(del.success);
                 }
             } catch (error) {
                 let err = error.responseText;
-                console.log(err);
-                $('#delete-alert').html(err).show(300).hide(300).fadeOut(200);
+                $('#deletealert').html(err).fadeIn(350).delay(1000).fadeOut(500);
             }
         })
 
-        function alert(tagid, message = ''){
-            $(`#${tagid}`).html(message);
-        }
 
         $(document).on('click', '#deletebtn', async function () {
             const data = $('#deletebtn').data('del');
@@ -355,6 +350,7 @@ require("startsession.php");
                 if (load) {
                     $('#cardcontainer').empty();
                     $('#cardcontainer').append(load);
+                    // show_toast('Table loaded');
                 }
             } catch (error) {
                 console.log(error);
@@ -379,14 +375,12 @@ require("startsession.php");
                     data: editdata
                 });
                 if (edit) {
-                    console.log(edit);
                     await load();
                     $('#confirmEdit').modal('hide');
-
+                    show_toast(edit.success);
                 }
             } catch (error) {
-                console.log(error);
-                console.log(error.responseText);
+                $('#editalert').html(error.responseText).fadeIn(350).delay(1000).fadeOut(500);
             }
         })
 
@@ -423,7 +417,6 @@ require("startsession.php");
                 });
 
                 if (load) {
-                    console.log(load);
                     let data = load.success;
                     $('#edit-eid').val(data.id);
                     $('#edit-ename').val(data.equipment);
@@ -457,12 +450,13 @@ require("startsession.php");
                 });
 
                 if (add) {
-                    console.log(add.success);
                     await load();
                     $('#confirmAdd').modal('hide');
+                    show_toast(add.success);
                 }
             } catch (error) {
-                console.log(error);
+                let err = error.responseJSON.error;
+                $('#addalert').html(err).fadeIn(350).delay(1000).fadeOut(500);
             }
         });
 
