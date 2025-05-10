@@ -8,7 +8,7 @@ require("startsession.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operations Supervisor | Equipments</title>
+    <title>Technician | Equipment</title>
     <?php include('header.links.php'); ?>
 </head>
 
@@ -118,7 +118,7 @@ require("startsession.php");
                             <div class="modal-body">
                                 <div class="row mb-2">
                                     <label for="addPwd" class="form-label fw-light">Add new equipment? Enter Operations Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
@@ -220,7 +220,7 @@ require("startsession.php");
                                 <div class="row mb-2">
                                     <label for="addPwd" class="form-label fw-light">Edit equipment information? Enter
                                         Operations Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="hidden" name="eid" id="edit-eid">
                                         <input type="hidden" name="oldimgpath" id="eimg-hidden">
@@ -259,7 +259,7 @@ require("startsession.php");
                                     <label for="addPwd" class="form-label fw-light">You will delete equipment '<span
                                             id="eqname-delete">---</span>'. Enter
                                         Operations Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="hidden" name="eid" id="delete-id">
                                         <input type="hidden" name="eimg" id="delete-img">

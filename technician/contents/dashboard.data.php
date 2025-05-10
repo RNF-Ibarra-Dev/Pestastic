@@ -120,3 +120,25 @@ if (isset($_GET['append']) && $_GET['append'] === 'chemicals') {
         echo "<tr><td scope='row' colspan='3' class='text-center'>No available chemicals.</td></tr>";
     }
 }
+
+if (isset($_GET['append']) && $_GET['append'] === 'eqtable') {
+    $sql = "SELECT * FROM equipments WHERE availability = 'Available';";
+    $results = mysqli_query($conn, $sql);
+    $rows = mysqli_num_rows($results);
+  
+    if ($rows > 0) {
+      while ($row = mysqli_fetch_assoc($results)) {
+        $name = $row['equipment'];
+        $avail = $row['availability'];
+        ?>
+        <tr class="text-center align-middle">
+          <td><?= htmlspecialchars($name) ?></td>
+          <td><?= htmlspecialchars($avail) ?></td>
+        </tr>
+        <?php
+      }
+    }else{
+      echo "<tr><td scope='row' colspan='2' class='text-center'>No available equipment.</td></tr>";
+      exit();
+    }
+  }

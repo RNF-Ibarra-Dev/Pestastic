@@ -8,7 +8,7 @@ require("startsession.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Technician - Pestastic Inventory</title>
+    <title>Technician | Pestastic Inventory</title>
     <?php include('header.links.php'); ?>
 </head>
 
@@ -100,34 +100,18 @@ require("startsession.php");
                     </table>
                 </div>
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <p class="text-center fs-3 mx-auto">Available Equipments</p>
+                    <p class="text-center fs-3 mx-auto">Available Equipment</p>
                     <table class="table-hover rounded overflow-hidden table">
-                        <caption>Check your <a href="equipments.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">equipments</a>
-                            for more.</caption>
+                        <caption>Check <a href="equipments.php"
+                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">equipment</a>
+                            page for more information.</caption>
                         <thead>
                             <tr>
                                 <th scope="col">Equipment</th>
-                                <th scope="col">Last</th>
-                                <th scope="col">Handle</th>
+                                <th scope="col">Status</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td>@mdo</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>Thornton</td>
-                                <td>@fat</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td>John</td>
-                                <td>@social</td>
-                            </tr>
+                        <tbody id="eqtable">
                         </tbody>
                     </table>
                 </div>
@@ -145,7 +129,8 @@ require("startsession.php");
                 await append_table('pending'),
                 await append_table('chemicals'),
                 await append_table('completed'),
-                await append_table('accepted')
+                await append_table('accepted'),
+                await append_table('eqtable')
             ])
             if (!tables) {
                 alert('Loading table failed.');
