@@ -22,7 +22,7 @@ if (isset($_POST['add']) && $_POST['add'] === 'true') {
         exit();
     }
 
-    if (!validateTech($conn, $pwd)) {
+    if (!validateOS($conn, $pwd)) {
         http_response_code(400);
         echo json_encode(['error' => "Invalid Password."]);
         exit();
@@ -90,7 +90,7 @@ if (isset($_POST['edit']) && $_POST['edit'] === 'true') {
         exit();
     }
 
-    if (!validateTech($conn, $pwd)) {
+    if (!validateOS($conn, $pwd)) {
         http_response_code(400);
         echo json_encode(['error' => "Invalid Password."]);
         exit();
@@ -167,7 +167,7 @@ if (isset($_POST['delete']) && $_POST['delete'] === 'true') {
         exit();
     }
 
-    if (!validateTech($conn, $pwd)) {
+    if (!validateOS($conn, $pwd)) {
         http_response_code(400);
         echo 'Wrong Password';
         exit();
