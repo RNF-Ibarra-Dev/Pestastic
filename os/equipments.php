@@ -8,7 +8,7 @@ require("startsession.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operations Supervisor - Equipments</title>
+    <title>Operations Supervisor | Equipments</title>
     <?php include('header.links.php'); ?>
 </head>
 
@@ -366,9 +366,9 @@ require("startsession.php");
             e.preventDefault();
             var editdata = new FormData(this);
             editdata.append('edit', 'true');
-            for (const data of editdata.entries()) {
-                console.log(data[0] + ': ' + data[1]);
-            }
+            // for (const data of editdata.entries()) {
+            //     console.log(data[0] + ': ' + data[1]);
+            // }
 
             try {
                 const edit = await $.ajax({
@@ -385,7 +385,7 @@ require("startsession.php");
                     show_toast(edit.success);
                 }
             } catch (error) {
-                $('#editalert').html(error.responseText).fadeIn(350).delay(1000).fadeOut(500);
+                $('#editalert').html(error.responseJSON.error).fadeIn(350).delay(1000).fadeOut(500);
             }
         })
 
