@@ -123,34 +123,18 @@ require("startsession.php");
                     </table>
                 </div>
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <p class="text-center fs-3 mx-auto">Available Equipments</p>
+                    <p class="text-center fs-3 mx-auto">Available Equipment</p>
                     <table class="table-hover rounded overflow-hidden table">
-                        <caption>Check your <a href="equipments.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">equipments</a>
-                            for more.</caption>
+                        <caption>Check <a href="equipments.php"
+                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">equipment</a>
+                            page for more.</caption>
                         <thead>
-                            <tr>
+                            <tr class="text-center align-middle">
                                 <th scope="col">Equipment</th>
-                                <th scope="col">Last</th>
-                                <th scope="col">Handle</th>
+                                <th scope="col">Status</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td>@mdo</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>Thornton</td>
-                                <td>@fat</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td>John</td>
-                                <td>@social</td>
-                            </tr>
+                        <tbody id="eqtable">
                         </tbody>
                     </table>
                 </div>
@@ -165,10 +149,14 @@ require("startsession.php");
         const dataurl = 'tablecontents/index.data.php';
 
         $(document).ready(async function () {
-            await append_table('pendingtrans');
-            await append_table('pendingchem');
-            await append_table('lowchemicals');
-            await append_table('voidreqtable');
+            const loadtables = await Promise.all([
+                await append_table('pendingtrans'),
+                await append_table('pendingchem'),
+                await append_table('lowchemicals'),
+                await append_table('voidreqtable'),
+                await append_table('eqtable')
+            ]);
+        
         })
 
         async function append_table(container) {
@@ -250,10 +238,10 @@ require("startsession.php");
                         },
                         tooltip: {
                             bodyColor: 'white',
-                            titleColor: 'white', 
+                            titleColor: 'white',
                             yAlign: 'bottom'
                         },
-                       
+
                     }
                 }
             });
