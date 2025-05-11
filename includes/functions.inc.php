@@ -425,7 +425,50 @@ function add_tech_trans($conn, $transId, $techId)
     }
 }
 
+// subtract chem
+function update_chem_level($conn, $id, $ovalue, $uvalue)
+{
+    $updatedval = $ovalue - $uvalue;
 
+    $sql = "UPDATE chemicals SET chemLevel = ? WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'STMT ERROR'];
+    }
+    mysqli_stmt_bind_param($stmt, 'ii', $updatedval, $id);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_stmt_affected_rows($stmt) > 0) {
+        return true;
+    } else {
+        return ['error' => 'Not updated' . mysqli_stmt_error($stmt)];
+    }
+}
+
+function get_chem_level($conn, $id)
+{
+    $sql = "SELECT chemLevel FROM chemicals WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'STMT ERROR'];
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    if ($result) {
+        if ($row = mysqli_fetch_assoc($result)) {
+            return $row['chemLevel'];
+        }
+    } else {
+        return json_encode(['error' => mysqli_stmt_error($stmt)]);
+    }
+
+}
 
 function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $treatment, $chemUsed, $amtUsed, $status, $pestProblem)
 {
@@ -459,7 +502,21 @@ function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $t
                     error_log("Insert failed at iteration $i");
                     throw new Exception('The chemical used addition failed: ' . $chemUsed[$i] . $amtUsed[$i] . ' ' . mysqli_error($conn));
                 }
+                // add function to update chemical level
                 $iterationLogs[] = "iterated $i";
+
+                // get original value
+                $level = get_chem_level($conn, $chemUsed[$i]);
+
+                if($amtUsed[$i] > $level){
+                    throw new Exception('Insufficient Chemical');
+                }
+
+                $update = update_chem_level($conn, $chemUsed[$i], $level, $amtUsed[$i]);
+
+                if(isset($update['error'])){
+                    throw new Exception('Chemical not updated. Chem ID: ' . $chemUsed[$i] . $update['error']);
+                }
             }
 
             for ($i = 0; $i < count($pestProblem); $i++) {
@@ -1193,20 +1250,21 @@ function update_equipment($conn, $name, $desc, $avail, $id, $path = NULL)
 //     $sql = 
 // }
 
-function delete_equipment($conn, $id){
+function delete_equipment($conn, $id)
+{
     $sql = "DELETE FROM equipments WHERE id =?;";
     $stmt = mysqli_stmt_init($conn);
 
-    if(!mysqli_stmt_prepare($stmt, $sql)){
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
         return ['error' => 'STMT FAILED'];
     }
 
     mysqli_stmt_bind_param($stmt, 'i', $id);
     mysqli_stmt_execute($stmt);
 
-    if(mysqli_stmt_affected_rows($stmt) > 0){
-        return ['success'=> 'Equipment Deleted'];
-    } else{
+    if (mysqli_stmt_affected_rows($stmt) > 0) {
+        return ['success' => 'Equipment Deleted'];
+    } else {
         return ['error' => mysqli_stmt_error($stmt)];
     }
 }

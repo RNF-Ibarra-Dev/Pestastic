@@ -1251,6 +1251,7 @@
         $(function() {
             $('#addTransaction').on('submit', async function(e) {
                 e.preventDefault();
+                console.log($(this).serialize());
                 try {
                     const trans = await $.ajax({
                         type: 'POST',
@@ -1267,16 +1268,19 @@
                         $('#addTransaction')[0].reset();
                         $('#tableAlert').removeClass('visually-hidden').html(trans.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
                     }
+                    if(trans){
+                        console.log(trans);
+                    }
 
                 } catch (error) {
-                    console.log(JSON.stringify(error));
+                    console.log(error);
                     // console.log(error);
                     let errorData = error.responseJSON;
                     if (errorData && errorData.errorMessage) {
                         // alert('Error Message: ' + errorData.errorMessage + ';\n\nLine: ' + errorData.line + ';\n\nFile: ' + errorData.file + ';\n\nTrace: ' + errorData.trace);
                         $('#add-alert').removeClass('visually-hidden').html(errorData.errorMessage).hide().fadeIn(400).delay(2000).fadeOut(1000);
                     } else {
-                        alert('unknown error occured.');
+                        // alert('unknown error occured.');
                     }
                 }
             })

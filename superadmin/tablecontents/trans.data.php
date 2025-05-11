@@ -154,7 +154,7 @@ function get_prob($conn, $checked = null)
 function get_chem($conn, $active = null)
 {
     $active = $active == null ? '' : $active;
-    $sql = 'SELECT * FROM chemicals';
+    $sql = 'SELECT * FROM chemicals ORDER BY id DESC;';
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -170,9 +170,10 @@ function get_chem($conn, $active = null)
         $brand = $row['brand'];
         $name = $row['name'];
         $level = $row['chemLevel'];
+        $req = $row['request']
         ?>
-        <option value="<?= $id ?>" <?= $level <= 0 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?>>
-            <?= $name . " | " . $brand . " | " . $level . "ml" ?>
+        <option value="<?= htmlspecialchars($id)?>" <?= $level <= 0 || $req == 1 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?>>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars($level) . "ml"?><?= $req == 1 ? " | Chemical Under Review" : ''?>
         </option>
         <?php
     }

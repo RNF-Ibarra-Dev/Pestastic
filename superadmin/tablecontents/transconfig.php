@@ -35,7 +35,6 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-
     if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatment) || empty($problems) || empty($chemUsed) || empty($amtUsed) || empty($status)) {
         // header('Content-Type: application/json');
         http_response_code(400);
