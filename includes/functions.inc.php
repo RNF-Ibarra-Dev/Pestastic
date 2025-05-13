@@ -508,13 +508,13 @@ function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $t
                 // get original value
                 $level = get_chem_level($conn, $chemUsed[$i]);
 
-                if($amtUsed[$i] > $level){
+                if ($amtUsed[$i] > $level) {
                     throw new Exception('Insufficient Chemical');
                 }
 
                 $update = update_chem_level($conn, $chemUsed[$i], $level, $amtUsed[$i]);
 
-                if(isset($update['error'])){
+                if (isset($update['error'])) {
                     throw new Exception('Chemical not updated. Chem ID: ' . $chemUsed[$i] . $update['error']);
                 }
             }
@@ -598,6 +598,52 @@ function delete_old_ids($conn, $table, $trans_id, $target_id, $ids)
     }
 }
 
+function update_trans_chem_revert($conn, $id)
+{
+    if (!is_numeric($id)) {
+        return ['error' => 'Invalid ID.'];
+    }
+
+    $sql = "SELECT amt_used FROM transaction_chemicals WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    // $result = mysqli_query($conn, $sql);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'Fetch amt used stmt failed.'];
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) > 0) {
+        if ($row = mysqli_fetch_assoc($result)) {
+            $transamt = $row['amt_used'];
+        }
+    } else {
+        return ['error' => 'No row returned from transaction.' . mysqli_stmt_error($stmt)];
+    }
+
+    $updatesql = "UPDATE chemicals SET chemLevel = chemLevel + ? WHERE id = ?;";
+    $updatestmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($updatestmt, $updatesql)) {
+        return ['error' => 'Revert chemical stmt failed.'];
+    }
+
+    mysqli_stmt_bind_param($updatestmt, 'ii', $transamt, $id);
+    mysqli_stmt_execute($updatestmt);
+
+    if (mysqli_stmt_affected_rows($updatestmt) > 0) {
+        return true;
+    } else {
+        return ['error' => 'Revert Failed.' . mysqli_stmt_error($updatestmt)];
+    }
+}
+
+function update_trans_chem($conn, $id)
+{
+
+}
+
 function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUsed, $pestProblem)
 {
     mysqli_begin_transaction($conn);
@@ -607,7 +653,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transData['transId']);
         $existingProblems = get_existing($conn, 'problem_id', 'transaction_problems', $transData['transId']);
 
-        // check removed chem, problem, item basta yon
+        // check removed chem, problem, item basta yon (function returns different array values)
         $delTechs = array_diff($existingTechs, $technicianIds);
         $delChems = array_diff($existingChems, $chemUsed);
         $delProblems = array_diff($existingProblems, $pestProblem);
@@ -625,17 +671,36 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
             $fTechs = array_values(array_unique($fTechs));
         }
 
+        // deletes chemicals that aren't at the new transaction
         if (!empty($delChems)) {
             $delete = delete_old_ids($conn, 'transaction_chemicals', $transData['transId'], 'chem_id', $delChems);
             if (isset($delete['error'])) {
                 throw new Exception('Error: ' . $delete['error']);
             }
+
+            if ($transData['status'] != 'Completed') {
+                for ($i = 0; $i < count($delChems); $i++) {
+                    $revert = update_trans_chem_revert($conn, $delChems[$i]);
+                    if (isset($revert['error'])) {
+                        throw new Exception("Error: " . $revert['error']);
+                    }
+                }
+            }
+
             $fchems = array_merge($chemUsed, array_diff($existingChems, $delChems));
             $fchems = array_unique($fchems);
         } else {
             $fchems = array_merge($existingChems, $chemUsed);
             $fchems = array_values(array_unique($fchems));
         }
+
+        // $chem = array_intersect($chemUsed, $existingChems);
+        // for($i = 0; $i < count($chem); $i++){
+        //     // update_trans_chem($conn, $chem[$i]);
+        //     $olevel = get_chem_level($conn, $chemUsed[$i]);
+        //     if($olevel != $amtUsed[$i])
+        // }
+
 
         if (!empty($delProblems)) {
             $delete = delete_old_ids($conn, 'transaction_problems', $transData['transId'], 'problem_id', $delProblems);
