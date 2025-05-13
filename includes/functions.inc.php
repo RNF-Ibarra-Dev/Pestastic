@@ -661,7 +661,25 @@ function prev_trans_amt($conn, $id, $trans_id)
     }
 }
 
-function change_chemical($conn, $id){}
+function reflect_trans_chem($conn, $id, $chem)
+{
+    $sql = "UPDATE chemicals SET chemLevel = chemLevel - ? WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'Stmt failed. Error: ' . mysqli_stmt_error($stmt)];
+    }
+
+    mysqli_stmt_bind_param($stmt, 'ii', $chem, $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_stmt_affected_rows($stmt) > 0) {
+        return true;
+    } else {
+        return ['error' => 'Update failed. Error: ' . mysqli_stmt_error($stmt)];
+    }
+}
 
 function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUsed, $pestProblem)
 {
@@ -672,18 +690,19 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         for ($i = 0; $i < count($chemUsed); $i++) {
             $prevtransamt = prev_trans_amt($conn, $chemUsed[$i], $transData['transId']);
             $amt_used = $amtUsed[$i];
+            
+            if (isset($prevtransamt['error'])){
+                throw new Exception("Error: " . $prevtransamt['error']);
+            }
+
             if (!$prevtransamt) {
                 continue;
-            } else {
-                // compare previous transaction amount to the new amount, if the new amount is different, chemical should be updated
-                // how can we update the chemical? should we add the original amount to the original chemical level first? or 
-                // subtract it to the previous transaction amount and add or subtract it if it was lesser or greater?
-                if ($prevtransamt > $amtUsed[$i]) {
-                    $newamt = $prevtransamt - $amt_used[$i];
-                    
-                } elseif($prevtransamt < $amtUsed[$i]){
+            }
 
-                }
+            $newamt = $prevtransamt - $amt_used;
+            $reflect = reflect_trans_chem($conn, $chemUsed[$i], $newamt);
+            if (isset($reflect['error'])){
+                throw new Exception("Error: " . $reflect['error']);
             }
         }
 
