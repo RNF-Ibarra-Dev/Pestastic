@@ -597,19 +597,19 @@ function delete_old_ids($conn, $table, $trans_id, $target_id, $ids)
     }
 }
 
-function update_trans_chem_revert($conn, $id)
+function update_trans_chem_revert($conn, $id, $trans_id)
 {
     if (!is_numeric($id)) {
         return ['error' => 'Invalid ID.'];
     }
 
-    $sql = "SELECT amt_used FROM transaction_chemicals WHERE id = ?;";
+    $sql = "SELECT amt_used FROM transaction_chemicals WHERE id = ? AND trans_id = ?;";
     $stmt = mysqli_stmt_init($conn);
     // $result = mysqli_query($conn, $sql);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         return ['error' => 'Fetch amt used stmt failed.'];
     }
-    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_bind_param($stmt, 'ii', $id, $trans_id);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
@@ -638,32 +638,55 @@ function update_trans_chem_revert($conn, $id)
     }
 }
 
-function prev_trans_amt($conn, $id)
+function prev_trans_amt($conn, $id, $trans_id)
 {
-    $sql = "SELECT amt_used FROM transaction_chemicals WHERE id = ?;";
+    $sql = "SELECT amt_used FROM transaction_chemicals WHERE chem_id = ? AND trans_id = ?;";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         return ['error' => 'Fetching previous transaction chemical amount failed. Chemical ID: ' . $id];
     }
 
-    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_bind_param($stmt, 'ii', $id, $trans_id);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
     if (mysqli_stmt_num_rows($stmt) > 0) {
         if ($row = mysqli_fetch_assoc($result)) {
-            return $row;
+            return $row['amt_used'];
         }
     } else {
-        return ['error' => 'No rows returned from fetching previous amount. Error: ' . mysqli_stmt_error($stmt)];
+        // return ['error' => 'No rows returned from fetching previous amount. Error: ' . mysqli_stmt_error($stmt)];
+        return false;
     }
 }
+
+function change_chemical($conn, $id){}
 
 function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUsed, $pestProblem)
 {
     mysqli_begin_transaction($conn);
     try {
+
+        // get transaction chemicals previous amount used
+        for ($i = 0; $i < count($chemUsed); $i++) {
+            $prevtransamt = prev_trans_amt($conn, $chemUsed[$i], $transData['transId']);
+            $amt_used = $amtUsed[$i];
+            if (!$prevtransamt) {
+                continue;
+            } else {
+                // compare previous transaction amount to the new amount, if the new amount is different, chemical should be updated
+                // how can we update the chemical? should we add the original amount to the original chemical level first? or 
+                // subtract it to the previous transaction amount and add or subtract it if it was lesser or greater?
+                if ($prevtransamt > $amtUsed[$i]) {
+                    $newamt = $prevtransamt - $amt_used[$i];
+                    
+                } elseif($prevtransamt < $amtUsed[$i]){
+
+                }
+            }
+        }
+
         // get existing arrays to check
         $existingTechs = get_existing($conn, 'tech_id', 'transaction_technicians', $transData['transId']);
         $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transData['transId']);
@@ -696,7 +719,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
             //function to revert chemical to their original value. Unless Completed.
             for ($i = 0; $i < count($delChems); $i++) {
-                $revert = update_trans_chem_revert($conn, $delChems[$i]);
+                $revert = update_trans_chem_revert($conn, $delChems[$i], $transData['transId']);
                 if (isset($revert['error'])) {
                     throw new Exception("Error: " . $revert['error']);
                 }
@@ -709,14 +732,6 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
             $fchems = array_values(array_unique($fchems));
         }
 
-        // get the id of the chemicals that still exists at the transaction
-        $chem = array_intersect($chemUsed, $existingChems);
-
-        // get transaction chemicals previous amount used
-        for ($i = 0; $i < count($chem); $i++){
-            $prevtransamt = prev_trans_amt($conn, $chem[$i]);
-            if($)
-        }
 
         if (!empty($delProblems)) {
             $delete = delete_old_ids($conn, 'transaction_problems', $transData['transId'], 'problem_id', $delProblems);
