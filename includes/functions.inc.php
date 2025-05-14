@@ -651,19 +651,20 @@ function prev_trans_amt($conn, $id, $trans_id)
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
-    if (mysqli_stmt_num_rows($stmt) > 0) {
+    if (mysqli_num_rows($result) > 0) {
         if ($row = mysqli_fetch_assoc($result)) {
             return $row['amt_used'];
         }
+        return null;
     } else {
-        // return ['error' => 'No rows returned from fetching previous amount. Error: ' . mysqli_stmt_error($stmt)];
-        return false;
+        return ['error' => 'No rows returned from fetching previous amount. Error: ' . mysqli_stmt_error($stmt)];
+        // return false;
     }
 }
 
-function reflect_trans_chem($conn, $id, $chem)
+function reflect_trans_chem($conn, $chem, $id)
 {
-    $sql = "UPDATE chemicals SET chemLevel = chemLevel - ? WHERE id = ?;";
+    $sql = "UPDATE chemicals SET chemLevel = chemLevel + ? WHERE id = ?;";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -672,12 +673,11 @@ function reflect_trans_chem($conn, $id, $chem)
 
     mysqli_stmt_bind_param($stmt, 'ii', $chem, $id);
     mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
 
     if (mysqli_stmt_affected_rows($stmt) > 0) {
         return true;
     } else {
-        return ['error' => 'Update failed. Error: ' . mysqli_stmt_error($stmt)];
+        return ['error' => 'Chemical update failed. Error: ' . mysqli_stmt_error($stmt) . 'Params passed: ' . $chem . ' ' . $id];
     }
 }
 
@@ -688,21 +688,29 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
         // get transaction chemicals previous amount used
         for ($i = 0; $i < count($chemUsed); $i++) {
+            // get previous amount and set it to var $prevtransamt
             $prevtransamt = prev_trans_amt($conn, $chemUsed[$i], $transData['transId']);
-            $amt_used = $amtUsed[$i];
-            
-            if (isset($prevtransamt['error'])){
+            // $amt_used = $amtUsed[$i];
+
+            $chemlevel = get_chem_level($conn, $chemUsed[$i]);
+            if ($amtUsed[$i] > $chemlevel) {
+                $chemname = get_chemical_name($conn, $chemUsed[$i]);
+                throw new Exception("Insufficient Chemical:  " . $chemname);
+            }
+
+            if (isset($prevtransamt['error'])) {
                 throw new Exception("Error: " . $prevtransamt['error']);
             }
 
-            if (!$prevtransamt) {
+            if ($prevtransamt === NULL || $prevtransamt === $amtUsed[$i]) {
                 continue;
+            } else {
+                $difference = $prevtransamt - $amtUsed[$i];
+                $reflect = reflect_trans_chem($conn, $difference, $chemUsed[$i]);
             }
 
-            $newamt = $prevtransamt - $amt_used;
-            $reflect = reflect_trans_chem($conn, $chemUsed[$i], $newamt);
-            if (isset($reflect['error'])){
-                throw new Exception("Error: " . $reflect['error']);
+            if ($reflect !==true && isset($reflect['error'])) {
+                throw new Exception("Modify error: " . $reflect['error'] . 'prev amt: ' . $prevtransamt . ' ' . $amtUsed[$i]);
             }
         }
 
