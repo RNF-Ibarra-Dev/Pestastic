@@ -62,31 +62,11 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link btn btn-sidebar my-1 ps-2 acc-dropdown-arrow <?= $page == 'technicianlogs.php' ? 'btn-active' : ''; ?>"
-                data-bs-toggle="collapse"
-                aria-expanded="<?= $page == 'create.tech.php' || $page == 'create.os.php' ? 'true' : 'false'; ?>"
-                data-bs-target="#create-accounts">
-                <i class="bi bi-person-add me-3"></i>
+            <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'account.php' ? 'btn-active' : ''; ?>"
+                href="account.php">
+                <i class="bi bi-file-text me-3"></i>
                 <div class="text-light fw-lighter fs-7">Create Account</div>
-                <i class="bi bi-chevron-compact-left ms-auto me-3 "></i>
             </a>
-            <ul id="create-accounts"
-                class="navbar-nav collapse navbar-collapse acc-dropdown <?= $page == 'create.tech.php' || $page == 'create.os.php' ? 'show' : ''; ?>">
-                <li class="nav-item">
-                    <a class="nav-link btn btn-sidebar my-1 ps-3 <?= $page == 'create.tech.php' ? 'btn-active-dropdown' : ''; ?>"
-                        href="create.tech.php">
-                        <i class="bi bi-person-fill-add me-3"></i>
-                        <div class="text-light fw-lighter fs-7">Technicians</div>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link btn btn-sidebar my-1 ps-3 <?= $page == 'create.os.php' ? 'btn-active-dropdown' : ''; ?>"
-                        href="create.os.php">
-                        <i class="bi bi-person-fill-add me-3"></i>
-                        <div class="text-light fw-lighter fs-7">Operations Supervisors</div>
-                    </a>
-                </li>
-            </ul>
         </li>
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 ps-2 " href="../includes/logout.inc.php">

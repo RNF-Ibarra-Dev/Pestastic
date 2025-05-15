@@ -8,7 +8,7 @@ require("startsession.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager - Equipments</title>
+    <title>Manager - Equipment</title>
     <?php include('header.links.php'); ?>
 </head>
 

@@ -203,7 +203,7 @@ function checkExistingAccs($conn, $username, $email, $id)
     mysqli_stmt_close($stmt);
 }
 
-function employeeIdCheck($conn, $empId, $id)
+function employeeIdCheck($conn, $empId, $id = NULL)
 {
 
     global $userTypes;
@@ -214,7 +214,7 @@ function employeeIdCheck($conn, $empId, $id)
         $userEmpId = $details['empId'];
         $stmt = mysqli_stmt_init($conn);
         $sql = "SELECT * FROM $userTable WHERE $userEmpId = ?";
-        if (empty($id)) {
+        if ($id === NULL) {
             $sql .= ";";
         } else {
             $sql .= " AND $userId != ?;";
@@ -254,9 +254,12 @@ function createTechAccount($conn, $firstName, $lastName, $username, $email, $pwd
 
     mysqli_stmt_bind_param($stmt, "sssssssss", $firstName, $lastName, $username, $email, $hashedPwd, $contact, $address, $empId, $birthdate);
     mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-    header("location: ../superadmin/create.tech.php?error=none");
-    exit();
+
+    if (mysqli_stmt_affected_rows($stmt) > 0){
+        return true;
+    } else{
+        return ['error' => 'Account creation failed. Please contact administration.'];
+    }
 }
 
 function createOpSupAccount($conn, $firstName, $lastName, $username, $email, $pwd, $contact, $address, $empId, $birthdate)
@@ -273,9 +276,12 @@ function createOpSupAccount($conn, $firstName, $lastName, $username, $email, $pw
 
     mysqli_stmt_bind_param($stmt, "sssssssss", $firstName, $lastName, $username, $email, $hashedPwd, $contact, $address, $empId, $birthdate);
     mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-    header("location: ../superadmin/create.os.php?error=none");
-    exit();
+    
+    if(mysqli_stmt_affected_rows($stmt) > 0){
+        return true;
+    }else{
+        return ['error' => 'Account creation failed. Please contact administration.'];
+    }
 }
 
 function addChemical($conn, $name, $brand, $level, $expdate, $request = 0)

@@ -31,6 +31,10 @@ body {
     z-index: 100 !important;
 }*/
 
+select:focus{
+  border-color: #bababa !important;
+}
+
 .form-control-plaintext {
   border: none !important;
 }

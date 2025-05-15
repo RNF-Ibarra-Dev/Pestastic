@@ -1,6 +1,6 @@
 <?php
 
-if (isset($_POST["submitCreateAcc"])) {
+if (isset($_POST["createacc"]) && $_POST['createacc'] === 'true') {
 
     $firstName = $_POST["firstName"];
     $lastName = $_POST["lastName"];
@@ -32,10 +32,7 @@ if (isset($_POST["submitCreateAcc"])) {
         header("location: ../superadmin/create.tech.php?error=invalidusername");
         exit();
     }
-    // if (usernameExists($conn, $username) !== false) {
-    //     header("location: ../createAccount.php?error=usernametaken");
-    //     exit();
-    // }
+
     if (invalidEmail($email) !== false) {
         header("location: ../superadmin/create.tech.php?error=invalidemail");
         exit();
@@ -55,7 +52,3 @@ if (isset($_POST["submitCreateAcc"])) {
 
     createTechAccount($conn, $firstName, $lastName, $username, $email, $pwd, $contactNo, $address, $empId, $birthdate);
 } 
-// else {
-//     header("location: ../superadmin/create.tech.php");
-//     exit();
-// }
