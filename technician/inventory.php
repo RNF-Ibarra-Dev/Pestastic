@@ -100,7 +100,7 @@ require("startsession.php");
                             <div class="modal-body">
                                 <div class="row mb-2">
                                     <label for="pass" class="form-label fw-light">Change information? Enter manager
-                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="saPwd" class="form-control" id="pwd">
                                     </div>
@@ -186,7 +186,7 @@ require("startsession.php");
                             <div class="modal-body">
                                 <div class="row mb-2">
                                     <label for="pass" class="form-label fw-light">Add Chemical? Enter manager
-                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
@@ -222,7 +222,7 @@ require("startsession.php");
                                 <div class="row mb-2">
                                     <label for="pass" class="form-label fw-light">Are you sure you want to
                                         delete this product? Enter manager
-                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="saPwd" class="form-control" id="manPass">
                                     </div>
@@ -280,7 +280,7 @@ require("startsession.php");
 
     <script>
         const pagination = 'contents/inv.pagination.php';
-        $(document).ready(async function(){
+        $(document).ready(async function() {
             await loadpage();
         })
         async function loadpagination(pageno) {
@@ -292,7 +292,7 @@ require("startsession.php");
                         pagenav: 'true',
                         active: pageno
                     },
-                    success: async function (res) {
+                    success: async function(res) {
                         $('#pagination').empty();
                         $('#pagination').append(res);
                         window.history.pushState(null, "", "?page=" + pageno);
@@ -312,11 +312,11 @@ require("startsession.php");
                         table: 'true',
                         currentpage: page
                     },
-                    success: function (data) {
+                    success: function(data) {
                         $('#chemicalTable').empty();
                         $('#chemicalTable').append(data);
                     },
-                    error: function (err) {
+                    error: function(err) {
                         alert('loadtable func error:' + err);
                     }
                 });
@@ -326,7 +326,7 @@ require("startsession.php");
             }
         }
 
-        $('#pagination').on('click', '.page-link', async function (e) {
+        $('#pagination').on('click', '.page-link', async function(e) {
             e.preventDefault();
             let currentpage = $(this).data('page');
             console.log(currentpage);
@@ -346,17 +346,17 @@ require("startsession.php");
             ])
         }
 
-        $(function () {
+        $(function() {
             let timeout = null;
 
-            $('#searchbar').keyup(function () {
+            $('#searchbar').keyup(function() {
                 clearTimeout(timeout);
                 $('#chemicalTable').empty();
                 // $('#chemicalTable').append($('#loader'))
                 // $('#loader').removeClass('visually-hidden');
                 $('#loader').css('display', 'block');
 
-                timeout = setTimeout(async function () {
+                timeout = setTimeout(async function() {
                     var search = $('#searchbar').val();
                     try {
                         const searchChem = await $.ajax({
@@ -366,7 +366,7 @@ require("startsession.php");
                             data: {
                                 search: search
                             },
-                            success: async function (searchChem, status) {
+                            success: async function(searchChem, status) {
                                 if (!search == '') {
                                     $('#chemicalTable').empty();
                                     $('#loader').attr('style', 'display: none !important;');

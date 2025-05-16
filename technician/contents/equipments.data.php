@@ -32,12 +32,7 @@ if (isset($_GET['equipments']) && $_GET['equipments'] === 'true') {
                         <p class="card-text mb-2"><strong>Availability:</strong> <?= htmlspecialchars($avail) ?></p>
                         <p class="card-text text-light"><?= $desc == NULL ? 'No Description.' : htmlspecialchars($desc) ?></p>
                     </div>
-                    <div class="card-footer bg-transparent p-0 d-flex justify-content-around border-top border-light">
-                        <button type="button" data-id="<?= htmlspecialchars($id) ?>" id="editbtn"
-                            class="btn btn-sidebar left-btn-rounded text-light w-50 py-3">Edit</button>
-                        <button type="button" data-del="<?= htmlspecialchars($delarr, ENT_QUOTES, 'UTF-8') ?>" id="deletebtn"
-                            class="btn btn-sidebar right-btn-rounded text-light w-50 py-3">Delete</button>
-                    </div>
+                    
                 </div>
             </div>
             <?php
@@ -115,12 +110,6 @@ if (isset($_GET['search'])) {
                         <hr>
                         <p class="card-text mb-2"><strong>Availability:</strong> <?= htmlspecialchars($avail) ?></p>
                         <p class="card-text text-light"><?= $desc == NULL ? 'No Description.' : htmlspecialchars($desc) ?></p>
-                    </div>
-                    <div class="card-footer bg-transparent p-0 d-flex justify-content-around border-top border-light">
-                        <button type="button" data-id="<?= htmlspecialchars($id) ?>" id="editbtn"
-                            class="btn btn-sidebar left-btn-rounded text-light w-50 py-3">Edit</button>
-                        <button type="button" data-del="<?= htmlspecialchars($delarr, ENT_QUOTES, 'UTF-8') ?>" id="deletebtn"
-                            class="btn btn-sidebar right-btn-rounded text-light w-50 py-3">Delete</button>
                     </div>
                 </div>
             </div>
