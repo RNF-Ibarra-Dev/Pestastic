@@ -43,7 +43,7 @@
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 p-2 <?= $page == 'itemstock.php' ? 'btn-active' : ''; ?>"
                 href="itemstock.php">
-                <i class="bi bi-archive me-3"></i>
+                <i class="bi bi-flask me-3"></i>
                 <div class="text-light fw-lighter fs-7">Item Stock</div>
             </a>
         </li>
@@ -52,6 +52,13 @@
                 href="equipments.php">
                 <i class="bi bi-tools me-3"></i>
                 <div class="text-light fw-lighter fs-7">Equipment</div>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'queue.php' ? 'btn-active' : ''; ?>"
+                href="queue.php">
+                <i class="bi bi-list me-3"></i>
+                <div class="text-light fw-lighter fs-7">Queue</div>
             </a>
         </li>
         <li class="nav-item">
@@ -64,7 +71,7 @@
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'account.php' ? 'btn-active' : ''; ?>"
                 href="account.php">
-                <i class="bi bi-file-text me-3"></i>
+                <i class="bi bi-person-add me-3"></i>
                 <div class="text-light fw-lighter fs-7">Create Account</div>
             </a>
         </li>
