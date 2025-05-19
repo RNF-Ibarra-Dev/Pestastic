@@ -52,18 +52,30 @@ require("startsession.php");
                         class="bi bi-plus-square"></i></button>
             </div>
 
-            <div class="container d-flex flex-nowrap " id="queuecontainer">
+            <div class="m-2 d-flex p-2 rounded-3">
+                <i class="bi bi-sort-up h5" id='sortrecent'></i>
+                <h4 class="fw-light text-center">Recent Transactions</h5>
+            </div>
+
+            <div class="container d-flex flex-nowrap bg-dark bg-opacity-25 mb-2" id="queuecontainer">
                 <div class="spinner-border text-light mt-4 mx-auto" style="display: none;" id="loader" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
                 <div class=" d-flex flex-nowrap row row-cols-1 row-cols-md-3 g-4 mt-2 mb-4 px-4" id="cardcontainer">
                     <!-- ajax -->
-
                 </div>
             </div>
 
-            <div class="container-fluid">
-                <div class="row" id="ondispatch"></div>
+             <div class="bg-light bg-opacity-25 m-2 p-2 rounded-3">
+                <h4 class="fw-light text-center">Upcoming Transactions</h5>
+            </div>
+            <div class="container bg-dark bg-opacity-25 my-2 py-4">
+                <div class="row-cols-md-3 gx-4 row" id="ondispatch"></div>
+            </div>
+
+            <div class="container row row-cols-2 g-4">
+                <div class="col" id="newpending"></div>
+                <div class="col" id="recentvoid"></div>
             </div>
 
             <div class="toast-container m-2 me-3 bottom-0 end-0">
@@ -84,7 +96,7 @@ require("startsession.php");
             <div class="modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header bg-modal-title text-light">
-                        <h1 class="modal-title fs-5">Deployed Technicians for Transaction <span
+                        <h1 class="modal-title fs-5">Assigned Technicians for Transaction <span
                                 id="deployedtransid"></span></h1>
                         <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                 class="bi text-light bi-x"></i></button>
@@ -113,22 +125,43 @@ require("startsession.php");
             toast.show();
         }
 
-        $(document).ready(async function () {
+        $(document).ready(async function() {
             await load();
+            await active_transaction();
+            await fetch_data('newpending');
         });
 
-        $(document).on('click', '#dispatchedtechbtn', async function () {
+        $(document).on('click', '#dispatchedtechbtn', async function() {
             let id = $(this).data('tech');
             $('#deployedtransid').html(id);
             const deploy = await deployed_tech(id);
-            if (deploy) {
+            // if (deploy) {
                 $('#technicians').modal('show');
-            }
+            // }
         });
 
-        $(document).on('hidden.bs.modal', '#technicians', function () {
+        $(document).on('hidden.bs.modal', '#technicians', function() {
             $('#technicianscont').empty();
         });
+
+        async function fetch_data(container){
+            try {
+                const data = await $.ajax({
+                    method: 'GET',
+                    url: dataUrl,
+                    dataType:'html',
+                    data: {
+                        getdata: container,
+                    }
+                });
+                if(data){
+                    $(`#${container}`).html(data);
+                    return true;
+                }
+            } catch (error) {
+                return error;
+            }
+        }
 
         async function deployed_tech(transid) {
             try {
@@ -144,19 +177,27 @@ require("startsession.php");
 
                 if (deployed) {
                     $('#technicianscont').html(deployed);
-                    return true;
                 }
             } catch (error) {
-                // console.log(error);
-                return error;
+                console.log(error);
             }
         }
 
-        async function active_transaction(){
+        async function active_transaction() {
             try {
-                
+                const ondispatch = await $.ajax({
+                    method: 'GET',
+                    url: dataUrl,
+                    dataType: 'html',
+                    data: "&ondispatch=true"
+                });
+
+                if (ondispatch) {
+                    $('#ondispatch').html(ondispatch);
+                    return true;
+                }
             } catch (error) {
-                
+                return error;
             }
         }
 
@@ -182,15 +223,15 @@ require("startsession.php");
         }
 
 
-        $(function () {
+        $(function() {
             let delay = null;
 
-            $('#searchbar').keyup(function () {
+            $('#searchbar').keyup(function() {
                 clearTimeout(delay);
                 $('#cardcontainer').empty();
                 $('#loader').attr('style', 'display: block !important');
 
-                delay = setTimeout(async function () {
+                delay = setTimeout(async function() {
                     var search = $('#searchbar').val();
                     try {
                         const searcheq = await $.ajax({

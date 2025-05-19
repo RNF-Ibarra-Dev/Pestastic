@@ -3,7 +3,9 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
-    $sql = "SELECT * FROM transactions ORDER BY treatment_date DESC;";
+    $sql = "SELECT * FROM transactions 
+    WHERE transaction_status = 'Completed'
+    ORDER BY treatment_date DESC;";
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) > 0) {
@@ -12,9 +14,9 @@ if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
             $customername = $row['customer_name'];
             $date = $row['treatment_date'];
             $treatment = $row['treatment'];
-            ?>
+?>
             <div class="col">
-                <div class="card bg-white bg-opacity-25 rounded-3 border-0 text-light">
+                <div class="card bg-white bg-opacity-25 rounded-4 border-0 text-light px-3">
                     <div class="card-body px-2 border-light ">
                         <h5 class="card-title">Transaction <?= htmlspecialchars($id) ?></h5>
                         <hr>
@@ -33,7 +35,53 @@ if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
 
                 </div>
             </div>
-            <?php
+        <?php
+        }
+    }
+}
+
+if (isset($_GET['ondispatch']) && $_GET['ondispatch'] === 'true') {
+    $sql = "SELECT * FROM transactions 
+    WHERE treatment_date >= CURDATE() AND (transaction_status = 'Pending' OR transaction_status = 'Accepted') 
+    ORDER BY treatment_date ASC LIMIT 3;";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $customername = $row['customer_name'];
+            $date = $row['treatment_date'];
+            $treatment = $row['treatment'];
+            $status = $row['transaction_status'];
+        ?>
+            <div class="col">
+                <div class="card bg-white bg-opacity-25 rounded-4 border-0 text-light px-3">
+                    <div class="card-body px-2 border-light ">
+                        <h5 class="card-title align-middle">Transaction <?= htmlspecialchars($id) ?><?= $status === 'Pending' ? "<i class='bi bi-dot text-warning fs-4'></i>" : "<i class='bi bi-dot text-success fs-4'></i>" ?></h5>
+                        <hr>
+                        <p class="card-text lh-lg">
+                            <strong>Customer:</strong> <?= htmlspecialchars($customername) ?><br>
+                            <strong>Address:</strong> N/A <br>
+                            <strong>Treatment Date:</strong> <span
+                                class="ms-1 text-danger-emphasis"><?= htmlspecialchars($date) ?></span><br>
+                            <strong>Follow up Date:</strong> Not set<br>
+                            <strong>Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
+                            <strong>Status:</strong> <?php echo $status == 'Accepted' ? "<span class='text-success'>" . htmlspecialchars($status) . "<i class='bi bi-dot text-success'></i></span>" : "<span class='text-warning'>" . htmlspecialchars($status) . "<i class='bi bi-dot text-warning'></i></span>" ?><br>
+                        </p>
+                        <button type="button" id="dispatchedtechbtn"
+                            class="btn btn-sidebar border-light rounded-pill text-light bg-transparent"
+                            data-tech="<?= htmlspecialchars($id) ?>">Dispatched Technicians</button> <br>
+                        <?php
+                        if ($status === 'Accepted') {
+                            echo "<p class='text-body-secondary mb-0 text-light mt-3 lh-1'><small>Transaction ready and accepted. Dispatch?</small></p>";
+                        } else {
+                            echo "<p class='text-body-secondary mb-0 text-light mt-3 lh-1'><small>Transaction pending. Accept transaction?</small></p>";
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        <?php
         }
     }
 }
@@ -53,11 +101,16 @@ if (isset($_GET['dispatched']) && $_GET['dispatched'] === 'true') {
 
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            ?>
+        ?>
             <li class="list-group-item"><?= htmlspecialchars($row['tech_info']) ?></li>
-            <?php
+<?php
         }
-    } else{
+    } else {
         echo "<li class = 'list-group-item'>No assigned technicians for this transaction.</li>";
     }
+}
+
+if (isset($_GET['getdata']) && $_GET['getdata'] === 'newpending') {
+    $sql = "SELECT * FROM transactions WHERE transaction_status = 'pending' ORDER BY id DESC;";
+    $result = mysqli_query($conn, $sql);
 }
