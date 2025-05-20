@@ -29,6 +29,22 @@ require("startsession.php");
         #queuecontainer {
             -ms-overflow-style: none !important;
         }
+
+        .active {
+            cursor: grabbing;
+            cursor: -webkit-grabbing;
+            transform: scale(1.01) !important;
+            transition: 0.4s;
+        }
+
+        #cardcontainer {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
     </style>
 </head>
 
@@ -52,21 +68,43 @@ require("startsession.php");
                         class="bi bi-plus-square"></i></button>
             </div>
 
-            <div class="m-2 d-flex p-2 rounded-3">
-                <i class="bi bi-sort-up h5" id='sortrecent'></i>
-                <h4 class="fw-light text-center">Recent Transactions</h5>
+
+            <div class="container-fluid">
+                <!-- headers -->
+                <div class="row row-col-2 d-flex justify-content-around">
+                    <div class="col-4 bg-light bg-opacity-25 rounded-pill p-2 m-2">
+                        <h4 class="fw-light justify-content-center m-0 d-flex align-items-center">Active Transaction
+                            </h5>
+                    </div>
+                    <div
+                        class="col-7 m-2 d-flex border-light bg-light bg-opacity-25 shadow p-2 align-middle rounded-pill">
+                        <button type="button" class="btn btn-sidebar rounded-pill me-2 text-light">
+                            <i class="bi bi-sort-up h5 m-0 d-flex align-items-center" id='sortrecent'></i>
+                        </button>
+                        <h4 class="fw-light m-0 justify-content-center flex-grow-1 d-flex align-items-center">Recent Transactions</h5>
+                        <div style="width: 35px !important;" class="m-0 p-0"></div>
+                    </div>
+                </div>
+                <!-- contents -->
+                <div class="row row-col-2 d-flex justify-content-around">
+                    <!-- active dispatch -->
+                    <div class="col-4 d-flex bg-light bg-opacity-25 rounded" id="activecontainer">
+                        <!-- ajaxsdkljf -->
+                    </div>
+
+                    <!-- recents -->
+                    <div class="col-7 d-flex flex-nowrap bg-light shadow-sm rounded bg-opacity-25" id="queuecontainer">
+                        <div class=" d-flex flex-nowrap w-75 row row-cols-1 row-cols-md-3 g-4 mt-2 mb-4 px-4"
+                            id="cardcontainer">
+                            <!-- ajax -->
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="container d-flex flex-nowrap bg-dark bg-opacity-25 mb-2" id="queuecontainer">
-                <div class="spinner-border text-light mt-4 mx-auto" style="display: none;" id="loader" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <div class=" d-flex flex-nowrap row row-cols-1 row-cols-md-3 g-4 mt-2 mb-4 px-4" id="cardcontainer">
-                    <!-- ajax -->
-                </div>
-            </div>
 
-             <div class="bg-light bg-opacity-25 m-2 p-2 rounded-3">
+
+            <div class="bg-light bg-opacity-25 m-2 p-2 rounded-3">
                 <h4 class="fw-light text-center">Upcoming Transactions</h5>
             </div>
             <div class="container bg-dark bg-opacity-25 my-2 py-4">
@@ -112,10 +150,47 @@ require("startsession.php");
             </div>
         </div>
 
+
     </div>
     <script>
         const dataUrl = "tablecontents/queue.data.php";
         const submitUrl = "tablecontents/queue.config.php";
+
+        $(async function () {
+            await click_drag('queuecontainer');
+            await load_active();
+        })
+
+        async function click_drag(container) {
+            const slider = document.getElementById(container);
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                $(slider).addClass('active');
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+                $(slider).removeClass('active');
+
+            });
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                $(slider).removeClass('active');
+            });
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const walk = x - startX;
+                slider.scrollLeft = scrollLeft - walk;
+                // console.log(walk);
+            });
+        }
 
 
         function show_toast(message) {
@@ -125,36 +200,67 @@ require("startsession.php");
             toast.show();
         }
 
-        $(document).ready(async function() {
-            await load();
+        let asc = false;
+
+        $(document).on('click', '#sortrecent', async function () {
+            if (asc === false) { 
+                $('#sortrecent').removeClass('bi-sort-up').addClass('bi-sort-down');
+                asc = true;
+                await load_cards(true); 
+            } else { 
+                $('#sortrecent').removeClass('bi-sort-down').addClass('bi-sort-up');
+                asc = false;
+                await load_cards(false);
+            }
+        });
+
+        async function load_active(){
+            try {
+                const active = await $.ajax({
+                    method: 'GET',
+                    url:dataUrl,
+                    data: '&getactive=true'
+                });
+
+                if(active){
+                    $('#activecontainer').empty();
+                    $('#activecontainer').append(active);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        $(document).ready(async function () {
+            await load_cards();
             await active_transaction();
             await fetch_data('newpending');
         });
 
-        $(document).on('click', '#dispatchedtechbtn', async function() {
+        $(document).on('click', '#dispatchedtechbtn', async function () {
             let id = $(this).data('tech');
             $('#deployedtransid').html(id);
             const deploy = await deployed_tech(id);
             // if (deploy) {
-                $('#technicians').modal('show');
+            $('#technicians').modal('show');
             // }
         });
 
-        $(document).on('hidden.bs.modal', '#technicians', function() {
+        $(document).on('hidden.bs.modal', '#technicians', function () {
             $('#technicianscont').empty();
         });
 
-        async function fetch_data(container){
+        async function fetch_data(container) {
             try {
                 const data = await $.ajax({
                     method: 'GET',
                     url: dataUrl,
-                    dataType:'html',
+                    dataType: 'html',
                     data: {
                         getdata: container,
                     }
                 });
-                if(data){
+                if (data) {
                     $(`#${container}`).html(data);
                     return true;
                 }
@@ -201,14 +307,15 @@ require("startsession.php");
             }
         }
 
-        async function load() {
+        async function load_cards(sort = null) {
             try {
                 const load = await $.ajax({
                     method: "GET",
                     url: dataUrl,
                     dataType: 'html',
                     data: {
-                        queue: 'true'
+                        queue: 'true',
+                        sort: sort
                     }
                 });
 
@@ -223,15 +330,15 @@ require("startsession.php");
         }
 
 
-        $(function() {
+        $(function () {
             let delay = null;
 
-            $('#searchbar').keyup(function() {
+            $('#searchbar').keyup(function () {
                 clearTimeout(delay);
                 $('#cardcontainer').empty();
                 $('#loader').attr('style', 'display: block !important');
 
-                delay = setTimeout(async function() {
+                delay = setTimeout(async function () {
                     var search = $('#searchbar').val();
                     try {
                         const searcheq = await $.ajax({
