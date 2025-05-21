@@ -82,14 +82,15 @@ require("startsession.php");
                             <i class="bi bi-sort-up h5 m-0 d-flex align-items-center" id='sortrecent'></i>
                         </button>
                         <h4 class="fw-light m-0 justify-content-center flex-grow-1 d-flex align-items-center">Recent Transactions</h5>
-                        <div style="width: 35px !important;" class="m-0 p-0"></div>
+                            <div style="width: 35px !important;" class="m-0 p-0"></div>
                     </div>
                 </div>
                 <!-- contents -->
                 <div class="row row-col-2 d-flex justify-content-around">
                     <!-- active dispatch -->
-                    <div class="col-4 d-flex bg-light bg-opacity-25 rounded" id="activecontainer">
-                        <!-- ajaxsdkljf -->
+                    <div class="col-4 bg-light bg-opacity-25 rounded" id="activecontainer">
+                        <!-- <input type="datetime-local" id="schedule" style="display: none !important;"> -->
+                        <div id="calendar"></div>
                     </div>
 
                     <!-- recents -->
@@ -152,14 +153,59 @@ require("startsession.php");
 
 
     </div>
+    <?php include('footer.links.php'); ?>
+
     <script>
         const dataUrl = "tablecontents/queue.data.php";
         const submitUrl = "tablecontents/queue.config.php";
 
-        $(async function () {
-            await click_drag('queuecontainer');
-            await load_active();
-        })
+        async function get_dates() {
+            try {
+                const dates = await $.ajax({
+                    method: 'GET',
+                    url: dataUrl,
+                    data: {
+                        dates: 'true'
+                    },
+                    dataType: 'json'
+                });
+
+                if (dates.length > 0) {
+                    console.log(dates);
+                    return dates;
+                } else {
+                    return [];
+                }
+            } catch (error) {
+                console.log(error);
+                return [];
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridFourWeek',
+                views: {
+                    dayGridFourWeek: {
+                        type: 'dayGridWeek',
+                        duration: {
+                            weeks: 4
+                        }
+                    }
+                },
+                headerToolbar: {
+                    left: 'prev,next',
+                    center: 'title',
+                    right: 'dayGridWeek,dayGridDay' // user can switch between the two
+                },
+                selectable: true
+            });
+            calendar.render();
+        });
+
 
         async function click_drag(container) {
             const slider = document.getElementById(container);
@@ -202,27 +248,27 @@ require("startsession.php");
 
         let asc = false;
 
-        $(document).on('click', '#sortrecent', async function () {
-            if (asc === false) { 
+        $(document).on('click', '#sortrecent', async function() {
+            if (asc === false) {
                 $('#sortrecent').removeClass('bi-sort-up').addClass('bi-sort-down');
                 asc = true;
-                await load_cards(true); 
-            } else { 
+                await load_cards(true);
+            } else {
                 $('#sortrecent').removeClass('bi-sort-down').addClass('bi-sort-up');
                 asc = false;
                 await load_cards(false);
             }
         });
 
-        async function load_active(){
+        async function load_active() {
             try {
                 const active = await $.ajax({
                     method: 'GET',
-                    url:dataUrl,
+                    url: dataUrl,
                     data: '&getactive=true'
                 });
 
-                if(active){
+                if (active) {
                     $('#activecontainer').empty();
                     $('#activecontainer').append(active);
                 }
@@ -231,13 +277,13 @@ require("startsession.php");
             }
         }
 
-        $(document).ready(async function () {
+        $(document).ready(async function() {
             await load_cards();
             await active_transaction();
             await fetch_data('newpending');
         });
 
-        $(document).on('click', '#dispatchedtechbtn', async function () {
+        $(document).on('click', '#dispatchedtechbtn', async function() {
             let id = $(this).data('tech');
             $('#deployedtransid').html(id);
             const deploy = await deployed_tech(id);
@@ -246,7 +292,7 @@ require("startsession.php");
             // }
         });
 
-        $(document).on('hidden.bs.modal', '#technicians', function () {
+        $(document).on('hidden.bs.modal', '#technicians', function() {
             $('#technicianscont').empty();
         });
 
@@ -330,15 +376,15 @@ require("startsession.php");
         }
 
 
-        $(function () {
+        $(function() {
             let delay = null;
 
-            $('#searchbar').keyup(function () {
+            $('#searchbar').keyup(function() {
                 clearTimeout(delay);
                 $('#cardcontainer').empty();
                 $('#loader').attr('style', 'display: block !important');
 
-                delay = setTimeout(async function () {
+                delay = setTimeout(async function() {
                     var search = $('#searchbar').val();
                     try {
                         const searcheq = await $.ajax({
@@ -367,7 +413,6 @@ require("startsession.php");
 
         });
     </script>
-    <?php include('footer.links.php'); ?>
 </body>
 
 </html>

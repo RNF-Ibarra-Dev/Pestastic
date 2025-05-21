@@ -1,14 +1,10 @@
 :root {
-  --main-bg-color: linear-gradient(
-    135deg,
-    rgba(71, 138, 126, 1) 40%,
-    rgba(112, 89, 18, 1) 84%
-  );
-  --secondary-bg-color: linear-gradient(
-    90deg,
-    rgba(71, 138, 126, 1) 30%,
-    rgba(173, 138, 28, 1) 84%
-  );
+  --main-bg-color: linear-gradient(135deg,
+      rgba(71, 138, 126, 1) 40%,
+      rgba(112, 89, 18, 1) 84%);
+  --secondary-bg-color: linear-gradient(90deg,
+      rgba(71, 138, 126, 1) 30%,
+      rgba(173, 138, 28, 1) 84%);
   --btn-bg-dropdown-color: rgba(87, 154, 146, 0.2);
   --btn-bg-color: rgba(113, 187, 178, 0.2);
   --night-bg-color: #16404d;
@@ -21,6 +17,7 @@ body {
   height: 100%;
   /*     overflow: visible;*/
 }
+
 .sa-content {
   overflow: auto !important;
 }
@@ -48,7 +45,7 @@ body {
   background-color: #0d495b;
 }
 
-::-webkit-scrollbar-thumb:hover{
+::-webkit-scrollbar-thumb:hover {
   background-color: #146778;
 
 
@@ -88,47 +85,35 @@ input:focus {
 
 .bg-dash {
   background: #2a7b9b;
-  background: -webkit-linear-gradient(
-    308deg,
-    rgba(42, 123, 155, 1) 0%,
-    rgba(87, 199, 133, 1) 79%,
-    rgba(148, 232, 109, 1) 99%
-  );
-  background: -moz-linear-gradient(
-    308deg,
-    rgba(42, 123, 155, 1) 0%,
-    rgba(87, 199, 133, 1) 79%,
-    rgba(148, 232, 109, 1) 99%
-  );
-  background: linear-gradient(
-    308deg,
-    rgba(42, 123, 155, 1) 0%,
-    rgba(87, 199, 133, 1) 79%,
-    rgba(148, 232, 109, 1) 99%
-  );
+  background: -webkit-linear-gradient(308deg,
+      rgba(42, 123, 155, 1) 0%,
+      rgba(87, 199, 133, 1) 79%,
+      rgba(148, 232, 109, 1) 99%);
+  background: -moz-linear-gradient(308deg,
+      rgba(42, 123, 155, 1) 0%,
+      rgba(87, 199, 133, 1) 79%,
+      rgba(148, 232, 109, 1) 99%);
+  background: linear-gradient(308deg,
+      rgba(42, 123, 155, 1) 0%,
+      rgba(87, 199, 133, 1) 79%,
+      rgba(148, 232, 109, 1) 99%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#2A7B9B", endColorstr="#94E86D", GradientType=0);
 }
 
 .bg-official {
   background: rgb(227, 207, 147);
-  background: -moz-linear-gradient(
-    0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 30%,
-    rgba(13, 73, 91, 1) 88%
-  );
-  background: -webkit-linear-gradient(
-    0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 30%,
-    rgba(13, 73, 91, 1) 88%
-  );
-  background: linear-gradient(
-    0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 30%,
-    rgba(13, 73, 91, 1) 88%
-  );
+  background: -moz-linear-gradient(0deg,
+      rgba(227, 207, 147, 1) 0%,
+      rgba(106, 145, 103, 1) 30%,
+      rgba(13, 73, 91, 1) 88%);
+  background: -webkit-linear-gradient(0deg,
+      rgba(227, 207, 147, 1) 0%,
+      rgba(106, 145, 103, 1) 30%,
+      rgba(13, 73, 91, 1) 88%);
+  background: linear-gradient(0deg,
+      rgba(227, 207, 147, 1) 0%,
+      rgba(106, 145, 103, 1) 30%,
+      rgba(13, 73, 91, 1) 88%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e3cf93", endColorstr="#0d495b", GradientType=1);
 }
 
@@ -145,69 +130,56 @@ input:focus {
 }
 
 .card-bg {
-  background: #6a9167; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to bottom,
-    #010211,
-    #0d495b,
-    #6a9167
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to bottom,
-    #010211,
-    #0d495b,
-    #6a9167
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #6a9167;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to bottom,
+      #010211,
+      #0d495b,
+      #6a9167);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom,
+      #010211,
+      #0d495b,
+      #6a9167);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   border-radius: 1.2rem !important;
 }
 
 .bg-official-login {
   background: rgb(227, 207, 147);
-  background: -moz-linear-gradient(
-    0deg,
-    #e3cf93 0%,
-    rgb(106, 145, 103) 11%,
-    rgb(13, 73, 91) 58%,
-    rgba(2, 21, 34, 1) 86%,
-    rgb(1, 2, 17) 95%
-  );
-  background: -webkit-linear-gradient(
-    0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 11%,
-    rgba(13, 73, 91, 1) 58%,
-    rgba(2, 21, 34, 1) 86%,
-    rgba(1, 2, 17, 1) 95%
-  );
-  background: linear-gradient(
-    0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 11%,
-    rgba(13, 73, 91, 1) 58%,
-    rgba(2, 21, 34, 1) 86%,
-    rgba(1, 2, 17, 1) 95%
-  );
+  background: -moz-linear-gradient(0deg,
+      #e3cf93 0%,
+      rgb(106, 145, 103) 11%,
+      rgb(13, 73, 91) 58%,
+      rgba(2, 21, 34, 1) 86%,
+      rgb(1, 2, 17) 95%);
+  background: -webkit-linear-gradient(0deg,
+      rgba(227, 207, 147, 1) 0%,
+      rgba(106, 145, 103, 1) 11%,
+      rgba(13, 73, 91, 1) 58%,
+      rgba(2, 21, 34, 1) 86%,
+      rgba(1, 2, 17, 1) 95%);
+  background: linear-gradient(0deg,
+      rgba(227, 207, 147, 1) 0%,
+      rgba(106, 145, 103, 1) 11%,
+      rgba(13, 73, 91, 1) 58%,
+      rgba(2, 21, 34, 1) 86%,
+      rgba(1, 2, 17, 1) 95%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e3cf93", endColorstr="#010211", GradientType=1);
 }
 
 .bg-modal-title {
   /* background: #4a7a74 !important; */
   background: rgb(74, 122, 112);
-  background: -moz-linear-gradient(
-    45deg,
-    rgba(74, 122, 112, 1) 50%,
-    rgba(2, 25, 33, 1) 100%
-  );
-  background: -webkit-linear-gradient(
-    45deg,
-    rgba(74, 122, 112, 1) 50%,
-    rgba(2, 25, 33, 1) 100%
-  );
-  background: linear-gradient(
-    45deg,
-    rgba(74, 122, 112, 1) 50%,
-    rgba(2, 25, 33, 1) 100%
-  );
+  background: -moz-linear-gradient(45deg,
+      rgba(74, 122, 112, 1) 50%,
+      rgba(2, 25, 33, 1) 100%);
+  background: -webkit-linear-gradient(45deg,
+      rgba(74, 122, 112, 1) 50%,
+      rgba(2, 25, 33, 1) 100%);
+  background: linear-gradient(45deg,
+      rgba(74, 122, 112, 1) 50%,
+      rgba(2, 25, 33, 1) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#4a7a70", endColorstr="#021921", GradientType=1);
 }
 
@@ -220,12 +192,10 @@ input:focus {
 }
 
 .btn-grad {
-  background-image: linear-gradient(
-    to right,
-    #134e5e 0%,
-    #71b280 51%,
-    #134e5e 100%
-  );
+  background-image: linear-gradient(to right,
+      #134e5e 0%,
+      #71b280 51%,
+      #134e5e 100%);
 }
 
 .btn-grad {
@@ -289,30 +259,24 @@ input[type="number"] {
 
 .bg-modal {
   background: rgb(227, 207, 147);
-  background: -moz-linear-gradient(
-    0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 11%,
-    rgba(13, 73, 91, 1) 58%,
-    rgba(2, 21, 34, 1) 86%,
-    rgba(1, 2, 17, 1) 95%
-  );
-  background: -webkit-linear-gradient(
-    0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 11%,
-    rgba(13, 73, 91, 1) 58%,
-    rgba(2, 21, 34, 1) 86%,
-    rgba(1, 2, 17, 1) 95%
-  );
-  background: linear-gradient(
-    0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 11%,
-    rgba(13, 73, 91, 1) 58%,
-    rgba(2, 21, 34, 1) 86%,
-    rgba(1, 2, 17, 1) 95%
-  );
+  background: -moz-linear-gradient(0deg,
+      rgba(227, 207, 147, 1) 0%,
+      rgba(106, 145, 103, 1) 11%,
+      rgba(13, 73, 91, 1) 58%,
+      rgba(2, 21, 34, 1) 86%,
+      rgba(1, 2, 17, 1) 95%);
+  background: -webkit-linear-gradient(0deg,
+      rgba(227, 207, 147, 1) 0%,
+      rgba(106, 145, 103, 1) 11%,
+      rgba(13, 73, 91, 1) 58%,
+      rgba(2, 21, 34, 1) 86%,
+      rgba(1, 2, 17, 1) 95%);
+  background: linear-gradient(0deg,
+      rgba(227, 207, 147, 1) 0%,
+      rgba(106, 145, 103, 1) 11%,
+      rgba(13, 73, 91, 1) 58%,
+      rgba(2, 21, 34, 1) 86%,
+      rgba(1, 2, 17, 1) 95%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e3cf93", endColorstr="#010211", GradientType=1);
   /* opacity: 0.5; */
 }
@@ -325,12 +289,12 @@ input[type="number"] {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.form-floating.form-custom > .form-control {
+.form-floating.form-custom>.form-control {
   background: transparent !important;
 }
 
-.form-floating.form-custom > label,
-.form-floating.form-custom > input {
+.form-floating.form-custom>label,
+.form-floating.form-custom>input {
   color: #fff !important;
 }
 
@@ -347,7 +311,7 @@ input[type="number"] {
   color: rgba(255, 255, 255, 0.6) !important;
 }
 
-.form-floating.form-custom > label::after {
+.form-floating.form-custom>label::after {
   background-color: transparent !important;
   color: #fff !important;
 }
@@ -491,4 +455,21 @@ table.os-table {
 .tech-table tbody tr:last-child td:last-child,
 .os-table tbody tr:last-child td:last-child {
   border-bottom-right-radius: 0.5rem;
+}
+
+#activecontainer>.flatpickr-calendar.animate.inline {
+  height: 90% !important;
+  margin: auto auto;
+}
+
+.has-transaction {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 150px;
+  bottom: 3px;
+  left: calc(50% - 1.5px);
+  content: " ";
+  display: block;
+  background: #3d8eb9;
 }

@@ -20,7 +20,7 @@ if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
             $customername = $row['customer_name'];
             $date = $row['treatment_date'];
             $treatment = $row['treatment'];
-            ?>
+?>
             <div class="col">
                 <div class="card bg-white bg-opacity-25 shadow-sm rounded-4 border-0 text-light px-3">
                     <div class="card-body px-2 border-light ">
@@ -41,7 +41,7 @@ if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
 
                 </div>
             </div>
-            <?php
+        <?php
         }
     }
 }
@@ -59,7 +59,7 @@ if (isset($_GET['ondispatch']) && $_GET['ondispatch'] === 'true') {
             $date = $row['treatment_date'];
             $treatment = $row['treatment'];
             $status = $row['transaction_status'];
-            ?>
+        ?>
             <div class="col">
                 <div class="card bg-white bg-opacity-25 rounded-4 border-0 text-light px-3">
                     <div class="card-body px-2 border-light ">
@@ -91,7 +91,7 @@ if (isset($_GET['ondispatch']) && $_GET['ondispatch'] === 'true') {
                     </div>
                 </div>
             </div>
-            <?php
+        <?php
         }
     }
 }
@@ -111,9 +111,9 @@ if (isset($_GET['dispatched']) && $_GET['dispatched'] === 'true') {
 
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            ?>
+        ?>
             <li class="list-group-item"><?= htmlspecialchars($row['tech_info']) ?></li>
-            <?php
+        <?php
         }
     } else {
         echo "<li class = 'list-group-item'>No assigned technicians for this transaction.</li>";
@@ -136,7 +136,7 @@ if (isset($_GET['getactive']) && $_GET['getactive'] === 'true') {
             $date = $row['treatment_date'];
             $treatment = $row['treatment'];
             $status = $row['transaction_status'];
-            ?>
+        ?>
             <div class="col align-content-center">
                 <div class="card bg-white bg-opacity-25 rounded-4 border-0 text-light px-3">
                     <div class="card-body px-2 border-light ">
@@ -154,11 +154,11 @@ if (isset($_GET['getactive']) && $_GET['getactive'] === 'true') {
                         <button type="button" id="dispatchedtechbtn"
                             class="btn btn-sidebar border-light rounded-pill text-light bg-transparent"
                             data-tech="<?= htmlspecialchars($id) ?>">Dispatched Technicians</button> <br>
-                        
+
                     </div>
                 </div>
             </div>
-            <?php
+        <?php
         }
     } else {
         ?>
@@ -169,6 +169,20 @@ if (isset($_GET['getactive']) && $_GET['getactive'] === 'true') {
                 </div>
             </div>
         </div>
-        <?php
+<?php
     }
+}
+
+if (isset($_GET['dates']) && $_GET['dates'] === 'true') {
+    $sql = "SELECT treatment_date FROM transactions;";
+    $result = mysqli_query($conn, $sql);
+
+    $dates = [];
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $dates[] = $row['treatment_date'];
+        }
+    } 
+    echo json_encode($dates);
+    exit();
 }
