@@ -97,17 +97,27 @@ require("startsession.php");
             </div>
 
 
-
-            <div class="bg-light bg-opacity-25 m-2 p-2 rounded-3">
-                <h4 class="fw-light text-center">Upcoming Transactions</h5>
-            </div>
-            <div class="container bg-dark bg-opacity-25 my-2 py-4">
-                <div class="row-cols-md-3 gx-4 row" id="ondispatch"></div>
-            </div>
-
-            <div class="container row row-cols-2 g-4">
-                <div class="col" id="newpending"></div>
-                <div class="col" id="recentvoid"></div>
+            <div class="container-fluid">
+                <div class="row d-flex justify-content-around">
+                    <div class="col-7">
+                        <div class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm">
+                            <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0">Weekly
+                                Transactions</h5>
+                        </div>
+                        <div class="container bg-light bg-opacity-25 rounded shadow-sm">
+                            <div id="upcoming"></div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="bg-light bg-opacity-25 my-2 p-2 shadow-sm rounded-pill">
+                            <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0">
+                                Ongoing Transactions</h4>
+                        </div>
+                        <div class="bg-light bg-opacity-25 shadow-sm rounded">
+                            <div id="ongoing"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="toast-container m-2 me-3 bottom-0 end-0">
@@ -155,48 +165,25 @@ require("startsession.php");
 
 
     </div>
-    <?php include('footer.links.php'); ?>
+    <?php
+    include('footer.links.php');
+    ?>
+
     <script>
         const dataUrl = "tablecontents/queue.data.php";
         const submitUrl = "tablecontents/queue.config.php";
 
-        async function get_dates() {
-            try {
-                const dates = await $.ajax({
-                    method: 'GET',
-                    url: dataUrl,
-                    data: {
-                        dates: 'true'
-                    },
-                    dataType: 'json'
-                });
-
-                if (dates.length > 0) {
-                    console.log(dates);
-                    return dates;
-                } else {
-                    return [];
-                }
-            } catch (error) {
-                console.log(error);
-                return [];
-            }
-        }
-
-
         document.addEventListener('DOMContentLoaded', () => {
-
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                start: 'title',
-                center: '',
-                end: 'prev,next',
+                headerToolbar: {
+                    start: 'prev',
+                    center: 'title',
+                    end: 'next'
+                },
                 height: 275,
                 selectable: true,
                 handleWindowResize: true,
-                themeSystem: 'bootstrap5',
-                prev: 'caret-left',
-                next: 'caret-right',
                 events: {
                     url: dataUrl,
                     method: 'GET',
@@ -209,12 +196,39 @@ require("startsession.php");
                     },
                     color: '#00000033',
                     textColor: 'white'
-                },
-                dateClick: function(info){
-                    console.log(info);
-                    console.log(info.jsEvent.textContent);
                 }
             });
+
+            var upcomingid = document.getElementById('upcoming');
+            var upcoming = new FullCalendar.Calendar(upcomingid, {
+                initialView: 'dayGridWeek',
+                headerToolbar: {
+                    start: 'prev',
+                    center: 'title',
+                    end: 'next'
+                },
+                handleWindowResize: true,
+                events: {
+                    url: dataUrl,
+                    method: 'GET',
+                    extraParams: {
+                        transactions: 'true',
+                        data: 'titleonly'
+                    },
+                    failure: function (e) {
+                        alert('Transaction event fetch failed.');
+                        console.log(e);
+                    },
+                    color: '#00000033',
+                    textColor: 'white'
+                },
+                eventContent: function (arg) {
+                    return { html: arg.event.title };
+                },
+                height: 250
+            });
+
+            upcoming.render();
             calendar.render();
         });
 
@@ -250,7 +264,6 @@ require("startsession.php");
             });
         }
 
-
         function show_toast(message) {
             $('#toastmsg').html(message);
             var toastid = $('#toast');
@@ -259,7 +272,6 @@ require("startsession.php");
         }
 
         let asc = false;
-
         $(document).on('click', '#sortrecent', async function () {
             if (asc === false) {
                 $('#sortrecent').removeClass('bi-sort-up').addClass('bi-sort-down');
@@ -272,28 +284,11 @@ require("startsession.php");
             }
         });
 
-        async function load_active() {
-            try {
-                const active = await $.ajax({
-                    method: 'GET',
-                    url: dataUrl,
-                    data: '&getactive=true'
-                });
-
-                if (active) {
-                    $('#activecontainer').empty();
-                    $('#activecontainer').append(active);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        }
 
         $(document).ready(async function () {
             await load_cards();
-            await active_transaction();
-            await fetch_data('newpending');
-            await click_drag('queuecontainer')
+            await click_drag('queuecontainer');
+            await fetch_data('ongoing');
         });
 
         $(document).on('click', '#dispatchedtechbtn', async function () {
@@ -320,7 +315,7 @@ require("startsession.php");
                     }
                 });
                 if (data) {
-                    $(`#${container}`).html(data);
+                    $(`#${container}`).empty().html(data);
                     return true;
                 }
             } catch (error) {
@@ -348,23 +343,6 @@ require("startsession.php");
             }
         }
 
-        async function active_transaction() {
-            try {
-                const ondispatch = await $.ajax({
-                    method: 'GET',
-                    url: dataUrl,
-                    dataType: 'html',
-                    data: "&ondispatch=true"
-                });
-
-                if (ondispatch) {
-                    $('#ondispatch').html(ondispatch);
-                    return true;
-                }
-            } catch (error) {
-                return error;
-            }
-        }
 
         async function load_cards(sort = null) {
             try {
