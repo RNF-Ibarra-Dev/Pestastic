@@ -178,6 +178,33 @@ function get_chem($conn, $active = null)
         <?php
     }
 }
+function get_chem_edit($conn, $active = null)
+{
+    $active = $active == null ? '' : $active;
+    $sql = 'SELECT * FROM chemicals ORDER BY id DESC;';
+    $result = mysqli_query($conn, $sql);
+
+    if (!$result) {
+        echo 'Error fetching chem data' . mysqli_error($conn);
+        return;
+    }
+
+    echo "<option value='#' selected>Select Chemical</option>";
+    echo "<hr class='dropdown-divider'>";
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $id = $row['id'];
+        $brand = $row['brand'];
+        $name = $row['name'];
+        $level = $row['chemLevel'];
+        $req = $row['request']
+        ?>
+        <option value="<?= htmlspecialchars($id)?>" <?= $id == $active ? 'selected' : '' ?>>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars($level) . "ml"?><?= $req == 1 ? " | Chemical Under Review" : ''?>
+        </option>
+        <?php
+    }
+}
 function get_more_chem($conn, $rowNum)
 {
     $sql = 'SELECT * FROM chemicals';
@@ -516,7 +543,7 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
                     <label for="edit-chemBrandUsed-<?= $id ?>" class="form-label fw-light" id="edit-chemBrandUsed-label">Chemical
                         Used:</label>
                     <select id="edit-chemBrandUsed-<?= $id ?>" name="edit_chemBrandUsed[]" class="form-select">
-                        <?php get_chem($conn, $id); ?>
+                        <?php get_chem_edit($conn, $id); ?>
                     </select>
                 </div>
 

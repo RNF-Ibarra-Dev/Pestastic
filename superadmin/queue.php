@@ -59,14 +59,6 @@ require("startsession.php");
             <?php include('navbar.php'); ?>
             <!-- content -->
 
-            <div class="hstack gap-3 mt-4 mx-3">
-                <input class="form-control form-custom me-auto p-2 text-light" type="search" placeholder="Search . . ."
-                    id="searchbar" name="searchforafuckingchemical" autocomplete="one-time-code">
-                <div class="vr"></div>
-                <button type="button" id="loadChem" class="btn btn-sidebar text-light py-3 px-4" data-bs-toggle="modal"
-                    data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
-                        class="bi bi-plus-square"></i></button>
-            </div>
 
 
             <div class="container-fluid">
@@ -127,6 +119,15 @@ require("startsession.php");
                             aria-label="Close"></button>
                     </div>
                 </div>
+            </div>
+
+            <div class="hstack gap-3 mt-4 mx-3">
+                <input class="form-control form-custom me-auto p-2 text-light" type="search" placeholder="Search . . ."
+                    id="searchbar" name="searchforafuckingchemical" autocomplete="one-time-code">
+                <div class="vr"></div>
+                <button type="button" id="loadChem" class="btn btn-sidebar text-light py-3 px-4" data-bs-toggle="modal"
+                    data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
+                        class="bi bi-plus-square"></i></button>
             </div>
         </main>
 
