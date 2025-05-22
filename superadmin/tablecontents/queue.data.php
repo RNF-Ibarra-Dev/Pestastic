@@ -186,3 +186,21 @@ if (isset($_GET['dates']) && $_GET['dates'] === 'true') {
     echo json_encode($dates);
     exit();
 }
+
+if(isset($_GET['transactions']) && $_GET['transactions'] === 'true'){
+    $sql = "SELECT treatment_date, id FROM transactions WHERE transaction_status != 'Voided';";
+    $result = mysqli_query($conn, $sql);
+
+    $dates = [];
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $dates[] = [
+                'title'=> $row['id'],
+                'start'=> $row['treatment_date'],
+                'end' => $row['treatment_date']
+            ];
+        }
+    } 
+    echo json_encode($dates);
+    exit();
+}

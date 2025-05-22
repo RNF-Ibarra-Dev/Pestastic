@@ -1,10 +1,14 @@
 :root {
-  --main-bg-color: linear-gradient(135deg,
-      rgba(71, 138, 126, 1) 40%,
-      rgba(112, 89, 18, 1) 84%);
-  --secondary-bg-color: linear-gradient(90deg,
-      rgba(71, 138, 126, 1) 30%,
-      rgba(173, 138, 28, 1) 84%);
+  --main-bg-color: linear-gradient(
+    135deg,
+    rgba(71, 138, 126, 1) 40%,
+    rgba(112, 89, 18, 1) 84%
+  );
+  --secondary-bg-color: linear-gradient(
+    90deg,
+    rgba(71, 138, 126, 1) 30%,
+    rgba(173, 138, 28, 1) 84%
+  );
   --btn-bg-dropdown-color: rgba(87, 154, 146, 0.2);
   --btn-bg-color: rgba(113, 187, 178, 0.2);
   --night-bg-color: #16404d;
@@ -47,8 +51,6 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: #146778;
-
-
 }
 
 select:focus {
@@ -85,35 +87,47 @@ input:focus {
 
 .bg-dash {
   background: #2a7b9b;
-  background: -webkit-linear-gradient(308deg,
-      rgba(42, 123, 155, 1) 0%,
-      rgba(87, 199, 133, 1) 79%,
-      rgba(148, 232, 109, 1) 99%);
-  background: -moz-linear-gradient(308deg,
-      rgba(42, 123, 155, 1) 0%,
-      rgba(87, 199, 133, 1) 79%,
-      rgba(148, 232, 109, 1) 99%);
-  background: linear-gradient(308deg,
-      rgba(42, 123, 155, 1) 0%,
-      rgba(87, 199, 133, 1) 79%,
-      rgba(148, 232, 109, 1) 99%);
+  background: -webkit-linear-gradient(
+    308deg,
+    rgba(42, 123, 155, 1) 0%,
+    rgba(87, 199, 133, 1) 79%,
+    rgba(148, 232, 109, 1) 99%
+  );
+  background: -moz-linear-gradient(
+    308deg,
+    rgba(42, 123, 155, 1) 0%,
+    rgba(87, 199, 133, 1) 79%,
+    rgba(148, 232, 109, 1) 99%
+  );
+  background: linear-gradient(
+    308deg,
+    rgba(42, 123, 155, 1) 0%,
+    rgba(87, 199, 133, 1) 79%,
+    rgba(148, 232, 109, 1) 99%
+  );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#2A7B9B", endColorstr="#94E86D", GradientType=0);
 }
 
 .bg-official {
   background: rgb(227, 207, 147);
-  background: -moz-linear-gradient(0deg,
-      rgba(227, 207, 147, 1) 0%,
-      rgba(106, 145, 103, 1) 30%,
-      rgba(13, 73, 91, 1) 88%);
-  background: -webkit-linear-gradient(0deg,
-      rgba(227, 207, 147, 1) 0%,
-      rgba(106, 145, 103, 1) 30%,
-      rgba(13, 73, 91, 1) 88%);
-  background: linear-gradient(0deg,
-      rgba(227, 207, 147, 1) 0%,
-      rgba(106, 145, 103, 1) 30%,
-      rgba(13, 73, 91, 1) 88%);
+  background: -moz-linear-gradient(
+    0deg,
+    rgba(227, 207, 147, 1) 0%,
+    rgba(106, 145, 103, 1) 30%,
+    rgba(13, 73, 91, 1) 88%
+  );
+  background: -webkit-linear-gradient(
+    0deg,
+    rgba(227, 207, 147, 1) 0%,
+    rgba(106, 145, 103, 1) 30%,
+    rgba(13, 73, 91, 1) 88%
+  );
+  background: linear-gradient(
+    0deg,
+    rgba(227, 207, 147, 1) 0%,
+    rgba(106, 145, 103, 1) 30%,
+    rgba(13, 73, 91, 1) 88%
+  );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e3cf93", endColorstr="#0d495b", GradientType=1);
 }
 
@@ -132,54 +146,60 @@ input:focus {
 .card-bg {
   background: #6a9167;
   /* fallback for old browsers */
-  background: -webkit-linear-gradient(to bottom,
-      #010211,
-      #0d495b,
-      #6a9167);
+  background: -webkit-linear-gradient(to bottom, #010211, #0d495b, #6a9167);
   /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to bottom,
-      #010211,
-      #0d495b,
-      #6a9167);
+  background: linear-gradient(to bottom, #010211, #0d495b, #6a9167);
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   border-radius: 1.2rem !important;
 }
 
 .bg-official-login {
   background: rgb(227, 207, 147);
-  background: -moz-linear-gradient(0deg,
-      #e3cf93 0%,
-      rgb(106, 145, 103) 11%,
-      rgb(13, 73, 91) 58%,
-      rgba(2, 21, 34, 1) 86%,
-      rgb(1, 2, 17) 95%);
-  background: -webkit-linear-gradient(0deg,
-      rgba(227, 207, 147, 1) 0%,
-      rgba(106, 145, 103, 1) 11%,
-      rgba(13, 73, 91, 1) 58%,
-      rgba(2, 21, 34, 1) 86%,
-      rgba(1, 2, 17, 1) 95%);
-  background: linear-gradient(0deg,
-      rgba(227, 207, 147, 1) 0%,
-      rgba(106, 145, 103, 1) 11%,
-      rgba(13, 73, 91, 1) 58%,
-      rgba(2, 21, 34, 1) 86%,
-      rgba(1, 2, 17, 1) 95%);
+  background: -moz-linear-gradient(
+    0deg,
+    #e3cf93 0%,
+    rgb(106, 145, 103) 11%,
+    rgb(13, 73, 91) 58%,
+    rgba(2, 21, 34, 1) 86%,
+    rgb(1, 2, 17) 95%
+  );
+  background: -webkit-linear-gradient(
+    0deg,
+    rgba(227, 207, 147, 1) 0%,
+    rgba(106, 145, 103, 1) 11%,
+    rgba(13, 73, 91, 1) 58%,
+    rgba(2, 21, 34, 1) 86%,
+    rgba(1, 2, 17, 1) 95%
+  );
+  background: linear-gradient(
+    0deg,
+    rgba(227, 207, 147, 1) 0%,
+    rgba(106, 145, 103, 1) 11%,
+    rgba(13, 73, 91, 1) 58%,
+    rgba(2, 21, 34, 1) 86%,
+    rgba(1, 2, 17, 1) 95%
+  );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e3cf93", endColorstr="#010211", GradientType=1);
 }
 
 .bg-modal-title {
   /* background: #4a7a74 !important; */
   background: rgb(74, 122, 112);
-  background: -moz-linear-gradient(45deg,
-      rgba(74, 122, 112, 1) 50%,
-      rgba(2, 25, 33, 1) 100%);
-  background: -webkit-linear-gradient(45deg,
-      rgba(74, 122, 112, 1) 50%,
-      rgba(2, 25, 33, 1) 100%);
-  background: linear-gradient(45deg,
-      rgba(74, 122, 112, 1) 50%,
-      rgba(2, 25, 33, 1) 100%);
+  background: -moz-linear-gradient(
+    45deg,
+    rgba(74, 122, 112, 1) 50%,
+    rgba(2, 25, 33, 1) 100%
+  );
+  background: -webkit-linear-gradient(
+    45deg,
+    rgba(74, 122, 112, 1) 50%,
+    rgba(2, 25, 33, 1) 100%
+  );
+  background: linear-gradient(
+    45deg,
+    rgba(74, 122, 112, 1) 50%,
+    rgba(2, 25, 33, 1) 100%
+  );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#4a7a70", endColorstr="#021921", GradientType=1);
 }
 
@@ -192,10 +212,12 @@ input:focus {
 }
 
 .btn-grad {
-  background-image: linear-gradient(to right,
-      #134e5e 0%,
-      #71b280 51%,
-      #134e5e 100%);
+  background-image: linear-gradient(
+    to right,
+    #134e5e 0%,
+    #71b280 51%,
+    #134e5e 100%
+  );
 }
 
 .btn-grad {
@@ -259,24 +281,30 @@ input[type="number"] {
 
 .bg-modal {
   background: rgb(227, 207, 147);
-  background: -moz-linear-gradient(0deg,
-      rgba(227, 207, 147, 1) 0%,
-      rgba(106, 145, 103, 1) 11%,
-      rgba(13, 73, 91, 1) 58%,
-      rgba(2, 21, 34, 1) 86%,
-      rgba(1, 2, 17, 1) 95%);
-  background: -webkit-linear-gradient(0deg,
-      rgba(227, 207, 147, 1) 0%,
-      rgba(106, 145, 103, 1) 11%,
-      rgba(13, 73, 91, 1) 58%,
-      rgba(2, 21, 34, 1) 86%,
-      rgba(1, 2, 17, 1) 95%);
-  background: linear-gradient(0deg,
-      rgba(227, 207, 147, 1) 0%,
-      rgba(106, 145, 103, 1) 11%,
-      rgba(13, 73, 91, 1) 58%,
-      rgba(2, 21, 34, 1) 86%,
-      rgba(1, 2, 17, 1) 95%);
+  background: -moz-linear-gradient(
+    0deg,
+    rgba(227, 207, 147, 1) 0%,
+    rgba(106, 145, 103, 1) 11%,
+    rgba(13, 73, 91, 1) 58%,
+    rgba(2, 21, 34, 1) 86%,
+    rgba(1, 2, 17, 1) 95%
+  );
+  background: -webkit-linear-gradient(
+    0deg,
+    rgba(227, 207, 147, 1) 0%,
+    rgba(106, 145, 103, 1) 11%,
+    rgba(13, 73, 91, 1) 58%,
+    rgba(2, 21, 34, 1) 86%,
+    rgba(1, 2, 17, 1) 95%
+  );
+  background: linear-gradient(
+    0deg,
+    rgba(227, 207, 147, 1) 0%,
+    rgba(106, 145, 103, 1) 11%,
+    rgba(13, 73, 91, 1) 58%,
+    rgba(2, 21, 34, 1) 86%,
+    rgba(1, 2, 17, 1) 95%
+  );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e3cf93", endColorstr="#010211", GradientType=1);
   /* opacity: 0.5; */
 }
@@ -289,12 +317,12 @@ input[type="number"] {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.form-floating.form-custom>.form-control {
+.form-floating.form-custom > .form-control {
   background: transparent !important;
 }
 
-.form-floating.form-custom>label,
-.form-floating.form-custom>input {
+.form-floating.form-custom > label,
+.form-floating.form-custom > input {
   color: #fff !important;
 }
 
@@ -311,7 +339,7 @@ input[type="number"] {
   color: rgba(255, 255, 255, 0.6) !important;
 }
 
-.form-floating.form-custom>label::after {
+.form-floating.form-custom > label::after {
   background-color: transparent !important;
   color: #fff !important;
 }
@@ -457,7 +485,7 @@ table.os-table {
   border-bottom-right-radius: 0.5rem;
 }
 
-#activecontainer>.flatpickr-calendar.animate.inline {
+#activecontainer > .flatpickr-calendar.animate.inline {
   height: 90% !important;
   margin: auto auto;
 }
@@ -472,4 +500,48 @@ table.os-table {
   content: " ";
   display: block;
   background: #3d8eb9;
+}
+
+.fc .fc-col-header-cell-cushion,
+.fc .fc-daygrid-day-number {
+  text-decoration: none !important;
+  color: #fff !important;
+}
+
+.fc .fc-scroller-harness-liquid ::-webkit-scrollbar-track {
+  /* -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); */
+  background-color: #f5f5f5;
+}
+
+.fc .fc-scroller-harness-liquid ::-webkit-scrollbar {
+  width: 12px;
+  background-color: #f5f5f5;
+}
+
+.fc .fc-scroller-harness-liquid ::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #9f9f9f;
+}
+
+.fc .fc-button-group > .fc-button,
+.fc .fc-button-primary,
+.fc .fc-button-primary:disabled,
+.fc .fc-button-primary {
+  background: #ffffff52;
+  border: 1px solid white;
+  border-radius: 0.6rem;
+}
+
+.fc .fc-button-primary:disabled {
+  border: none !important;
+}
+
+.fc .fc-button-group > .fc-button:hover,
+.fc .fc-button:not(:disabled):hover {
+  background: #ffffff87;
+  border: 1px solid white;
+}
+
+.fc .fc-toolbar.fc-header-toolbar{
+  margin: 0.80rem 0;
 }

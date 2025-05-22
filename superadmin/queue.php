@@ -72,23 +72,24 @@ require("startsession.php");
             <div class="container-fluid">
                 <!-- headers -->
                 <div class="row row-col-2 d-flex justify-content-around">
-                    <div class="col-4 bg-light bg-opacity-25 rounded-pill p-2 m-2">
-                        <h4 class="fw-light justify-content-center m-0 d-flex align-items-center">Active Transaction
+                    <div class="col-4 bg-light bg-opacity-25 shadow-sm rounded-pill p-2 m-2">
+                        <h4 class="fw-light justify-content-center m-0 d-flex align-items-center">Transaction Calendar
                             </h5>
                     </div>
                     <div
-                        class="col-7 m-2 d-flex border-light bg-light bg-opacity-25 shadow p-2 align-middle rounded-pill">
+                        class="col-7 m-2 d-flex border-light bg-light bg-opacity-25 shadow-sm p-2 align-middle rounded-pill">
                         <button type="button" class="btn btn-sidebar rounded-pill me-2 text-light">
                             <i class="bi bi-sort-up h5 m-0 d-flex align-items-center" id='sortrecent'></i>
                         </button>
-                        <h4 class="fw-light m-0 justify-content-center flex-grow-1 d-flex align-items-center">Recent Transactions</h5>
+                        <h4 class="fw-light m-0 justify-content-center flex-grow-1 d-flex align-items-center">Recent
+                            Transactions</h5>
                             <div style="width: 35px !important;" class="m-0 p-0"></div>
                     </div>
                 </div>
                 <!-- contents -->
                 <div class="row row-col-2 d-flex justify-content-around">
                     <!-- active dispatch -->
-                    <div class="col-4 bg-light bg-opacity-25 rounded" id="activecontainer">
+                    <div class="col-4 bg-light shadow-sm bg-opacity-25 rounded" id="activecontainer">
                         <!-- <input type="datetime-local" id="schedule" style="display: none !important;"> -->
                         <div id="calendar"></div>
                     </div>
@@ -154,7 +155,6 @@ require("startsession.php");
 
     </div>
     <?php include('footer.links.php'); ?>
-
     <script>
         const dataUrl = "tablecontents/queue.data.php";
         const submitUrl = "tablecontents/queue.config.php";
@@ -187,21 +187,32 @@ require("startsession.php");
 
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridFourWeek',
-                views: {
-                    dayGridFourWeek: {
-                        type: 'dayGridWeek',
-                        duration: {
-                            weeks: 4
-                        }
-                    }
+                start: 'title',
+                center: '',
+                end: 'prev,next',
+                height: 275,
+                selectable: true,
+                handleWindowResize: true,
+                themeSystem: 'bootstrap5',
+                prev: 'caret-left',
+                next: 'caret-right',
+                events: {
+                    url: dataUrl,
+                    method: 'GET',
+                    extraParams: {
+                        transactions: 'true'
+                    },
+                    failure: function (e) {
+                        alert('Transaction event fetch failed.');
+                        console.log(e);
+                    },
+                    color: '#00000033',
+                    textColor: 'white'
                 },
-                headerToolbar: {
-                    left: 'prev,next',
-                    center: 'title',
-                    right: 'dayGridWeek,dayGridDay' // user can switch between the two
-                },
-                selectable: true
+                dateClick: function(info){
+                    console.log(info);
+                    console.log(info.jsEvent.textContent);
+                }
             });
             calendar.render();
         });
@@ -248,7 +259,7 @@ require("startsession.php");
 
         let asc = false;
 
-        $(document).on('click', '#sortrecent', async function() {
+        $(document).on('click', '#sortrecent', async function () {
             if (asc === false) {
                 $('#sortrecent').removeClass('bi-sort-up').addClass('bi-sort-down');
                 asc = true;
@@ -277,13 +288,14 @@ require("startsession.php");
             }
         }
 
-        $(document).ready(async function() {
+        $(document).ready(async function () {
             await load_cards();
             await active_transaction();
             await fetch_data('newpending');
+            await click_drag('queuecontainer')
         });
 
-        $(document).on('click', '#dispatchedtechbtn', async function() {
+        $(document).on('click', '#dispatchedtechbtn', async function () {
             let id = $(this).data('tech');
             $('#deployedtransid').html(id);
             const deploy = await deployed_tech(id);
@@ -292,7 +304,7 @@ require("startsession.php");
             // }
         });
 
-        $(document).on('hidden.bs.modal', '#technicians', function() {
+        $(document).on('hidden.bs.modal', '#technicians', function () {
             $('#technicianscont').empty();
         });
 
@@ -376,15 +388,15 @@ require("startsession.php");
         }
 
 
-        $(function() {
+        $(function () {
             let delay = null;
 
-            $('#searchbar').keyup(function() {
+            $('#searchbar').keyup(function () {
                 clearTimeout(delay);
                 $('#cardcontainer').empty();
                 $('#loader').attr('style', 'display: block !important');
 
-                delay = setTimeout(async function() {
+                delay = setTimeout(async function () {
                     var search = $('#searchbar').val();
                     try {
                         const searcheq = await $.ajax({
