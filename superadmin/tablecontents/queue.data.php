@@ -5,7 +5,7 @@ require_once('../../includes/functions.inc.php');
 if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
     $sort = $_GET['sort'];
     $sql = "SELECT * FROM transactions 
-    WHERE transaction_status = 'Completed'
+    WHERE transaction_status = 'Accepted' AND treatment_date >= CURDATE()
     ORDER BY treatment_date";
     if ($sort === 'true') {
         $sql .= " ASC;";
@@ -20,28 +20,42 @@ if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
             $customername = $row['customer_name'];
             $date = $row['treatment_date'];
             $treatment = $row['treatment'];
-            ?>
+?>
             <div class="col">
-                <div class="card bg-white bg-opacity-25 shadow-sm rounded-4 border-0 text-light px-3">
-                    <div class="card-body px-2 border-light ">
+                <div class="card bg-white bg-opacity-25 shadow-sm rounded border-0 text-light p-0">
+                    <div class="card-body px-2 border-light pb-0 mx-3">
                         <h5 class="card-title">Transaction <?= htmlspecialchars($id) ?></h5>
                         <hr>
-                        <p class="card-text lh-lg">
+                        <p class="card-text lh-lg mb-3">
                             <strong>Customer:</strong> <?= htmlspecialchars($customername) ?><br>
                             <strong>Address:</strong> N/A <br>
                             <strong>Treatment Date:</strong> <span
                                 class="ms-1 text-danger-emphasis"><?= htmlspecialchars($date) ?></span><br>
                             <strong>Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
                         </p>
-                        <button type="button" id="dispatchedtechbtn"
-                            class="btn btn-sidebar border-light rounded-pill text-light bg-transparent"
-                            data-tech="<?= htmlspecialchars($id) ?>">Dispatched Technicians</button>
-
+                    </div>
+                    <div class="card-footer border-top-0 p-0">
+                        <ul class="list-group list-group-flush d-flex justify-content-center bg-light bg-opacity-25 rounded-bottom" style="--bs-list-group-bg: none !important;">
+                            <li class="list-group-item d-flex p-0 m-0">
+                                <button type="button" id="dispatchedtechbtn"
+                                    class="btn btn-sidebar mx-auto w-100 rounded-0 text-light bg-opacity-0"
+                                    data-tech="<?= htmlspecialchars($id) ?>">Assigned Technicians</button>
+                            </li>
+                            <li class="list-group-item d-flex p-0 m-0">
+                                <button type="button" id="resched"
+                                    class="btn btn-sidebar mx-auto w-100 rounded-0 text-light bg-opacity-0" data-resched="<?= htmlspecialchars($id) ?>">Reschedule Transaction</button>
+                            </li>
+                            <li class=" list-group-item d-flex p-0 m-0">
+                                <button type="button" id="Cancel"
+                                    class="btn btn-sidebar mx-auto w-100 text-light rounded-top-0 bg-opacity-0"
+                                    data-cancel="<?= htmlspecialchars($id) ?>">Cancel Transaction</button>
+                            </li>
+                        </ul>
                     </div>
 
                 </div>
             </div>
-            <?php
+        <?php
         }
     }
 }
@@ -59,7 +73,7 @@ if (isset($_GET['ondispatch']) && $_GET['ondispatch'] === 'true') {
             $date = $row['treatment_date'];
             $treatment = $row['treatment'];
             $status = $row['transaction_status'];
-            ?>
+        ?>
             <div class="col">
                 <div class="card bg-white bg-opacity-25 rounded-4 border-0 text-light px-3">
                     <div class="card-body px-2 border-light ">
@@ -91,7 +105,7 @@ if (isset($_GET['ondispatch']) && $_GET['ondispatch'] === 'true') {
                     </div>
                 </div>
             </div>
-            <?php
+        <?php
         }
     }
 }
@@ -111,9 +125,9 @@ if (isset($_GET['dispatched']) && $_GET['dispatched'] === 'true') {
 
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            ?>
+        ?>
             <li class="list-group-item"><?= htmlspecialchars($row['tech_info']) ?></li>
-            <?php
+        <?php
         }
     } else {
         echo "<li class = 'list-group-item'>No assigned technicians for this transaction.</li>";
@@ -131,7 +145,7 @@ if (isset($_GET['getactive']) && $_GET['getactive'] === 'true') {
             $date = $row['treatment_date'];
             $treatment = $row['treatment'];
             $status = $row['transaction_status'];
-            ?>
+        ?>
             <div class="col align-content-center">
                 <div class="card bg-white bg-opacity-25 rounded-4 border-0 text-light px-3">
                     <div class="card-body px-2 border-light ">
@@ -153,7 +167,7 @@ if (isset($_GET['getactive']) && $_GET['getactive'] === 'true') {
                     </div>
                 </div>
             </div>
-            <?php
+        <?php
         }
     } else {
         ?>
@@ -211,33 +225,33 @@ if (isset($_GET['getdata']) && $_GET['getdata'] === 'ongoing') {
             $date = $row['treatment_date'];
             $treatment = $row['treatment'];
             $status = $row['transaction_status'];
-            ?>
-                <div class="card bg-white bg-opacity-25 rounded border-0 text-light px-3">
-                    <div class="card-body px-2 border-light ">
-                        <h5 class="card-title align-middle">Transaction
-                            <?= htmlspecialchars($id) ?>
-                            <?= $status === 'Pending' ? "<i class='bi bi-dot text-warning fs-4'></i>" : "<i class='bi bi-dot text-success fs-4'></i>" ?>
-                        </h5>
-                        <hr>
-                        <p class="card-text lh-lg">
-                            <strong>Customer:</strong> <?= htmlspecialchars($customername) ?><br>
-                            <strong>Address:</strong> N/A <br>
-                            <strong>Follow up Date:</strong> Not set<br>
-                            <strong>Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
-                        </p>
-                        <button type="button" id="dispatchedtechbtn"
-                            class="btn btn-sidebar border-light rounded-pill text-light bg-transparent"
-                            data-tech="<?= htmlspecialchars($id) ?>">Dispatched Technicians</button> <br>
+        ?>
+            <div class="card bg-white bg-opacity-25 rounded border-0 text-light px-3">
+                <div class="card-body px-2 border-light ">
+                    <h5 class="card-title align-middle">Transaction
+                        <?= htmlspecialchars($id) ?>
+                        <?= $status === 'Pending' ? "<i class='bi bi-dot text-warning fs-4'></i>" : "<i class='bi bi-dot text-success fs-4'></i>" ?>
+                    </h5>
+                    <hr>
+                    <p class="card-text lh-lg">
+                        <strong>Customer:</strong> <?= htmlspecialchars($customername) ?><br>
+                        <strong>Address:</strong> N/A <br>
+                        <strong>Follow up Date:</strong> Not set<br>
+                        <strong>Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
+                    </p>
+                    <button type="button" id="dispatchedtechbtn"
+                        class="btn btn-sidebar border-light rounded-pill text-light bg-transparent"
+                        data-tech="<?= htmlspecialchars($id) ?>">Dispatched Technicians</button> <br>
 
-                    </div>
                 </div>
-            <?php
+            </div>
+        <?php
         }
     } else {
         ?>
-            <div class="card bg-white bg-opacity-25 rounded border-0 text-light px-3">
-                    <h5 class="fw-light text-center m-0 p-4">No Schedule for Today. Schedule Immediate Transaction?</h5>
-            </div>
-        <?php
+        <div class="card bg-white bg-opacity-25 rounded border-0 text-light px-3">
+            <h5 class="fw-light text-center m-0 p-4">No Schedule for Today. Schedule Immediate Transaction?</h5>
+        </div>
+<?php
     }
 }

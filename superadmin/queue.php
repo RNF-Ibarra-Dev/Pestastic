@@ -73,7 +73,7 @@ require("startsession.php");
                         <button type="button" class="btn btn-sidebar rounded-pill me-2 text-light">
                             <i class="bi bi-sort-up h5 m-0 d-flex align-items-center" id='sortrecent'></i>
                         </button>
-                        <h4 class="fw-light m-0 justify-content-center flex-grow-1 d-flex align-items-center">Recent
+                        <h4 class="fw-light m-0 justify-content-center flex-grow-1 d-flex align-items-center">Upcoming
                             Transactions</h5>
                             <div style="width: 35px !important;" class="m-0 p-0"></div>
                     </div>
@@ -88,7 +88,7 @@ require("startsession.php");
 
                     <!-- recents -->
                     <div class="col-7 d-flex flex-nowrap bg-light shadow-sm rounded bg-opacity-25" id="queuecontainer">
-                        <div class=" d-flex flex-nowrap w-75 row row-cols-1 row-cols-md-3 g-4 mt-2 mb-4 px-4"
+                        <div class=" d-flex flex-nowrap w-75 row row-cols-1 row-cols-md-3 g-4 mt-2 mb-4 px-4 align-items-center"
                             id="cardcontainer">
                             <!-- ajax -->
                         </div>
@@ -181,7 +181,7 @@ require("startsession.php");
                     center: 'title',
                     end: 'next'
                 },
-                height: 275,
+                height: 400,
                 selectable: true,
                 handleWindowResize: true,
                 events: {
