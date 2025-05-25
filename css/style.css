@@ -545,3 +545,17 @@ table.os-table {
 .fc .fc-toolbar.fc-header-toolbar{
   margin: 0.80rem 0;
 }
+
+.text-custom-success{
+  color: #b3ffb2 !important;
+}
+
+.fc-event-title-container{
+  padding: 0 0.25rem !important;
+}
+
+.fc-event-main{
+  /* padding: 0 0.25rem !important; */
+  display: flex !important;
+  justify-content: center !important;
+}

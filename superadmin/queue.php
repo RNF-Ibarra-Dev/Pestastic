@@ -120,13 +120,16 @@ require("startsession.php");
                 </div>
             </div>
 
-            <div class="toast-container m-2 me-3 bottom-0 end-0">
-                <div class="toast align-items-center" role="alert" id="toast" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body text-dark ps-4 text-success-emphasis" id="toastmsg">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm">
+                            <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0">
+                                Current Technician Status</h4>
                         </div>
-                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"
-                            aria-label="Close"></button>
+                        <div class="bg-light bg-opacity-25 my-2 p-2 rounded">
+                            <ul class="list-group list-group-flush d-flex" id="technicianStatus"></ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -141,6 +144,18 @@ require("startsession.php");
             </div>
         </main>
 
+        <!-- hidden stuffs -->
+
+        <div class="toast-container m-2 me-3 bottom-0 end-0">
+            <div class="toast align-items-center" role="alert" id="toast" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body text-dark ps-4 text-success-emphasis" id="toastmsg">
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
         <!-- technicians -->
         <div class="modal fade text-dark modal-edit" id="technicians" tabindex="-1" aria-labelledby="create"
             aria-hidden="true">
@@ -163,6 +178,62 @@ require("startsession.php");
             </div>
         </div>
 
+        <div class="modal fade text-dark modal-edit" id="reschedModal" tabindex="-1" aria-labelledby="create"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header bg-modal-title text-light">
+                        <h1 class="modal-title fs-5">Reschedule Transaction <span id="reschedtransid"></span></h1>
+                        <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                class="bi text-light bi-x"></i></button>
+                    </div>
+                    <form id="reschedForm">
+                        <div class="modal-body">
+
+                            <input type="hidden" name="reschedid" id="reschedId">
+                            <label for="rescheddate" class="form-label">Select New Schedule</label>
+                            <input type="date" name="reschedDate" class="form-control" id="reschedDate">
+                            <label for="reschedTime" class="form-label">Select Time:</label>
+                            <input type="text" name="reschedTime" class="form-control" id="reschedTime">
+                            <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 mt-3' style="display: none;"
+                                id="reschedalert"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-grad">Reschedule Transaction</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="modal fade text-dark modal-edit" id="cancelModal" tabindex="-1" aria-labelledby="create"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header bg-modal-title text-light">
+                        <h1 class="modal-title fs-5">Cancel Transaction <span id="cancelIdDisplay"></span></h1>
+                        <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                class="bi text-light bi-x"></i></button>
+                    </div>
+                    <form id="cancelForm">
+                        <div class="modal-body">
+                            <input type="hidden" name="cancelIdName" id="cancelId">
+                            <label for="cancelPass" class="form-label">Cancel this transaction? Enter
+                                <?= $_SESSION['saUsn'] ?>'s password to proceed</label>
+                            <input type="password" name="cancelPass" class="form-control" id="cancelPass">
+                            <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 mt-3' style="display: none;"
+                                id="cancelAlert"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-grad">Cancel Transaction</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
 
     </div>
     <?php
@@ -172,6 +243,28 @@ require("startsession.php");
     <script>
         const dataUrl = "tablecontents/queue.data.php";
         const submitUrl = "tablecontents/queue.config.php";
+
+        let asc = false;
+        $(document).on('click', '#sortrecent', async function () {
+            if (asc === false) {
+                $('#sortrecent').removeClass('bi-sort-up').addClass('bi-sort-down');
+                asc = true;
+                await load_cards(true);
+                return asc;
+            } else {
+                $('#sortrecent').removeClass('bi-sort-down').addClass('bi-sort-up');
+                asc = false;
+                await load_cards(false);
+                return asc;
+            }
+        });
+
+        $(document).ready(async function () {
+            await load_cards();
+            await click_drag('queuecontainer');
+            await fetch_data('ongoing');
+            await load_technician_status();
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
             var calendarEl = document.getElementById('calendar');
@@ -196,12 +289,16 @@ require("startsession.php");
                     },
                     color: '#00000033',
                     textColor: 'white'
-                }
+                },
+                hiddenDays: [0],
+                dayHeaderFormat: { weekday: 'short' },
             });
 
             var upcomingid = document.getElementById('upcoming');
-            var upcoming = new FullCalendar.Calendar(upcomingid, {
+            var transCalendar = new FullCalendar.Calendar(upcomingid, {
                 initialView: 'dayGridWeek',
+                hiddenDays: [0],
+                dayHeaderFormat: { weekday: 'short', day: 'numeric', omitCommas: true },
                 headerToolbar: {
                     start: 'prev',
                     center: 'title',
@@ -228,10 +325,132 @@ require("startsession.php");
                 height: 250
             });
 
-            upcoming.render();
+            transCalendar.render();
             calendar.render();
+
+
         });
 
+        async function load_technician_status() {
+            try {
+                const techStat = await $.ajax({
+                    method: 'GET',
+                    url: dataUrl,
+                    dataType: 'html',
+                    data: "techStats=true"
+                });
+
+                if (techStat) {
+                    $('#technicianStatus').html(techStat);
+                    return true;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        $(document).on('click', '#cancel', async function () {
+            let id = $(this).data('cancel');
+            $('#cancelIdDisplay').html(id);
+            $('#cancelId').attr('value', id);
+            $('#cancelModal').modal('show');
+        });
+
+
+
+        $(document).on('submit', '#reschedForm', async function (e) {
+            e.preventDefault();
+            try {
+                const resched = await $.ajax({
+                    url: submitUrl,
+                    method: 'POST',
+                    dataType: 'json',
+                    data: $(this).serialize() + "&resched=true"
+                });
+
+                if (resched) {
+                    await show_toast(resched.success);
+                    await load_cards();
+                    $('#reschedModal').modal('hide');
+                }
+            } catch (error) {
+                let err = error.responseText;
+                $('#reschedalert').html(err).fadeIn(350).delay(2000).fadeOut(500);
+            }
+        });
+
+        $(document).on('submit', '#cancelForm', async function (e) {
+            e.preventDefault();
+            try {
+                const cancel = await $.ajax({
+                    method: 'POST',
+                    url: submitUrl,
+                    dataType: 'json',
+                    data: $(this).serialize() + "&cancel=true"
+                });
+
+                if (cancel) {
+                    show_toast(cancel.success);
+                    await load_cards();
+                    $('#cancelModal').modal('hide');
+                }
+            } catch (error) {
+                let err = error.responseText;
+                $('#cancelAlert').html(err).fadeIn(350).delay(2000).fadeOut(500);
+            }
+        });
+
+        let reschedDatee = document.getElementById('reschedDate');
+        reschedDate = flatpickr(reschedDatee, {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+            minDate: new Date().fp_incr(1),
+            disable: [
+                function (date) {
+                    return (date.getDay() === 0 || date.getDay() === 6);
+                }
+            ],
+            locale: {
+                "firstDayOfWeek": 1
+            }
+        });
+
+        let reschedTimee = document.getElementById('reschedTime');
+        reschedTime = flatpickr(reschedTimee, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            minTime: "9:00",
+            maxTime: "15:00"
+        });
+
+        $(document).on('click', '#resched', async function () {
+            let id = $(this).data('resched');
+            let time = $(this).data('otime');
+            let date = $(this).data('odate');
+
+            $('#reschedtransid').html(id);
+            $('#reschedId').attr('value', id);
+
+            if (date) {
+                reschedDate.setDate(date, true);
+            } else {
+                reschedDate.clear();
+            }
+
+            if(time){
+                reschedTime.setDate(time, true);
+            } else{
+                reschedTime.clear();
+            }
+
+            $('#reschedModal').modal('show');
+            $(document).on('hidden-bs-modal', '#reschedModal', function(){
+                reschedTime.clear();
+                reschedDate.clear();
+            });
+        });
 
         async function click_drag(container) {
             const slider = document.getElementById(container);
@@ -271,25 +490,7 @@ require("startsession.php");
             toast.show();
         }
 
-        let asc = false;
-        $(document).on('click', '#sortrecent', async function () {
-            if (asc === false) {
-                $('#sortrecent').removeClass('bi-sort-up').addClass('bi-sort-down');
-                asc = true;
-                await load_cards(true);
-            } else {
-                $('#sortrecent').removeClass('bi-sort-down').addClass('bi-sort-up');
-                asc = false;
-                await load_cards(false);
-            }
-        });
 
-
-        $(document).ready(async function () {
-            await load_cards();
-            await click_drag('queuecontainer');
-            await fetch_data('ongoing');
-        });
 
         $(document).on('click', '#dispatchedtechbtn', async function () {
             let id = $(this).data('tech');
@@ -344,7 +545,7 @@ require("startsession.php");
         }
 
 
-        async function load_cards(sort = null) {
+        async function load_cards(sort = asc) {
             try {
                 const load = await $.ajax({
                     method: "GET",
