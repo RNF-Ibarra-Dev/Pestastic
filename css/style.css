@@ -550,6 +550,10 @@ table.os-table {
   color: #b3ffb2 !important;
 }
 
+.text-custom-danger{
+  color: #e1737d !important;
+}
+
 .fc-event-title-container{
   padding: 0 0.25rem !important;
 }

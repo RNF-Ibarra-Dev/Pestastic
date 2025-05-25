@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 18, 2025 at 04:42 PM
+-- Generation Time: May 25, 2025 at 05:03 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -82,7 +82,7 @@ INSERT INTO `chemicals` (`id`, `name`, `brand`, `chemLevel`, `expiryDate`, `adde
 (46, 'n', 'n', 0, '2025-04-03', '2025-04-12 15:06:30', '2025-04-12 15:06:30', 0),
 (47, 'sad', 'asd', 500, '2025-01-01', '2025-04-12 15:06:30', '2025-04-12 15:06:30', 0),
 (49, 'asd', 'asd', 0, '2025-01-01', '2025-04-12 15:06:30', '2025-04-12 15:06:30', 0),
-(50, 'Deltacides', 'CHEM', 3, '2025-01-01', '2025-04-12 15:06:30', '2025-04-12 15:06:30', 0),
+(50, 'Deltacides', 'CHEM', 0, '2025-01-01', '2025-04-12 15:06:30', '2025-05-22 06:18:45', 0),
 (51, 'asd', 'asd', 33, '2025-01-29', '2025-04-12 15:06:30', '2025-04-12 15:06:30', 0),
 (52, 'asd', 'asd', 33, '2025-01-29', '2025-04-12 15:06:30', '2025-04-12 15:06:30', 0),
 (54, 'chem B', 'brand B', 100, '2029-06-21', '2025-04-12 15:06:30', '2025-04-12 15:06:30', 0),
@@ -199,21 +199,22 @@ CREATE TABLE `technician` (
   `techContact` varchar(15) NOT NULL,
   `techAddress` varchar(255) NOT NULL,
   `techEmpId` varchar(3) NOT NULL,
-  `techBirthdate` date NOT NULL DEFAULT '1930-01-01'
+  `techBirthdate` date NOT NULL DEFAULT '1930-01-01',
+  `technician_status` enum('Available','On Leave','Dispatched','Unavailable') NOT NULL DEFAULT 'Unavailable'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `technician`
 --
 
-INSERT INTO `technician` (`technicianId`, `firstName`, `lastName`, `username`, `techEmail`, `techPwd`, `techContact`, `techAddress`, `techEmpId`, `techBirthdate`) VALUES
-(1, 'rayan', 'ibarra', 'qweee3231', 'pedro@email.com', '$2y$10$cti18IMlEMqlgJi2X2Dpfut49RIGvIartiYitMKLCqaMFbx/u97aq', '0917 123 4567', 'Phase 9, Phase 7 B3, Lot 14, Bagong Silang, Caloocan City, Metro Manila', '456', '1930-02-05'),
-(2, 'asdf', 'asdf', 'tech1', 'asd@a.com', '$2y$10$70/GbO1etq830pk1gX6sMuz6QstqZIpMO2/xEey4Sla01wqRekdKG', '639610970714', '362 Moret St, Sampaloc, Manila, 1008 Metro Manila, Philippines', '654', '1930-01-29'),
-(4, 'rayan', 'ibarra', 'sdf', 'leal@gmail.com', '041902', '6391 2321 123', '-', '065', '1930-01-01'),
-(10, 'fgh', 'fgh', 'fgh', 'fghfgh@email.com', '$2y$10$/upNMNYpGayHj5V51qpSuuyN9kTYFGhUT9pyt9jB8fcKPphv4Crv.', '456564546', '--', '645', '1930-01-01'),
-(15, 'alena', 'datolayta', 'alena', 'alenadatolayta10@gmail.com', '$2y$10$0nDgpiyIh1B9un8kCOIQnupvVI6fgaEY3CVE/LDxeIbQPLEGTLSnq', '32132131', '--', '001', '2002-07-10'),
-(18, 'gf', 'ddfd', 'dgdf', 'ddg@email.com', '$2y$10$4Gjaym94aue7hMlxsxnavuhYT4sXZo7wHaq4LVNBT2a4TazvZFxn6', '00000000000', 'dasdas', '111', '1930-01-01'),
-(19, 'sdfsdf', 'sdfsdfs', '32424', 'bsdfsdfa@email.com', '$2y$10$nOHsQ94.118PwzZwiC/e3.rL17YZG1cAgWTKumc4upgwHmdSOuO0u', '00000000000', '000', '000', '1930-01-21');
+INSERT INTO `technician` (`technicianId`, `firstName`, `lastName`, `username`, `techEmail`, `techPwd`, `techContact`, `techAddress`, `techEmpId`, `techBirthdate`, `technician_status`) VALUES
+(1, 'rayan', 'ibarra', 'qweee3231', 'pedro@email.com', '$2y$10$cti18IMlEMqlgJi2X2Dpfut49RIGvIartiYitMKLCqaMFbx/u97aq', '0917 123 4567', 'Phase 9, Phase 7 B3, Lot 14, Bagong Silang, Caloocan City, Metro Manila', '456', '1930-02-05', 'Unavailable'),
+(2, 'asdf', 'asdf', 'tech1', 'asd@a.com', '$2y$10$70/GbO1etq830pk1gX6sMuz6QstqZIpMO2/xEey4Sla01wqRekdKG', '639610970714', '362 Moret St, Sampaloc, Manila, 1008 Metro Manila, Philippines', '654', '1930-01-29', 'Available'),
+(4, 'rayan', 'ibarra', 'sdf', 'leal@gmail.com', '041902', '6391 2321 123', '-', '065', '1930-01-01', 'Dispatched'),
+(10, 'fgh', 'fgh', 'fgh', 'fghfgh@email.com', '$2y$10$/upNMNYpGayHj5V51qpSuuyN9kTYFGhUT9pyt9jB8fcKPphv4Crv.', '456564546', '--', '645', '1930-01-01', 'On Leave'),
+(15, 'alena', 'datolayta', 'alena', 'alenadatolayta10@gmail.com', '$2y$10$0nDgpiyIh1B9un8kCOIQnupvVI6fgaEY3CVE/LDxeIbQPLEGTLSnq', '32132131', '--', '001', '2002-07-10', 'Dispatched'),
+(18, 'gf', 'ddfd', 'dgdf', 'ddg@email.com', '$2y$10$4Gjaym94aue7hMlxsxnavuhYT4sXZo7wHaq4LVNBT2a4TazvZFxn6', '00000000000', 'dasdas', '111', '1930-01-01', 'Available'),
+(19, 'sdfsdf', 'sdfsdfs', '32424', 'bsdfsdfa@email.com', '$2y$10$nOHsQ94.118PwzZwiC/e3.rL17YZG1cAgWTKumc4upgwHmdSOuO0u', '00000000000', '000', '000', '1930-01-21', 'Dispatched');
 
 -- --------------------------------------------------------
 
@@ -228,35 +229,37 @@ CREATE TABLE `transactions` (
   `treatment` enum('Soil Injection','Termite Powder Application','Wooden Structures Treatment','Termite Control','Crawling Insects Control','Follow-up Crawling Insects Control') NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `transaction_status` enum('Pending','Accepted','Voided','Completed') NOT NULL DEFAULT 'Pending',
-  `void_request` tinyint(1) NOT NULL DEFAULT 0
+  `transaction_status` enum('Pending','Accepted','Voided','Completed','Cancelled') NOT NULL DEFAULT 'Pending',
+  `void_request` tinyint(1) NOT NULL DEFAULT 0,
+  `transaction_time` time NOT NULL DEFAULT '00:00:00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `transactions`
 --
 
-INSERT INTO `transactions` (`id`, `treatment_date`, `customer_name`, `treatment`, `created_at`, `updated_at`, `transaction_status`, `void_request`) VALUES
-(76, '2025-04-04', 'gffggh', 'Termite Powder Application', '2025-03-31 13:07:43', '2025-04-04 13:56:20', 'Completed', 0),
-(80, '2025-04-25', 'dfgfd', 'Crawling Insects Control', '2025-04-01 14:23:01', '2025-04-01 14:23:01', 'Completed', 0),
-(82, '2025-05-01', 'ggddf', 'Crawling Insects Control', '2025-04-05 13:46:48', '2025-04-05 13:46:48', 'Completed', 0),
-(83, '2025-05-01', 'sssss', 'Wooden Structures Treatment', '2025-04-05 13:47:19', '2025-04-05 13:47:19', 'Voided', 0),
-(84, '2025-04-25', 'asd', 'Crawling Insects Control', '2025-04-05 14:14:53', '2025-04-05 14:14:53', 'Completed', 0),
-(85, '2025-04-19', 'kkjljkl', 'Follow-up Crawling Insects Control', '2025-04-06 05:19:12', '2025-04-13 14:09:32', 'Accepted', 0),
-(96, '2025-04-19', 'dfsdf', 'Crawling Insects Control', '2025-04-10 06:51:37', '2025-04-10 06:51:37', 'Voided', 0),
-(97, '2025-04-25', 'ghj', 'Crawling Insects Control', '2025-04-10 06:53:43', '2025-05-01 08:37:10', 'Voided', 0),
-(98, '2025-04-25', 'jkl', 'Crawling Insects Control', '2025-04-10 06:54:24', '2025-04-10 06:54:24', 'Completed', 0),
-(99, '2025-04-25', 'sdfsdf', 'Termite Control', '2025-04-10 06:57:10', '2025-05-01 13:18:10', 'Pending', 1),
-(100, '2025-04-25', 'ghbgh', 'Crawling Insects Control', '2025-04-10 07:07:38', '2025-05-01 11:44:36', 'Voided', 0),
-(101, '2025-04-19', 'hjkjk', 'Crawling Insects Control', '2025-04-10 07:08:48', '2025-05-01 13:18:11', 'Accepted', 1),
-(102, '2025-04-18', 'lkkl', 'Crawling Insects Control', '2025-04-10 07:12:11', '2025-05-01 13:18:13', 'Pending', 1),
-(103, '2025-04-24', 'sdf', 'Wooden Structures Treatment', '2025-04-10 13:15:57', '2025-05-01 13:38:29', 'Pending', 0),
-(104, '2025-05-02', 'dfgdf', 'Crawling Insects Control', '2025-04-12 15:10:19', '2025-05-01 13:18:14', 'Accepted', 1),
-(10001, '2025-04-26', 'gfhfgh', 'Termite Control', '2025-04-12 15:15:31', '2025-05-01 11:45:22', 'Voided', 0),
-(10002, '2025-04-25', 'jhh', 'Crawling Insects Control', '2025-04-20 13:13:41', '2025-05-01 13:18:15', 'Accepted', 1),
-(10003, '2025-05-01', 'sdfsds', 'Termite Control', '2025-04-22 07:52:06', '2025-05-01 08:37:00', 'Voided', 0),
-(10004, '2025-05-01', '......', 'Follow-up Crawling Insects Control', '2025-04-22 07:56:38', '2025-04-22 07:56:38', 'Voided', 0),
-(10017, '2025-05-24', 'asd', 'Termite Control', '2025-05-11 07:11:03', '2025-05-11 07:11:03', 'Accepted', 0);
+INSERT INTO `transactions` (`id`, `treatment_date`, `customer_name`, `treatment`, `created_at`, `updated_at`, `transaction_status`, `void_request`, `transaction_time`) VALUES
+(76, '2025-04-04', 'gffggh', 'Termite Powder Application', '2025-03-31 13:07:43', '2025-04-04 13:56:20', 'Completed', 0, '00:00:00'),
+(80, '2025-04-25', 'dfgfd', 'Crawling Insects Control', '2025-04-01 14:23:01', '2025-04-01 14:23:01', 'Completed', 0, '00:00:00'),
+(82, '2025-05-01', 'ggddf', 'Crawling Insects Control', '2025-04-05 13:46:48', '2025-04-05 13:46:48', 'Completed', 0, '00:00:00'),
+(83, '2025-05-01', 'sssss', 'Wooden Structures Treatment', '2025-04-05 13:47:19', '2025-04-05 13:47:19', 'Voided', 0, '00:00:00'),
+(84, '2025-05-20', 'asd', 'Crawling Insects Control', '2025-04-05 14:14:53', '2025-05-20 15:39:47', 'Completed', 0, '00:00:00'),
+(85, '2025-04-19', 'kkjljkl', 'Follow-up Crawling Insects Control', '2025-04-06 05:19:12', '2025-04-13 14:09:32', 'Accepted', 0, '00:00:00'),
+(96, '2025-04-19', 'dfsdf', 'Crawling Insects Control', '2025-04-10 06:51:37', '2025-04-10 06:51:37', 'Voided', 0, '00:00:00'),
+(97, '2025-04-25', 'ghj', 'Crawling Insects Control', '2025-04-10 06:53:43', '2025-05-01 08:37:10', 'Voided', 0, '00:00:00'),
+(98, '2025-04-25', 'jkl', 'Crawling Insects Control', '2025-04-10 06:54:24', '2025-04-10 06:54:24', 'Completed', 0, '00:00:00'),
+(99, '2025-04-25', 'sdfsdf', 'Termite Control', '2025-04-10 06:57:10', '2025-05-01 13:18:10', 'Pending', 1, '00:00:00'),
+(100, '2025-04-25', 'ghbgh', 'Crawling Insects Control', '2025-04-10 07:07:38', '2025-05-01 11:44:36', 'Voided', 0, '00:00:00'),
+(101, '2025-04-19', 'hjkjk', 'Crawling Insects Control', '2025-04-10 07:08:48', '2025-05-01 13:18:11', 'Accepted', 1, '00:00:00'),
+(102, '2025-04-18', 'lkkl', 'Crawling Insects Control', '2025-04-10 07:12:11', '2025-05-01 13:18:13', 'Pending', 1, '00:00:00'),
+(103, '2025-04-24', 'sdf', 'Wooden Structures Treatment', '2025-04-10 13:15:57', '2025-05-01 13:38:29', 'Pending', 0, '00:00:00'),
+(104, '2025-05-02', 'dfgdf', 'Crawling Insects Control', '2025-04-12 15:10:19', '2025-05-01 13:18:14', 'Accepted', 1, '00:00:00'),
+(10001, '2025-04-26', 'gfhfgh', 'Termite Control', '2025-04-12 15:15:31', '2025-05-01 11:45:22', 'Voided', 0, '00:00:00'),
+(10002, '2025-06-06', 'jhh', 'Crawling Insects Control', '2025-04-20 13:13:41', '2025-05-24 12:27:45', 'Accepted', 1, '12:00:00'),
+(10003, '2025-05-01', 'sdfsds', 'Termite Control', '2025-04-22 07:52:06', '2025-05-01 08:37:00', 'Voided', 0, '00:00:00'),
+(10004, '2025-05-01', '......', 'Follow-up Crawling Insects Control', '2025-04-22 07:56:38', '2025-04-22 07:56:38', 'Voided', 0, '00:00:00'),
+(10017, '2025-05-30', 'asd', 'Termite Control', '2025-05-11 07:11:03', '2025-05-24 13:04:32', 'Accepted', 0, '00:00:00'),
+(10018, '2025-05-30', 'dfgfg', 'Crawling Insects Control', '2025-05-22 06:18:45', '2025-05-22 06:18:45', 'Pending', 0, '00:00:00');
 
 -- --------------------------------------------------------
 
@@ -299,7 +302,8 @@ INSERT INTO `transaction_chemicals` (`trans_id`, `chem_id`, `chem_brand`, `amt_u
 (10003, 51, 'asd | asd', 3),
 (10003, 1002, 'fgh | fgh', 3),
 (10004, 1004, 'fgh | fgh', 7),
-(10017, 1014, 'jhghj | hjghj', 4);
+(10017, 1014, 'jhghj | hjghj', 4),
+(10018, 50, 'Deltacides | CHEM', 3);
 
 --
 -- Triggers `transaction_chemicals`
@@ -374,7 +378,9 @@ INSERT INTO `transaction_problems` (`trans_id`, `problem_id`) VALUES
 (10004, 3),
 (10004, 4),
 (10017, 3),
-(10017, 10);
+(10017, 10),
+(10018, 3),
+(10018, 10);
 
 -- --------------------------------------------------------
 
@@ -416,7 +422,8 @@ INSERT INTO `transaction_technicians` (`trans_id`, `tech_id`, `tech_info`) VALUE
 (10003, 2, 'asdf asdf'),
 (10003, 10, 'fgh fgh'),
 (10004, 2, 'asdf asdf'),
-(10017, 4, 'rayan ibarra');
+(10017, 4, 'rayan ibarra'),
+(10018, 15, 'alena datolayta');
 
 --
 -- Triggers `transaction_technicians`
@@ -546,7 +553,7 @@ ALTER TABLE `technician`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10018;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10019;
 
 --
 -- Constraints for dumped tables

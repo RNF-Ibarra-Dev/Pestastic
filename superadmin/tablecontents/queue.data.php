@@ -267,15 +267,21 @@ if (isset($_GET['getdata']) && $_GET['getdata'] === 'ongoing') {
 
 
 if (isset($_GET['techStats']) && $_GET['techStats'] === 'true') {
-    $sql = "SELECT * FROM technician;";
+    $sort = $_GET["sort"];
+
+    $sql = "SELECT * FROM technician";
+    if($sort !== 'none'){
+        $sql .= " WHERE technician_status = '$sort';";
+    }
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             $tech = $row['firstName'] . ' ' . $row['lastName'];
             $status = $row['technician_status'];
+            $techid = $row['techEmpId'];
             ?>
-            <li class="list-group-item bg-transparent text-light d-flex justify-content-between"><?= htmlspecialchars($tech) ?> <span class="<?=$status === 'Available' ? 'text-custom-success' : ($status === 'Unavailable' ? 'text-body-secondary' : 'text-warning')?>"><?= htmlspecialchars($status)?><i class="bi bi-dot <?=$status === 'Available' ? 'text-custom-success' : ($status === 'Unavailable' ? 'text-danger' : 'text-warning')?>"></i></span></li>
+            <li class="list-group-item bg-transparent text-light d-flex justify-content-between"><?= htmlspecialchars($tech) . ' - [' . htmlspecialchars($techid) . ']' ?> <span class="<?=$status === 'Available' ? 'text-custom-success' : ($status === 'Unavailable' ? 'text-danger' : 'text-warning')?>"><?= htmlspecialchars($status)?><i class="bi bi-dot <?=$status === 'Available' ? 'text-custom-success' : ($status === 'Unavailable' ? 'text-custom-danger' : 'text-warning')?>"></i></span></li>
             <?php
         }
     } else{

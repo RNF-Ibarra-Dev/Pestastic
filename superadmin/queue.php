@@ -61,33 +61,33 @@ require("startsession.php");
 
 
 
-            <div class="container-fluid">
-                <!-- headers -->
-                <div class="row row-col-2 d-flex justify-content-around">
-                    <div class="col-4 bg-light bg-opacity-25 shadow-sm rounded-pill p-2 m-2">
-                        <h4 class="fw-light justify-content-center m-0 d-flex align-items-center">Transaction Calendar
-                            </h5>
+            <div class="row row-col-2 m-0 d-flex justify-content-around">
+                <!-- calendar -->
+                <div class="col-4 bg-dark bg-opacity-25 border border-dark rounded mt-2 shadow-sm">
+                    <div class="bg-light bg-opacity-25 my-2 p-2 shadow-sm rounded-pill">
+                        <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0"><i
+                                class="bi bi-file-earmark-text me-2 "></i>
+                            Ongoing Transactions</h4>
                     </div>
-                    <div
-                        class="col-7 m-2 d-flex border-light bg-light bg-opacity-25 shadow-sm p-2 align-middle rounded-pill">
+                    <div class="bg-light bg-opacity-25 shadow-sm rounded">
+                        <div id="ongoing"></div>
+                    </div>
+                </div>
+
+                <!-- upcoming -->
+                <div class="col-7 bg-dark bg-opacity-25 border border-dark rounded mt-2 shadow-sm">
+                    <div class="m-2 d-flex border-light bg-light bg-opacity-25 shadow-sm p-2 align-middle rounded-pill">
                         <button type="button" class="btn btn-sidebar rounded-pill me-2 text-light">
                             <i class="bi bi-sort-up h5 m-0 d-flex align-items-center" id='sortrecent'></i>
                         </button>
-                        <h4 class="fw-light m-0 justify-content-center flex-grow-1 d-flex align-items-center">Upcoming
+                        <h4 class="fw-light m-0 justify-content-center flex-grow-1 d-flex align-items-center"><i
+                                class="bi bi-journal me-2"></i>
+                            Upcoming
                             Transactions</h5>
                             <div style="width: 35px !important;" class="m-0 p-0"></div>
                     </div>
-                </div>
-                <!-- contents -->
-                <div class="row row-col-2 d-flex justify-content-around">
-                    <!-- active dispatch -->
-                    <div class="col-4 bg-light shadow-sm bg-opacity-25 rounded" id="activecontainer">
-                        <!-- <input type="datetime-local" id="schedule" style="display: none !important;"> -->
-                        <div id="calendar"></div>
-                    </div>
+                    <div class="d-flex flex-nowrap bg-light shadow-sm rounded bg-opacity-25" id="queuecontainer">
 
-                    <!-- recents -->
-                    <div class="col-7 d-flex flex-nowrap bg-light shadow-sm rounded bg-opacity-25" id="queuecontainer">
                         <div class=" d-flex flex-nowrap w-75 row row-cols-1 row-cols-md-3 g-4 mt-2 mb-4 px-4 align-items-center"
                             id="cardcontainer">
                             <!-- ajax -->
@@ -99,22 +99,23 @@ require("startsession.php");
 
             <div class="container-fluid">
                 <div class="row d-flex justify-content-around">
-                    <div class="col-7">
+                    <div class="col-4 bg-dark bg-opacity-25 border border-dark rounded shadow-sm my-3">
+                        <div class="bg-light bg-opacity-25 shadow-sm rounded-pill p-2 my-2">
+                            <h4 class="fw-light justify-content-center m-0 d-flex align-items-center"><i
+                                    class="bi bi-calendar-date me-2"></i>Transaction
+                                Calendar
+                            </h4>
+                        </div>
+                        <div class="bg-light shadow-sm bg-opacity-25 rounded p-2" id="calendar"></div>
+                    </div>
+                    <div class="col-7 bg-dark bg-opacity-25 border border-dark rounded shadow-sm my-3">
                         <div class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm">
-                            <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0">Weekly
+                            <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0"><i
+                                    class="bi bi-calendar-week me-2"></i>Weekly
                                 Transactions</h5>
                         </div>
                         <div class="container bg-light bg-opacity-25 rounded shadow-sm">
                             <div id="upcoming"></div>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="bg-light bg-opacity-25 my-2 p-2 shadow-sm rounded-pill">
-                            <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0">
-                                Ongoing Transactions</h4>
-                        </div>
-                        <div class="bg-light bg-opacity-25 shadow-sm rounded">
-                            <div id="ongoing"></div>
                         </div>
                     </div>
                 </div>
@@ -122,14 +123,18 @@ require("startsession.php");
 
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-4">
-                        <div class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm">
+                    <div class="col-4 bg-dark bg-opacity-25 border border-dark rounded">
+                        <div
+                            class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm d-flex justify-content-between">
+                            <button type="button" class="btn btn-sidebar rounded-pill me-2 text-light"
+                                id='sortTechStatus'>
+                                <i class="bi bi-filter h5 m-0 d-flex align-items-center"></i>
+                            </button>
                             <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0">
                                 Current Technician Status</h4>
+                            <div id="techStatBtnFiller" class="m-0 p-0"></div>
                         </div>
-                        <div class="bg-light bg-opacity-25 my-2 p-2 rounded">
-                            <ul class="list-group list-group-flush d-flex" id="technicianStatus"></ul>
-                        </div>
+                        <div class="list-group list-group-flush d-flex" id="technicianStatus"></div>
                     </div>
                 </div>
             </div>
@@ -259,6 +264,11 @@ require("startsession.php");
             }
         });
 
+        $(document).ready(function () {
+            let techStatBtnWidth = $("#sortTechStatus").outerWidth();
+            $('#techStatBtnFiller').attr("style", `width: ${techStatBtnWidth}px !important`);
+        });
+
         $(document).ready(async function () {
             await load_cards();
             await click_drag('queuecontainer');
@@ -331,16 +341,37 @@ require("startsession.php");
 
         });
 
-        async function load_technician_status() {
+        $(async function () {
+            let status = ['Available', 'Dispatched', 'Unavailable', 'On Leave', 'none'];
+            // const totalStatus = 4; 
+            statusNum = 0;
+            $(document).on('click', '#sortTechStatus', async function () {
+                load_technician_status(status[statusNum]);
+                // console.log(status[statusNum]);
+                if (statusNum >= 4) {
+                    statusNum = 0;
+                } else {
+                    statusNum++;
+                }
+                return statusNum;
+            });
+        })
+
+
+        async function load_technician_status(sort = 'none') {
             try {
                 const techStat = await $.ajax({
                     method: 'GET',
                     url: dataUrl,
                     dataType: 'html',
-                    data: "techStats=true"
+                    data: {
+                        techStats: 'true',
+                        sort: sort
+                    }
                 });
 
                 if (techStat) {
+                    $('#technicianStatus').empty();
                     $('#technicianStatus').html(techStat);
                     return true;
                 }
@@ -439,14 +470,14 @@ require("startsession.php");
                 reschedDate.clear();
             }
 
-            if(time){
+            if (time) {
                 reschedTime.setDate(time, true);
-            } else{
+            } else {
                 reschedTime.clear();
             }
 
             $('#reschedModal').modal('show');
-            $(document).on('hidden-bs-modal', '#reschedModal', function(){
+            $(document).on('hidden-bs-modal', '#reschedModal', function () {
                 reschedTime.clear();
                 reschedDate.clear();
             });
