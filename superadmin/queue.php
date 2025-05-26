@@ -63,14 +63,13 @@ require("startsession.php");
 
             <div class="row row-col-2 m-0 d-flex justify-content-around">
                 <!-- calendar -->
-                <div class="col-4 bg-dark bg-opacity-25 border border-dark rounded mt-2 shadow-sm">
+                <div class="col-4 bg-dark bg-opacity-25 border border-dark rounded mt-2 shadow-sm d-flex flex-column pb-3">
                     <div class="bg-light bg-opacity-25 my-2 p-2 shadow-sm rounded-pill">
                         <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0"><i
                                 class="bi bi-file-earmark-text me-2 "></i>
                             Ongoing Transactions</h4>
                     </div>
-                    <div class="bg-light bg-opacity-25 shadow-sm rounded">
-                        <div id="ongoing"></div>
+                    <div class="flex-grow-1 d-flex" id="ongoing">
                     </div>
                 </div>
 
@@ -131,18 +130,24 @@ require("startsession.php");
                                 <i class="bi bi-filter h5 m-0 d-flex align-items-center"></i>
                             </button>
                             <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0">
-                                <i class="bi bi-people me-2"></i>Technician Status</h4>
+                                <i class="bi bi-people me-2"></i>Technician Status
+                            </h4>
                             <div id="techStatBtnFiller" class="m-0 p-0"></div>
                         </div>
-                        <div class="list-group list-group-flush d-flex overflow-auto" id="technicianStatus" style="height: 15rem !important"></div>
+                        <div class="list-group list-group-flush d-flex overflow-auto" id="technicianStatus"
+                            style="height: 15rem !important"></div>
                     </div>
 
 
                     <div class="col-5 bg-dark bg-opacity-25 border border-dark d-flex flex-column rounded shadow-sm">
-                        <div class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm d-flex justify-content-center">
-                            <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0"><i class="bi bi-journal-minus me-2"></i> Unassigned Transactions</h4>
+                        <div
+                            class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm d-flex justify-content-center">
+                            <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0"><i
+                                    class="bi bi-journal-minus me-2"></i> Unassigned Transactions</h4>
                         </div>
-                        <div id="incompleteTransactions" class="my-auto p-0 d-flex justify-content-center"></div>
+                        <div class="d-flex flex-nowrap bg-light shadow-sm rounded bg-opacity-25" id="incTransContainer">
+                            <div id="incompleteTransactions" class="my-auto p-0 d-flex flex-nowrap g-4 justify-content-center"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -206,9 +211,11 @@ require("startsession.php");
 
                             <input type="hidden" name="reschedid" id="reschedId">
                             <label for="rescheddate" class="form-label">Select New Schedule</label>
-                            <input type="date" name="reschedDate" class="form-control" id="reschedDate">
+                            <input type="date" name="reschedDate" class="form-control w-50" id="reschedDate">
+                            <div class="form-text ms-1"></div>
                             <label for="reschedTime" class="form-label">Select Time:</label>
-                            <input type="text" name="reschedTime" class="form-control" id="reschedTime">
+                            <input type="text" name="reschedTime" class="form-control w-50" id="reschedTime">
+                            <div class="form-text ms-1">Select time between 9:00 AM and 3:00 PM.</div>
                             <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 mt-3' style="display: none;"
                                 id="reschedalert"></p>
                         </div>
@@ -235,7 +242,8 @@ require("startsession.php");
                             <input type="hidden" name="cancelIdName" id="cancelId">
                             <label for="cancelPass" class="form-label">Cancel this transaction? Enter
                                 <?= $_SESSION['saUsn'] ?>'s password to proceed</label>
-                            <input type="password" name="cancelPass" class="form-control" id="cancelPass">
+                            <input type="password" name="cancelPass" class="form-control w-50" id="cancelPass">
+                            <div class="form-text ms-1">Cancelling Transaction is undoable, continue?</div>
                             <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 mt-3' style="display: none;"
                                 id="cancelAlert"></p>
                         </div>
@@ -246,6 +254,37 @@ require("startsession.php");
                 </div>
             </div>
         </div>
+<!-- 
+        <div class="modal fade text-dark modal-edit" id="reviewModal" tabindex="-1" aria-labelledby="create"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header bg-modal-title text-light">
+                        <h1 class="modal-title fs-5">Review Transaction</h1>
+                        <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                class="bi text-light bi-x"></i></button>
+                    </div>
+                    <form id="reviewForm">
+                        <div class="modal-body">
+                            <input type="hidden" name="id" id="reviewIdInput">
+                            <label for="reviewId">Transaction ID:</label>
+                            <p class="fw-light" id="reviewId"></p>
+                            <label for="cname">Customer Name:</label>
+                            <input type="text" name="name" id="cname">
+
+
+                            <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 mt-3' style="display: none;"
+                                id="cancelAlert"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-grad">Edit Transaction</button>
+                            <button type="submit" class="btn btn-grad">Approve Transaction</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div> -->
 
 
 
@@ -259,7 +298,7 @@ require("startsession.php");
         const submitUrl = "tablecontents/queue.config.php";
 
         let asc = false;
-        $(document).on('click', '#sortrecent', async function() {
+        $(document).on('click', '#sortrecent', async function () {
             if (asc === false) {
                 $('#sortrecent').removeClass('bi-sort-up').addClass('bi-sort-down');
                 asc = true;
@@ -273,12 +312,24 @@ require("startsession.php");
             }
         });
 
-        $(document).ready(function() {
+        // $(document).on('click', '#reviewBtn', async function () {
+        //     let id = $(this).data('review');
+        //     $('#reviewIdInput').attr("value", id);
+        //     $('#reviewId').html(id);
+        //     $('#reviewModal').modal('show');
+        // });
+
+        // $(document).on('submit', '#reviewForm', async function(e){
+        //     e.preventDefault();
+        //     console.log($(this).serialize());
+        // });
+
+        $(document).ready(function () {
             let techStatBtnWidth = $("#sortTechStatus").outerWidth();
             $('#techStatBtnFiller').attr("style", `width: ${techStatBtnWidth}px !important`);
         });
 
-        $(document).ready(async function() {
+        $(document).ready(async function () {
             await load_cards();
             await click_drag('queuecontainer');
             await fetch_data('ongoing');
@@ -286,7 +337,7 @@ require("startsession.php");
             await load_incomplete_transactions();
         });
 
-        async function load_incomplete_transactions(){
+        async function load_incomplete_transactions() {
             try {
                 const inc = await $.ajax({
                     method: 'GET',
@@ -297,7 +348,7 @@ require("startsession.php");
                     }
                 });
 
-                if(inc){
+                if (inc) {
                     $("#incompleteTransactions").empty();
                     $("#incompleteTransactions").append(inc);
                 }
@@ -323,7 +374,7 @@ require("startsession.php");
                     extraParams: {
                         transactions: 'true'
                     },
-                    failure: function(e) {
+                    failure: function (e) {
                         alert('Transaction event fetch failed.');
                         console.log(e);
                     },
@@ -358,14 +409,14 @@ require("startsession.php");
                         transactions: 'true',
                         data: 'titleonly'
                     },
-                    failure: function(e) {
+                    failure: function (e) {
                         alert('Transaction event fetch failed.');
                         console.log(e);
                     },
                     color: '#00000033',
                     textColor: 'white'
                 },
-                eventContent: function(arg) {
+                eventContent: function (arg) {
                     return {
                         html: arg.event.title
                     };
@@ -379,11 +430,11 @@ require("startsession.php");
 
         });
 
-        $(async function() {
+        $(async function () {
             let status = ['Available', 'Dispatched', 'Unavailable', 'On Leave', 'none'];
             // const totalStatus = 4; 
             statusNum = 0;
-            $(document).on('click', '#sortTechStatus', async function() {
+            $(document).on('click', '#sortTechStatus', async function () {
                 load_technician_status(status[statusNum]);
                 // console.log(status[statusNum]);
                 if (statusNum >= 4) {
@@ -418,7 +469,7 @@ require("startsession.php");
             }
         }
 
-        $(document).on('click', '#cancel', async function() {
+        $(document).on('click', '#cancel', async function () {
             let id = $(this).data('cancel');
             $('#cancelIdDisplay').html(id);
             $('#cancelId').attr('value', id);
@@ -427,7 +478,7 @@ require("startsession.php");
 
 
 
-        $(document).on('submit', '#reschedForm', async function(e) {
+        $(document).on('submit', '#reschedForm', async function (e) {
             e.preventDefault();
             try {
                 const resched = await $.ajax({
@@ -448,7 +499,7 @@ require("startsession.php");
             }
         });
 
-        $(document).on('submit', '#cancelForm', async function(e) {
+        $(document).on('submit', '#cancelForm', async function (e) {
             e.preventDefault();
             try {
                 const cancel = await $.ajax({
@@ -476,7 +527,7 @@ require("startsession.php");
             dateFormat: "Y-m-d",
             minDate: new Date().fp_incr(1),
             disable: [
-                function(date) {
+                function (date) {
                     return (date.getDay() === 0 || date.getDay() === 6);
                 }
             ],
@@ -494,7 +545,7 @@ require("startsession.php");
             maxTime: "15:00"
         });
 
-        $(document).on('click', '#resched', async function() {
+        $(document).on('click', '#resched', async function () {
             let id = $(this).data('resched');
             let time = $(this).data('otime');
             let date = $(this).data('odate');
@@ -515,7 +566,7 @@ require("startsession.php");
             }
 
             $('#reschedModal').modal('show');
-            $(document).on('hidden-bs-modal', '#reschedModal', function() {
+            $(document).on('hidden-bs-modal', '#reschedModal', function () {
                 reschedTime.clear();
                 reschedDate.clear();
             });
@@ -561,7 +612,7 @@ require("startsession.php");
 
 
 
-        $(document).on('click', '#dispatchedtechbtn', async function() {
+        $(document).on('click', '#dispatchedtechbtn', async function () {
             let id = $(this).data('tech');
             $('#deployedtransid').html(id);
             const deploy = await deployed_tech(id);
@@ -570,7 +621,7 @@ require("startsession.php");
             // }
         });
 
-        $(document).on('hidden.bs.modal', '#technicians', function() {
+        $(document).on('hidden.bs.modal', '#technicians', function () {
             $('#technicianscont').empty();
         });
 
@@ -637,15 +688,15 @@ require("startsession.php");
         }
 
 
-        $(function() {
+        $(function () {
             let delay = null;
 
-            $('#searchbar').keyup(function() {
+            $('#searchbar').keyup(function () {
                 clearTimeout(delay);
                 $('#cardcontainer').empty();
                 $('#loader').attr('style', 'display: block !important');
 
-                delay = setTimeout(async function() {
+                delay = setTimeout(async function () {
                     var search = $('#searchbar').val();
                     try {
                         const searcheq = await $.ajax({
