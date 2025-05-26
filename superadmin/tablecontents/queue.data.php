@@ -281,10 +281,22 @@ if (isset($_GET['techStats']) && $_GET['techStats'] === 'true') {
             $status = $row['technician_status'];
             $techid = $row['techEmpId'];
             ?>
-            <li class="list-group-item bg-transparent text-light d-flex justify-content-between"><?= htmlspecialchars($tech) . ' - [' . htmlspecialchars($techid) . ']' ?> <span class="<?=$status === 'Available' ? 'text-custom-success' : ($status === 'Unavailable' ? 'text-danger' : 'text-warning')?>"><?= htmlspecialchars($status)?><i class="bi bi-dot <?=$status === 'Available' ? 'text-custom-success' : ($status === 'Unavailable' ? 'text-custom-danger' : 'text-warning')?>"></i></span></li>
+            <li class="list-group-item bg-transparent text-light d-flex justify-content-between"><?= htmlspecialchars($tech) . ' - [' . htmlspecialchars($techid) . ']' ?> <span class="<?=$status === 'Available' ? 'text-custom-success' : ($status === 'Unavailable' ? 'text-danger' : ($status === 'On Leave' ? 'text-info' : 'text-warning'))?>"><?= htmlspecialchars($status)?><i class="ms-2 bi <?=$status === 'Available' ? 'bi-person-check-fill text-custom-success' : ($status === 'Unavailable' ? 'bi-person-x-fill text-custom-danger' : ($status === 'On Leave' ? 'bi-person-dash-fill text-info' : 'bi-person-fill-gear text-warning'))?>"></i></span></li>
             <?php
         }
     } else{
         echo "<li class='list-group-item bg-transparent text-light'>No technicians.</li>";
     }
+}
+
+if(isset($_GET['inc']) && $_GET['inc'] === 'true'){
+    $sql = "SELECT * FROM transactions WHERE NOT EXISTS (SELECT trans_id FROM transaction_technicians WHERE transactions.id = transaction_technicians.trans_id)";
+    $result = mysqli_query($conn, $sql);
+
+    if(mysqli_num_rows($result) > 0 ){
+        echo "results";
+    } else{
+        echo "<div class='bg-light bg-opacity-25 rounded shadow-sm'><h5 class='fw-light m-0 px-4 py-2'>No Unassigned Transactions.</h5></div>";
+    }
+    exit();
 }
