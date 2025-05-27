@@ -59,7 +59,7 @@ require("startsession.php");
         <!-- sidebar -->
         <?php include('sidenav.php'); ?>
         <!-- main content -->
-        <main class="sa-content col-sm-10 p-0 container-fluid">
+        <main class="sa-content col-sm-10 p-0 container-fluid pb-3">
             <!-- navbar -->
             <?php include('navbar.php'); ?>
             <!-- content -->
@@ -90,7 +90,7 @@ require("startsession.php");
                             Transactions</h5>
                             <div style="width: 35px !important;" class="m-0 p-0"></div>
                     </div>
-                    <div class="d-flex flex-nowrap bg-light shadow-sm rounded bg-opacity-25" id="queuecontainer">
+                    <div class="d-flex flex-nowrap rounded-3" id="queuecontainer">
 
                         <div class=" d-flex flex-nowrap w-75 row row-cols-1 row-cols-md-3 g-4 mt-2 mb-4 px-4 align-items-center"
                             id="cardcontainer">
@@ -150,29 +150,29 @@ require("startsession.php");
                                     class="bi bi-journal-minus me-2"></i> Pending Transactions</h4>
                         </div>
 
-                        <div class="d-flex flex-nowrap rounded bg-light bg-opacity-25 flex-grow-1" id="incTransContainer">
+                        <div class="d-flex flex-nowrap rounded flex-grow-1" id="incTransContainer">
                             <div id="incompleteTransactions" class="my-auto d-flex flex-nowrap justify-content-start gap-4 px-4"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="container-fluid">
+            <!-- <div class="container-fluid">
                 <div class="row d-flex justify-content-around">
                     <div class="col-4 bg-dark bg-opacity-25 border border-dark d-flex flex-column rounded pb-3 shadow-sm">
 
                     </div>
                 </div>
-            </div>
+            </div> -->
 
-            <div class="hstack gap-3 mt-4 mx-3">
+            <!-- <div class="hstack gap-3 mt-4 mx-3">
                 <input class="form-control form-custom me-auto p-2 text-light" type="search" placeholder="Search . . ."
                     id="searchbar" name="searchforafuckingchemical" autocomplete="one-time-code">
                 <div class="vr"></div>
                 <button type="button" id="loadChem" class="btn btn-sidebar text-light py-3 px-4" data-bs-toggle="modal"
                     data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
                         class="bi bi-plus-square"></i></button>
-            </div>
+            </div> -->
         </main>
 
 

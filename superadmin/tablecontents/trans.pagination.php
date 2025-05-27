@@ -96,8 +96,10 @@ if (isset($_GET['paginate']) && $_GET['paginate'] == 'true') {
 }
 
 
-function load_pagination($conn, $status) {
-    
+function load_pagination($conn, $status)
+{
+
+    // list($countResult, $totalRows, $totalPages) = row_status($conn, $pageRows, $status);
     if ($status != '') {
         $rowstatus = row_status($conn, $status);
         $totalRows = $rowstatus['rows'];
@@ -105,8 +107,7 @@ function load_pagination($conn, $status) {
     } else {
         $totalPages = $GLOBALS['totalPages'];
     }
-    
-    
+
     ?>
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
@@ -217,10 +218,10 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     if ($status != '') {
         $sql .= "WHERE transaction_status = '$status' ";
-        $sql .= "AND void_request = 0 ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
+        $sql .= "ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 
     } else {
-        $sql .= "WHERE void_request = 0 ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
+        $sql .= "ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 
     }
 
