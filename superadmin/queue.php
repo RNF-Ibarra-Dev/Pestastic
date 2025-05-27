@@ -11,33 +11,38 @@ require("startsession.php");
     <title>Manager - Pestastic Queue</title>
     <?php include('header.links.php'); ?>
     <style>
-        #queuecontainer {
+        #queuecontainer,
+        #incTransContainer {
             overflow-x: auto !important;
             white-space: nowrap !important;
             -webkit-overflow-scrolling: touch !important;
         }
 
-        #cardcontainer>.col {
+        #cardcontainer>.col,
+        #incompleteTransactions>.col {
             flex: 0 0 auto !important;
             width: 24rem !important;
         }
 
-        #queuecontainer::-webkit-scrollbar {
+        #queuecontainer::-webkit-scrollbar,
+        #incTransContainer::-webkit-scrollbar {
             display: none !important;
         }
 
-        #queuecontainer {
+        #queuecontainer,
+        #incTransContainer {
             -ms-overflow-style: none !important;
         }
 
         .active {
             cursor: grabbing;
             cursor: -webkit-grabbing;
-            transform: scale(1.01) !important;
+            transform: scale(1.005) !important;
             transition: 0.4s;
         }
 
-        #cardcontainer {
+        #cardcontainer,
+        #incompleteTransactions {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             -khtml-user-select: none;
@@ -138,16 +143,24 @@ require("startsession.php");
                             style="height: 15rem !important"></div>
                     </div>
 
-
-                    <div class="col-5 bg-dark bg-opacity-25 border border-dark d-flex flex-column rounded shadow-sm">
+                    <div class="col-7 bg-dark bg-opacity-25 border border-dark d-flex flex-column rounded pb-3 shadow-sm">
                         <div
                             class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm d-flex justify-content-center">
                             <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0"><i
-                                    class="bi bi-journal-minus me-2"></i> Unassigned Transactions</h4>
+                                    class="bi bi-journal-minus me-2"></i> Pending Transactions</h4>
                         </div>
-                        <div class="d-flex flex-nowrap bg-light shadow-sm rounded bg-opacity-25" id="incTransContainer">
-                            <div id="incompleteTransactions" class="my-auto p-0 d-flex flex-nowrap g-4 justify-content-center"></div>
+
+                        <div class="d-flex flex-nowrap rounded bg-light bg-opacity-25 flex-grow-1" id="incTransContainer">
+                            <div id="incompleteTransactions" class="my-auto d-flex flex-nowrap justify-content-start gap-4 px-4"></div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <div class="row d-flex justify-content-around">
+                    <div class="col-4 bg-dark bg-opacity-25 border border-dark d-flex flex-column rounded pb-3 shadow-sm">
+
                     </div>
                 </div>
             </div>
@@ -254,7 +267,7 @@ require("startsession.php");
                 </div>
             </div>
         </div>
-<!-- 
+        <!-- 
         <div class="modal fade text-dark modal-edit" id="reviewModal" tabindex="-1" aria-labelledby="create"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable">
@@ -298,7 +311,7 @@ require("startsession.php");
         const submitUrl = "tablecontents/queue.config.php";
 
         let asc = false;
-        $(document).on('click', '#sortrecent', async function () {
+        $(document).on('click', '#sortrecent', async function() {
             if (asc === false) {
                 $('#sortrecent').removeClass('bi-sort-up').addClass('bi-sort-down');
                 asc = true;
@@ -324,14 +337,15 @@ require("startsession.php");
         //     console.log($(this).serialize());
         // });
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             let techStatBtnWidth = $("#sortTechStatus").outerWidth();
             $('#techStatBtnFiller').attr("style", `width: ${techStatBtnWidth}px !important`);
         });
 
-        $(document).ready(async function () {
+        $(document).ready(async function() {
             await load_cards();
             await click_drag('queuecontainer');
+            await click_drag('incTransContainer');
             await fetch_data('ongoing');
             await load_technician_status();
             await load_incomplete_transactions();
@@ -374,7 +388,7 @@ require("startsession.php");
                     extraParams: {
                         transactions: 'true'
                     },
-                    failure: function (e) {
+                    failure: function(e) {
                         alert('Transaction event fetch failed.');
                         console.log(e);
                     },
@@ -409,14 +423,14 @@ require("startsession.php");
                         transactions: 'true',
                         data: 'titleonly'
                     },
-                    failure: function (e) {
+                    failure: function(e) {
                         alert('Transaction event fetch failed.');
                         console.log(e);
                     },
                     color: '#00000033',
                     textColor: 'white'
                 },
-                eventContent: function (arg) {
+                eventContent: function(arg) {
                     return {
                         html: arg.event.title
                     };
@@ -430,11 +444,11 @@ require("startsession.php");
 
         });
 
-        $(async function () {
+        $(async function() {
             let status = ['Available', 'Dispatched', 'Unavailable', 'On Leave', 'none'];
             // const totalStatus = 4; 
             statusNum = 0;
-            $(document).on('click', '#sortTechStatus', async function () {
+            $(document).on('click', '#sortTechStatus', async function() {
                 load_technician_status(status[statusNum]);
                 // console.log(status[statusNum]);
                 if (statusNum >= 4) {
@@ -469,7 +483,7 @@ require("startsession.php");
             }
         }
 
-        $(document).on('click', '#cancel', async function () {
+        $(document).on('click', '#cancel', async function() {
             let id = $(this).data('cancel');
             $('#cancelIdDisplay').html(id);
             $('#cancelId').attr('value', id);
@@ -478,7 +492,7 @@ require("startsession.php");
 
 
 
-        $(document).on('submit', '#reschedForm', async function (e) {
+        $(document).on('submit', '#reschedForm', async function(e) {
             e.preventDefault();
             try {
                 const resched = await $.ajax({
@@ -499,7 +513,7 @@ require("startsession.php");
             }
         });
 
-        $(document).on('submit', '#cancelForm', async function (e) {
+        $(document).on('submit', '#cancelForm', async function(e) {
             e.preventDefault();
             try {
                 const cancel = await $.ajax({
@@ -527,7 +541,7 @@ require("startsession.php");
             dateFormat: "Y-m-d",
             minDate: new Date().fp_incr(1),
             disable: [
-                function (date) {
+                function(date) {
                     return (date.getDay() === 0 || date.getDay() === 6);
                 }
             ],
@@ -545,7 +559,7 @@ require("startsession.php");
             maxTime: "15:00"
         });
 
-        $(document).on('click', '#resched', async function () {
+        $(document).on('click', '#resched', async function() {
             let id = $(this).data('resched');
             let time = $(this).data('otime');
             let date = $(this).data('odate');
@@ -566,7 +580,7 @@ require("startsession.php");
             }
 
             $('#reschedModal').modal('show');
-            $(document).on('hidden-bs-modal', '#reschedModal', function () {
+            $(document).on('hidden-bs-modal', '#reschedModal', function() {
                 reschedTime.clear();
                 reschedDate.clear();
             });
@@ -612,7 +626,7 @@ require("startsession.php");
 
 
 
-        $(document).on('click', '#dispatchedtechbtn', async function () {
+        $(document).on('click', '#dispatchedtechbtn', async function() {
             let id = $(this).data('tech');
             $('#deployedtransid').html(id);
             const deploy = await deployed_tech(id);
@@ -621,7 +635,7 @@ require("startsession.php");
             // }
         });
 
-        $(document).on('hidden.bs.modal', '#technicians', function () {
+        $(document).on('hidden.bs.modal', '#technicians', function() {
             $('#technicianscont').empty();
         });
 
@@ -688,15 +702,15 @@ require("startsession.php");
         }
 
 
-        $(function () {
+        $(function() {
             let delay = null;
 
-            $('#searchbar').keyup(function () {
+            $('#searchbar').keyup(function() {
                 clearTimeout(delay);
                 $('#cardcontainer').empty();
                 $('#loader').attr('style', 'display: block !important');
 
-                delay = setTimeout(async function () {
+                delay = setTimeout(async function() {
                     var search = $('#searchbar').val();
                     try {
                         const searcheq = await $.ajax({
