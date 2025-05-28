@@ -692,16 +692,16 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
     mysqli_begin_transaction($conn);
     try {
 
-        if($transData['status'] != 'Pending'){
-            if(empty($pestProblem)){
+        if ($transData['status'] != 'Pending') {
+            if (empty($pestProblem)) {
                 throw new Exception("Transaction should be pending if Pest Problem is not indicated.");
             }
 
             if (in_array('#', $technicianIds) || empty($technicianIds)) {
                 throw new Exception("Transaction should be pending if there is no assigned technicians.");
             }
-    
-            if(in_array('#', $chemUsed) || empty($chemUsed)){
+
+            if (in_array('#', $chemUsed) || empty($chemUsed)) {
                 throw new Exception("Transaction should be pending if there is no used chemicals.");
             }
         }
@@ -718,7 +718,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
             }
             // $amt_used = $amtUsed[$i];
 
-            
+
             if (in_array($chemUsed[$i], $existingChems)) {
                 // we need to get the old amount used
                 // throw new Exception($chemUsed[$i] . json_encode($existingChems) . $amtUsed[$i] . $prevtransamt);
@@ -959,8 +959,69 @@ function approve_stock($conn, $id)
     }
 }
 
+function check_approve($conn, $id)
+{
+    $sql = "SELECT 1 FROM transactions WHERE (treatment_date IS NULL OR customer_name IS NULL OR transaction_time IS NULL) AND id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'stmt failed [check_approve]' . $id];
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) > 0) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function check_normalized_data($conn, $id)
+{
+    $sql = "SELECT 1
+    FROM transactions AS trs
+    WHERE (NOT EXISTS
+    (SELECT trans_id FROM transaction_technicians AS tt WHERE tt.trans_id = trs.id)
+    OR NOT EXISTS
+    (SELECT trans_id FROM transaction_problems AS tp WHERE tp.trans_id = trs.id)
+    OR NOT EXISTS
+    (SELECT trans_id FROM transaction_chemicals AS tc WHERE tc.trans_id = trs.id))
+    AND trs.id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'stmt failed [check_normalized_data()]' . $id];
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) > 0) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 function approve_transaction($conn, $id)
 {
+    $checkTrans = check_approve($conn, $id);
+    if (isset($checkTrans['error'])) {
+        return $checkTrans['error'];
+    } elseif (!$checkTrans) {
+        return 'Missing data. Make sure that all transaction fields are filled in.';
+    }
+
+    $checkNormalized = check_normalized_data($conn, $id);
+    if(isset($checkNormalized['error'])){
+        return $checkNormalized['error'];
+    } elseif(!$checkNormalized){
+        return "Missing data. Make sure that all transaction fields are filled in.";
+    }
+
     $sql = "UPDATE transactions SET transaction_status = 'Accepted' WHERE id = ?;";
     $stmt = mysqli_stmt_init($conn);
 

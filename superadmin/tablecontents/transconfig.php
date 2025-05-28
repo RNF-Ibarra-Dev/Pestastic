@@ -151,7 +151,7 @@ if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
     }
 
     $approve = approve_transaction($conn, $transId);
-    if ($approve) {
+    if ($approve === true) {
         http_response_code(200);
         echo json_encode(['success' => 'Transaction Accepted!']);
         exit();

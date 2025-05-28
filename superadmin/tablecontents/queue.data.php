@@ -297,7 +297,9 @@ if (isset($_GET['inc']) && $_GET['inc'] === 'true') {
     OR NOT EXISTS
     (SELECT trans_id FROM transaction_problems AS tp WHERE tp.trans_id = trs.id)
     OR NOT EXISTS
-    (SELECT trans_id FROM transaction_chemicals AS tc WHERE tc.trans_id = trs.id);";
+    (SELECT trans_id FROM transaction_chemicals AS tc WHERE tc.trans_id = trs.id)
+    OR 
+    (treatment_date IS NULL OR customer_name IS NULL OR transaction_time IS NULL);";
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) > 0) {
