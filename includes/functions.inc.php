@@ -663,7 +663,7 @@ function prev_trans_amt($conn, $id, $trans_id)
         }
         return null;
     } else {
-        return ['error' => 'No rows returned from fetching previous amount. Error: ' . mysqli_stmt_error($stmt)];
+        return ['error' => '[prev_trans_amt()] - No rows returned from fetching previous amount. Error: ' . mysqli_stmt_error($stmt)];
         // return false;
     }
 }
@@ -692,8 +692,18 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
     mysqli_begin_transaction($conn);
     try {
 
-        if (in_array('#', $technicianIds) && $transData['status'] != 'Pending') {
-            throw new Exception("");
+        if($transData['status'] != 'Pending'){
+            if(empty($pestProblem)){
+                throw new Exception("Transaction should be pending if Pest Problem is not indicated.");
+            }
+
+            if (in_array('#', $technicianIds) || empty($technicianIds)) {
+                throw new Exception("Transaction should be pending if there is no assigned technicians.");
+            }
+    
+            if(in_array('#', $chemUsed) || empty($chemUsed)){
+                throw new Exception("Transaction should be pending if there is no used chemicals.");
+            }
         }
 
         $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transData['transId']);
@@ -701,29 +711,29 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         // get transaction chemicals previous amount used
         for ($i = 0; $i < count($chemUsed); $i++) {
 
-
             // get previous amount and set it to var $prevtransamt
             $prevtransamt = prev_trans_amt($conn, $chemUsed[$i], $transData['transId']);
+            if (isset($prevtransamt['error'])) {
+                throw new Exception("Error [725]: " . $prevtransamt['error'] . $chemUsed[$i] . json_encode($existingChems));
+            }
             // $amt_used = $amtUsed[$i];
 
-            $chemlevel = get_chem_level($conn, $chemUsed[$i]);
-
+            
             if (in_array($chemUsed[$i], $existingChems)) {
                 // we need to get the old amount used
+                // throw new Exception($chemUsed[$i] . json_encode($existingChems) . $amtUsed[$i] . $prevtransamt);
                 if ($amtUsed[$i] == $prevtransamt) {
-                    // throw new Exception($chemUsed[$i] . json_encode($existingChems) . $amtUsed[$i] . $prevtransamt);
                     continue;
                 }
             }
+
+            $chemlevel = get_chem_level($conn, $chemUsed[$i]);
 
             if ($amtUsed[$i] > $chemlevel) {
                 $chemname = get_chemical_name($conn, $chemUsed[$i]);
                 throw new Exception("Insufficient Chemical:  " . $chemname);
             }
 
-            if (isset($prevtransamt['error'])) {
-                throw new Exception("Error: " . $prevtransamt['error']);
-            }
 
             if ($prevtransamt === NULL || $prevtransamt === $amtUsed[$i]) {
                 continue;
@@ -1039,9 +1049,9 @@ function loginMultiUser($conn, $uidEmail, $pwd)
 
         // $pwdHashed = $userExists['techPwd'];
         // $checkPwd = password_verify($pwd, $pwdHashed);
-        $passFuckingWord = $userExists['baPwd'];
+        $passwood = $userExists['baPwd'];
 
-        if ($pwd === $passFuckingWord) {
+        if ($pwd === $passwood) {
             session_start();
             $_SESSION["baID"] = $userExists['baID'];
             $_SESSION["fname"] = $userExists['baFName'];

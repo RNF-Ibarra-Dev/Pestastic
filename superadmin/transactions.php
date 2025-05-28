@@ -145,7 +145,7 @@
                                         <div class="col-lg-6 mb-2">
                                             <label for="add-treatment" class="form-label fw-light">Treatment</label>
                                             <select name="add-treatment" id="add-treatment" class="form-select">
-                                                <option value="#" selected>Select Treatment</option>
+                                                <option value="" selected>Select Treatment</option>
                                                 <option value="Follow-up Crawling Insects Control">Follow-up Crawling
                                                     Insects Control</option>
                                                 <option value="Crawling Insects Control">Crawling Insects Control
@@ -213,7 +213,7 @@
                                     <div class="row mb-2 mx-auto">
                                         <label for="add-status" class="form-label fw-light">Status</label>
                                         <select name="add-status" id="add-status" class="form-select">
-                                            <option value="#" selected>Select Status</option>
+                                            <option value="" selected>Select Status</option>
                                             <option value="Pending">Pending</option>
                                             <option value="Accepted">Accepted</option>
                                             <option value="Voided">Voided</option>
@@ -345,7 +345,7 @@
 
                                             <!-- <select id="edit-technicianName" name="edit-technicianName[]"
                                                 class="form-select visually-hidden" aria-label="Default select example">
-                                                <option value="#" selected>Select Technician</option>
+                                                <option value="" selected>Select Technician</option>
                                             </select> -->
                                         </div>
                                     </div>
@@ -369,7 +369,7 @@
                                                 id="edit-treatment-label">Treatment</label>
                                             <select name="edit-treatment" id="edit-treatment"
                                                 class="form-select visually-hidden">
-                                                <option value="#" selected>Select Treatment</option>
+                                                <option value="" selected>Select Treatment</option>
                                                 <option value="Follow-up Crawling Insects Control">Follow-up Crawling
                                                     Insects Control</option>
                                                 <option value="Crawling Insects Control">Crawling Insects Control
@@ -457,7 +457,7 @@
                                         <label for="edit-status" class="form-label mb-0 fw-light p-0 "
                                             id='label-edit-status'>Transaction Status:</label>
                                         <select name="edit-status" id="edit-status" class="form-select ">
-                                            <option value="#" selected>Select Status</option>
+                                            <option value="" selected>Select Status</option>
                                             <option value="Pending">Pending</option>
                                             <option value="Accepted">Accepted</option>
                                             <option value="Voided">Voided</option>
