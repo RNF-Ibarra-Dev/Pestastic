@@ -1340,9 +1340,10 @@
                     $('#tableAlert').removeClass('visually-hidden').html(update.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
                 }
             } catch (error) {
-                let err = jQuery.parseJSON(error.responseText);
+                let err = error.responseText;
+                console.log(error); 
                 console.log('ERROR: ' + error.responseText);
-                $('#del-errormessage').removeClass('visually-hidden').html(err.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                $('#del-errormessage').removeClass('visually-hidden').html(err).hide().fadeIn(400).delay(2000).fadeOut(1000);
                 $('input#editPwd').addClass('border border-danger-subtle').fadeIn(400);
             }
         }

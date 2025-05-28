@@ -127,7 +127,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $update = update_transaction($conn, $data, $techId, $chemUsed, $amtUsed, $problems);
     if (!isset($update['success'])) {
         http_response_code(400);
-        echo json_encode(['error' => $update['errorMessage']]);
+        echo  $update['errorMessage'];
     } else {
         echo json_encode([
             'success' => 'function success ' . $update['success'],

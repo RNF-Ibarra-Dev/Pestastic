@@ -255,9 +255,9 @@ function createTechAccount($conn, $firstName, $lastName, $username, $email, $pwd
     mysqli_stmt_bind_param($stmt, "sssssssss", $firstName, $lastName, $username, $email, $hashedPwd, $contact, $address, $empId, $birthdate);
     mysqli_stmt_execute($stmt);
 
-    if (mysqli_stmt_affected_rows($stmt) > 0){
+    if (mysqli_stmt_affected_rows($stmt) > 0) {
         return true;
-    } else{
+    } else {
         return ['error' => 'Account creation failed. Please contact administration.'];
     }
 }
@@ -276,10 +276,10 @@ function createOpSupAccount($conn, $firstName, $lastName, $username, $email, $pw
 
     mysqli_stmt_bind_param($stmt, "sssssssss", $firstName, $lastName, $username, $email, $hashedPwd, $contact, $address, $empId, $birthdate);
     mysqli_stmt_execute($stmt);
-    
-    if(mysqli_stmt_affected_rows($stmt) > 0){
+
+    if (mysqli_stmt_affected_rows($stmt) > 0) {
         return true;
-    }else{
+    } else {
         return ['error' => 'Account creation failed. Please contact administration.'];
     }
 }
@@ -692,13 +692,30 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
     mysqli_begin_transaction($conn);
     try {
 
+        if (in_array('#', $technicianIds) && $transData['status'] != 'Pending') {
+            throw new Exception("");
+        }
+
+        $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transData['transId']);
+
         // get transaction chemicals previous amount used
         for ($i = 0; $i < count($chemUsed); $i++) {
+
+
             // get previous amount and set it to var $prevtransamt
             $prevtransamt = prev_trans_amt($conn, $chemUsed[$i], $transData['transId']);
             // $amt_used = $amtUsed[$i];
 
             $chemlevel = get_chem_level($conn, $chemUsed[$i]);
+
+            if (in_array($chemUsed[$i], $existingChems)) {
+                // we need to get the old amount used
+                if ($amtUsed[$i] == $prevtransamt) {
+                    // throw new Exception($chemUsed[$i] . json_encode($existingChems) . $amtUsed[$i] . $prevtransamt);
+                    continue;
+                }
+            }
+
             if ($amtUsed[$i] > $chemlevel) {
                 $chemname = get_chemical_name($conn, $chemUsed[$i]);
                 throw new Exception("Insufficient Chemical:  " . $chemname);
@@ -715,14 +732,13 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                 $reflect = reflect_trans_chem($conn, $difference, $chemUsed[$i]);
             }
 
-            if ($reflect !==true && isset($reflect['error'])) {
+            if ($reflect !== true && isset($reflect['error'])) {
                 throw new Exception("Modify error: " . $reflect['error'] . 'prev amt: ' . $prevtransamt . ' ' . $amtUsed[$i]);
             }
         }
 
         // get existing arrays to check
         $existingTechs = get_existing($conn, 'tech_id', 'transaction_technicians', $transData['transId']);
-        $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transData['transId']);
         $existingProblems = get_existing($conn, 'problem_id', 'transaction_problems', $transData['transId']);
 
         // check removed chem, problem, item basta yon (function returns different array values)
@@ -803,7 +819,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         foreach ($fTechs as $tech) {
             $techInfo = get_tech_name($conn, $tech);
             if (!$techInfo) {
-                throw new Exception("failed to fetch tech name");
+                throw new Exception("failed to fetch tech name" . $tech);
             }
             $techSql = "INSERT INTO transaction_technicians (trans_id, tech_id, tech_info) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE tech_info = VALUES(tech_info);";
             $techStmt = mysqli_stmt_init($conn);
