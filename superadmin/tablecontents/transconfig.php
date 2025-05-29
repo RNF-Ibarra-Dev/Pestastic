@@ -130,7 +130,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         echo  $update['errorMessage'];
     } else {
         echo json_encode([
-            'success' => 'function success ' . $update['success'],
+            'success' => 'Transaction Updated.',
             'techs' => $update['ids'],
             'diffs' => $update['diffs'],
             'ftech' => $update['ftech'],

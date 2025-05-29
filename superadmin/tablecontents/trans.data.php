@@ -256,6 +256,7 @@ function add_more_tech($conn, $num, $active)
     <?php
 }
 
+// get details. From view transaction
 if (isset($_GET['details']) && $_GET['details'] === 'true') {
     $id = htmlspecialchars($_GET['transId']);
     if (!is_numeric($id)) {
