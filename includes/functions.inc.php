@@ -475,12 +475,12 @@ function get_chem_level($conn, $id)
     }
 }
 
-function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $treatment, $chemUsed, $amtUsed, $status, $pestProblem)
+function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $amtUsed, $status, $pestProblem)
 {
 
     mysqli_begin_transaction($conn);
     try {
-        $transSql = "INSERT INTO transactions (customer_name, treatment_date, treatment, transaction_status, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW());";
+        $transSql = "INSERT INTO transactions (customer_name, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW());";
         $transStmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($transStmt, $transSql)) {
@@ -490,7 +490,7 @@ function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $t
         if (!$transStmt) {
             error_log("SQL Error: " . mysqli_error($conn));
         }
-        mysqli_stmt_bind_param($transStmt, 'ssss', $customerName, $treatmentDate, $treatment, $status);
+        mysqli_stmt_bind_param($transStmt, 'sssss', $customerName, $treatmentDate, $treatmentTime, $treatment, $status);
         mysqli_stmt_execute($transStmt);
 
         if (mysqli_stmt_affected_rows($transStmt) > 0) {
@@ -959,6 +959,27 @@ function approve_stock($conn, $id)
     }
 }
 
+function check_status($conn, $id)
+{
+    $sql = "SELECT transaction_status FROM transactions WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'stmt failed [check_status]' . $id];
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) > 0) {
+        if ($row = mysqli_fetch_assoc($result)) {
+            return $row['transaction_status'];
+        }
+    } else {
+        return false;
+    }
+}
 function check_approve($conn, $id)
 {
     $sql = "SELECT 1 FROM transactions WHERE (treatment_date IS NULL OR customer_name IS NULL OR transaction_time IS NULL) AND id = ?;";
@@ -1016,9 +1037,9 @@ function approve_transaction($conn, $id)
     }
 
     $checkNormalized = check_normalized_data($conn, $id);
-    if(isset($checkNormalized['error'])){
+    if (isset($checkNormalized['error'])) {
         return $checkNormalized['error'];
-    } elseif(!$checkNormalized){
+    } elseif (!$checkNormalized) {
         return "Missing data. Make sure that all transaction fields are filled in.";
     }
 

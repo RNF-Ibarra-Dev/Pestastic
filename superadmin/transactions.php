@@ -135,11 +135,16 @@
 
                                     <div class="row mb-2">
 
-                                        <div class="col-lg-6 mb-2">
+                                        <div class="col-lg-3 mb-2">
                                             <label for="add-treatmentDate" class="form-label fw-light">Treatment
                                                 Date</label>
                                             <input type="date" name="add-treatmentDate" id="add-treatmentDate"
-                                                min="2025-01-01" class="form-control form-add">
+                                                class="form-control form-add">
+                                        </div>
+                                        <div class="col-lg-3 mb-2">
+                                            <label for="add-treatmentTime" class="form-label fw-light">Treatment Time</label>
+                                            <input type="date" name="add-treatmentTime" id="add-treatmentTime"
+                                                class="form-control form-add" autocomplete="address-line3">
                                         </div>
 
                                         <div class="col-lg-6 mb-2">
@@ -216,7 +221,7 @@
                                             <option value="" selected>Select Status</option>
                                             <option value="Pending">Pending</option>
                                             <option value="Accepted">Accepted</option>
-                                            <option value="Voided">Voided</option>
+                                            <!-- <option value="Voided">Voided</option> -->
                                             <option value="Completed">Completed </option>
                                         </select>
                                     </div>
@@ -1068,11 +1073,16 @@
                     // $('#view-treatmentDate').val(d.treatment_date == null ? "--:--:--" : d.treatment_date);
                     $('#list-status').empty();
                     $('#view-status').html(d.transaction_status);
-                    
+
                     if (d.transaction_status == 'Pending') {
                         editTransDate.config.minDate = new Date().fp_incr(1);
                     } else {
                         editTransDate.config.minDate = null;
+                    }
+                    if (d.transaction_status == 'Completed' || d.transaction_status == 'Voided') {
+                        $('#editbtn').attr('disabled', true);
+                    } else {
+                        $('#editbtn').attr('disabled', false);
                     }
                     $(`#edit-status option[value=${d.transaction_status}]`).attr('selected', true);
                     $(`#edit-treatment option[value='${d.treatment}']`).attr('selected', true);
@@ -1280,7 +1290,35 @@
             }
         }
 
+        let adddate = $('#add-treatmentDate');
+        addDate = flatpickr(adddate, {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+            minDate: new Date().fp_incr(1),
+            disable: [
+                function(date) {
+                    return (date.getDay() === 0 || date.getDay() === 6);
+                }
+            ],
+            locale: {
+                "firstDayOfWeek": 1
+            },
+            // enableTime: true
+        });
 
+        let addtime = $('#add-treatmentTime');
+        addTime = flatpickr(addtime, {
+            altInput: true,
+            altFormat: "h:i K",
+            dateFormat: "h:i",
+            enableTime: true,
+            noCalendar: true,
+            minTime: "9:00",
+            maxTime: "15:00",
+            defaultDate: "9:00",
+            // allowInput: true
+        });
         // submit
         $(function () {
             $('#addTransaction').on('submit', async function (e) {
@@ -1361,23 +1399,23 @@
                 });
 
                 if (update) {
-                    console.log(update.success);
-                    // console.log(update.data);
-                    console.log('final tech: ' + update.ftech);
-                    console.log('final chems: ' + update.fchems);
-                    console.log('final problems: ' + update.fprob);
-                    console.log(update.techs);
-                    console.log(update.diffs);
+                    // console.log(update.success);
+                    // // console.log(update.data);
+                    // console.log('final tech: ' + update.ftech);
+                    // console.log('final chems: ' + update.fchems);
+                    // console.log('final problems: ' + update.fprob);
+                    // console.log(update.techs);
+                    // console.log(update.diffs);
                     await loadpage();
                     $('#confirmation').modal('hide');
                     $('#viewEditForm')[0].reset();
                     $('#tableAlert').removeClass('visually-hidden').html(update.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
                 }
             } catch (error) {
-                let err = error.responseText;
+                let err = error.responseJSON;
                 console.log(error);
-                console.log('ERROR: ' + error.responseText);
-                $('#del-errormessage').removeClass('visually-hidden').html(err).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                console.log('ERROR: ' + error.responseJSON);
+                $('#del-errormessage').removeClass('visually-hidden').html(err.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
                 $('input#editPwd').addClass('border border-danger-subtle').fadeIn(400);
             }
         }

@@ -10,6 +10,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $customerName = $_POST['add-customerName'];
     $techId = $_POST['add-technicianName'] ?? [];
     $treatmentDate = $_POST['add-treatmentDate'];
+    $treatmentTime = $_POST['add-treatmentTime'];
     $treatment = $_POST['add-treatment'];
     $problems = $_POST['pest_problems'] ?? []; //array
     $chemUsed = $_POST['add_chemBrandUsed'] ?? []; //arrya
@@ -56,7 +57,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-    $transaction = newTransaction($conn, $customerName, $techId, $treatmentDate, $treatment, $chemUsed, $amtUsed, $status, $problems);
+    $transaction = newTransaction($conn, $customerName, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $amtUsed, $status, $problems);
 
     if (!isset($transaction['success'])) {
         http_response_code(400);
@@ -106,6 +107,26 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $status = $_POST['edit-status'];
     $saPwd = $_POST['edit-saPwd'];
 
+    $allowedUpdateStatus = ['Pending', 'Accepted'];
+
+    $oStatus = check_status($conn, $transId);
+    // no transId
+    if (!$oStatus) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Unknown transaction ID.']);
+        exit();
+    } elseif (isset($oStatus['error'])) {
+        // stmt error
+        http_response_code(400);
+        echo json_encode(['error' => $oStatus['error']]);
+        exit();
+    } elseif(!in_array($oStatus, $allowedUpdateStatus)) {
+        // if status is not pending or accepted
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid Status. Make sure the status is Pending or Accepted.']);
+        exit();
+    }
+
     $data = [
         'transId' => $transId,
         'customer' => $customerName,
@@ -127,7 +148,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $update = update_transaction($conn, $data, $techId, $chemUsed, $amtUsed, $problems);
     if (!isset($update['success'])) {
         http_response_code(400);
-        echo  $update['errorMessage'];
+        echo $update['errorMessage'];
     } else {
         echo json_encode([
             'success' => 'Transaction Updated.',
