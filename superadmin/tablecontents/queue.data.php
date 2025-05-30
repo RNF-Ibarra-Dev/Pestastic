@@ -231,23 +231,24 @@ if (isset($_GET['getdata']) && $_GET['getdata'] === 'ongoing') {
             $treatment = $row['treatment'];
             $status = $row['transaction_status'];
         ?>
-            <div class="card bg-white bg-opacity-25 rounded border-0 text-light px-3">
-                <div class="card-body px-2 border-light ">
-                    <h5 class="card-title align-middle">Transaction
-                        <?= htmlspecialchars($id) ?>
-                        <?= $status === 'Pending' ? "<i class='bi bi-dot text-warning fs-4'></i>" : "<i class='bi bi-dot text-success fs-4'></i>" ?>
-                    </h5>
-                    <hr>
-                    <p class="card-text lh-lg">
-                        <strong>Customer:</strong> <?= htmlspecialchars($customername) ?><br>
-                        <strong>Address:</strong> N/A <br>
-                        <strong>Follow up Date:</strong> Not set<br>
-                        <strong>Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
-                    </p>
-                    <button type="button" id="dispatchedtechbtn"
-                        class="btn btn-sidebar border-light rounded-pill text-light bg-transparent"
-                        data-tech="<?= htmlspecialchars($id) ?>">Dispatched Technicians</button> <br>
-
+            <div class="col">
+                <div class="card bg-white bg-opacity-25 rounded border-0 text-light px-3">
+                    <div class="card-body px-2 border-light ">
+                        <h5 class="card-title align-middle">Transaction
+                            <?= htmlspecialchars($id) ?>
+                            <?= $status === 'Pending' ? "<i class='bi bi-dot text-warning fs-4'></i>" : "<i class='bi bi-dot text-success fs-4'></i>" ?>
+                        </h5>
+                        <hr>
+                        <p class="card-text lh-lg">
+                            <strong>Customer:</strong> <?= htmlspecialchars($customername) ?><br>
+                            <strong>Address:</strong> N/A <br>
+                            <strong>Follow up Date:</strong> Not set<br>
+                            <strong>Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
+                        </p>
+                        <button type="button" id="dispatchedtechbtn"
+                            class="btn btn-sidebar border-light rounded-pill text-light bg-transparent"
+                            data-tech="<?= htmlspecialchars($id) ?>">Dispatched Technicians</button> <br>
+                    </div>
                 </div>
             </div>
         <?php

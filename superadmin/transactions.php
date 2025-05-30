@@ -374,6 +374,9 @@
                                                 id="edit-treatment-label">Treatment</label>
                                             <select name="edit-treatment" id="edit-treatment"
                                                 class="form-select visually-hidden">
+                                                <div id="edit-optionTreatments">
+                                                    <!-- ajax -->
+                                                </div>
                                                 <option value="" selected>Select Treatment</option>
                                                 <option value="Follow-up Crawling Insects Control">Follow-up Crawling
                                                     Insects Control</option>
@@ -985,14 +988,6 @@
             altFormat: "F j, Y",
             dateFormat: "Y-m-d",
             // minDate: new Date().fp_incr(1),
-            disable: [
-                function (date) {
-                    return (date.getDay() === 0 || date.getDay() === 6);
-                }
-            ],
-            locale: {
-                "firstDayOfWeek": 1
-            }
         });
 
         let toggled = false;
@@ -1296,14 +1291,6 @@
             altFormat: "F j, Y",
             dateFormat: "Y-m-d",
             minDate: new Date().fp_incr(1),
-            disable: [
-                function(date) {
-                    return (date.getDay() === 0 || date.getDay() === 6);
-                }
-            ],
-            locale: {
-                "firstDayOfWeek": 1
-            },
             // enableTime: true
         });
 
@@ -1313,10 +1300,7 @@
             altFormat: "h:i K",
             dateFormat: "h:i",
             enableTime: true,
-            noCalendar: true,
-            minTime: "9:00",
-            maxTime: "15:00",
-            defaultDate: "9:00",
+            noCalendar: true,   
             // allowInput: true
         });
         // submit

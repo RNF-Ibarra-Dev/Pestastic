@@ -12,25 +12,29 @@ require("startsession.php");
     <?php include('header.links.php'); ?>
     <style>
         #queuecontainer,
-        #incTransContainer {
+        #incTransContainer,
+        #ongoingContainer {
             overflow-x: auto !important;
             white-space: nowrap !important;
             -webkit-overflow-scrolling: touch !important;
         }
 
         #cardcontainer>.col,
-        #incompleteTransactions>.col {
+        #incompleteTransactions>.col,
+        #ongoing>.col {
             flex: 0 0 auto !important;
             width: 24rem !important;
         }
 
         #queuecontainer::-webkit-scrollbar,
-        #incTransContainer::-webkit-scrollbar {
+        #incTransContainer::-webkit-scrollbar,
+        #ongoingContainer::-webkit-scrollbar {
             display: none !important;
         }
 
         #queuecontainer,
-        #incTransContainer {
+        #incTransContainer,
+        #ongoingContainer {
             -ms-overflow-style: none !important;
         }
 
@@ -42,7 +46,8 @@ require("startsession.php");
         }
 
         #cardcontainer,
-        #incompleteTransactions {
+        #incompleteTransactions, 
+        #ongoing {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             -khtml-user-select: none;
@@ -74,7 +79,10 @@ require("startsession.php");
                                 class="bi bi-file-earmark-text me-2 "></i>
                             Ongoing Transactions</h4>
                     </div>
-                    <div class="flex-grow-1 d-flex" id="ongoing">
+
+                    <div class="d-flex flex-nowrap rounded-3" id="ongoingContainer">
+                        <div class="flex-grow-1 d-flex flex-nowrap gap-4 p-4 align-items-center" id="ongoing">
+                        </div>
                     </div>
                 </div>
 
@@ -346,6 +354,7 @@ require("startsession.php");
             await load_cards();
             await click_drag('queuecontainer');
             await click_drag('incTransContainer');
+            await click_drag('ongoingContainer')
             await fetch_data('ongoing');
             await load_technician_status();
             await load_incomplete_transactions();
