@@ -12,29 +12,38 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $treatmentDate = $_POST['add-treatmentDate'];
     $treatmentTime = $_POST['add-treatmentTime'];
     $treatment = $_POST['add-treatment'];
+    $t_type = $_POST['add-treatmentType'];
+    $package = $_POST['add-package'];
     $problems = $_POST['pest_problems'] ?? []; //array
     $chemUsed = $_POST['add_chemBrandUsed'] ?? []; //arrya
-    $amtUsed = $_POST['add_amountUsed'] ?? []; //array
+    // $amtUsed = $_POST['add_amountUsed'] ?? []; //array
     $status = $_POST['add-status'];
+    $session = $_POST['add-session'];
     $saPwd = $_POST['saPwd'];
 
-    // if(!in_array($problems, $allPestProblems)){
-    //     http_response_code(400);
-    //     echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Not in pest problems array']);
-    //     exit();
-    // }
+    if(!in_array($t_type, $transactionType)){
+        http_response_code(400);
+        echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Transaction Type. Please Try Again.']);
+        exit();
+    }
+
+    if(!in_array($problems, $allPestProblems)){
+        http_response_code(400);
+        echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Pest Problem. Please Try Again.']);
+        exit();
+    }
 
     if (!in_array($status, $allStatus)) {
         http_response_code(400);
-        echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Status not valid. Please refresh the page and try again.']);
+        echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Status. Please Try Again.']);
         exit();
     }
 
-    if (!in_array($treatment, $allTreatments, true)) {
-        http_response_code(400);
-        echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Treatment not valid. Please refresh the page and try again.']);
-        exit();
-    }
+    // if (!in_array($treatment, $allTreatments, true)) {
+    //     http_response_code(400);
+    //     echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Treatment. Please Try Again']);
+    //     exit();
+    // }
 
     if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatment) || empty($problems) || empty($chemUsed) || empty($amtUsed) || empty($status)) {
         // header('Content-Type: application/json');
@@ -57,7 +66,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-    $transaction = newTransaction($conn, $customerName, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $amtUsed, $status, $problems);
+    $transaction = newTransaction($conn, $customerName, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session);
 
     if (!isset($transaction['success'])) {
         http_response_code(400);

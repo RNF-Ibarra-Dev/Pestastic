@@ -101,14 +101,22 @@
                                             class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p class="fs-6 fw-light">Provide the details of the transaction below.</p>
-                                    <!-- <h5 class="fw-light">Primary Information</h5> -->
+                                    <p class="fw-medium mb-4 fs-4 text-uppercase text-center">Customer Information</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
                                             <label for="add-customerName" class="form-label fw-light">Customer Name
                                             </label>
                                             <input type="text" name="add-customerName" id="add-customerName"
-                                                class="form-control form-add" autocomplete="one-time-code">
+                                                class="form-control form-add" placeholder="Enter name"
+                                                autocomplete="one-time-code">
+                                            <!-- <p class="text-body-secondary text-muted fw-light">Note: Include full customer name</p> -->
+                                        </div>
+                                        <div class="col-lg-6 mb-2">
+                                            <label for="add-customerAddress" class="form-label fw-light">Customer Full
+                                                Address
+                                            </label>
+                                            <textarea name="add-customerAddress" id="add-customerAddress"
+                                                class="form-control form-add" rows="1" placeholder="e.g B20 L64 Garnet Street Lee Grove 4 Mandaluyong, Metro Manila"></textarea>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
@@ -121,17 +129,17 @@
                                         </div>
                                         <div class="col-lg-2 mb-2 d-flex gap-1 p-0 justify-content-start">
                                             <button type="button" id="addMoreTech"
-                                                class="btn btn-grad mt-auto py-2 px-3"><i
+                                                class="btn btn-grad mt-auto py-1 px-3"><i
                                                     class="bi bi-plus-circle text-light"></i></button>
-                                            <button type="button" id="deleteTech"
-                                                class="btn btn-grad mt-auto py-2 px-3"><i
-                                                    class="bi bi-dash-circle text-light"></i></button>
                                         </div>
                                     </div>
 
-                                    <div id="addTechContainer" class="p-0 m-0 mb-2"></div>
+                                    <div id="addTechContainer" class="row mb-2"></div>
 
                                     <hr class="my-2">
+
+                                    <p class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center">Treatment Information
+                                    </p>
 
                                     <div class="row mb-2">
 
@@ -142,7 +150,8 @@
                                                 class="form-control form-add">
                                         </div>
                                         <div class="col-lg-3 mb-2">
-                                            <label for="add-treatmentTime" class="form-label fw-light">Treatment Time</label>
+                                            <label for="add-treatmentTime" class="form-label fw-light">Treatment
+                                                Time</label>
                                             <input type="date" name="add-treatmentTime" id="add-treatmentTime"
                                                 class="form-control form-add" autocomplete="address-line3">
                                         </div>
@@ -151,20 +160,45 @@
                                             <label for="add-treatment" class="form-label fw-light">Treatment</label>
                                             <select name="add-treatment" id="add-treatment" class="form-select">
                                                 <option value="" selected>Select Treatment</option>
-                                                <option value="Follow-up Crawling Insects Control">Follow-up Crawling
-                                                    Insects Control</option>
-                                                <option value="Crawling Insects Control">Crawling Insects Control
-                                                </option>
-                                                <option value="Termite Control">Termite Control</option>
-                                                <option value="Wooden Structures Treatment">Wooden Structures Treatment
-                                                </option>
-                                                <option value="Termite Powder Application">Termite Powder Application
-                                                </option>
-                                                <option value="Soil Injection">Soil Injection</option>
+                                                <div id="add-treatmentContainer"></div>
                                             </select>
                                         </div>
 
                                     </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-lg-3">
+                                            <label for="add-treatmentType" class="form-label fw-light">Treatment
+                                                Type</label>
+                                            <select name="add-treatmentType" id="add-treatmentType" class="form-select">
+                                                <option value="" selected>Select Treatment Type</option>
+                                                <option value="General Treatment">General Treatment
+                                                </option>
+                                                <option value="Follow-up Treatment">Follow-up Treatment
+                                                </option>
+                                                <option value="Quarterly Treatment">Quarterly Treatment</option>
+                                                <option value="Monthly Treatment">Monthly Treatment
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label for="add-package" class="form-label fw-light">Package</label>
+                                            <select name="add-package" id="add-package" class="form-select">
+                                                <div id="packageSelectContainer"></div>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <label for="add-session" class="form-label fw-light">Session Number</label>
+                                            <input type="number" name="add-session" class="form-control form-add"
+                                                id="add-session" placeholder="e.g. 2" autocomplete="one-time-code" disabled>
+                                        </div>
+                                    </div>
+
+                                    <hr class="mb-2 mt-4">
+
+                                    <p class="fw-medium mt-3 mb-2 fs-4 text-uppercase text-center">Additional
+                                        Information
+                                    </p>
 
                                     <div class="row mb-2">
 
@@ -188,47 +222,36 @@
                                             </select>
 
                                         </div>
-                                        <div class="col-lg-4 mb-2 ps-0">
-                                            <label for="add-amountUsed" class="form-label fw-light">Amount
-                                                Used</label>
-                                            <div class="d-flex flex-row">
-                                                <input type="number" name="add_amountUsed[]" maxlength="4"
-                                                    id="add-amountUsed" class="form-control form-add me-3"
-                                                    autocomplete="one-time-code">
-                                                <span id="passwordHelpInline" class="form-text align-self-center">
-                                                    /ml
-                                                </span>
-                                            </div>
-                                        </div>
+
 
                                         <div class="col-lg-2 mb-2 d-flex gap-1 p-0 justify-content-start">
                                             <button type="button" id="addMoreChem"
                                                 class="btn btn-grad mt-auto py-2 px-3"><i
                                                     class="bi bi-plus-circle text-light"></i></button>
-                                            <button type="button" id="deleteChemRow"
-                                                class="btn btn-grad mt-auto py-2 px-3"><i
-                                                    class="bi bi-dash-circle text-light"></i></button>
                                         </div>
                                     </div>
 
-                                    <div class="p-0 m-0 mb-2" id="add-chemContainer">
+                                    <div class="row mb-2" id="add-chemContainer">
                                         <!-- template add chemical -->
                                     </div>
 
-                                    <div class="row mb-2 mx-auto">
-                                        <label for="add-status" class="form-label fw-light">Status</label>
-                                        <select name="add-status" id="add-status" class="form-select">
-                                            <option value="" selected>Select Status</option>
-                                            <option value="Pending">Pending</option>
-                                            <option value="Accepted">Accepted</option>
-                                            <!-- <option value="Voided">Voided</option> -->
-                                            <option value="Completed">Completed </option>
-                                        </select>
+                                    <div class="row mb-2 ">
+                                        <div class="col-lg-6">
+                                            <label for="add-status" class="form-label fw-light">Status</label>
+                                            <select name="add-status" id="add-status" class="form-select">
+                                                <option value="" selected>Select Status</option>
+                                                <option value="Pending">Pending</option>
+                                                <option value="Accepted">Accepted</option>
+                                                <option value="Completed">Completed </option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label for="add-notes" class="form-label fw-light">Additional Notes</label>
+                                            <textarea name="add-notes" id="add-notes" placeholder=". . ."
+                                                class="form-control" rows="1"></textarea>
+                                        </div>
                                     </div>
 
-                                    <!-- <div class="row mb-2">
-                                        
-                                    </div> -->
                                     <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
                                         id="emptyInput"></p>
                                 </div>
@@ -262,9 +285,6 @@
                                 </div>
                                 <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
                                     id="add-alert"></p>
-                                <!-- <div id="passwordHelpBlock" class="form-text">
-                                Note: deletion of chemicals are irreversible.
-                            </div> -->
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-target="#addModal"
@@ -798,6 +818,17 @@
             }
         })
 
+        async function treatments() {
+            try {
+                $.get(transUrl, "treatments=true", function (data) {
+                    $('#add-treatmentContainer').empty();
+                    $('#add-treatmentContainer').html(data);
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         $(document).on('click', '#addbtn', async function () {
             let form = 'add';
             try {
@@ -806,7 +837,9 @@
                     get_technician(form),
                     get_problems(form),
                     add_more_chem(),
-                    add_more_tech()
+                    add_more_tech(),
+                    add_packages(),
+                    treatments()
                 ]);
                 if (load) {
                     $('#addTransaction')[0].reset();
@@ -818,7 +851,26 @@
             } catch (error) {
                 console.log('add get error.')
             }
-        })
+        });
+
+        async function add_packages() {
+            try {
+                const package = await $.ajax({
+                    method: 'GET',
+                    url: transUrl,
+                    dataType: 'html',
+                    data: "packages=true"
+                });
+
+                if (package) {
+                    $('#packageSelectContainer').empty();
+                    $('#packageSelectContainer').html(package);
+                }
+            } catch (error) {
+                console.log(error);
+                console.log(error.responseText);
+            }
+        }
 
         // add / delete more technicians
         async function add_more_tech() {
@@ -830,16 +882,7 @@
                 num++;
                 console.log('tech add number: ' + num);
             });
-            $('#deleteTech').off('click').on('click', function () {
-                if (num > 2) {
-                    num--;
-                    let row = `#row-${num}`;
-                    console.log('row number: ' + row);
-                    $(row).remove();
-                } else {
-                    console.log('no more rows to delete.');
-                }
-            })
+
         }
 
         // add / delete chem main function
@@ -853,18 +896,7 @@
                 console.log(num);
 
             });
-            $('#deleteChemRow').off('click').on('click', function () {
-                // console.log(num);
-                if (num > 2) {
-                    num--;
-                    let row = `#row-${num}`;
-                    console.log(row);
-                    $(row).remove();
 
-                } else {
-                    console.log('no more rows to delete.');
-                }
-            })
         }
 
         // append tech row function
@@ -1098,10 +1130,10 @@
                     }
                 }
             } catch (error) {
-                alert(JSON.stringify(error.responseJSON));
-                alert(error);
+                alert(error.responseText);
             }
         }
+
 
         // open details
         $(document).on('click', '#tableDetails', async function () {
@@ -1151,6 +1183,18 @@
             }
         })
 
+        $(document).on('click', '#deleteTech', async function () {
+            let rowId = $(this).data('row-id');
+            let row = $('#addTechContainer').length;
+            if (row === 0) {
+                alert('Transaction should have at least one technician.');
+            } else {
+                $(this).parent().parent().remove();
+                // console.log('tech row removed');
+                // await check_emptyrow('technicianName');
+            }
+        })
+
         $(document).on('click', '#edit-deleteChemRow', async function () {
             let rowId = $(this).data('row-id');
             let row = $('#edit-chemBrandUsed > div').length;
@@ -1189,6 +1233,10 @@
                 await toggle();
                 $(this).html('Close Edit/Delete');
             }
+        });
+
+        $(document).on('click', '#deleteChem', function () {
+            $(this).parent().parent().remove();
         });
 
         async function empty_form() {
@@ -1285,12 +1333,21 @@
             }
         }
 
+        $(document).on('focusout', 'form input, form select, form textarea', function () {
+            if ($(this).val() == '' || $(this).val() == '#') {
+                $(this).addClass('border border-danger');
+            } else {
+                $(this).removeClass('border border-danger');
+            }
+        });
+
         let adddate = $('#add-treatmentDate');
         addDate = flatpickr(adddate, {
             altInput: true,
             altFormat: "F j, Y",
             dateFormat: "Y-m-d",
             minDate: new Date().fp_incr(1),
+            setDate: 'today'
             // enableTime: true
         });
 
@@ -1300,8 +1357,8 @@
             altFormat: "h:i K",
             dateFormat: "h:i",
             enableTime: true,
-            noCalendar: true,   
-            // allowInput: true
+            noCalendar: true,
+            setDate: '8:00'
         });
         // submit
         $(function () {

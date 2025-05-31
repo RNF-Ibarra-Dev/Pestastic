@@ -171,9 +171,10 @@ function get_chem($conn, $active = null)
         $name = $row['name'];
         $level = $row['chemLevel'];
         $req = $row['request']
-        ?>
-        <option value="<?= htmlspecialchars($id)?>" <?= $level <= 0 || $req == 1 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?>>
-            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars($level) . "ml"?><?= $req == 1 ? " | Chemical Under Review" : ''?>
+            ?>
+        <option value="<?= htmlspecialchars($id) ?>" <?= $level <= 0 || $req == 1 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?>>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars($level) . "ml" ?>
+            <?= $req == 1 ? " | Chemical Under Review" : '' ?>
         </option>
         <?php
     }
@@ -198,9 +199,10 @@ function get_chem_edit($conn, $active = null)
         $name = $row['name'];
         $level = $row['chemLevel'];
         $req = $row['request']
-        ?>
-        <option value="<?= htmlspecialchars($id)?>" <?= $id == $active ? 'selected' : '' ?>>
-            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars($level) . "ml"?><?= $req == 1 ? " | Chemical Under Review" : ''?>
+            ?>
+        <option value="<?= htmlspecialchars($id) ?>" <?= $id == $active ? 'selected' : '' ?>>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars($level) . "ml" ?>
+            <?= $req == 1 ? " | Chemical Under Review" : '' ?>
         </option>
         <?php
     }
@@ -216,42 +218,51 @@ function get_more_chem($conn, $rowNum)
     }
 
     ?>
-    <div class="row mb-2" id="row-<?= $rowNum ?>">
-        <div class="col-lg-6 mb-2">
-            <label for="add-chemBrandUsed" class="form-label fw-light">Chemical
-                Used #<?= $rowNum ?></label>
+    <div class="row mb-2">
+        <div class="col-lg-6 dropdown-center d-flex flex-column pe-0">
             <select id="add-chemBrandUsed" name="add_chemBrandUsed[]" class="form-select">
                 <?= get_chem($conn); ?>
                 <!-- chem ajax -->
             </select>
-
         </div>
-        <div class="col-lg-4 mb-2 ps-0">
-            <label for="add-amountUsed" class="form-label fw-light">Amount
-                Used</label>
-            <div class="d-flex flex-row">
-                <input type="number" name="add_amountUsed[]" maxlength="4" id="amountUsed-<?= $rowNum ?>"
-                    class="form-control form-add me-3 " autocomplete="one-time-code">
-                <span id="passwordHelpInline" class="form-text align-self-center">
-                    /ml
-                </span>
-            </div>
+        <div class="col-2 d-flex">
+            <button type="button" id="deleteChem" class="btn btn-grad mt-auto py-2 px-3"><i
+                    class="bi bi-dash-circle text-light"></i></button>
         </div>
     </div>
     <?php
+}
+
+if(isset($_GET['treatments']) && $_GET['treatments'] === 'true'){
+    $sql = "SELECT * FROM treatments;";
+    $result = mysqli_query($conn, $sql);
+
+    if(mysqli_num_rows($result) > 0){
+        while ($row = mysqli_fetch_assoc($result)){
+            $id = $row['id'];
+            $n = $row['t_name'];
+            ?>
+            <option value="<?=htmlspecialchars($id)?>"><?=htmlspecialchars($n)?></option>
+            <?php
+        }
+    }
 }
 
 function add_more_tech($conn, $num, $active)
 {
 
     ?>
-
-    <div class="dropdown-center col-lg-6 mb-2" id="row-<?= $num ?>">
-        <label for="add-technicianName" class="form-label fw-light">Technician #<?= $num ?>
-        </label>
-        <select id="add-technicianName" name="add-technicianName[]" class="form-select" aria-label="Default select example">
-            <?= get_tech($conn, $active); ?>
-        </select>
+    <div class="row mb-2">
+        <div class="dropdown-center d-flex col-lg-6 mb-2" id="row-<?= $num ?>">
+            <select id="add-technicianName" name="add-technicianName[]" class="form-select"
+                aria-label="Default select example">
+                <?= get_tech($conn, $active); ?>
+            </select>
+        </div>
+        <div class="col-2 p-0">
+            <button type="button" id="deleteTech" class="btn btn-grad py-1 px-3"><i
+                    class="bi bi-dash-circle text-light text-align-middle"></i></button>
+        </div>
     </div>
     <?php
 }
@@ -624,5 +635,39 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
     <?php
     exit();
 }
+
+if (isset($_GET['packages']) && $_GET['packages'] === 'true') {
+    ?>
+    <option value="#" selected>Select Package</option>
+    <option value="none">None</option>
+    <?php
+    packages($conn);
+}
+
+function packages($conn)
+{
+    $sql = "SELECT * FROM packages;";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $name = $row['name'];
+            $sessions = $row['session_count'];
+            $warranty = $row['warranty'];
+            ?>
+            <option value="<?= $id ?>">
+                <?= htmlspecialchars($name) . ' | ' . htmlspecialchars($warranty) . " Years Warranty" . ($sessions != 1 ? " | (" . htmlspecialchars($sessions) . " Sessions) " : '') ?>
+            </option>
+            <?php
+        }
+    } else {
+        ?>
+        <option disabled>No Current Package.</option>
+        <?php
+    }
+}
+
+
 
 ?>

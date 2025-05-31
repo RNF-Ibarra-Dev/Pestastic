@@ -336,7 +336,7 @@ function get_chemical_name($conn, $chemId)
     }
 }
 
-function add_chemical_used($conn, $transactionId, $chemUsedId, $amtUsed)
+function add_chemical_used($conn, $transactionId, $chemUsedId, $amtUsed=0)
 {
     $chemBrand = get_chemical_name($conn, $chemUsedId);
     if (!$chemBrand) {
@@ -475,7 +475,7 @@ function get_chem_level($conn, $id)
     }
 }
 
-function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $amtUsed, $status, $pestProblem)
+function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session)
 {
 
     mysqli_begin_transaction($conn);
@@ -497,33 +497,33 @@ function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $t
             mysqli_stmt_close($transStmt);
             $transId = mysqli_insert_id($conn);
 
-            $iterationLogs = [];
+            // $iterationLogs = [];
             // error_log("Total count of chemUsed: " . count($chemUsed));
 
             for ($i = 0; $i < count($chemUsed); $i++) {
-                $addChemFunc = add_chemical_used($conn, $transId, $chemUsed[$i], $amtUsed[$i]);
-                // error_log("Iteration $i - Chem ID: {$chemUsed[$i]}, Amount: {$amtUsed[$i]}"); 
+                $addChemFunc = add_chemical_used($conn, $transId, $chemUsed[$i]);
                 if (!$addChemFunc) {
                     error_log("Insert failed at iteration $i");
-                    throw new Exception('The chemical used addition failed: ' . $chemUsed[$i] . $amtUsed[$i] . ' ' . mysqli_error($conn));
+                    throw new Exception('The chemical used addition failed: ' . $chemUsed[$i] . ' ' . mysqli_error($conn));
                 }
-                // add function to update chemical level
-                $iterationLogs[] = "iterated $i";
+
+                // $iterationLogs[] = "iterated $i";
 
                 // get original value
-                $level = get_chem_level($conn, $chemUsed[$i]);
+                // $level = get_chem_level($conn, $chemUsed[$i]);
 
-                if ($amtUsed[$i] > $level) {
-                    throw new Exception('Insufficient Chemical');
-                }
+                // if ($amtUsed[$i] > $level) {
+                //     throw new Exception('Insufficient Chemical');
+                // }
 
-                $update = update_chem_level($conn, $chemUsed[$i], $level, $amtUsed[$i]);
+                // $update = update_chem_level($conn, $chemUsed[$i], $level, $amtUsed[$i]);
 
-                if (isset($update['error'])) {
-                    throw new Exception('Chemical not updated. Chem ID: ' . $chemUsed[$i] . $update['error']);
-                }
+                // if (isset($update['error'])) {
+                //     throw new Exception('Chemical not updated. Chem ID: ' . $chemUsed[$i] . $update['error']);
+                // }
             }
 
+            // insert pest prob to database
             for ($i = 0; $i < count($pestProblem); $i++) {
                 $addPestProb = add_pest_prob($conn, $transId, $pestProblem[$i]);
                 if (!$addPestProb) {
@@ -533,6 +533,7 @@ function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $t
             // error_log("Transaction ID: " . $transId);
             // error_log("Technician IDs: " . json_encode($technicianIds));
 
+            // insert technicians to database
             for ($i = 0; $i < count($technicianIds); $i++) {
                 $addTech = add_tech_trans($conn, $transId, $technicianIds[$i]);
                 if (!$addTech) {
@@ -542,7 +543,7 @@ function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $t
             mysqli_commit($conn);
             return [
                 'success' => true,
-                'iterate' => $iterationLogs
+                // 'iterate' => $iterationLogs
             ];
         } else {
             throw new Exception('Insertion Failed.');
