@@ -272,7 +272,7 @@ if (isset($_GET['details']) && $_GET['details'] === 'true') {
     $id = htmlspecialchars($_GET['transId']);
     if (!is_numeric($id)) {
         http_response_code(400);
-        echo json_encode(['type' => 'id', 'message' => 'ID not numeric.']);
+        echo json_encode(['type' => 'id', 'message' => 'Invalid ID.']);
         exit();
     }
     $response = [];
@@ -337,8 +337,8 @@ if (isset($_GET['getTechList']) && $_GET['getTechList'] == 'true') {
 }
 
 if (isset($_GET['view']) && $_GET['view'] == 'treatment') {
-    $transId = $_GET['transId'];
-    $sql = "SELECT treatment FROM transactions WHERE id = ?;";
+    $treatmentid = $_GET['transId'];
+    $sql = "SELECT t_name FROM treatments WHERE id = ?;";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -346,7 +346,7 @@ if (isset($_GET['view']) && $_GET['view'] == 'treatment') {
         exit();
     }
 
-    mysqli_stmt_bind_param($stmt, 'i', $transId);
+    mysqli_stmt_bind_param($stmt, 'i', $treatmentid);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
@@ -354,7 +354,7 @@ if (isset($_GET['view']) && $_GET['view'] == 'treatment') {
 
     if ($numRows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $treatment = $row['treatment'];
+            $treatment = $row['t_name'];
 
             ?>
             <li class="list-group-item"><?= $treatment ?></li>
@@ -429,7 +429,7 @@ if (isset($_GET['view']) && $_GET['view'] == 'chemUsed') {
 
             ?>
             <li class="list-group-item mb-2"><strong>Chemical:</strong> <?= $chemUsed ?><br><strong>Amount used:
-                </strong><?= $amtUsed ?> ml</li>
+                </strong><?= $amtUsed != 0 ? $amtUsed . ' ml' : 'Amount Pending'?></li>
             <?php
         }
         mysqli_stmt_close($stmt);
@@ -465,7 +465,7 @@ if (isset($_GET['edit']) && $_GET['edit'] == 'technicianName') {
             $technician = $row['tech_info'];
 
             ?>
-            <div class="mb-2 d-inline-flex w-50" id="techRow-<?= $id ?>">
+            <div class="mb-2 d-inline-flex" id="techRow-<?= $id ?>">
                 <select id="edit-technicianName" name="edit-technicianName[]" class="form-select me-3"
                     aria-label="Default select example">
                     <?php
@@ -481,7 +481,7 @@ if (isset($_GET['edit']) && $_GET['edit'] == 'technicianName') {
         exit();
     } else {
         ?>
-        <div class="mb-2 d-inline-flex w-50" id="techRow-">
+        <div class="mb-2 d-inline-flex" id="techRow-">
             <select id="edit-technicianName" name="edit-technicianName[]" class="form-select me-3"
                 aria-label="Default select example">
                 <?php
@@ -654,7 +654,7 @@ function packages($conn)
             $id = $row['id'];
             $name = $row['name'];
             $sessions = $row['session_count'];
-            $warranty = $row['warranty'];
+            $warranty = $row['year_warranty'];
             ?>
             <option value="<?= $id ?>">
                 <?= htmlspecialchars($name) . ' | ' . htmlspecialchars($warranty) . " Years Warranty" . ($sessions != 1 ? " | (" . htmlspecialchars($sessions) . " Sessions) " : '') ?>
@@ -665,6 +665,19 @@ function packages($conn)
         ?>
         <option disabled>No Current Package.</option>
         <?php
+    }
+}
+
+if(isset($_GET['treatmentname']) && $_GET['treatmentname'] === 'true'){
+    $id = $_GET['id'];
+    $sql = "SELECT t_name FROM treatments WHERE id = $id";
+    $res = mysqli_query($conn, $sql);
+    if(mysqli_num_rows($res) > 0){
+        if($row = mysqli_fetch_assoc($res)){
+            return $row['t_name'];
+        }
+    }else{
+        return "Invalid ID.";
     }
 }
 

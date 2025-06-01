@@ -116,7 +116,8 @@
                                                 Address
                                             </label>
                                             <textarea name="add-customerAddress" id="add-customerAddress"
-                                                class="form-control form-add" rows="1" placeholder="e.g B20 L64 Garnet Street Lee Grove 4 Mandaluyong, Metro Manila"></textarea>
+                                                class="form-control form-add" rows="1"
+                                                placeholder="e.g B20 L64 Garnet Street Lee Grove 4 Mandaluyong, Metro Manila"></textarea>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
@@ -190,7 +191,8 @@
                                         <div class="col-lg-3">
                                             <label for="add-session" class="form-label fw-light">Session Number</label>
                                             <input type="number" name="add-session" class="form-control form-add"
-                                                id="add-session" placeholder="e.g. 2" autocomplete="one-time-code" disabled>
+                                                id="add-session" placeholder="e.g. 2" autocomplete="one-time-code"
+                                                disabled>
                                         </div>
                                     </div>
 
@@ -314,7 +316,8 @@
                                 <!-- modal body -->
                                 <div class="modal-body pb-1">
 
-                                    <p class="fw-light text-muted">Transaction details presented below.</p>
+                                    <!-- <p class="fw-light text-muted">Transaction details presented below.</p> -->
+                                    <p class="fw-medium mb-4 fs-4 text-uppercase text-center">Customer Information</p>
 
                                     <!-- row 1 -->
                                     <div class="row mb-2">
@@ -339,44 +342,48 @@
 
                                     </div>
 
-                                    <!-- edit technician choices/select, toggle visually-hidden when edit is on -->
-                                    <label for='edit-technicianName' id="edit-technicianName-label"
-                                        class="form-label fw-light visually-hidden">Edit Technician/s:</label>
-
-                                    <!-- container -- ajax -- append -->
-                                    <div class="d-flex flex-column m-0 p-0 visually-hidden" id="edit-technicianName">
-                                    </div>
-
-                                    <!-- add button -->
-                                    <div class="w-50 d-flex visually-hidden" id="techaddbtn">
-                                        <button type="button" id="edit-addTech"
-                                            class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
-                                            <p class="fw-light m-0 me-3">Add Technician</p><i
-                                                class="bi bi-plus-circle text-light"></i>
-                                        </button>
-                                    </div>
-
-
-                                    <!-- row 2 -->
                                     <div class="row mb-2">
-                                        <!-- left side -->
-                                        <div class="dropdown-center col-lg-6 mb-2">
+                                        <div class="col-lg-6">
+                                            <!-- edit technician choices/select, toggle visually-hidden when edit is on -->
+                                            <label for='edit-technicianName' id="edit-technicianName-label"
+                                                class="form-label fw-light visually-hidden">Edit Technician/s:</label>
 
-                                            <!-- list technician when in view mode. Handled in ajax -->
-                                            <label for="view-technicians" id="view-technicians-label"
-                                                class="form-label fw-light">Technician/s:
-                                            </label>
-                                            <ul class="list-group list-group-flush" id="view-technicians"></ul>
+                                            <!-- container -- ajax -- append -->
+                                            <div class="d-flex flex-column m-0 p-0 visually-hidden"
+                                                id="edit-technicianName">
+                                            </div>
 
-                                            <!-- <select id="edit-technicianName" name="edit-technicianName[]"
-                                                class="form-select visually-hidden" aria-label="Default select example">
-                                                <option value="" selected>Select Technician</option>
-                                            </select> -->
+                                            <!-- add button -->
+                                            <div class="w-50 d-flex visually-hidden" id="techaddbtn">
+                                                <button type="button" id="edit-addTech"
+                                                    class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
+                                                    <p class="fw-light m-0 me-3">Add Technician</p><i
+                                                        class="bi bi-plus-circle text-light"></i>
+                                                </button>
+                                            </div>
+
+                                            <div class="dropdown-center col-lg-6 mb-2">
+                                                <!-- list technician when in view mode. Handled in ajax -->
+                                                <label for="view-technicians" id="view-technicians-label"
+                                                    class="form-label fw-light">Technician/s:
+                                                </label>
+                                                <ul class="list-group list-group-flush" id="view-technicians"></ul>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <!-- add more technician container (when edit mode) -- this is a row itself -->
-                                    <!-- <div id="edit-techContainer" class="p-0 m-0 mb-2 visually-hidden"></div> -->
+                                        <div class="col-lg-6 mb-2" id='view-addCont'>
+                                            <label for='view-address' class="form-label fw-light">Address:</label>
+                                            <textarea type="text" id="view-address"
+                                                class="form-control-plaintext form-add" readonly style="resize: none !important;"></textarea>
+                                        </div>
+                                        
+                                        <div class="col-lg-6 mb-2 d-none" id='edit-addCont'>
+                                            <label for='edit-address' class="form-label fw-light">Address:</label>
+                                            <textarea type="text" name="edit-address" id="edit-address"
+                                                class="form-control form-add"></textarea>
+                                        </div>
+
+                                    </div>
 
                                     <hr class="my-2">
 
@@ -820,7 +827,7 @@
 
         async function treatments() {
             try {
-                $.get(transUrl, "treatments=true", function (data) {
+                $.get(transUrl, "treatments=true",  function (data) {
                     $('#add-treatmentContainer').empty();
                     $('#add-treatmentContainer').html(data);
                 });
@@ -1053,6 +1060,7 @@
             $('#view-probCheckbox-label').toggleClass('visually-hidden');
             $('#metadata').toggleClass('visually-hidden');
             $('#view-status-col').toggleClass('visually-hidden');
+            $('#view-addCont').toggleClass('d-none');
 
             // removes visually-hidden when edit/detele button is clicked
             $('#edit-technicianName-label').toggleClass('visually-hidden');
@@ -1066,6 +1074,7 @@
             $('#btn-amountUsed').toggleClass('visually-hidden');
             $('#edit-status-col').toggleClass('visually-hidden');
             $('#editbtns').toggleClass('visually-hidden');
+            $('#edit-addCont').toggleClass('d-none');
             return toggled = true;
         }
 
@@ -1077,6 +1086,16 @@
                 editTransDate.config.minDate = null;
             }
         });
+
+        function treatment_name(id) {
+            try {
+                $.get(transUrl, `treatmentname=true&id=${{id}}`, function (d) {
+                    return d;
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        }
 
         async function view_transaction(transId) {
             try {
@@ -1094,13 +1113,13 @@
                     console.log(details);
                     let d = details.success;
                     $('#view-transId').val(d.id);
-                    $('#view-customerName').val(d.customer_name == null ? `Name not set.` : d.customer_name);
+                    $('#view-customerName').val(d.customer_name ?? `Name not set.`);
                     editTransDate.clear();
                     editTransDate.setDate(d.treatment_date);
-                    // $('#view-treatmentDate').val(d.treatment_date == null ? "--:--:--" : d.treatment_date);
                     $('#list-status').empty();
                     $('#view-status').html(d.transaction_status);
-
+                    $('#view-address').html(d.customer_address ?? 'Address not set.');
+                    $('#edit-address').html(d.customer_address ?? '');
                     if (d.transaction_status == 'Pending') {
                         editTransDate.config.minDate = new Date().fp_incr(1);
                     } else {
@@ -1112,11 +1131,12 @@
                         $('#editbtn').attr('disabled', false);
                     }
                     $(`#edit-status option[value=${d.transaction_status}]`).attr('selected', true);
-                    $(`#edit-treatment option[value='${d.treatment}']`).attr('selected', true);
+                    let tname = treatment_name(d.treatment);
+                    $(`#edit-treatment option[value='${tname}']`).attr('selected', true);
                     $('#view-time').html('Created at: ' + d.created_at + '<br>Updated at: ' + d.updated_at);
                     const functions = await Promise.all([
                         await view_technician(d.id),
-                        await view(d.id, 'treatment'),
+                        await view(d.treatment, 'treatment'),
                         await view(d.id, 'probCheckbox'),
                         await view(d.id, 'chemUsed'),
                         await edit('technicianName', d.id),
@@ -1124,6 +1144,7 @@
                         await get_chemical_brand('edit', d.id)
                     ]);
                     if (functions) {
+                        console.log(functions);
                         $('#details-modal').modal('show');
                     } else {
                         alert('Details Modal Error. Refresh Page.');
@@ -1277,7 +1298,7 @@
                         $(`#edit-${name}`).empty();
                         $(`#edit-${name}`).append(target);
                     } else {
-                        $(`#edit-${name}`).append(target);
+                        $(`#edit-${name}`).html(target);
                     }
                 } else {
                     alert('no edit returned');
@@ -1332,6 +1353,16 @@
                 alert(error);
             }
         }
+
+        $(document).on('change', '#add-package', function () {
+            let package = $(this).val();
+            console.log(package);
+            if (package === 'none' || package === '#') {
+                $('#add-session').attr('disabled', true);
+            } else {
+                $('#add-session').attr('disabled', false);
+            }
+        });
 
         $(document).on('focusout', 'form input, form select, form textarea', function () {
             if ($(this).val() == '' || $(this).val() == '#') {

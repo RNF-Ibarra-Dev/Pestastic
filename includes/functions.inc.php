@@ -475,12 +475,12 @@ function get_chem_level($conn, $id)
     }
 }
 
-function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session)
+function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note, $t_finished)
 {
 
     mysqli_begin_transaction($conn);
     try {
-        $transSql = "INSERT INTO transactions (customer_name, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW());";
+        $transSql = "INSERT INTO transactions (customer_name, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at, ) VALUES (?, ?, ?, ?, ?, NOW(), NOW());";
         $transStmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($transStmt, $transSql)) {

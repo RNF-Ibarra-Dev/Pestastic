@@ -18,20 +18,28 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $chemUsed = $_POST['add_chemBrandUsed'] ?? []; //arrya
     // $amtUsed = $_POST['add_amountUsed'] ?? []; //array
     $status = $_POST['add-status'];
-    $session = $_POST['add-session'];
+    $session = $_POST['add-session'] ?? 1;
     $saPwd = $_POST['saPwd'];
 
-    if(!in_array($t_type, $transactionType)){
+    if ($package === '#') {
         http_response_code(400);
-        echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Transaction Type. Please Try Again.']);
+        echo json_encode(['type' => 'empty', 'errorMessage' => 'Invalid Transaction Session Count.']);
         exit();
     }
 
-    if(!in_array($problems, $allPestProblems)){
-        http_response_code(400);
-        echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Pest Problem. Please Try Again.']);
-        exit();
+    if ($package != 'none') {
+        if (!in_array($package, $packageIds)) {
+            http_response_code(400);
+            echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Package. Please Try Again.']);
+            exit();
+        }
     }
+
+    // if (!in_array($problems, $allPestProblems)) {
+    //     http_response_code(400);
+    //     echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Pest Problem. Please Try Again.']);
+    //     exit();
+    // }
 
     if (!in_array($status, $allStatus)) {
         http_response_code(400);
@@ -45,7 +53,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     //     exit();
     // }
 
-    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatment) || empty($problems) || empty($chemUsed) || empty($amtUsed) || empty($status)) {
+    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatment) || empty($problems) || empty($chemUsed) || empty($status) || empty($treatment) || empty($t_type)) {
         // header('Content-Type: application/json');
         http_response_code(400);
         echo json_encode(['type' => 'emptyinput', 'errorMessage' => "All input fields are required."]);
@@ -74,7 +82,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     } else {
         http_response_code(200);
-        echo json_encode(['success' => 'Transaction added.', 'iterate' => $transaction['iterate']]);
+        echo json_encode(['success' => 'Transaction added.']);
         exit();
     }
 }
@@ -129,7 +137,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         http_response_code(400);
         echo json_encode(['error' => $oStatus['error']]);
         exit();
-    } elseif(!in_array($oStatus, $allowedUpdateStatus)) {
+    } elseif (!in_array($oStatus, $allowedUpdateStatus)) {
         // if status is not pending or accepted
         http_response_code(400);
         echo json_encode(['error' => 'Invalid Status. Make sure the status is Pending or Accepted.']);

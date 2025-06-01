@@ -11,10 +11,10 @@ require_once '../../includes/functions.inc.php';
 //     'Follow-up Crawling Insects Control'
 // ];
 
-$allTreatments =[];
+$allTreatments = [];
 $treatments = "SELECT t_name FROM treatments;";
 $t_result = mysqli_query($conn, $treatments);
-while ($row = mysqli_fetch_assoc($t_result)){
+while ($row = mysqli_fetch_assoc($t_result)) {
     $allTreatments[] = $row['t_name'];
 }
 
@@ -25,9 +25,9 @@ $allStatus = [
     'Completed'
 ];
 
-$transactionType = [
+$treatmentType = [
     'General Treatment',
-    'Follow-up Treatment', 
+    'Follow-up Treatment',
     'Quarterly Treatment',
     'Monthly Treatment'
 ];
@@ -40,5 +40,10 @@ while ($row = mysqli_fetch_assoc($pestProbResult)) {
     $allPestProblems[] = $row['problems'];
 }
 
-// print_r($allPestProblems);
-// echo $allPestProblems[0];
+$packageIds = [];
+$package = "SELECT * FROM packages;";
+$packRes = mysqli_query($conn, $package);
+
+while ($row = mysqli_fetch_assoc($packRes)) {
+    $packageIds[] = $row['id'];
+}
