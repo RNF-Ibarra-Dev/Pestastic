@@ -683,4 +683,36 @@ if(isset($_GET['treatmentname']) && $_GET['treatmentname'] === 'true'){
 
 
 
-?>
+function get_treatment_id($id, $conn){
+    $sql = "SELECT treatment FROM transactions WHERE id = $id;";
+    $result = mysqli_query($conn, $sql);
+    if(mysqli_num_rows($result) > 0){
+        if($row = mysqli_fetch_assoc($result)){
+            return $row['treatment'];
+        }
+    }
+}
+
+
+
+if(isset($_GET['edit']) && $_GET['edit'] === 'treatment-options'){
+    $id = $_GET['transId'];
+    // $treatmentid = get_treatment_id($id, $conn);
+
+    $sql = "SELECT * FROM treatments;";
+    $res = mysqli_query($conn, $sql);
+
+    if(mysqli_num_rows($res) > 0){
+        while($row = mysqli_fetch_assoc($res)){
+            $idval = $row['id'];
+            $tname = $row['t_name'];
+            ?>
+            <option value="<?=htmlspecialchars($idval)?>" <?=$id == $idval ? 'selected' : ''?>><?=htmlspecialchars($tname)?></option>
+            <?php
+        }
+    } else{
+       ?> 
+       <option value="" disabled>No Treatments</option>
+       <?php
+    }
+}

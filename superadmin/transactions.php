@@ -376,7 +376,7 @@
                                             <textarea type="text" id="view-address"
                                                 class="form-control-plaintext form-add" readonly style="resize: none !important;"></textarea>
                                         </div>
-                                        
+
                                         <div class="col-lg-6 mb-2 d-none" id='edit-addCont'>
                                             <label for='edit-address' class="form-label fw-light">Address:</label>
                                             <textarea type="text" name="edit-address" id="edit-address"
@@ -401,29 +401,26 @@
                                                 id="edit-treatment-label">Treatment</label>
                                             <select name="edit-treatment" id="edit-treatment"
                                                 class="form-select visually-hidden">
-                                                <div id="edit-optionTreatments">
+                                                <option value="" selected>Select Treatment</option>
+                                                <div id="edit-treatment-options">
                                                     <!-- ajax -->
                                                 </div>
-                                                <option value="" selected>Select Treatment</option>
-                                                <option value="Follow-up Crawling Insects Control">Follow-up Crawling
-                                                    Insects Control</option>
-                                                <option value="Crawling Insects Control">Crawling Insects Control
-                                                </option>
-                                                <option value="Termite Control">Termite Control</option>
-                                                <option value="Wooden Structures Treatment">Wooden Structures Treatment
-                                                </option>
-                                                <option value="Termite Powder Application">Termite Powder Application
-                                                </option>
-                                                <option value="Soil Injection">Soil Injection</option>
                                             </select>
                                         </div>
 
                                         <!-- right side -->
-                                        <div class="col-lg-6 mb-2">
-                                            <!-- remove readonly in edit mode -->
+                                        <div class="col-lg-3 mb-2">
                                             <label for="view-treatmentDate" class="form-label fw-light">Treatment
                                                 Date:</label>
                                             <input type="date" name="edit-treatmentDate" id="view-treatmentDate"
+                                                min="2025-01-01" class="form-control form-add"
+                                                style="border: none !important;" disabled>
+                                        </div>
+
+                                        <div class="col-lg-3 mb-2">
+                                            <label for="view-treatmentTime" class="form-label fw-light">Treatment
+                                                Time:</label>
+                                            <input type="date" name="edit-treatmentTime" id="view-treatmentTime"
                                                 min="2025-01-01" class="form-control form-add"
                                                 style="border: none !important;" disabled>
                                         </div>
@@ -450,6 +447,24 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-lg-3">
+                                            <label for="edit-treatmentType" class="form-label fw-light">Treatment Type:</label>
+                                            <p id="view-treatmentType" class="ps-3"></p>
+                                            <select name="edit-treatmentType" id="edit-treatmentType" class="form-select d-none"></select>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label for="edit-package" class="form-label fw-light">Package:</label>
+                                            <p id="view-package" class="ps-3"></p>
+                                            <select name="edit-package" id="edit-package" class="form-select d-none"></select>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <label for="edit-session" class="form-label fw-light">Session number:</label>
+                                            <input type="text" class="form-control-plaintext ps-3" id="edit-session" name="edit-session" readonly>
+                                        </div>
+                                    </div>
+
 
                                     <div class="visually-hidden" id="edit-chemBrandUsed"></div>
 
@@ -702,29 +717,29 @@
 
         <?php
         if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
-            ?>
+        ?>
             $('#viewEditForm')[0].reset();
             let id = <?= $_GET['id']; ?>;
             console.log(id);
             view_transaction(id);
-            $('#details-modal').on('hidden.bs.modal', function (e) {
+            $('#details-modal').on('hidden.bs.modal', function(e) {
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.delete('openmodal');
                 currentUrl.searchParams.delete('id');
                 window.history.pushState(null, "", currentUrl.pathname + currentUrl.search);
             });
-            <?php
+        <?php
         }
         ?>
 
-        $(document).on('change', '#checkall', function () {
+        $(document).on('change', '#checkall', function() {
             $('#checkicon').toggleClass('bi-square bi-check-square');
             var checked = $(this).prop('checked');
             $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
         });
 
         // voidrequesttable
-        $(document).on('click', '#voidreqbtn', async function () {
+        $(document).on('click', '#voidreqbtn', async function() {
             const loadreq = await void_req_table();
             if (loadreq) {
                 $('#voidrequestmodal').modal('show');
@@ -753,7 +768,7 @@
             }
         }
 
-        $(document).on('submit', '#voidrequestform', async function (e) {
+        $(document).on('submit', '#voidrequestform', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -776,7 +791,7 @@
             }
         })
 
-        $(document).on('click', '#pendingbtn', function () {
+        $(document).on('click', '#pendingbtn', function() {
             let transId = $(this).data('pending-id');
             console.log(transId);
             $('#transidinput').val(transId);
@@ -785,7 +800,7 @@
             $('#approvemodal').modal('show');
         });
 
-        $('#approvependingtransactions').on('submit', async function (e) {
+        $('#approvependingtransactions').on('submit', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             let status = $('#sortstatus option:selected').val();
@@ -827,7 +842,7 @@
 
         async function treatments() {
             try {
-                $.get(transUrl, "treatments=true",  function (data) {
+                $.get(transUrl, "treatments=true", function(data) {
                     $('#add-treatmentContainer').empty();
                     $('#add-treatmentContainer').html(data);
                 });
@@ -836,7 +851,7 @@
             }
         }
 
-        $(document).on('click', '#addbtn', async function () {
+        $(document).on('click', '#addbtn', async function() {
             let form = 'add';
             try {
                 const load = await Promise.all([
@@ -883,7 +898,7 @@
         async function add_more_tech() {
             let num = 2;
 
-            $('#addMoreTech', '#addModal').off('click').on('click', async function () {
+            $('#addMoreTech', '#addModal').off('click').on('click', async function() {
                 // console.log('tite' + num);
                 await get_more_tech(num);
                 num++;
@@ -897,7 +912,7 @@
             // let moreChemTemp = $('#add-chemicalData').html();
             let num = 2;
 
-            $('#addMoreChem', '#addModal').off('click').on('click', async function () {
+            $('#addMoreChem', '#addModal').off('click').on('click', async function() {
                 await add_used_chem(num);
                 num++;
                 console.log(num);
@@ -1024,15 +1039,22 @@
 
         let etd = $('#view-treatmentDate');
         editTransDate = flatpickr(etd, {
-            altFormat: "F j, Y",
             dateFormat: "Y-m-d",
+            // minDate: new Date().fp_incr(1),
+        });
+
+        let ett = $('#view-treatmentTime');
+        editTransTime = flatpickr(ett, {
+            dateFormat: "H:i",
+            noCalendar: true,
+            enableTime: true
             // minDate: new Date().fp_incr(1),
         });
 
         let toggled = false;
 
         async function toggle() {
-            $("#view-customerName").attr("readonly", function (i, attr) {
+            $("#view-customerName, #edit-session").attr("readonly", function(i, attr) {
                 if (attr) {
                     $(this).removeClass('form-control-plaintext');
                     $(this).addClass('form-control');
@@ -1042,7 +1064,7 @@
                 }
                 return attr ? false : true;
             });
-            $("#view-treatmentDate").attr("disabled", function (i, attr) {
+            $("#view-treatmentDate, #view-treatmentTime").attr("disabled", function(i, attr) {
                 $(this).removeAttr('style');
                 if (attr) {
                     $(this).removeAttr('style');
@@ -1061,6 +1083,8 @@
             $('#metadata').toggleClass('visually-hidden');
             $('#view-status-col').toggleClass('visually-hidden');
             $('#view-addCont').toggleClass('d-none');
+            $('#view-treatmentType').toggleClass('d-none');
+            $('#view-package').toggleClass('d-none');
 
             // removes visually-hidden when edit/detele button is clicked
             $('#edit-technicianName-label').toggleClass('visually-hidden');
@@ -1075,210 +1099,19 @@
             $('#edit-status-col').toggleClass('visually-hidden');
             $('#editbtns').toggleClass('visually-hidden');
             $('#edit-addCont').toggleClass('d-none');
+            $('#edit-treatmentType').toggleClass('d-none');
+            $('#edit-package').toggleClass('d-none');
             return toggled = true;
         }
 
-        $(document).on('change', '#edit-status', function () {
-            let sts = $('#edit-status').val();
-            if (sts == 'Pending') {
-                editTransDate.config.minDate = new Date().fp_incr(1);
-            } else {
-                editTransDate.config.minDate = null;
-            }
-        });
-
-        function treatment_name(id) {
-            try {
-                $.get(transUrl, `treatmentname=true&id=${{id}}`, function (d) {
-                    return d;
-                });
-            } catch (error) {
-                console.log(error);
-            }
-        }
-
-        async function view_transaction(transId) {
-            try {
-                const details = await $.ajax({
-                    type: 'GET',
-                    url: transUrl,
-                    dataType: 'json',
-                    data: {
-                        details: 'true',
-                        transId: transId
-                    }
-                });
-
-                if (details.success) {
-                    console.log(details);
-                    let d = details.success;
-                    $('#view-transId').val(d.id);
-                    $('#view-customerName').val(d.customer_name ?? `Name not set.`);
-                    editTransDate.clear();
-                    editTransDate.setDate(d.treatment_date);
-                    $('#list-status').empty();
-                    $('#view-status').html(d.transaction_status);
-                    $('#view-address').html(d.customer_address ?? 'Address not set.');
-                    $('#edit-address').html(d.customer_address ?? '');
-                    if (d.transaction_status == 'Pending') {
-                        editTransDate.config.minDate = new Date().fp_incr(1);
-                    } else {
-                        editTransDate.config.minDate = null;
-                    }
-                    if (d.transaction_status == 'Completed' || d.transaction_status == 'Voided') {
-                        $('#editbtn').attr('disabled', true);
-                    } else {
-                        $('#editbtn').attr('disabled', false);
-                    }
-                    $(`#edit-status option[value=${d.transaction_status}]`).attr('selected', true);
-                    let tname = treatment_name(d.treatment);
-                    $(`#edit-treatment option[value='${tname}']`).attr('selected', true);
-                    $('#view-time').html('Created at: ' + d.created_at + '<br>Updated at: ' + d.updated_at);
-                    const functions = await Promise.all([
-                        await view_technician(d.id),
-                        await view(d.treatment, 'treatment'),
-                        await view(d.id, 'probCheckbox'),
-                        await view(d.id, 'chemUsed'),
-                        await edit('technicianName', d.id),
-                        await edit('probCheckbox', d.id),
-                        await get_chemical_brand('edit', d.id)
-                    ]);
-                    if (functions) {
-                        console.log(functions);
-                        $('#details-modal').modal('show');
-                    } else {
-                        alert('Details Modal Error. Refresh Page.');
-                    }
-                }
-            } catch (error) {
-                alert(error.responseText);
-            }
-        }
-
-
-        // open details
-        $(document).on('click', '#tableDetails', async function () {
-            const clearform = await empty_form();
-            if (clearform) {
-                $('#viewEditForm')[0].reset();
-                $(`#edit-chemBrandUsed`).empty();
-                let transId = $(this).data('trans-id');
-                if (toggled) {
-                    await toggle();
-                    toggled = false;
-                    $('#editbtn').html('Edit/Delete Transaction');
-                }
-                await view_transaction(transId);
-            } else {
-                alert('Modal Error. Refresh Page.');
-            }
-        });
-
-        function get_addrow(row) {
-            $.get(transUrl, {
-                addrow: 'true'
-            }, function (data) {
-                $(`#edit-${row}`).append(data);
-                console.log(status);
-            })
-        }
-
-        async function check_emptyrow(row) {
-            if ($(`#edit-${row}`).html().trim().length === 0) {
-                console.log("empty div");
-                get_addrow(row);
-            } else {
-                console.log('div not empty');
-            }
-        }
-
-        $(document).on('click', '#edit-deleteTech', async function () {
-            let rowId = $(this).data('row-id');
-            let row = $('#edit-technicianName > div').length;
-            if (row === 1) {
-                alert('Transaction should have at least one technician.');
-            } else {
-                $(this).parent().remove();
-                console.log('tech row removed');
-                await check_emptyrow('technicianName');
-            }
-        })
-
-        $(document).on('click', '#deleteTech', async function () {
-            let rowId = $(this).data('row-id');
-            let row = $('#addTechContainer').length;
-            if (row === 0) {
-                alert('Transaction should have at least one technician.');
-            } else {
-                $(this).parent().parent().remove();
-                // console.log('tech row removed');
-                // await check_emptyrow('technicianName');
-            }
-        })
-
-        $(document).on('click', '#edit-deleteChemRow', async function () {
-            let rowId = $(this).data('row-id');
-            let row = $('#edit-chemBrandUsed > div').length;
-            if (row === 1) {
-                alert('Transaction should have at least one or two chemical used');
-            } else {
-                if (rowId === '') {
-                    let row = $(this).closest('div.row');
-                    row.remove();
-                    console.log('row with no id removed.');
-                } else {
-                    console.log(rowId);
-                    $(`.row #row-${rowId}`).remove();
-                }
-                await check_emptyrow('chemBrandUsed');
-            }
-        })
-
-        $(document).on('click', '#edit-addTech', async function () {
-            // $.get(transUrl, { editTechAdd: 'true' }, function (data) {
-            //     $('#edit-technicianName').append(data);
-            // })
-            await edit('technicianName');
-        })
-
-        $(document).on('click', '#edit-addMoreChem', async function () {
-            get_addrow('chemBrandUsed');
-        })
-
-        $(document).on('click', '#editbtn', async function () {
-            if (toggled) {
-                await toggle();
-                toggled = false;
-                $(this).html('Edit/Delete Transaction');
-            } else {
-                await toggle();
-                $(this).html('Close Edit/Delete');
-            }
-        });
-
-        $(document).on('click', '#deleteChem', function () {
-            $(this).parent().parent().remove();
-        });
-
-        async function empty_form() {
-            $('#viewEditForm')[0].reset();
-            $('#add-technicianName').empty();
-            $('#addTechContainer').empty();
-            $('#add-probCheckbox').empty();
-            $('#add-chemBrandUsed').empty();
-            $('#edit-technicianName').empty();
-            $('#view-technicians').empty();
-            $('#view-treatment').empty();
-            $('#view-probCheckbox').empty();
-            $('#edit-probCheckbox').empty();
-            $('#edit-chemBrandUsed').empty();
-            $('#view-chemUsed').empty();
-            $('#view-status').empty();
-            $('#edit-chemContainer').empty();
-            console.log('modal cleared');
-            return true;
-        }
-
+        // $(document).on('change', '#edit-status', function () {
+        //     let sts = $('#edit-status').val();
+        //     if (sts == 'Pending') {
+        //         editTransDate.config.minDate = new Date().fp_incr(1);
+        //     } else {
+        //         editTransDate.config.minDate = null;
+        //     }
+        // });
 
         async function edit(name, transId = null) {
             try {
@@ -1301,7 +1134,7 @@
                         $(`#edit-${name}`).html(target);
                     }
                 } else {
-                    alert('no edit returned');
+                    alert('no edit returned' + target);
                 }
             } catch (error) {
                 alert('Error at edit function: ' + edit + '\nerror: ' + error);
@@ -1354,7 +1187,214 @@
             }
         }
 
-        $(document).on('change', '#add-package', function () {
+        function treatment_name(id) {
+            try {
+                $.get(transUrl, `treatmentname=true&id=${{id}}`, function(d) {
+                    return d;
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        function package_name(id){
+            $.get(transUrl, `packagename=true&id=${{id}}`, function(data){
+                if(data){
+                    $('#view-package').empty();
+                    $('#view-package').html(data);
+                } else{
+                    console.log(data);
+                }
+            });
+        }
+
+        async function view_transaction(transId) {
+            try {
+                const details = await $.ajax({
+                    type: 'GET',
+                    url: transUrl,
+                    dataType: 'json',
+                    data: {
+                        details: 'true',
+                        transId: transId
+                    }
+                });
+
+                if (details.success) {
+                    console.log(details);
+                    let d = details.success;
+                    $('#view-transId').val(d.id);
+                    $('#view-customerName').val(d.customer_name ?? `Name not set.`);
+                    editTransDate.clear();
+                    editTransDate.setDate(d.treatment_date);
+                    $('#list-status').empty();
+                    $('#view-status').html(d.transaction_status);
+                    $('#view-address').html(d.customer_address ?? 'Address not set.');
+                    $('#edit-address').html(d.customer_address ?? '');
+                    editTransTime.setDate(d.transaction_time);
+                    $('#edit-session').val(d.session_no ?? '1');
+                    $('#view-treatmentType').html(d.treatment_type ?? 'Treatment type not set');
+
+                    if (d.transaction_status == 'Completed' || d.transaction_status == 'Voided') {
+                        $('#editbtn').attr('disabled', true);
+                    } else {
+                        $('#editbtn').attr('disabled', false);
+                    }
+                    $(`#edit-status option[value=${d.transaction_status}]`).attr('selected', true);
+                    let tname = treatment_name(d.treatment);
+                    $(`#edit-treatment option[value='${tname}']`).attr('selected', true);
+                    $('#view-time').html('Created at: ' + d.created_at + '<br>Updated at: ' + d.updated_at);
+                    
+                    const functions = await Promise.all([
+                        await view_technician(d.id),
+                        await view(d.treatment, 'treatment'),
+                        await view(d.id, 'probCheckbox'),
+                        await view(d.id, 'chemUsed'),
+                        await edit('treatment-options', d.treatment), //treatment option
+                        await edit('technicianName', d.id),
+                        await edit('probCheckbox', d.id),
+                        await edit('treatmentType'),
+                        await get_chemical_brand('edit', d.id)
+                    ]);
+                    if (functions) {
+                        $('#details-modal').modal('show');
+                    } else {
+                        alert('Details Modal Error. Refresh Page.');
+                    }
+                }
+            } catch (error) {
+                alert(error.responseText);
+            }
+        }
+
+
+        // open details
+        $(document).on('click', '#tableDetails', async function() {
+            const clearform = await empty_form();
+            if (clearform) {
+                $('#viewEditForm')[0].reset();
+                $(`#edit-chemBrandUsed`).empty();
+                let transId = $(this).data('trans-id');
+                if (toggled) {
+                    await toggle();
+                    toggled = false;
+                    $('#editbtn').html('Edit/Delete Transaction');
+                }
+                await view_transaction(transId);
+            } else {
+                alert('Modal Error. Refresh Page.');
+            }
+        });
+
+        function get_addrow(row) {
+            $.get(transUrl, {
+                addrow: 'true'
+            }, function(data) {
+                $(`#edit-${row}`).append(data);
+                console.log(status);
+            })
+        }
+
+        async function check_emptyrow(row) {
+            if ($(`#edit-${row}`).html().trim().length === 0) {
+                console.log("empty div");
+                get_addrow(row);
+            } else {
+                console.log('div not empty');
+            }
+        }
+
+        $(document).on('click', '#edit-deleteTech', async function() {
+            let rowId = $(this).data('row-id');
+            let row = $('#edit-technicianName > div').length;
+            if (row === 1) {
+                alert('Transaction should have at least one technician.');
+            } else {
+                $(this).parent().remove();
+                console.log('tech row removed');
+                await check_emptyrow('technicianName');
+            }
+        })
+
+        $(document).on('click', '#deleteTech', async function() {
+            let rowId = $(this).data('row-id');
+            let row = $('#addTechContainer').length;
+            if (row === 0) {
+                alert('Transaction should have at least one technician.');
+            } else {
+                $(this).parent().parent().remove();
+                // console.log('tech row removed');
+                // await check_emptyrow('technicianName');
+            }
+        })
+
+        $(document).on('click', '#edit-deleteChemRow', async function() {
+            let rowId = $(this).data('row-id');
+            let row = $('#edit-chemBrandUsed > div').length;
+            if (row === 1) {
+                alert('Transaction should have at least one or two chemical used');
+            } else {
+                if (rowId === '') {
+                    let row = $(this).closest('div.row');
+                    row.remove();
+                    console.log('row with no id removed.');
+                } else {
+                    console.log(rowId);
+                    $(`.row #row-${rowId}`).remove();
+                }
+                await check_emptyrow('chemBrandUsed');
+            }
+        })
+
+        $(document).on('click', '#edit-addTech', async function() {
+            // $.get(transUrl, { editTechAdd: 'true' }, function (data) {
+            //     $('#edit-technicianName').append(data);
+            // })
+            await edit('technicianName');
+        })
+
+        $(document).on('click', '#edit-addMoreChem', async function() {
+            get_addrow('chemBrandUsed');
+        })
+
+        $(document).on('click', '#editbtn', async function() {
+            if (toggled) {
+                await toggle();
+                toggled = false;
+                $(this).html('Edit/Delete Transaction');
+            } else {
+                await toggle();
+                $(this).html('Close Edit/Delete');
+            }
+        });
+
+        $(document).on('click', '#deleteChem', function() {
+            $(this).parent().parent().remove();
+        });
+
+        async function empty_form() {
+            $('#viewEditForm')[0].reset();
+            $('#add-technicianName').empty();
+            $('#addTechContainer').empty();
+            $('#add-probCheckbox').empty();
+            $('#add-chemBrandUsed').empty();
+            $('#edit-technicianName').empty();
+            $('#view-technicians').empty();
+            $('#view-treatment').empty();
+            $('#view-probCheckbox').empty();
+            $('#edit-probCheckbox').empty();
+            $('#edit-chemBrandUsed').empty();
+            $('#view-chemUsed').empty();
+            $('#view-status').empty();
+            $('#edit-chemContainer').empty();
+            console.log('modal cleared');
+            return true;
+        }
+
+
+
+
+        $(document).on('change', '#add-package', function() {
             let package = $(this).val();
             console.log(package);
             if (package === 'none' || package === '#') {
@@ -1364,7 +1404,7 @@
             }
         });
 
-        $(document).on('focusout', 'form input, form select, form textarea', function () {
+        $(document).on('focusout', 'form input, form select, form textarea', function() {
             if ($(this).val() == '' || $(this).val() == '#') {
                 $(this).addClass('border border-danger');
             } else {
@@ -1392,8 +1432,8 @@
             setDate: '8:00'
         });
         // submit
-        $(function () {
-            $('#addTransaction').on('submit', async function (e) {
+        $(function() {
+            $('#addTransaction').on('submit', async function(e) {
                 e.preventDefault();
                 console.log($(this).serialize());
                 try {
@@ -1431,7 +1471,7 @@
         });
 
         // edit section
-        $(document).on('click', '#confirmUpdate', function () {
+        $(document).on('click', '#confirmUpdate', function() {
             $('#confirmation #verifyAdd').text('Verify Transaction Update');
             $('#confirmation #edit-confirm').text('Update Transaction');
             $('#confirmation #edit-confirm').attr('data-update', 'update');
@@ -1439,7 +1479,7 @@
         })
 
         // edit section
-        $(document).on('click', '#confirmDelete', function () {
+        $(document).on('click', '#confirmDelete', function() {
             $('#confirmation #verifyAdd').text('Verify Transaction Deletion');
             $('#confirmation #edit-confirm').text('Delete Transaction');
             $('#confirmation #edit-confirm').attr('data-update', 'delete');
@@ -1447,7 +1487,7 @@
         })
 
         // submit section | confirmation modal
-        $(document).on('click', '#edit-confirm', async function () {
+        $(document).on('click', '#edit-confirm', async function() {
             let update = $(this).attr('data-update');
             // console.log(update);
             if (update === 'delete') {
@@ -1542,15 +1582,15 @@
 
 
         // search function
-        $(function () {
+        $(function() {
             let delay = null;
 
-            $('#searchbar').keyup(function () {
+            $('#searchbar').keyup(function() {
                 clearTimeout(delay);
                 $('#table').empty();
                 $('#loader').removeClass('visually-hidden');
 
-                delay = setTimeout(async function () {
+                delay = setTimeout(async function() {
                     var search = $('#searchbar').val();
                     let status = $('#sortstatus').val();
                     try {
@@ -1628,11 +1668,11 @@
             }
         }
 
-        $(document).ready(async function () {
+        $(document).ready(async function() {
             await loadpage();
         })
 
-        $("#sortstatus").on('change', async function () {
+        $("#sortstatus").on('change', async function() {
             let status = $("#sortstatus option:selected").val();
             $("#searchbar").val('');
             if (status != '') {
@@ -1647,7 +1687,7 @@
             await load_paginated_table(page, status);
         }
 
-        $('#pagination').on('click', '.page-link', async function (e) {
+        $('#pagination').on('click', '.page-link', async function(e) {
             e.preventDefault();
             let status = $("#sortstatus option:selected").val();
 
