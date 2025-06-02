@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 30, 2025 at 12:42 PM
+-- Generation Time: Jun 02, 2025 at 05:36 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -142,11 +142,18 @@ CREATE TABLE `packages` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL DEFAULT 'Name not set',
   `session_count` int(11) NOT NULL DEFAULT 0,
-  `warranty` int(11) NOT NULL DEFAULT 0,
-  `contract_date` date NOT NULL,
-  `expiry_date` date NOT NULL,
+  `year_warranty` int(11) NOT NULL DEFAULT 0,
   `treatment` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `packages`
+--
+
+INSERT INTO `packages` (`id`, `name`, `session_count`, `year_warranty`, `treatment`) VALUES
+(101, 'Termite Control Package', 4, 2, 4),
+(102, 'Termite Control Package', 8, 2, 4),
+(103, 'Termite Control Package', 1, 1, 4);
 
 -- --------------------------------------------------------
 
@@ -247,43 +254,49 @@ CREATE TABLE `transactions` (
   `treatment_date` date DEFAULT NULL,
   `customer_name` varchar(255) DEFAULT NULL,
   `customer_address` varchar(255) DEFAULT NULL,
-  `treatment` enum('Soil Injection','Termite Powder Application','Wooden Structures Treatment','Follow-up Crawling Insects Control','Not Set') NOT NULL DEFAULT 'Not Set',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `transaction_status` enum('Pending','Accepted','Voided','Completed','Cancelled') NOT NULL DEFAULT 'Pending',
   `void_request` tinyint(1) NOT NULL DEFAULT 0,
   `transaction_time` time DEFAULT NULL,
   `notes` varchar(255) DEFAULT NULL,
-  `t_end` time DEFAULT NULL
+  `t_finished` datetime DEFAULT NULL,
+  `package_id` int(11) DEFAULT NULL,
+  `treatment_type` enum('General Treatment','Follow-up Treatment','Quarterly Treatment','Monthly Treatment') DEFAULT NULL,
+  `treatment` int(11) NOT NULL,
+  `package_exp` date DEFAULT NULL,
+  `session_no` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `transactions`
 --
 
-INSERT INTO `transactions` (`id`, `treatment_date`, `customer_name`, `customer_address`, `treatment`, `created_at`, `updated_at`, `transaction_status`, `void_request`, `transaction_time`, `notes`, `t_end`) VALUES
-(76, '2025-04-04', 'gffggh', NULL, 'Termite Powder Application', '2025-03-31 13:07:43', '2025-04-04 13:56:20', 'Completed', 0, '00:00:00', NULL, NULL),
-(80, '2025-04-25', 'dfgfd', NULL, 'Not Set', '2025-04-01 14:23:01', '2025-05-30 10:06:07', 'Completed', 0, '00:00:00', NULL, NULL),
-(82, NULL, 'ggddf', NULL, 'Not Set', '2025-04-05 13:46:48', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL),
-(83, '2025-05-01', 'sssss', NULL, 'Wooden Structures Treatment', '2025-04-05 13:47:19', '2025-04-05 13:47:19', 'Voided', 0, '00:00:00', NULL, NULL),
-(84, '2025-05-20', 'asd', NULL, 'Not Set', '2025-04-05 14:14:53', '2025-05-30 10:06:07', 'Completed', 0, '00:00:00', NULL, NULL),
-(85, '2025-04-19', 'kkjljkl', NULL, 'Follow-up Crawling Insects Control', '2025-04-06 05:19:12', '2025-04-13 14:09:32', 'Accepted', 0, '00:00:00', NULL, NULL),
-(96, '2025-04-19', 'dfsdf', NULL, 'Termite Powder Application', '2025-04-10 06:51:37', '2025-05-28 14:22:40', 'Voided', 0, '00:00:00', NULL, NULL),
-(97, '2025-04-25', 'ghj', NULL, 'Not Set', '2025-04-10 06:53:43', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL),
-(98, '2025-04-25', 'jkl', NULL, 'Not Set', '2025-04-10 06:54:24', '2025-05-30 10:06:07', 'Pending', 0, NULL, NULL, NULL),
-(99, '2025-04-25', NULL, NULL, 'Not Set', '2025-04-10 06:57:10', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL),
-(100, '2025-04-25', 'ghbgh', NULL, 'Not Set', '2025-04-10 07:07:38', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL),
-(101, NULL, 'hjkjk', NULL, 'Not Set', '2025-04-10 07:08:48', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL),
-(102, '2025-04-18', 'lkkl', NULL, 'Not Set', '2025-04-10 07:12:11', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL),
-(103, '2025-04-24', 'sdf', NULL, 'Wooden Structures Treatment', '2025-04-10 13:15:57', '2025-05-01 13:38:29', 'Pending', 0, '00:00:00', NULL, NULL),
-(104, '2025-05-02', 'dfgdf', NULL, 'Not Set', '2025-04-12 15:10:19', '2025-05-30 10:06:07', 'Accepted', 1, '00:00:00', NULL, NULL),
-(10001, '2025-04-26', 'gfhfgh', NULL, 'Not Set', '2025-04-12 15:15:31', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL),
-(10002, '2025-06-06', 'jhh', NULL, 'Not Set', '2025-04-20 13:13:41', '2025-05-30 10:06:07', 'Accepted', 1, '12:00:00', NULL, NULL),
-(10003, '2025-05-01', 'sdfsds', NULL, 'Not Set', '2025-04-22 07:52:06', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL),
-(10004, '2025-05-01', '......', NULL, 'Follow-up Crawling Insects Control', '2025-04-22 07:56:38', '2025-05-29 12:12:41', 'Voided', 0, '00:00:00', NULL, NULL),
-(10017, '2025-05-30', 'asd', NULL, 'Not Set', '2025-05-11 07:11:03', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL),
-(10018, '2025-05-30', 'dfgfg', NULL, 'Not Set', '2025-05-22 06:18:45', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL),
-(10019, '2025-06-05', 'customer', NULL, 'Not Set', '2025-05-29 15:18:17', '2025-05-30 10:06:07', 'Pending', 0, '11:00:00', NULL, NULL);
+INSERT INTO `transactions` (`id`, `treatment_date`, `customer_name`, `customer_address`, `created_at`, `updated_at`, `transaction_status`, `void_request`, `transaction_time`, `notes`, `t_finished`, `package_id`, `treatment_type`, `treatment`, `package_exp`, `session_no`) VALUES
+(76, '2025-04-04', 'gffggh', NULL, '2025-03-31 13:07:43', '2025-04-04 13:56:20', 'Completed', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(80, '2025-04-25', 'dfgfd', NULL, '2025-04-01 14:23:01', '2025-05-30 10:06:07', 'Completed', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(82, NULL, 'ggddf', NULL, '2025-04-05 13:46:48', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(83, '2025-05-01', 'sssss', NULL, '2025-04-05 13:47:19', '2025-04-05 13:47:19', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(84, '2025-05-20', 'asd', NULL, '2025-04-05 14:14:53', '2025-05-30 10:06:07', 'Completed', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(85, '2025-04-19', 'kkjljkl', NULL, '2025-04-06 05:19:12', '2025-04-13 14:09:32', 'Accepted', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(96, '2025-04-19', 'dfsdf', NULL, '2025-04-10 06:51:37', '2025-05-28 14:22:40', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(97, '2025-04-25', 'ghj', NULL, '2025-04-10 06:53:43', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(98, '2025-04-25', 'jkl', NULL, '2025-04-10 06:54:24', '2025-05-30 10:06:07', 'Pending', 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(99, '2025-04-25', NULL, NULL, '2025-04-10 06:57:10', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(100, '2025-04-25', 'ghbgh', NULL, '2025-04-10 07:07:38', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(101, NULL, 'hjkjk', NULL, '2025-04-10 07:08:48', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(102, '2025-04-18', 'lkkl', NULL, '2025-04-10 07:12:11', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(103, '2025-04-24', 'sdf', NULL, '2025-04-10 13:15:57', '2025-05-01 13:38:29', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(104, '2025-05-02', 'dfgdf', NULL, '2025-04-12 15:10:19', '2025-05-30 10:06:07', 'Accepted', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(10001, '2025-04-26', 'gfhfgh', NULL, '2025-04-12 15:15:31', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(10002, '2025-06-06', 'jhh', NULL, '2025-04-20 13:13:41', '2025-05-30 10:06:07', 'Accepted', 1, '12:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(10003, '2025-05-01', 'sdfsds', NULL, '2025-04-22 07:52:06', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(10004, '2025-05-01', '......', NULL, '2025-04-22 07:56:38', '2025-05-29 12:12:41', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(10017, '2025-05-30', 'asd', NULL, '2025-05-11 07:11:03', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(10018, '2025-05-30', 'dfgfg', NULL, '2025-05-22 06:18:45', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(10019, '2025-06-05', 'customer', NULL, '2025-05-29 15:18:17', '2025-05-30 10:06:07', 'Pending', 0, '11:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(10020, '2025-06-12', 'ggh', NULL, '2025-06-01 06:59:38', '2025-06-01 06:59:38', 'Pending', 0, '02:00:00', NULL, NULL, NULL, NULL, 3, NULL, NULL),
+(10021, '2025-06-11', 'Albert Einstein', NULL, '2025-06-01 07:05:44', '2025-06-01 07:05:44', 'Pending', 0, '02:00:00', NULL, NULL, NULL, NULL, 2, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -328,7 +341,11 @@ INSERT INTO `transaction_chemicals` (`trans_id`, `chem_id`, `chem_brand`, `amt_u
 (10004, 1004, 'fgh | fgh', 7),
 (10017, 1014, 'jhghj | hjghj', 4),
 (10018, 50, 'Deltacides | CHEM', 3),
-(10019, 54, 'chem B | brand B', 5);
+(10019, 54, 'chem B | brand B', 5),
+(10020, 54, 'chem B | brand B', 0),
+(10020, 1004, 'fgh | fgh', 0),
+(10021, 54, 'chem B | brand B', 0),
+(10021, 1005, 'hk | hjk', 0);
 
 --
 -- Triggers `transaction_chemicals`
@@ -344,6 +361,19 @@ CREATE TRIGGER `verify_chem_id` BEFORE INSERT ON `transaction_chemicals` FOR EAC
 END
 $$
 DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `transaction_package`
+--
+
+CREATE TABLE `transaction_package` (
+  `trans_id` int(11) NOT NULL,
+  `package_id` int(11) NOT NULL,
+  `date_start` date NOT NULL DEFAULT current_timestamp(),
+  `date_expiry` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -407,7 +437,11 @@ INSERT INTO `transaction_problems` (`trans_id`, `problem_id`) VALUES
 (10018, 3),
 (10018, 10),
 (10019, 3),
-(10019, 10);
+(10019, 10),
+(10020, 2),
+(10020, 9),
+(10021, 1),
+(10021, 9);
 
 -- --------------------------------------------------------
 
@@ -450,7 +484,11 @@ INSERT INTO `transaction_technicians` (`trans_id`, `tech_id`, `tech_info`) VALUE
 (10003, 10, 'fgh fgh'),
 (10004, 2, 'asdf asdf'),
 (10017, 2, 'asdf asdf'),
-(10019, 4, 'rayan ibarra');
+(10019, 4, 'rayan ibarra'),
+(10020, 1, 'rayan ibarra'),
+(10020, 10, 'fgh fgh'),
+(10021, 4, 'rayan ibarra'),
+(10021, 10, 'fgh fgh');
 
 --
 -- Triggers `transaction_technicians`
@@ -485,7 +523,8 @@ CREATE TABLE `treatments` (
 INSERT INTO `treatments` (`id`, `t_name`) VALUES
 (1, 'Wooden Structures Treatment'),
 (2, 'Termite Powder Application'),
-(3, 'Soil Injection');
+(3, 'Soil Injection'),
+(4, 'Termite Control');
 
 --
 -- Indexes for dumped tables
@@ -539,7 +578,9 @@ ALTER TABLE `technician`
 -- Indexes for table `transactions`
 --
 ALTER TABLE `transactions`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `package_id` (`package_id`),
+  ADD KEY `fk_t_id` (`treatment`);
 
 --
 -- Indexes for table `transaction_chemicals`
@@ -547,6 +588,13 @@ ALTER TABLE `transactions`
 ALTER TABLE `transaction_chemicals`
   ADD PRIMARY KEY (`trans_id`,`chem_id`),
   ADD KEY `transaction_chemicals_ibfk_2` (`chem_id`);
+
+--
+-- Indexes for table `transaction_package`
+--
+ALTER TABLE `transaction_package`
+  ADD PRIMARY KEY (`trans_id`,`package_id`),
+  ADD KEY `package_id` (`package_id`);
 
 --
 -- Indexes for table `transaction_problems`
@@ -595,7 +643,7 @@ ALTER TABLE `equipments`
 -- AUTO_INCREMENT for table `packages`
 --
 ALTER TABLE `packages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
 
 --
 -- AUTO_INCREMENT for table `pest_problems`
@@ -619,13 +667,13 @@ ALTER TABLE `technician`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10020;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10022;
 
 --
 -- AUTO_INCREMENT for table `treatments`
 --
 ALTER TABLE `treatments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -638,11 +686,25 @@ ALTER TABLE `packages`
   ADD CONSTRAINT `packages_ibfk_1` FOREIGN KEY (`treatment`) REFERENCES `treatments` (`id`);
 
 --
+-- Constraints for table `transactions`
+--
+ALTER TABLE `transactions`
+  ADD CONSTRAINT `fk_t_id` FOREIGN KEY (`treatment`) REFERENCES `treatments` (`id`),
+  ADD CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`package_id`) REFERENCES `packages` (`id`);
+
+--
 -- Constraints for table `transaction_chemicals`
 --
 ALTER TABLE `transaction_chemicals`
   ADD CONSTRAINT `transaction_chemicals_ibfk_2` FOREIGN KEY (`chem_id`) REFERENCES `chemicals` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `transaction_chemicals_ibfk_3` FOREIGN KEY (`trans_id`) REFERENCES `transactions` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `transaction_package`
+--
+ALTER TABLE `transaction_package`
+  ADD CONSTRAINT `transaction_package_ibfk_1` FOREIGN KEY (`trans_id`) REFERENCES `transactions` (`id`),
+  ADD CONSTRAINT `transaction_package_ibfk_2` FOREIGN KEY (`package_id`) REFERENCES `packages` (`id`);
 
 --
 -- Constraints for table `transaction_problems`
