@@ -233,16 +233,16 @@ function get_more_chem($conn, $rowNum)
     <?php
 }
 
-if(isset($_GET['treatments']) && $_GET['treatments'] === 'true'){
+if (isset($_GET['treatments']) && $_GET['treatments'] === 'true') {
     $sql = "SELECT * FROM treatments;";
     $result = mysqli_query($conn, $sql);
 
-    if(mysqli_num_rows($result) > 0){
-        while ($row = mysqli_fetch_assoc($result)){
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
             $n = $row['t_name'];
             ?>
-            <option value="<?=htmlspecialchars($id)?>"><?=htmlspecialchars($n)?></option>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($n) ?></option>
             <?php
         }
     }
@@ -429,7 +429,7 @@ if (isset($_GET['view']) && $_GET['view'] == 'chemUsed') {
 
             ?>
             <li class="list-group-item mb-2"><strong>Chemical:</strong> <?= $chemUsed ?><br><strong>Amount used:
-                </strong><?= $amtUsed != 0 ? $amtUsed . ' ml' : 'Amount Pending'?></li>
+                </strong><?= $amtUsed != 0 ? $amtUsed . ' ml' : 'Amount Pending' ?></li>
             <?php
         }
         mysqli_stmt_close($stmt);
@@ -636,13 +636,6 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
     exit();
 }
 
-if (isset($_GET['packages']) && $_GET['packages'] === 'true') {
-    ?>
-    <option value="#" selected>Select Package</option>
-    <option value="none">None</option>
-    <?php
-    packages($conn);
-}
 
 function packages($conn)
 {
@@ -668,51 +661,116 @@ function packages($conn)
     }
 }
 
-if(isset($_GET['treatmentname']) && $_GET['treatmentname'] === 'true'){
+if (isset($_GET['packages']) && $_GET['packages'] === 'true') {
+    ?>
+    <option value="none">None</option>
+    <?php
+    packages($conn);
+}
+
+if (isset($_GET['treatmentname']) && $_GET['treatmentname'] === 'true') {
     $id = $_GET['id'];
     $sql = "SELECT t_name FROM treatments WHERE id = $id";
     $res = mysqli_query($conn, $sql);
-    if(mysqli_num_rows($res) > 0){
-        if($row = mysqli_fetch_assoc($res)){
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
             return $row['t_name'];
         }
-    }else{
+    } else {
         return "Invalid ID.";
     }
 }
 
+if (isset($_GET['edit']) && $_GET['edit'] === 'treatment-options') {
+    $id = $_GET['transId'];
 
+    if (!ctype_digit($id)) {
+        http_response_code(400);
+        echo "Invalid ID.";
+        exit();
+    }
 
-function get_treatment_id($id, $conn){
-    $sql = "SELECT treatment FROM transactions WHERE id = $id;";
-    $result = mysqli_query($conn, $sql);
-    if(mysqli_num_rows($result) > 0){
-        if($row = mysqli_fetch_assoc($result)){
-            return $row['treatment'];
+    $sql = "SELECT * FROM treatments;";
+    $res = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($res) > 0) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            $idval = $row['id'];
+            $tname = $row['t_name'];
+            ?>
+            <option value="<?= htmlspecialchars($idval) ?>" <?= $id == $idval ? 'selected' : '' ?>><?= htmlspecialchars($tname) ?>
+            </option>
+            <?php
         }
+    } else {
+        ?>
+        <option value="" disabled>No Treatments</option>
+        <?php
     }
 }
 
 
 
-if(isset($_GET['edit']) && $_GET['edit'] === 'treatment-options'){
-    $id = $_GET['transId'];
-    // $treatmentid = get_treatment_id($id, $conn);
+if (isset($_GET['edit']) && $_GET['edit'] === 'package') {
+    $package_id = $_GET['transId'];
 
-    $sql = "SELECT * FROM treatments;";
+    if (!ctype_digit($package_id)) {
+        http_response_code(400);
+        echo "Invalid ID.";
+        exit();
+    }
+
+    $sql = "SELECT * FROM packages;";
     $res = mysqli_query($conn, $sql);
-
-    if(mysqli_num_rows($res) > 0){
-        while($row = mysqli_fetch_assoc($res)){
-            $idval = $row['id'];
-            $tname = $row['t_name'];
+    if (mysqli_num_rows($res) > 0) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            $id = $row['id'];
+            $name = $row['name'];
+            $sessions = $row['session_count'];
+            $warranty = $row['year_warranty'];
             ?>
-            <option value="<?=htmlspecialchars($idval)?>" <?=$id == $idval ? 'selected' : ''?>><?=htmlspecialchars($tname)?></option>
+            <option value="<?= $id ?>" <?= $id === $package_id ? 'selected' : '' ?>>
+                <?= htmlspecialchars($name) . ' | ' . htmlspecialchars($warranty) . " Years Warranty" . ($sessions != 1 ? " | (" . htmlspecialchars($sessions) . " Sessions) " : '') ?>
+            </option>
             <?php
         }
-    } else{
-       ?> 
-       <option value="" disabled>No Treatments</option>
-       <?php
+    } else {
+        ?>
+        <option disabled>No Current Package.</option>
+        <?php
+    }
+
+
+}
+
+if (isset($_GET['packagename']) && $_GET['packagename'] === 'true') {
+    $id = $_GET['id'];
+
+    if ($id == 'none') {
+        echo "No Valid Package.";
+        exit();
+    }
+
+    if (!ctype_digit($id)) {
+        http_response_code(400);
+        return "Invalid ID.";
+    }
+
+    $sql = "SELECT * FROM packages WHERE id = $id;";
+    $res = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
+            $id = $row['id'];
+            $name = $row['name'];
+            $sessions = $row['session_count'];
+            $warranty = $row['year_warranty'];
+
+            echo htmlspecialchars($name) . ' ' . htmlspecialchars($sessions) . ' Sessions w/ ' . htmlspecialchars($warranty) . ' years warranty.';
+            exit();
+        }
+    } else {
+        echo "No Valid Package.";
+        exit();
     }
 }

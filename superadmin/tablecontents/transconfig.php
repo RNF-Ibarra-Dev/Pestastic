@@ -11,26 +11,33 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $techId = $_POST['add-technicianName'] ?? [];
     $treatmentDate = $_POST['add-treatmentDate'];
     $treatmentTime = $_POST['add-treatmentTime'];
-    $treatment = $_POST['add-treatment'];
+    $treatment = $_POST['add-treatment'] ?? null;
     $t_type = $_POST['add-treatmentType'];
     $package = $_POST['add-package'];
     $problems = $_POST['pest_problems'] ?? []; //array
     $chemUsed = $_POST['add_chemBrandUsed'] ?? []; //arrya
     // $amtUsed = $_POST['add_amountUsed'] ?? []; //array
+    $note = $_POST['add-notes'];
     $status = $_POST['add-status'];
     $session = $_POST['add-session'] ?? 1;
     $saPwd = $_POST['saPwd'];
 
-    if ($package === '#') {
-        http_response_code(400);
-        echo json_encode(['type' => 'empty', 'errorMessage' => 'Invalid Transaction Session Count.']);
-        exit();
-    }
+    // if ($package === '#') {
+    //     http_response_code(400);
+    //     echo json_encode(['type' => 'empty', 'errorMessage' => 'Invalid Transaction Session Count.']);
+    //     exit();
+    // }
 
     if ($package != 'none') {
         if (!in_array($package, $packageIds)) {
             http_response_code(400);
             echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Package. Please Try Again.']);
+            exit();
+        }
+        $treatment = get_package_treatment($conn, $package);
+        if (isset($treatment['error'])) {
+            http_response_code(400);
+            echo json_encode(['type' => 'invalid_id', 'errorMessage' => $treatment['error']]);
             exit();
         }
     }
@@ -74,7 +81,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-    $transaction = newTransaction($conn, $customerName, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session);
+    $transaction = newTransaction($conn, $customerName, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note);
 
     if (!isset($transaction['success'])) {
         http_response_code(400);

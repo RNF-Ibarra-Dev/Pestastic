@@ -101,7 +101,9 @@
                                             class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p class="fw-medium mb-4 fs-4 text-uppercase text-center">Customer Information</p>
+                                    <p
+                                        class="fw-medium mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Customer Information</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
                                             <label for="add-customerName" class="form-label fw-light">Customer Name
@@ -120,26 +122,13 @@
                                                 placeholder="e.g B20 L64 Garnet Street Lee Grove 4 Mandaluyong, Metro Manila"></textarea>
                                         </div>
                                     </div>
-                                    <div class="row mb-2">
-                                        <div class="dropdown-center col-lg-6 mb-2">
-                                            <label for="add-technicianName" class="form-label fw-light">Technicians
-                                            </label>
-                                            <select id="add-technicianName" name="add-technicianName[]" not-size="2"
-                                                class="form-select" aria-label="Default select example">
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-2 mb-2 d-flex gap-1 p-0 justify-content-start">
-                                            <button type="button" id="addMoreTech"
-                                                class="btn btn-grad mt-auto py-1 px-3"><i
-                                                    class="bi bi-plus-circle text-light"></i></button>
-                                        </div>
-                                    </div>
 
-                                    <div id="addTechContainer" class="row mb-2"></div>
 
                                     <hr class="my-2">
 
-                                    <p class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center">Treatment Information
+                                    <p
+                                        class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Treatment Information
                                     </p>
 
                                     <div class="row mb-2">
@@ -147,13 +136,13 @@
                                         <div class="col-lg-3 mb-2">
                                             <label for="add-treatmentDate" class="form-label fw-light">Treatment
                                                 Date</label>
-                                            <input type="date" name="add-treatmentDate" id="add-treatmentDate"
-                                                class="form-control form-add">
+                                            <input name="add-treatmentDate" placeholder="--/--/--"
+                                                id="add-treatmentDate" class="form-control form-add">
                                         </div>
                                         <div class="col-lg-3 mb-2">
                                             <label for="add-treatmentTime" class="form-label fw-light">Treatment
                                                 Time</label>
-                                            <input type="date" name="add-treatmentTime" id="add-treatmentTime"
+                                            <input name="add-treatmentTime" id="add-treatmentTime" placeholder="--:--"
                                                 class="form-control form-add" autocomplete="address-line3">
                                         </div>
 
@@ -198,7 +187,9 @@
 
                                     <hr class="mb-2 mt-4">
 
-                                    <p class="fw-medium mt-3 mb-2 fs-4 text-uppercase text-center">Additional
+                                    <p
+                                        class="fw-medium mt-3 mb-2 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Additional
                                         Information
                                     </p>
 
@@ -236,7 +227,22 @@
                                     <div class="row mb-2" id="add-chemContainer">
                                         <!-- template add chemical -->
                                     </div>
+                                    <div class="row mb-2">
+                                        <div class="dropdown-center col-lg-6 mb-2">
+                                            <label for="add-technicianName" class="form-label fw-light">Technicians
+                                            </label>
+                                            <select id="add-technicianName" name="add-technicianName[]" not-size="2"
+                                                class="form-select" aria-label="Default select example">
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 mb-2 d-flex gap-1 p-0 justify-content-start">
+                                            <button type="button" id="addMoreTech"
+                                                class="btn btn-grad mt-auto py-1 px-3"><i
+                                                    class="bi bi-plus-circle text-light"></i></button>
+                                        </div>
+                                    </div>
 
+                                    <div id="addTechContainer" class="row mb-2"></div>
                                     <div class="row mb-2 ">
                                         <div class="col-lg-6">
                                             <label for="add-status" class="form-label fw-light">Status</label>
@@ -317,7 +323,9 @@
                                 <div class="modal-body pb-1">
 
                                     <!-- <p class="fw-light text-muted">Transaction details presented below.</p> -->
-                                    <p class="fw-medium mb-4 fs-4 text-uppercase text-center">Customer Information</p>
+                                    <p
+                                        class="fw-medium mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Customer Information</p>
 
                                     <!-- row 1 -->
                                     <div class="row mb-2">
@@ -338,6 +346,166 @@
                                             <input type="text" name="edit-customerName" id="view-customerName"
                                                 class="form-control-plaintext form-add" readonly
                                                 autocomplete="one-time-code">
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row mb-2">
+
+                                        <div class="col-lg-6 mb-2" id='view-addCont'>
+                                            <label for='view-address' class="form-label fw-light">Address:</label>
+                                            <textarea type="text" id="view-address"
+                                                class="form-control-plaintext form-add" readonly
+                                                style="resize: none !important;"></textarea>
+                                        </div>
+
+                                        <div class="col-lg-6 mb-2 d-none" id='edit-addCont'>
+                                            <label for='edit-address' class="form-label fw-light">Address:</label>
+                                            <textarea type="text" name="edit-address" id="edit-address"
+                                                class="form-control form-add"></textarea>
+                                        </div>
+
+                                    </div>
+
+                                    <hr class="my-2">
+
+                                    <p
+                                        class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Treatment Information
+                                    </p>
+
+                                    <!-- row 3  -->
+                                    <div class="row mb-2">
+                                        <!-- treatment -->
+                                        <div class="col-lg-4 mb-2">
+                                            <!-- left side -- treatments in view -->
+                                            <label for="view-treatment" class="form-label fw-light"
+                                                id="view-treatment-label">Treatment:</label>
+                                            <ul class="list-group list-group-flush" id="view-treatment"></ul>
+
+                                            <!-- left side -- treatments in edit -->
+                                            <label for="edit-treatment" class="form-label fw-light visually-hidden"
+                                                id="edit-treatment-label">Treatment</label>
+                                            <select name="edit-treatment" id="edit-treatment"
+                                                class="form-select visually-hidden">
+                                                <option value="" selected>Select Treatment</option>
+                                                <div id="edit-treatment-options">
+                                                    <!-- ajax -->
+                                                </div>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <label for="edit-treatmentType" class="form-label fw-light">Treatment
+                                                Type:</label>
+                                            <p id="view-treatmentType" class="ps-3"></p>
+                                            <select name="edit-treatmentType" id="edit-treatmentType"
+                                                class="form-select d-none">
+                                                <option value="" selected>Select Treatment Type</option>
+                                                <option value="General Treatment">General Treatment
+                                                </option>
+                                                <option value="Follow-up Treatment">Follow-up Treatment
+                                                </option>
+                                                <option value="Quarterly Treatment">Quarterly Treatment</option>
+                                                <option value="Monthly Treatment">Monthly Treatment
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <!-- right side -->
+                                        <div class="col-lg-3 mb-2">
+                                            <label for="view-treatmentDate" class="form-label fw-light">Treatment
+                                                Date:</label>
+                                            <input type="text" name="edit-treatmentDate" id="view-treatmentDate"
+                                                class="form-control form-add" style="border: none !important;" disabled>
+                                        </div>
+
+                                        <div class="col-lg-2 mb-2">
+                                            <label for="view-treatmentTime" class="form-label fw-light">Treatment
+                                                Time:</label>
+                                            <input type="text" name="edit-treatmentTime" id="view-treatmentTime"
+                                                class="form-control form-add" style="border: none !important;" disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-lg-6 mb-2">
+                                            <!-- left side -- view of customer pest problems -->
+                                            <label for="view-probCheckbox" id="view-probCheckbox-label"
+                                                class="form-label fw-light">Customer's Pest
+                                                Problems:</label>
+                                            <ul class="list-group list-group-flush" id="view-probCheckbox"></ul>
+                                        </div>
+
+                                        <div class="col-lg-12 mb-2 visually-hidden" id="row-pestProblems">
+                                            <!-- whole row -- edit of customer pest problems-->
+                                            <label for="edit-probCheckbox" class="form-label fw-light">Customer's Pest
+                                                Problems:</label>
+                                            <div id="edit-probCheckbox" name="edit-probCheckbox"
+                                                class="d-flex gap-2 align-items-center justify-content-evenly flex-wrap">
+                                                <!-- pest problems ajax append here -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-2">
+
+                                        <div class="col-lg-6">
+                                            <label for="edit-package" class="form-label fw-light">Package:</label>
+                                            <p id="view-package" class="ps-3"></p>
+                                            <select name="edit-package" class="form-select d-none"
+                                                id="edit-package-select">
+                                                <option value="none">None</option>
+                                                <div id="edit-package"></div>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <label for="edit-session" class="form-label fw-light">Session
+                                                number:</label>
+                                            <input type="text" class="form-control-plaintext ps-3" id="edit-session"
+                                                name="edit-session" readonly>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <label for="edit-session" class="form-label fw-light">Package Expiry</label>
+                                            <input class="form-control-plaintext ps-3" placeholder="--/--/--"
+                                                id="view-expiry" disabled>
+                                        </div>
+                                    </div>
+
+                                    <hr class="my-2">
+
+                                    <p
+                                        class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Additional Information
+                                    </p>
+
+                                    <div class="visually-hidden" id="edit-chemBrandUsed"></div>
+
+                                    <!-- <div class="visually-hidden" id="edit-chemBrandUsed-addContainer"></div> -->
+
+                                    <div class="row mb-2">
+                                        <div class="col-lg-6 mb-2" id="view-chemUsedContainer">
+                                            <!-- left side -- view -->
+                                            <label for="view-chemUsed" id="view-chemUsed-label"
+                                                class="form-label fw-light">Chemicals
+                                                Used:</label>
+                                            <ul class="list-group list-group-flush" id="view-chemUsed"></ul>
+                                        </div>
+
+                                        <!-- right side -- view -->
+                                        <div class="col-lg-6 mb-2" id="view-status-col">
+                                            <label for="view-status" class="form-label mb-0 fw-light p-0">Transaction
+                                                Status:</label>
+                                            <p class="fw-light ps-3" id="view-status">
+                                            </p>
+                                        </div>
+
+                                        <!-- placed under -- add button for rows toggle in edit mode as well. -->
+                                        <div class="col-lg-4  my-2 d-flex visually-hidden" id='btn-amountUsed'>
+                                            <button type="button" id="edit-addMoreChem"
+                                                class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
+                                                <p class="fw-light m-0 me-2">Add Chemical</p><i
+                                                    class="bi bi-plus-circle text-light"></i>
+                                            </button>
                                         </div>
 
                                     </div>
@@ -369,131 +537,17 @@
                                                 </label>
                                                 <ul class="list-group list-group-flush" id="view-technicians"></ul>
                                             </div>
+
                                         </div>
-
-                                        <div class="col-lg-6 mb-2" id='view-addCont'>
-                                            <label for='view-address' class="form-label fw-light">Address:</label>
-                                            <textarea type="text" id="view-address"
-                                                class="form-control-plaintext form-add" readonly style="resize: none !important;"></textarea>
+                                        <div class="col-lg-6 mb-2" id="view-noteContainer">
+                                            <label for="view-note" class="form-label fw-light">Additional
+                                                Notes:</label>
+                                            <p class="ps-3 fw-light" id="view-note"></p>
                                         </div>
-
-                                        <div class="col-lg-6 mb-2 d-none" id='edit-addCont'>
-                                            <label for='edit-address' class="form-label fw-light">Address:</label>
-                                            <textarea type="text" name="edit-address" id="edit-address"
-                                                class="form-control form-add"></textarea>
-                                        </div>
-
-                                    </div>
-
-                                    <hr class="my-2">
-
-                                    <!-- row 3  -->
-                                    <div class="row mb-2">
-                                        <!-- treatment -->
-                                        <div class="col-lg-6 mb-2">
-                                            <!-- left side -- treatments in view -->
-                                            <label for="view-treatment" class="form-label fw-light"
-                                                id="view-treatment-label">Treatment:</label>
-                                            <ul class="list-group list-group-flush" id="view-treatment"></ul>
-
-                                            <!-- left side -- treatments in edit -->
-                                            <label for="edit-treatment" class="form-label fw-light visually-hidden"
-                                                id="edit-treatment-label">Treatment</label>
-                                            <select name="edit-treatment" id="edit-treatment"
-                                                class="form-select visually-hidden">
-                                                <option value="" selected>Select Treatment</option>
-                                                <div id="edit-treatment-options">
-                                                    <!-- ajax -->
-                                                </div>
-                                            </select>
-                                        </div>
-
-                                        <!-- right side -->
-                                        <div class="col-lg-3 mb-2">
-                                            <label for="view-treatmentDate" class="form-label fw-light">Treatment
-                                                Date:</label>
-                                            <input type="date" name="edit-treatmentDate" id="view-treatmentDate"
-                                                min="2025-01-01" class="form-control form-add"
-                                                style="border: none !important;" disabled>
-                                        </div>
-
-                                        <div class="col-lg-3 mb-2">
-                                            <label for="view-treatmentTime" class="form-label fw-light">Treatment
-                                                Time:</label>
-                                            <input type="date" name="edit-treatmentTime" id="view-treatmentTime"
-                                                min="2025-01-01" class="form-control form-add"
-                                                style="border: none !important;" disabled>
-                                        </div>
-
-
-                                    </div>
-
-                                    <div class="row mb-2">
-                                        <div class="col-lg-6 mb-2">
-                                            <!-- left side -- view of customer pest problems -->
-                                            <label for="view-probCheckbox" id="view-probCheckbox-label"
-                                                class="form-label fw-light">Customer's Pest
-                                                Problems:</label>
-                                            <ul class="list-group list-group-flush" id="view-probCheckbox"></ul>
-                                        </div>
-
-                                        <div class="col-lg-12 mb-2 visually-hidden" id="row-pestProblems">
-                                            <!-- whole row -- edit of customer pest problems-->
-                                            <label for="edit-probCheckbox" class="form-label fw-light">Customer's Pest
-                                                Problems:</label>
-                                            <div id="edit-probCheckbox" name="edit-probCheckbox"
-                                                class="d-flex gap-2 align-items-center justify-content-evenly flex-wrap">
-                                                <!-- pest problems ajax append here -->
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-2">
-                                        <div class="col-lg-3">
-                                            <label for="edit-treatmentType" class="form-label fw-light">Treatment Type:</label>
-                                            <p id="view-treatmentType" class="ps-3"></p>
-                                            <select name="edit-treatmentType" id="edit-treatmentType" class="form-select d-none"></select>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <label for="edit-package" class="form-label fw-light">Package:</label>
-                                            <p id="view-package" class="ps-3"></p>
-                                            <select name="edit-package" id="edit-package" class="form-select d-none"></select>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <label for="edit-session" class="form-label fw-light">Session number:</label>
-                                            <input type="text" class="form-control-plaintext ps-3" id="edit-session" name="edit-session" readonly>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="visually-hidden" id="edit-chemBrandUsed"></div>
-
-                                    <!-- <div class="visually-hidden" id="edit-chemBrandUsed-addContainer"></div> -->
-
-                                    <div class="row mb-2">
-                                        <div class="col-lg-6 mb-2" id="view-chemUsedContainer">
-                                            <!-- left side -- view -->
-                                            <label for="view-chemUsed" id="view-chemUsed-label"
-                                                class="form-label fw-light">Chemicals
-                                                Used:</label>
-                                            <ul class="list-group list-group-flush" id="view-chemUsed"></ul>
-                                        </div>
-                                        <!-- right side -- view -->
-                                        <div class="col-lg-6 mb-2" id="view-status-col">
-                                            <label for="view-status" class="form-label mb-0 fw-light p-0">Transaction
-                                                Status:</label>
-                                            <ul class="list-group list-group-flush" id="view-status">
-                                                <li class="list-group-item" id="list-status"></li>
-                                            </ul>
-                                        </div>
-
-                                        <!-- placed under -- add button for rows toggle in edit mode as well. -->
-                                        <div class="col-lg-4  my-2 d-flex visually-hidden" id='btn-amountUsed'>
-                                            <button type="button" id="edit-addMoreChem"
-                                                class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
-                                                <p class="fw-light m-0 me-2">Add Chemical</p><i
-                                                    class="bi bi-plus-circle text-light"></i>
-                                            </button>
+                                        <div class="col-lg-6 mb-2 d-none" id="edit-noteContainer">
+                                            <label for="edit-note" class="form-label fw-light">Additional
+                                                Notes:</label>
+                                            <textarea class="fw-light form-control" name="edit-note" id="edit-note"></textarea>
                                         </div>
 
                                     </div>
@@ -502,17 +556,20 @@
                                         <!-- template add chemical -->
                                     </div>
 
-                                    <div class="row mb-2 mx-auto visually-hidden" id="edit-status-col">
+                                    <div class="row mb-2 d-none" id="edit-status-col">
                                         <!-- edit -->
-                                        <label for="edit-status" class="form-label mb-0 fw-light p-0 "
-                                            id='label-edit-status'>Transaction Status:</label>
-                                        <select name="edit-status" id="edit-status" class="form-select ">
-                                            <option value="" selected>Select Status</option>
-                                            <option value="Pending">Pending</option>
-                                            <option value="Accepted">Accepted</option>
-                                            <option value="Voided">Voided</option>
-                                            <option value="Completed">Completed </option>
-                                        </select>
+                                        <div class="col-lg-4">
+                                            <label for="edit-status" class="form-label"
+                                                id='label-edit-status'>Transaction Status:</label>
+                                            <select name="edit-status" id="edit-status" class="form-select ">
+                                                <option value="" selected>Select Status</option>
+                                                <option value="Pending">Pending</option>
+                                                <option value="Accepted">Accepted</option>
+                                                <option value="Voided">Voided</option>
+                                                <option value="Completed">Completed </option>
+                                            </select>
+                                        </div>
+
                                     </div>
 
                                     <!-- toggle visually hidden when edit -->
@@ -717,33 +774,53 @@
 
         <?php
         if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
-        ?>
+            ?>
             $('#viewEditForm')[0].reset();
             let id = <?= $_GET['id']; ?>;
             console.log(id);
             view_transaction(id);
-            $('#details-modal').on('hidden.bs.modal', function(e) {
+            $('#details-modal').on('hidden.bs.modal', function (e) {
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.delete('openmodal');
                 currentUrl.searchParams.delete('id');
                 window.history.pushState(null, "", currentUrl.pathname + currentUrl.search);
             });
-        <?php
+            <?php
         }
         ?>
 
-        $(document).on('change', '#checkall', function() {
+        $(document).on('change', '#checkall', function () {
             $('#checkicon').toggleClass('bi-square bi-check-square');
             var checked = $(this).prop('checked');
             $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
         });
 
         // voidrequesttable
-        $(document).on('click', '#voidreqbtn', async function() {
+        $(document).on('click', '#voidreqbtn', async function () {
             const loadreq = await void_req_table();
             if (loadreq) {
                 $('#voidrequestmodal').modal('show');
             }
+        });
+
+        let adddate = $('#add-treatmentDate');
+        addDate = flatpickr(adddate, {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+            minDate: new Date().fp_incr(1),
+            setDate: 'today'
+            // enableTime: true
+        });
+
+        let addtime = $('#add-treatmentTime');
+        addTime = flatpickr(addtime, {
+            altInput: true,
+            altFormat: "h:i K",
+            dateFormat: "h:i",
+            enableTime: true,
+            noCalendar: true,
+            setDate: '8:00'
         });
 
         async function void_req_table() {
@@ -768,7 +845,7 @@
             }
         }
 
-        $(document).on('submit', '#voidrequestform', async function(e) {
+        $(document).on('submit', '#voidrequestform', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -791,7 +868,7 @@
             }
         })
 
-        $(document).on('click', '#pendingbtn', function() {
+        $(document).on('click', '#pendingbtn', function () {
             let transId = $(this).data('pending-id');
             console.log(transId);
             $('#transidinput').val(transId);
@@ -800,7 +877,7 @@
             $('#approvemodal').modal('show');
         });
 
-        $('#approvependingtransactions').on('submit', async function(e) {
+        $('#approvependingtransactions').on('submit', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             let status = $('#sortstatus option:selected').val();
@@ -840,18 +917,18 @@
             }
         })
 
-        async function treatments() {
+        async function treatments(form) {
             try {
-                $.get(transUrl, "treatments=true", function(data) {
-                    $('#add-treatmentContainer').empty();
-                    $('#add-treatmentContainer').html(data);
+                $.get(transUrl, "treatments=true", function (data) {
+                    $(`#${form}-treatmentContainer`).empty();
+                    $(`#${form}-treatmentContainer`).html(data);
                 });
             } catch (error) {
                 console.log(error);
             }
         }
 
-        $(document).on('click', '#addbtn', async function() {
+        $(document).on('click', '#addbtn', async function () {
             let form = 'add';
             try {
                 const load = await Promise.all([
@@ -861,7 +938,7 @@
                     add_more_chem(),
                     add_more_tech(),
                     add_packages(),
-                    treatments()
+                    treatments(form)
                 ]);
                 if (load) {
                     $('#addTransaction')[0].reset();
@@ -898,7 +975,7 @@
         async function add_more_tech() {
             let num = 2;
 
-            $('#addMoreTech', '#addModal').off('click').on('click', async function() {
+            $('#addMoreTech', '#addModal').off('click').on('click', async function () {
                 // console.log('tite' + num);
                 await get_more_tech(num);
                 num++;
@@ -912,7 +989,7 @@
             // let moreChemTemp = $('#add-chemicalData').html();
             let num = 2;
 
-            $('#addMoreChem', '#addModal').off('click').on('click', async function() {
+            $('#addMoreChem', '#addModal').off('click').on('click', async function () {
                 await add_used_chem(num);
                 num++;
                 console.log(num);
@@ -1040,6 +1117,13 @@
         let etd = $('#view-treatmentDate');
         editTransDate = flatpickr(etd, {
             dateFormat: "Y-m-d",
+            placeholder: "--/--/--"
+            // minDate: new Date().fp_incr(1),
+        });
+
+        let expdate = $('#view-expiry');
+        packageExpDate = flatpickr(expdate, {
+            dateFormat: "Y-m-d",
             // minDate: new Date().fp_incr(1),
         });
 
@@ -1047,14 +1131,14 @@
         editTransTime = flatpickr(ett, {
             dateFormat: "H:i",
             noCalendar: true,
-            enableTime: true
+            enableTime: true,
             // minDate: new Date().fp_incr(1),
         });
 
         let toggled = false;
 
         async function toggle() {
-            $("#view-customerName, #edit-session").attr("readonly", function(i, attr) {
+            $("#view-customerName, #edit-session").attr("readonly", function (i, attr) {
                 if (attr) {
                     $(this).removeClass('form-control-plaintext');
                     $(this).addClass('form-control');
@@ -1064,7 +1148,7 @@
                 }
                 return attr ? false : true;
             });
-            $("#view-treatmentDate, #view-treatmentTime").attr("disabled", function(i, attr) {
+            $("#view-treatmentDate, #view-treatmentTime").attr("disabled", function (i, attr) {
                 $(this).removeAttr('style');
                 if (attr) {
                     $(this).removeAttr('style');
@@ -1085,6 +1169,7 @@
             $('#view-addCont').toggleClass('d-none');
             $('#view-treatmentType').toggleClass('d-none');
             $('#view-package').toggleClass('d-none');
+            $('#view-noteContainer').toggleClass('d-none');
 
             // removes visually-hidden when edit/detele button is clicked
             $('#edit-technicianName-label').toggleClass('visually-hidden');
@@ -1096,11 +1181,12 @@
             $('#edit-chemBrandUsed').toggleClass('visually-hidden');
             $('#edit-techContainer').toggleClass('visually-hidden');
             $('#btn-amountUsed').toggleClass('visually-hidden');
-            $('#edit-status-col').toggleClass('visually-hidden');
+            $('#edit-status-col').toggleClass('d-none');
             $('#editbtns').toggleClass('visually-hidden');
             $('#edit-addCont').toggleClass('d-none');
             $('#edit-treatmentType').toggleClass('d-none');
-            $('#edit-package').toggleClass('d-none');
+            $('#edit-package-select').toggleClass('d-none');
+            $('#edit-noteContainer').toggleClass('d-none');
             return toggled = true;
         }
 
@@ -1137,7 +1223,8 @@
                     alert('no edit returned' + target);
                 }
             } catch (error) {
-                alert('Error at edit function: ' + edit + '\nerror: ' + error);
+                alert('Error at edit function: ' + name + '\nerror: ' + error);
+                console.log(error);
             }
         }
 
@@ -1188,25 +1275,51 @@
         }
 
         function treatment_name(id) {
-            try {
-                $.get(transUrl, `treatmentname=true&id=${{id}}`, function(d) {
+            $.get(transUrl, `treatmentname=true&id=${id}`)
+                .done(function (d) {
                     return d;
+                })
+                .fail(function (error, status, errmsg) {
+                    console.log(error);
+                    console.log(status + errmsg);
                 });
-            } catch (error) {
-                console.log(error);
-            }
         }
 
-        function package_name(id){
-            $.get(transUrl, `packagename=true&id=${{id}}`, function(data){
-                if(data){
+        function get_package_name(id) {
+            $.get(transUrl, `packagename=true&id=${id}`)
+                .done(function (data) {
                     $('#view-package').empty();
                     $('#view-package').html(data);
-                } else{
-                    console.log(data);
-                }
-            });
+                })
+                .fail(function (error, status, errmsg) {
+                    console.log(error);
+                    console.log(status + errmsg);
+                });
         }
+        let sval, tval;
+
+        $(document).on('change', '#edit-package-select', function () {
+            if ($(this).val() === 'none') {
+                sval = $('#edit-session').val();
+                $('#edit-session').val('');
+                $('#edit-session').removeAttr('name');
+                $('#edit-session').attr('disabled', true);
+
+                tval = $('#edit-treatment').val();
+                $('#edit-treatment').val('');
+                $('#edit-treatment').attr('disabled', false);
+                $('#edit-treatment').attr('name', 'edit-treatment');
+            } else {
+                $('#edit-treatment').val(tval);
+                $('#edit-treatment').removeAttr('name');
+                $('#edit-treatment').attr('disabled', true);
+
+                $('#edit-session').val(sval);
+                $('#edit-session').attr('disabled', false);
+                $('#edit-session').attr('name', 'edit-session');
+            }
+
+        })
 
         async function view_transaction(transId) {
             try {
@@ -1227,12 +1340,14 @@
                     $('#view-customerName').val(d.customer_name ?? `Name not set.`);
                     editTransDate.clear();
                     editTransDate.setDate(d.treatment_date);
+                    packageExpDate.clear();
+                    packageExpDate.setDate(d.package_exp ?? '--/--/--');
                     $('#list-status').empty();
                     $('#view-status').html(d.transaction_status);
                     $('#view-address').html(d.customer_address ?? 'Address not set.');
                     $('#edit-address').html(d.customer_address ?? '');
                     editTransTime.setDate(d.transaction_time);
-                    $('#edit-session').val(d.session_no ?? '1');
+                    $('#edit-session').val(d.session_no ?? 'One time session.');
                     $('#view-treatmentType').html(d.treatment_type ?? 'Treatment type not set');
 
                     if (d.transaction_status == 'Completed' || d.transaction_status == 'Voided') {
@@ -1240,11 +1355,21 @@
                     } else {
                         $('#editbtn').attr('disabled', false);
                     }
+
+                    if(d.package_id != null){
+                        $('#edit-treatment').removeAttr('name');
+                        $('#edit-treatment').attr('disabled', true);
+                    }
+
+                    $('#edit-note').val(d.notes ?? '');
+                    $('#view-note').html(d.notes ?? 'No existing note.');
+
                     $(`#edit-status option[value=${d.transaction_status}]`).attr('selected', true);
                     let tname = treatment_name(d.treatment);
                     $(`#edit-treatment option[value='${tname}']`).attr('selected', true);
+                    $(`#edit-treatmentType option[value='${d.treatment_type}']`).attr('selected', true);
                     $('#view-time').html('Created at: ' + d.created_at + '<br>Updated at: ' + d.updated_at);
-                    
+
                     const functions = await Promise.all([
                         await view_technician(d.id),
                         await view(d.treatment, 'treatment'),
@@ -1253,10 +1378,13 @@
                         await edit('treatment-options', d.treatment), //treatment option
                         await edit('technicianName', d.id),
                         await edit('probCheckbox', d.id),
-                        await edit('treatmentType'),
-                        await get_chemical_brand('edit', d.id)
+                        await edit('package', d.package_id ?? 0),
+                        await get_chemical_brand('edit', d.id),
+                        await get_package_name(d.package_id ?? 'none')
                     ]);
+
                     if (functions) {
+                        console.log(d.package_id);
                         $('#details-modal').modal('show');
                     } else {
                         alert('Details Modal Error. Refresh Page.');
@@ -1269,7 +1397,7 @@
 
 
         // open details
-        $(document).on('click', '#tableDetails', async function() {
+        $(document).on('click', '#tableDetails', async function () {
             const clearform = await empty_form();
             if (clearform) {
                 $('#viewEditForm')[0].reset();
@@ -1289,7 +1417,7 @@
         function get_addrow(row) {
             $.get(transUrl, {
                 addrow: 'true'
-            }, function(data) {
+            }, function (data) {
                 $(`#edit-${row}`).append(data);
                 console.log(status);
             })
@@ -1304,7 +1432,7 @@
             }
         }
 
-        $(document).on('click', '#edit-deleteTech', async function() {
+        $(document).on('click', '#edit-deleteTech', async function () {
             let rowId = $(this).data('row-id');
             let row = $('#edit-technicianName > div').length;
             if (row === 1) {
@@ -1316,7 +1444,7 @@
             }
         })
 
-        $(document).on('click', '#deleteTech', async function() {
+        $(document).on('click', '#deleteTech', async function () {
             let rowId = $(this).data('row-id');
             let row = $('#addTechContainer').length;
             if (row === 0) {
@@ -1328,7 +1456,7 @@
             }
         })
 
-        $(document).on('click', '#edit-deleteChemRow', async function() {
+        $(document).on('click', '#edit-deleteChemRow', async function () {
             let rowId = $(this).data('row-id');
             let row = $('#edit-chemBrandUsed > div').length;
             if (row === 1) {
@@ -1346,18 +1474,18 @@
             }
         })
 
-        $(document).on('click', '#edit-addTech', async function() {
+        $(document).on('click', '#edit-addTech', async function () {
             // $.get(transUrl, { editTechAdd: 'true' }, function (data) {
             //     $('#edit-technicianName').append(data);
             // })
             await edit('technicianName');
         })
 
-        $(document).on('click', '#edit-addMoreChem', async function() {
+        $(document).on('click', '#edit-addMoreChem', async function () {
             get_addrow('chemBrandUsed');
         })
 
-        $(document).on('click', '#editbtn', async function() {
+        $(document).on('click', '#editbtn', async function () {
             if (toggled) {
                 await toggle();
                 toggled = false;
@@ -1368,7 +1496,7 @@
             }
         });
 
-        $(document).on('click', '#deleteChem', function() {
+        $(document).on('click', '#deleteChem', function () {
             $(this).parent().parent().remove();
         });
 
@@ -1391,20 +1519,21 @@
             return true;
         }
 
-
-
-
-        $(document).on('change', '#add-package', function() {
+        $(document).on('change', '#add-package', function () {
             let package = $(this).val();
             console.log(package);
-            if (package === 'none' || package === '#') {
+            if (package === 'none') {
                 $('#add-session').attr('disabled', true);
+                $('#add-treatment').attr('disabled', false);
+                $('#add-treatment').attr('name', 'add-treatment');
             } else {
                 $('#add-session').attr('disabled', false);
+                $('#add-treatment').attr('disabled', true);
+                $('#add-treatment').removeAttr('name');
             }
         });
 
-        $(document).on('focusout', 'form input, form select, form textarea', function() {
+        $(document).on('focusout', 'form input, form select, form textarea', function () {
             if ($(this).val() == '' || $(this).val() == '#') {
                 $(this).addClass('border border-danger');
             } else {
@@ -1412,28 +1541,10 @@
             }
         });
 
-        let adddate = $('#add-treatmentDate');
-        addDate = flatpickr(adddate, {
-            altInput: true,
-            altFormat: "F j, Y",
-            dateFormat: "Y-m-d",
-            minDate: new Date().fp_incr(1),
-            setDate: 'today'
-            // enableTime: true
-        });
 
-        let addtime = $('#add-treatmentTime');
-        addTime = flatpickr(addtime, {
-            altInput: true,
-            altFormat: "h:i K",
-            dateFormat: "h:i",
-            enableTime: true,
-            noCalendar: true,
-            setDate: '8:00'
-        });
         // submit
-        $(function() {
-            $('#addTransaction').on('submit', async function(e) {
+        $(function () {
+            $('#addTransaction').on('submit', async function (e) {
                 e.preventDefault();
                 console.log($(this).serialize());
                 try {
@@ -1471,7 +1582,7 @@
         });
 
         // edit section
-        $(document).on('click', '#confirmUpdate', function() {
+        $(document).on('click', '#confirmUpdate', function () {
             $('#confirmation #verifyAdd').text('Verify Transaction Update');
             $('#confirmation #edit-confirm').text('Update Transaction');
             $('#confirmation #edit-confirm').attr('data-update', 'update');
@@ -1479,7 +1590,7 @@
         })
 
         // edit section
-        $(document).on('click', '#confirmDelete', function() {
+        $(document).on('click', '#confirmDelete', function () {
             $('#confirmation #verifyAdd').text('Verify Transaction Deletion');
             $('#confirmation #edit-confirm').text('Delete Transaction');
             $('#confirmation #edit-confirm').attr('data-update', 'delete');
@@ -1487,7 +1598,7 @@
         })
 
         // submit section | confirmation modal
-        $(document).on('click', '#edit-confirm', async function() {
+        $(document).on('click', '#edit-confirm', async function () {
             let update = $(this).attr('data-update');
             // console.log(update);
             if (update === 'delete') {
@@ -1582,15 +1693,15 @@
 
 
         // search function
-        $(function() {
+        $(function () {
             let delay = null;
 
-            $('#searchbar').keyup(function() {
+            $('#searchbar').keyup(function () {
                 clearTimeout(delay);
                 $('#table').empty();
                 $('#loader').removeClass('visually-hidden');
 
-                delay = setTimeout(async function() {
+                delay = setTimeout(async function () {
                     var search = $('#searchbar').val();
                     let status = $('#sortstatus').val();
                     try {
@@ -1668,11 +1779,11 @@
             }
         }
 
-        $(document).ready(async function() {
+        $(document).ready(async function () {
             await loadpage();
         })
 
-        $("#sortstatus").on('change', async function() {
+        $("#sortstatus").on('change', async function () {
             let status = $("#sortstatus option:selected").val();
             $("#searchbar").val('');
             if (status != '') {
@@ -1687,7 +1798,7 @@
             await load_paginated_table(page, status);
         }
 
-        $('#pagination').on('click', '.page-link', async function(e) {
+        $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
             let status = $("#sortstatus option:selected").val();
 

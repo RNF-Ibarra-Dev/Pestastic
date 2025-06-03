@@ -336,7 +336,7 @@ function get_chemical_name($conn, $chemId)
     }
 }
 
-function add_chemical_used($conn, $transactionId, $chemUsedId, $amtUsed=0)
+function add_chemical_used($conn, $transactionId, $chemUsedId, $amtUsed = 0)
 {
     $chemBrand = get_chemical_name($conn, $chemUsedId);
     if (!$chemBrand) {
@@ -475,12 +475,12 @@ function get_chem_level($conn, $id)
     }
 }
 
-function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note, $t_finished)
+function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note)
 {
 
     mysqli_begin_transaction($conn);
     try {
-        $transSql = "INSERT INTO transactions (customer_name, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at, ) VALUES (?, ?, ?, ?, ?, NOW(), NOW());";
+        $transSql = "INSERT INTO transactions (customer_name, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at, package_id, treatment_type, session_no, notes) VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?);";
         $transStmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($transStmt, $transSql)) {
@@ -490,7 +490,7 @@ function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $t
         if (!$transStmt) {
             error_log("SQL Error: " . mysqli_error($conn));
         }
-        mysqli_stmt_bind_param($transStmt, 'sssss', $customerName, $treatmentDate, $treatmentTime, $treatment, $status);
+        mysqli_stmt_bind_param($transStmt, 'sssssisis', $customerName, $treatmentDate, $treatmentTime, $treatment, $status, $package, $type, $session, $note);
         mysqli_stmt_execute($transStmt);
 
         if (mysqli_stmt_affected_rows($transStmt) > 0) {
@@ -556,6 +556,23 @@ function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $t
             'file' => $e->getFile(),
             'stringTrace' => $e->getTraceAsString(),
         ];
+    }
+}
+
+function get_package_treatment($conn, $packageid)
+{
+    if (!ctype_digit($packageid)) {
+        return ['error' => 'Invalid id'];
+    }
+
+    $sql = "SELECT treatment FROM packages WHERE id = $packageid;";
+    $res = mysqli_query($conn, $sql);
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
+            return $row['treatment'];
+        }
+    } else {
+        return ['error' => 'Data not in database.'];
     }
 }
 
