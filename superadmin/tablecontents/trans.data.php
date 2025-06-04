@@ -13,7 +13,7 @@ if (isset($_GET['voidreqs']) && $_GET['voidreqs'] === 'true') {
             $customerName = $row['customer_name'];
             $treatmentDate = $row['treatment_date'];
             $request = $row['void_request'];
-?>
+            ?>
             <tr class="text-center">
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
@@ -22,14 +22,14 @@ if (isset($_GET['voidreqs']) && $_GET['voidreqs'] === 'true') {
                     <div class="d-flex justify-content-center">
                         <?php
                         if ($request === "1") {
-                        ?>
+                            ?>
                             <input type="checkbox" class="btn-check" value="<?= $id ?>" name="trans[]" id="c-<?= $id ?>"
                                 autocomplete="off">
                             <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i class="bi bi-check-circle me-2"></i>Void
                                 Transaction</label>
-                        <?php
+                            <?php
                         } else {
-                        ?>
+                            ?>
                             <p class="text-muted">Voided.</p>
                         <?php } ?>
                     </div>
@@ -37,7 +37,7 @@ if (isset($_GET['voidreqs']) && $_GET['voidreqs'] === 'true') {
             </tr>
 
 
-        <?php
+            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='4' class='text-center'>No Void Requests.</td></tr>";
@@ -58,7 +58,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'table') {
             $createdAt = $row['created_at'];
             $updatedAt = $row['updated_at'];
             $status = $row['transaction_status'];
-        ?>
+            ?>
             <tr class="text-center">
                 <td scope="row"><?= $id ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
@@ -74,7 +74,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'table') {
             </tr>
 
 
-        <?php
+            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='6' class='text-center'>Search does not exist.</td></tr>";
@@ -125,7 +125,7 @@ function get_tech($conn, $active = null)
 
         ?>
         <option value="<?= $id ?>" <?= $id == $active ? 'selected' : '' ?>><?= $name . ' | Technician ' . $empId ?></option>
-    <?php
+        <?php
     }
 }
 
@@ -143,11 +143,11 @@ function get_prob($conn, $checked = null)
     while ($row = mysqli_fetch_assoc($result)) {
         $id = $row['id'];
         $problem = $row['problems'];
-    ?>
+        ?>
         <input type="checkbox" value="<?= $id ?>" name="pest_problems[]" class="btn-check" id="add-<?= $id ?>"
             autocomplete="off" <?= in_array($problem, $checked) ? 'checked' : '' ?>>
         <label class="btn" for="add-<?= $id ?>"><?= $problem ?></label>
-    <?php
+        <?php
     }
 }
 function get_chem($conn, $active = null)
@@ -170,12 +170,12 @@ function get_chem($conn, $active = null)
         $name = $row['name'];
         $level = $row['chemLevel'];
         $req = $row['request']
-    ?>
+            ?>
         <option value="<?= htmlspecialchars($id) ?>" <?= $level <= 0 || $req == 1 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?>>
             <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars($level) . "ml" ?>
             <?= $req == 1 ? " | Chemical Under Review" : '' ?>
         </option>
-    <?php
+        <?php
     }
 }
 function get_chem_edit($conn, $active = null)
@@ -198,12 +198,12 @@ function get_chem_edit($conn, $active = null)
         $name = $row['name'];
         $level = $row['chemLevel'];
         $req = $row['request']
-    ?>
+            ?>
         <option value="<?= htmlspecialchars($id) ?>" <?= $id == $active ? 'selected' : '' ?>>
             <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars($level) . "ml" ?>
             <?= $req == 1 ? " | Chemical Under Review" : '' ?>
         </option>
-    <?php
+        <?php
     }
 }
 function get_more_chem($conn, $rowNum)
@@ -240,9 +240,9 @@ if (isset($_GET['treatments']) && $_GET['treatments'] === 'true') {
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
             $n = $row['t_name'];
-    ?>
+            ?>
             <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($n) ?></option>
-    <?php
+            <?php
         }
     }
 }
@@ -320,9 +320,9 @@ if (isset($_GET['getTechList']) && $_GET['getTechList'] == 'true') {
         while ($row = mysqli_fetch_assoc($results)) {
             $technician = $row['tech_info'];
 
-    ?>
+            ?>
             <li class="list-group-item"><?= $technician ?></li>
-        <?php
+            <?php
         }
         mysqli_stmt_close($stmt);
         exit();
@@ -355,9 +355,9 @@ if (isset($_GET['view']) && $_GET['view'] == 'treatment') {
         while ($row = mysqli_fetch_assoc($result)) {
             $treatment = $row['t_name'];
 
-        ?>
+            ?>
             <li class="list-group-item"><?= $treatment ?></li>
-        <?php
+            <?php
         }
         mysqli_stmt_close($stmt);
         exit();
@@ -390,9 +390,9 @@ if (isset($_GET['view']) && $_GET['view'] == 'probCheckbox') {
         while ($row = mysqli_fetch_assoc($result)) {
             $problems = $row['problems'];
 
-        ?>
+            ?>
             <li class="list-group-item"><?= $problems ?></li>
-        <?php
+            <?php
         }
         mysqli_stmt_close($stmt);
         exit();
@@ -426,10 +426,10 @@ if (isset($_GET['view']) && $_GET['view'] == 'chemUsed') {
             $chemUsed = $row['chem_brand'];
             $amtUsed = $row['amt_used'];
 
-        ?>
+            ?>
             <li class="list-group-item mb-2"><strong>Chemical:</strong> <?= $chemUsed ?><br><strong>Amount used:
                 </strong><?= $amtUsed != 0 ? $amtUsed . ' ml' : 'Amount Pending' ?></li>
-        <?php
+            <?php
         }
         mysqli_stmt_close($stmt);
         exit();
@@ -463,7 +463,7 @@ if (isset($_GET['edit']) && $_GET['edit'] == 'technicianName') {
             $id = $row['tech_id'];
             $technician = $row['tech_info'];
 
-        ?>
+            ?>
             <div class="mb-2 d-inline-flex" id="techRow-<?= $id ?>">
                 <select id="edit-technicianName" name="edit-technicianName[]" class="form-select me-3"
                     aria-label="Default select example">
@@ -474,7 +474,7 @@ if (isset($_GET['edit']) && $_GET['edit'] == 'technicianName') {
                 <button type="button" id="edit-deleteTech" data-row-id="<?= $id ?>" class="btn btn-grad mt-auto py-2 px-3"><i
                         class="bi bi-dash-circle text-light"></i></button>
             </div>
-        <?php
+            <?php
         }
         mysqli_stmt_close($stmt);
         exit();
@@ -548,7 +548,7 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
             $id = $row['chem_id'];
             $amtUsed = $row['amt_used'];
 
-        ?>
+            ?>
             <div class="row" id="row-<?= $id ?>">
                 <div class="col-lg-4 mb-2">
                     <label for="edit-chemBrandUsed-<?= $id ?>" class="form-label fw-light" id="edit-chemBrandUsed-label">Chemical
@@ -573,7 +573,7 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
                 </div>
 
             </div>
-        <?php
+            <?php
         }
         mysqli_stmt_close($stmt);
         exit();
@@ -601,7 +601,7 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
                         class="bi bi-dash-circle text-light"></i></button>
             </div>
         </div>
-    <?php
+        <?php
         mysqli_stmt_close($stmt);
         exit();
     }
@@ -647,16 +647,16 @@ function packages($conn)
             $name = $row['name'];
             $sessions = $row['session_count'];
             $warranty = $row['year_warranty'];
-    ?>
+            ?>
             <option value="<?= $id ?>">
                 <?= htmlspecialchars($name) . ' | ' . htmlspecialchars($warranty) . " Years Warranty" . ($sessions != 1 ? " | (" . htmlspecialchars($sessions) . " Sessions) " : '') ?>
             </option>
-        <?php
+            <?php
         }
     } else {
         ?>
         <option disabled>No Current Package.</option>
-    <?php
+        <?php
     }
 }
 
@@ -696,10 +696,10 @@ if (isset($_GET['edit']) && $_GET['edit'] === 'treatment-options') {
         while ($row = mysqli_fetch_assoc($res)) {
             $idval = $row['id'];
             $tname = $row['t_name'];
-    ?>
+            ?>
             <option value="<?= htmlspecialchars($idval) ?>" <?= $id == $idval ? 'selected' : '' ?>><?= htmlspecialchars($tname) ?>
             </option>
-        <?php
+            <?php
         }
     } else {
         ?>
@@ -727,16 +727,16 @@ if (isset($_GET['edit']) && $_GET['edit'] === 'package') {
             $name = $row['name'];
             $sessions = $row['session_count'];
             $warranty = $row['year_warranty'];
-        ?>
+            ?>
             <option value="<?= $id ?>" <?= $id === $package_id ? 'selected' : '' ?>>
                 <?= htmlspecialchars($name) . ' | ' . htmlspecialchars($warranty) . " Years Warranty" . ($sessions != 1 ? " | (" . htmlspecialchars($sessions) . " Sessions) " : '') ?>
             </option>
-        <?php
+            <?php
         }
     } else {
         ?>
         <option disabled>No Current Package.</option>
-<?php
+        <?php
     }
 }
 
@@ -800,13 +800,13 @@ if (isset($_POST['pack_exp']) && $_POST['pack_exp'] === 'true') {
 
     $duration = get_warranty_duration($conn, $id);
 
-    if(isset($duration['error'])){
+    if (isset($duration['error'])) {
         http_response_code(400);
         return $duration['error'];
-        exit();
     }
 
-    date_add($date, date_interval_create_from_date_string("$duration year"));
+    $fdate = date("F j, Y",strtotime($date . "+ $duration years"));
 
-    return date_format($date, "Y-m-d");
+    echo $fdate;
+    exit();
 }
