@@ -8,6 +8,22 @@ $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
+function treatment_name($conn, $id){
+    if(!is_numeric($id)){
+        return "Invalid ID. ID passed: " . $id;
+    }
+
+    $sql = "SELECT t_name FROM treatments WHERE id = $id;";
+    $res = mysqli_query($conn, $sql);
+
+    if(mysqli_num_rows($res) > 0){
+        if($row = mysqli_fetch_assoc($res)){
+            return $row['t_name'];
+        }
+    }else{
+        return "No treatment found.";
+    }
+}
 
 function row_status($conn, $status = '')
 {
@@ -64,6 +80,7 @@ if (isset($_GET['search'])) {
             $customerName = $row['customer_name'];
             $treatmentDate = $row['treatment_date'];
             $treatment = $row['treatment'];
+            $t_name = treatment_name($conn, intval($treatment));
             $createdAt = $row['created_at'];
             $updatedAt = $row['updated_at'];
             $status = $row['transaction_status'];
@@ -72,7 +89,7 @@ if (isset($_GET['search'])) {
                 <td scope="row"><?= $id ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
                 <td><?= htmlspecialchars($treatmentDate) ?></td>
-                <td><?= htmlspecialchars($treatment) ?></td>
+                <td><?= htmlspecialchars($t_name) ?></td>
                 <td><?= htmlspecialchars($status) ?></td>
                 <td>
                     <div class="d-flex justify-content-center">
@@ -208,6 +225,8 @@ function load_pagination($conn, $status)
     <?php
 }
 
+
+
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
     $status = $_GET['status'] == '' ? '' : $_GET['status'];
@@ -236,6 +255,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $customerName = $row['customer_name'];
             $treatmentDate = $row['treatment_date'];
             $treatment = $row['treatment'];
+            $t_name = treatment_name($conn, $treatment);
             $createdAt = $row['created_at'];
             $updatedAt = $row['updated_at'];
             $status = $row['transaction_status'];
@@ -244,7 +264,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td scope="row"><?= $id ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
                 <td><?= htmlspecialchars($treatmentDate) ?></td>
-                <td><?= htmlspecialchars($treatment) ?></td>
+                <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
                         $status === 'Pending' ? "<button type='button' id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
