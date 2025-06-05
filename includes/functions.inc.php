@@ -475,12 +475,12 @@ function get_chem_level($conn, $id)
     }
 }
 
-function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note)
+function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note, $pstart, $pend)
 {
 
     mysqli_begin_transaction($conn);
     try {
-        $transSql = "INSERT INTO transactions (customer_name, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at, package_id, treatment_type, session_no, notes) VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?);";
+        $transSql = "INSERT INTO transactions (customer_name, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at, package_id, treatment_type, session_no, notes, pack_start, pack_exp) VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?);";
         $transStmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($transStmt, $transSql)) {
@@ -490,7 +490,7 @@ function newTransaction($conn, $customerName, $technicianIds, $treatmentDate, $t
         if (!$transStmt) {
             error_log("SQL Error: " . mysqli_error($conn));
         }
-        mysqli_stmt_bind_param($transStmt, 'sssssisis', $customerName, $treatmentDate, $treatmentTime, $treatment, $status, $package, $type, $session, $note);
+        mysqli_stmt_bind_param($transStmt, 'sssssisis', $customerName, $treatmentDate, $treatmentTime, $treatment, $status, $package, $type, $session, $note, $pstart, $pend);
         mysqli_stmt_execute($transStmt);
 
         if (mysqli_stmt_affected_rows($transStmt) > 0) {

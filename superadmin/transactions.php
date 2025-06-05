@@ -184,15 +184,14 @@
                                             <label for="add-packageStart"
                                                 class="form-label fw-light text-nowrap">Package Warranty
                                                 Start</label>
-                                            <input name="add-packageStart" placeholder="--/--/--" id="add-packageStart"
-                                                class="form-control form-add">
+                                            <input placeholder="--/--/--" id="add-packageStart"
+                                                class="form-control form-add" disabled>
                                         </div>
                                         <div class="col-lg-3 mb-2">
                                             <label for="add-packageExpiry" class="form-label fw-light">Package
                                                 Expiry</label>
                                             <!-- <p class="fw-light" id="add-packageExpiry"></p> -->
-                                            <input class="fw-light form-control-plaintext" id="add-packageExpiry"
-                                                name="add-packageExpiry" readonly>
+                                            <input class="fw-light form-control" id="add-packageExpiry" readonly>
                                         </div>
 
                                         <div class="col-lg-3">
@@ -793,29 +792,29 @@
 
         <?php
         if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
-            ?>
+        ?>
             $('#viewEditForm')[0].reset();
             let id = <?= $_GET['id']; ?>;
             console.log(id);
             view_transaction(id);
-            $('#details-modal').on('hidden.bs.modal', function (e) {
+            $('#details-modal').on('hidden.bs.modal', function(e) {
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.delete('openmodal');
                 currentUrl.searchParams.delete('id');
                 window.history.pushState(null, "", currentUrl.pathname + currentUrl.search);
             });
-            <?php
+        <?php
         }
         ?>
 
-        $(document).on('change', '#checkall', function () {
+        $(document).on('change', '#checkall', function() {
             $('#checkicon').toggleClass('bi-square bi-check-square');
             var checked = $(this).prop('checked');
             $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
         });
 
         // voidrequesttable
-        $(document).on('click', '#voidreqbtn', async function () {
+        $(document).on('click', '#voidreqbtn', async function() {
             const loadreq = await void_req_table();
             if (loadreq) {
                 $('#voidrequestmodal').modal('show');
@@ -824,27 +823,27 @@
 
         let apd = $('#add-packageStart');
         addPackageDate = flatpickr(apd, {
-            altInput: true,
-            altFormat: "F j, Y",
+            // altInput: true,
+            // altFormat: "F j, Y",
             dateFormat: "Y-m-d"
         });
 
         async function compute_package_expiry(date, packId) {
             return $.post(transUrl, {
-                date: date,
-                pack_exp: 'true',
-                pid: packId
-            }, function (data) {
-                // alert(data);
-                return data;
-            })
-                .fail(function (err) {
+                    date: date,
+                    pack_exp: 'true',
+                    pid: packId
+                }, function(data) {
+                    // alert(data);
+                    return data;
+                })
+                .fail(function(err) {
                     console.log(err);
                 })
         }
 
 
-        $(document).on('change', '#add-packageStart', async function (e) {
+        $(document).on('change', '#add-packageStart', async function(e) {
             let package_id = $('#add-package').val();
             if (!$.isNumeric(package_id)) {
                 alert('Please Select a package! Invalid package ID.');
@@ -859,8 +858,8 @@
 
         let adddate = $('#add-treatmentDate');
         addDate = flatpickr(adddate, {
-            altInput: true,
-            altFormat: "F j, Y",
+            // altInput: true,
+            // altFormat: "F j, Y",
             dateFormat: "Y-m-d",
             minDate: new Date().fp_incr(1),
             setDate: 'today'
@@ -899,7 +898,7 @@
             }
         }
 
-        $(document).on('submit', '#voidrequestform', async function (e) {
+        $(document).on('submit', '#voidrequestform', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -922,7 +921,7 @@
             }
         })
 
-        $(document).on('click', '#pendingbtn', function () {
+        $(document).on('click', '#pendingbtn', function() {
             let transId = $(this).data('pending-id');
             console.log(transId);
             $('#transidinput').val(transId);
@@ -931,7 +930,7 @@
             $('#approvemodal').modal('show');
         });
 
-        $('#approvependingtransactions').on('submit', async function (e) {
+        $('#approvependingtransactions').on('submit', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             let status = $('#sortstatus option:selected').val();
@@ -973,7 +972,7 @@
 
         async function treatments(form) {
             try {
-                $.get(transUrl, "treatments=true", function (data) {
+                $.get(transUrl, "treatments=true", function(data) {
                     $(`#${form}-treatmentContainer`).empty();
                     $(`#${form}-treatmentContainer`).html(data);
                 });
@@ -982,7 +981,7 @@
             }
         }
 
-        $(document).on('click', '#addbtn', async function () {
+        $(document).on('click', '#addbtn', async function() {
             let form = 'add';
             try {
                 const load = await Promise.all([
@@ -1005,6 +1004,7 @@
                 console.log('add get error.')
             }
         });
+
 
         async function add_packages() {
             try {
@@ -1029,7 +1029,7 @@
         async function add_more_tech() {
             let num = 2;
 
-            $('#addMoreTech', '#addModal').off('click').on('click', async function () {
+            $('#addMoreTech', '#addModal').off('click').on('click', async function() {
                 // console.log('tite' + num);
                 await get_more_tech(num);
                 num++;
@@ -1043,7 +1043,7 @@
             // let moreChemTemp = $('#add-chemicalData').html();
             let num = 2;
 
-            $('#addMoreChem', '#addModal').off('click').on('click', async function () {
+            $('#addMoreChem', '#addModal').off('click').on('click', async function() {
                 await add_used_chem(num);
                 num++;
                 console.log(num);
@@ -1192,7 +1192,7 @@
         let toggled = false;
 
         async function toggle() {
-            $("#view-customerName, #edit-session").attr("readonly", function (i, attr) {
+            $("#view-customerName, #edit-session").attr("readonly", function(i, attr) {
                 if (attr) {
                     $(this).removeClass('form-control-plaintext');
                     $(this).addClass('form-control');
@@ -1209,7 +1209,7 @@
 
                 return attr ? false : true;
             });
-            $("#view-treatmentDate, #view-treatmentTime").attr("disabled", function (i, attr) {
+            $("#view-treatmentDate, #view-treatmentTime").attr("disabled", function(i, attr) {
                 $(this).removeAttr('style');
                 if (attr) {
                     $(this).removeAttr('style');
@@ -1251,8 +1251,8 @@
             return toggled = true;
         }
 
-        $(document).on('change', '#edit-status', function () {
-            let sts = $('#edit-status').val();
+        $(document).on('change', '#edit-status, #add-status', function() {
+            let sts = $(this).val();
             if (sts == 'Pending') {
                 editTransDate.config.minDate = new Date().fp_incr(1);
             } else {
@@ -1337,10 +1337,10 @@
 
         function treatment_name(id) {
             $.get(transUrl, `treatmentname=true&id=${id}`)
-                .done(function (d) {
+                .done(function(d) {
                     return d;
                 })
-                .fail(function (error, status, errmsg) {
+                .fail(function(error, status, errmsg) {
                     console.log(error);
                     console.log(status + errmsg);
                 });
@@ -1348,18 +1348,18 @@
 
         function get_package_name(id) {
             $.get(transUrl, `packagename=true&id=${id}`)
-                .done(function (data) {
+                .done(function(data) {
                     $('#view-package').empty();
                     $('#view-package').html(data);
                 })
-                .fail(function (error, status, errmsg) {
+                .fail(function(error, status, errmsg) {
                     console.log(error);
                     console.log(status + errmsg);
                 });
         }
 
         let sval, tval;
-        $(document).on('change', '#edit-package-select', function () {
+        $(document).on('change', '#edit-package-select', function() {
             if ($(this).val() === 'none') {
                 sval = $('#edit-session').val();
                 $('#edit-session').val('');
@@ -1469,7 +1469,7 @@
 
 
         // open details
-        $(document).on('click', '#tableDetails', async function () {
+        $(document).on('click', '#tableDetails', async function() {
             const clearform = await empty_form();
             if (clearform) {
                 $('#viewEditForm')[0].reset();
@@ -1489,7 +1489,7 @@
         function get_addrow(row) {
             $.get(transUrl, {
                 addrow: 'true'
-            }, function (data) {
+            }, function(data) {
                 $(`#edit-${row}`).append(data);
                 console.log(status);
             })
@@ -1504,7 +1504,7 @@
             }
         }
 
-        $(document).on('click', '#edit-deleteTech', async function () {
+        $(document).on('click', '#edit-deleteTech', async function() {
             let rowId = $(this).data('row-id');
             let row = $('#edit-technicianName > div').length;
             if (row === 1) {
@@ -1516,7 +1516,7 @@
             }
         })
 
-        $(document).on('click', '#deleteTech', async function () {
+        $(document).on('click', '#deleteTech', async function() {
             let rowId = $(this).data('row-id');
             let row = $('#addTechContainer').length;
             if (row === 0) {
@@ -1528,7 +1528,7 @@
             }
         })
 
-        $(document).on('click', '#edit-deleteChemRow', async function () {
+        $(document).on('click', '#edit-deleteChemRow', async function() {
             let rowId = $(this).data('row-id');
             let row = $('#edit-chemBrandUsed > div').length;
             if (row === 1) {
@@ -1546,18 +1546,18 @@
             }
         })
 
-        $(document).on('click', '#edit-addTech', async function () {
+        $(document).on('click', '#edit-addTech', async function() {
             // $.get(transUrl, { editTechAdd: 'true' }, function (data) {
             //     $('#edit-technicianName').append(data);
             // })
             await edit('technicianName');
         })
 
-        $(document).on('click', '#edit-addMoreChem', async function () {
+        $(document).on('click', '#edit-addMoreChem', async function() {
             get_addrow('chemBrandUsed');
         })
 
-        $(document).on('click', '#editbtn', async function () {
+        $(document).on('click', '#editbtn', async function() {
             if (toggled) {
                 await toggle();
                 toggled = false;
@@ -1568,7 +1568,7 @@
             }
         });
 
-        $(document).on('click', '#deleteChem', function () {
+        $(document).on('click', '#deleteChem', function() {
             $(this).parent().parent().remove();
         });
 
@@ -1591,21 +1591,29 @@
             return true;
         }
 
-        $(document).on('change', '#add-package', function () {
+
+        // toggle name and disable when package is active
+        $(document).on('change', '#add-package', function() {
             let package = $(this).val();
-            console.log(package);
+            // console.log(package);
             if (package === 'none') {
                 $('#add-session').attr('disabled', true);
                 $('#add-treatment').attr('disabled', false);
                 $('#add-treatment').attr('name', 'add-treatment');
+                $('#add-packageStart').attr('disabled', true);
+                $('#add-packageStart').removeAttr('name');
+                $('#add-packageExpiry').removeAttr('name');
             } else {
                 $('#add-session').attr('disabled', false);
                 $('#add-treatment').attr('disabled', true);
                 $('#add-treatment').removeAttr('name');
+                $('#add-packageStart').attr('disabled', false);
+                $('#add-packageStart').attr('name', 'add-packageStart');
+                $('#add-packageExpiry').attr('name', 'add-packageExpiry');
             }
         });
 
-        $(document).on('focusout', 'form input, form select, form textarea', function () {
+        $(document).on('focusout', 'form input, form select, form textarea', function() {
             if ($(this).val() == '' || $(this).val() == '#') {
                 $(this).addClass('border border-danger');
             } else {
@@ -1615,8 +1623,8 @@
 
 
         // submit
-        $(function () {
-            $('#addTransaction').on('submit', async function (e) {
+        $(function() {
+            $('#addTransaction').on('submit', async function(e) {
                 e.preventDefault();
                 console.log($(this).serialize());
                 try {
@@ -1654,7 +1662,7 @@
         });
 
         // edit section
-        $(document).on('click', '#confirmUpdate', function () {
+        $(document).on('click', '#confirmUpdate', function() {
             $('#confirmation #verifyAdd').text('Verify Transaction Update');
             $('#confirmation #edit-confirm').text('Update Transaction');
             $('#confirmation #edit-confirm').attr('data-update', 'update');
@@ -1662,7 +1670,7 @@
         })
 
         // edit section
-        $(document).on('click', '#confirmDelete', function () {
+        $(document).on('click', '#confirmDelete', function() {
             $('#confirmation #verifyAdd').text('Verify Transaction Deletion');
             $('#confirmation #edit-confirm').text('Delete Transaction');
             $('#confirmation #edit-confirm').attr('data-update', 'delete');
@@ -1670,7 +1678,7 @@
         })
 
         // submit section | confirmation modal
-        $(document).on('click', '#edit-confirm', async function () {
+        $(document).on('click', '#edit-confirm', async function() {
             let update = $(this).attr('data-update');
             // console.log(update);
             if (update === 'delete') {
@@ -1765,15 +1773,15 @@
 
 
         // search function
-        $(function () {
+        $(function() {
             let delay = null;
 
-            $('#searchbar').keyup(function () {
+            $('#searchbar').keyup(function() {
                 clearTimeout(delay);
                 $('#table').empty();
                 $('#loader').removeClass('visually-hidden');
 
-                delay = setTimeout(async function () {
+                delay = setTimeout(async function() {
                     var search = $('#searchbar').val();
                     let status = $('#sortstatus').val();
                     try {
@@ -1851,11 +1859,11 @@
             }
         }
 
-        $(document).ready(async function () {
+        $(document).ready(async function() {
             await loadpage();
         })
 
-        $("#sortstatus").on('change', async function () {
+        $("#sortstatus").on('change', async function() {
             let status = $("#sortstatus option:selected").val();
             $("#searchbar").val('');
             if (status != '') {
@@ -1870,7 +1878,7 @@
             await load_paginated_table(page, status);
         }
 
-        $('#pagination').on('click', '.page-link', async function (e) {
+        $('#pagination').on('click', '.page-link', async function(e) {
             e.preventDefault();
             let status = $("#sortstatus option:selected").val();
 

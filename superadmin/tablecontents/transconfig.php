@@ -10,16 +10,19 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $customerName = $_POST['add-customerName'];
     $techId = $_POST['add-technicianName'] ?? [];
     $treatmentDate = $_POST['add-treatmentDate'];
+    $address = $_POST['add-customerAddress'];
     $treatmentTime = $_POST['add-treatmentTime'];
     $treatment = $_POST['add-treatment'] ?? null;
     $t_type = $_POST['add-treatmentType'];
-    $package = $_POST['add-package'];
+    $package = $_POST['add-package'] ?? null;
+    $pstart = $_POST['add-packageStart'] ?? null;
+    $pexp = $_POST['add-packageExpiry'] ?? null;
     $problems = $_POST['pest_problems'] ?? []; //array
     $chemUsed = $_POST['add_chemBrandUsed'] ?? []; //arrya
     // $amtUsed = $_POST['add_amountUsed'] ?? []; //array
     $note = $_POST['add-notes'];
     $status = $_POST['add-status'];
-    $session = $_POST['add-session'] ?? 1;
+    $session = $_POST['add-session'] ?? null;
     $saPwd = $_POST['saPwd'];
 
     // if ($package === '#') {
@@ -48,11 +51,6 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     //     exit();
     // }
 
-    if (!in_array($status, $allStatus)) {
-        http_response_code(400);
-        echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Status. Please Try Again.']);
-        exit();
-    }
 
     // if (!in_array($treatment, $allTreatments, true)) {
     //     http_response_code(400);
@@ -60,10 +58,29 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     //     exit();
     // }
 
-    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatment) || empty($problems) || empty($chemUsed) || empty($status) || empty($treatment) || empty($t_type)) {
+    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatment) || empty($problems) || empty($chemUsed) || empty($status) || empty($treatment) || empty($t_type) || empty($$note) || empty($address)) {
         // header('Content-Type: application/json');
         http_response_code(400);
         echo json_encode(['type' => 'emptyinput', 'errorMessage' => "All input fields are required."]);
+        exit();
+    }
+
+    if($package != null){
+        if(empty($session)){
+            http_response_code(400);
+            echo json_encode(['type'=>'emptyinput', 'errorMessage' => "Session count is required."]);
+            exit();
+        }
+        if(empty($pstart) || empty($pexp)){
+            http_response_code(400);
+            echo json_encode(['type'=>'emptyinput', 'errorMessage' => "Please Input Package Warranty Start."]);
+            exit();
+        }
+    }
+
+    if (!in_array($status, $allStatus)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Status. Please Try Again.']);
         exit();
     }
 
@@ -81,7 +98,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-    $transaction = newTransaction($conn, $customerName, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note);
+    $transaction = newTransaction($conn, $customerName, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp);
 
     if (!isset($transaction['success'])) {
         http_response_code(400);
@@ -205,7 +222,6 @@ if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
         echo json_encode(['type' => 'function', 'error' => $approve]);
         exit();
     }
-
 }
 
 if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
@@ -235,5 +251,4 @@ if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
     http_response_code(200);
     echo json_encode(['success' => $voidreq['success']]);
     exit();
-
 }
