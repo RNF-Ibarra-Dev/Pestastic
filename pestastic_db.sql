@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 02, 2025 at 05:36 AM
+-- Generation Time: Jun 08, 2025 at 04:55 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -86,9 +86,9 @@ INSERT INTO `chemicals` (`id`, `name`, `brand`, `chemLevel`, `expiryDate`, `adde
 (49, 'asd', 'asd', 0, '2025-01-01', '2025-04-12 15:06:30', '2025-04-12 15:06:30', 0, NULL),
 (50, 'Deltacides', 'CHEM', 0, '2025-01-01', '2025-04-12 15:06:30', '2025-05-22 06:18:45', 0, NULL),
 (51, 'asd', 'asd', 33, '2025-01-29', '2025-04-12 15:06:30', '2025-04-12 15:06:30', 0, NULL),
-(52, 'asd', 'asd', 33, '2025-01-29', '2025-04-12 15:06:30', '2025-04-12 15:06:30', 0, NULL),
-(54, 'chem B', 'brand B', 95, '2029-06-21', '2025-04-12 15:06:30', '2025-05-29 15:18:17', 0, NULL),
-(1000, 'hj', 'hj', 7, '2025-01-01', '2025-04-17 13:03:08', '2025-04-27 13:53:40', 0, NULL),
+(52, 'asd', 'asd', 25, '2025-01-29', '2025-04-12 15:06:30', '2025-06-08 14:41:21', 0, NULL),
+(54, 'chem B', 'brand B', 85, '2029-06-21', '2025-04-12 15:06:30', '2025-06-08 14:41:21', 0, NULL),
+(1000, 'hj', 'hj', 5, '2025-01-01', '2025-04-17 13:03:08', '2025-06-08 06:04:40', 0, NULL),
 (1001, 'gh', 'gh', 6, '2025-01-01', '2025-04-17 13:15:47', '2025-04-27 13:53:40', 0, NULL),
 (1002, 'fgh', 'fgh', 6, '2025-01-01', '2025-04-17 13:16:32', '2025-04-27 13:53:40', 0, NULL),
 (1003, 'asd', 'asd', 3, '2025-01-01', '2025-04-17 13:17:16', '2025-04-27 13:53:40', 0, NULL),
@@ -264,39 +264,42 @@ CREATE TABLE `transactions` (
   `package_id` int(11) DEFAULT NULL,
   `treatment_type` enum('General Treatment','Follow-up Treatment','Quarterly Treatment','Monthly Treatment') DEFAULT NULL,
   `treatment` int(11) NOT NULL,
-  `package_exp` date DEFAULT NULL,
-  `session_no` int(11) DEFAULT NULL
+  `pack_exp` date DEFAULT NULL,
+  `session_no` int(11) DEFAULT NULL,
+  `pack_start` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `transactions`
 --
 
-INSERT INTO `transactions` (`id`, `treatment_date`, `customer_name`, `customer_address`, `created_at`, `updated_at`, `transaction_status`, `void_request`, `transaction_time`, `notes`, `t_finished`, `package_id`, `treatment_type`, `treatment`, `package_exp`, `session_no`) VALUES
-(76, '2025-04-04', 'gffggh', NULL, '2025-03-31 13:07:43', '2025-04-04 13:56:20', 'Completed', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(80, '2025-04-25', 'dfgfd', NULL, '2025-04-01 14:23:01', '2025-05-30 10:06:07', 'Completed', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(82, NULL, 'ggddf', NULL, '2025-04-05 13:46:48', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(83, '2025-05-01', 'sssss', NULL, '2025-04-05 13:47:19', '2025-04-05 13:47:19', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(84, '2025-05-20', 'asd', NULL, '2025-04-05 14:14:53', '2025-05-30 10:06:07', 'Completed', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(85, '2025-04-19', 'kkjljkl', NULL, '2025-04-06 05:19:12', '2025-04-13 14:09:32', 'Accepted', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(96, '2025-04-19', 'dfsdf', NULL, '2025-04-10 06:51:37', '2025-05-28 14:22:40', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(97, '2025-04-25', 'ghj', NULL, '2025-04-10 06:53:43', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(98, '2025-04-25', 'jkl', NULL, '2025-04-10 06:54:24', '2025-05-30 10:06:07', 'Pending', 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(99, '2025-04-25', NULL, NULL, '2025-04-10 06:57:10', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(100, '2025-04-25', 'ghbgh', NULL, '2025-04-10 07:07:38', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(101, NULL, 'hjkjk', NULL, '2025-04-10 07:08:48', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(102, '2025-04-18', 'lkkl', NULL, '2025-04-10 07:12:11', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(103, '2025-04-24', 'sdf', NULL, '2025-04-10 13:15:57', '2025-05-01 13:38:29', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(104, '2025-05-02', 'dfgdf', NULL, '2025-04-12 15:10:19', '2025-05-30 10:06:07', 'Accepted', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(10001, '2025-04-26', 'gfhfgh', NULL, '2025-04-12 15:15:31', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(10002, '2025-06-06', 'jhh', NULL, '2025-04-20 13:13:41', '2025-05-30 10:06:07', 'Accepted', 1, '12:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(10003, '2025-05-01', 'sdfsds', NULL, '2025-04-22 07:52:06', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(10004, '2025-05-01', '......', NULL, '2025-04-22 07:56:38', '2025-05-29 12:12:41', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(10017, '2025-05-30', 'asd', NULL, '2025-05-11 07:11:03', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(10018, '2025-05-30', 'dfgfg', NULL, '2025-05-22 06:18:45', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(10019, '2025-06-05', 'customer', NULL, '2025-05-29 15:18:17', '2025-05-30 10:06:07', 'Pending', 0, '11:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL),
-(10020, '2025-06-12', 'ggh', NULL, '2025-06-01 06:59:38', '2025-06-01 06:59:38', 'Pending', 0, '02:00:00', NULL, NULL, NULL, NULL, 3, NULL, NULL),
-(10021, '2025-06-11', 'Albert Einstein', NULL, '2025-06-01 07:05:44', '2025-06-01 07:05:44', 'Pending', 0, '02:00:00', NULL, NULL, NULL, NULL, 2, NULL, NULL);
+INSERT INTO `transactions` (`id`, `treatment_date`, `customer_name`, `customer_address`, `created_at`, `updated_at`, `transaction_status`, `void_request`, `transaction_time`, `notes`, `t_finished`, `package_id`, `treatment_type`, `treatment`, `pack_exp`, `session_no`, `pack_start`) VALUES
+(76, '2025-04-04', 'gffggh', NULL, '2025-03-31 13:07:43', '2025-04-04 13:56:20', 'Completed', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(80, '2025-04-25', 'dfgfd', NULL, '2025-04-01 14:23:01', '2025-05-30 10:06:07', 'Completed', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(82, NULL, 'ggddf', NULL, '2025-04-05 13:46:48', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(83, '2025-05-01', 'sssss', NULL, '2025-04-05 13:47:19', '2025-04-05 13:47:19', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(84, '2025-05-20', 'asd', NULL, '2025-04-05 14:14:53', '2025-05-30 10:06:07', 'Completed', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(85, '2025-04-19', 'kkjljkl', NULL, '2025-04-06 05:19:12', '2025-04-13 14:09:32', 'Accepted', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(96, '2025-04-19', 'dfsdf', NULL, '2025-04-10 06:51:37', '2025-05-28 14:22:40', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(97, '2025-04-25', 'ghj', NULL, '2025-04-10 06:53:43', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(98, '2025-04-25', 'jkl', NULL, '2025-04-10 06:54:24', '2025-05-30 10:06:07', 'Pending', 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(99, '2025-04-25', NULL, NULL, '2025-04-10 06:57:10', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(100, '2025-04-25', 'ghbgh', NULL, '2025-04-10 07:07:38', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(101, NULL, 'hjkjk', NULL, '2025-04-10 07:08:48', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(102, '2025-04-18', 'lkkl', NULL, '2025-04-10 07:12:11', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(103, '2025-04-24', 'sdf', NULL, '2025-04-10 13:15:57', '2025-05-01 13:38:29', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(104, '2025-05-02', 'dfgdf', NULL, '2025-04-12 15:10:19', '2025-05-30 10:06:07', 'Accepted', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(10001, '2025-04-26', 'gfhfgh', NULL, '2025-04-12 15:15:31', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(10002, '2025-06-06', 'jhh', NULL, '2025-04-20 13:13:41', '2025-05-30 10:06:07', 'Accepted', 1, '12:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(10003, '2025-05-01', 'sdfsds', NULL, '2025-04-22 07:52:06', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(10004, '2025-05-01', '......', NULL, '2025-04-22 07:56:38', '2025-05-29 12:12:41', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(10017, '2025-05-30', 'asd', NULL, '2025-05-11 07:11:03', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(10018, '2025-05-30', 'dfgfg', NULL, '2025-05-22 06:18:45', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(10019, '2025-06-05', 'customer', NULL, '2025-05-29 15:18:17', '2025-05-30 10:06:07', 'Pending', 0, '11:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL),
+(10020, '2025-06-12', 'ggh', NULL, '2025-06-01 06:59:38', '2025-06-02 12:20:38', 'Pending', 0, '02:00:00', NULL, NULL, NULL, 'General Treatment', 3, NULL, NULL, NULL),
+(10021, '2025-06-11', 'Albert Einstein', NULL, '2025-06-01 07:05:44', '2025-06-02 12:20:35', 'Pending', 0, '02:00:00', NULL, NULL, NULL, 'Follow-up Treatment', 2, NULL, NULL, NULL),
+(10022, '2025-06-03', 'Sigmund Freud', NULL, '2025-06-02 14:44:33', '2025-06-02 14:44:33', 'Pending', 0, '12:00:00', NULL, NULL, 102, 'General Treatment', 4, NULL, 3, NULL),
+(10023, '2025-06-26', 'Name', 'Address', '2025-06-05 14:08:45', '2025-06-07 15:02:57', 'Accepted', 0, '09:05:00', 'notess\r\n', NULL, 101, 'Follow-up Treatment', 4, '2027-06-18', 4, '2025-06-18');
 
 -- --------------------------------------------------------
 
@@ -308,7 +311,7 @@ CREATE TABLE `transaction_chemicals` (
   `trans_id` int(11) NOT NULL,
   `chem_id` int(11) NOT NULL,
   `chem_brand` varchar(255) NOT NULL,
-  `amt_used` int(11) NOT NULL
+  `amt_used` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -345,7 +348,11 @@ INSERT INTO `transaction_chemicals` (`trans_id`, `chem_id`, `chem_brand`, `amt_u
 (10020, 54, 'chem B | brand B', 0),
 (10020, 1004, 'fgh | fgh', 0),
 (10021, 54, 'chem B | brand B', 0),
-(10021, 1005, 'hk | hjk', 0);
+(10021, 1005, 'hk | hjk', 0),
+(10022, 51, 'asd | asd', 0),
+(10022, 1000, 'hj | hj', 0),
+(10023, 52, 'asd | asd', 5),
+(10023, 54, 'chem B | brand B', 5);
 
 --
 -- Triggers `transaction_chemicals`
@@ -441,7 +448,12 @@ INSERT INTO `transaction_problems` (`trans_id`, `problem_id`) VALUES
 (10020, 2),
 (10020, 9),
 (10021, 1),
-(10021, 9);
+(10021, 9),
+(10022, 1),
+(10023, 1),
+(10023, 3),
+(10023, 6),
+(10023, 13);
 
 -- --------------------------------------------------------
 
@@ -488,7 +500,10 @@ INSERT INTO `transaction_technicians` (`trans_id`, `tech_id`, `tech_info`) VALUE
 (10020, 1, 'rayan ibarra'),
 (10020, 10, 'fgh fgh'),
 (10021, 4, 'rayan ibarra'),
-(10021, 10, 'fgh fgh');
+(10021, 10, 'fgh fgh'),
+(10022, 4, 'rayan ibarra'),
+(10022, 10, 'fgh fgh'),
+(10023, 15, 'alena datolayta');
 
 --
 -- Triggers `transaction_technicians`
@@ -667,7 +682,7 @@ ALTER TABLE `technician`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10022;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10024;
 
 --
 -- AUTO_INCREMENT for table `treatments`
