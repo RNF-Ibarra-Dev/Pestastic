@@ -443,7 +443,7 @@ if (isset($_GET['view']) && $_GET['view'] == 'chemUsed') {
 }
 
 
-if (isset($_GET['edit']) && $_GET['edit'] == 'technicianName') {
+if (isset($_GET['edit']) && $_GET['edit'] === 'technicianName') {
     $transId = $_GET['transId'];
 
     $sql = "SELECT * FROM transaction_technicians WHERE trans_id = ?;";
@@ -529,6 +529,7 @@ if (isset($_GET['edit']) && $_GET['edit'] == 'probCheckbox') {
 
 if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
     $transId = $_GET['transId'];
+    $status = $_GET['status'];
 
     $sql = "SELECT * FROM transaction_chemicals WHERE trans_id = ?;";
     $stmt = mysqli_stmt_init($conn);
@@ -551,24 +552,25 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
             ?>
             <div class="row" id="row-<?= $id ?>">
                 <div class="col-lg-4 mb-2">
-                    <label for="edit-chemBrandUsed-<?= $id ?>" class="form-label fw-light" id="edit-chemBrandUsed-label">Chemical
+                    <label for="edit-chemBrandUsed-<?= $id ?>" class="form-label fw-light">Chemical
                         Used:</label>
                     <select id="edit-chemBrandUsed-<?= $id ?>" name="edit_chemBrandUsed[]" class="form-select">
                         <?php get_chem_edit($conn, $id); ?>
                     </select>
                 </div>
 
-                <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly" id='container-amountUsed'>
+                <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
                     <div class="d-flex flex-column">
                         <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
                             id="edit-amountUsed-label">Amount:</label>
-                        <input type="number" name="edit-amountUsed[]" maxlength="4" id="edit-amountUsed-<?= $id ?>"
-                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>">
+                        <input type="number" <?= $status != 'Accepted' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
+                            id="edit-amountUsed-<?=$id?>" class="form-control form-add me-3" autocomplete="one-time-code"
+                            value="<?= $amtUsed ?>" <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
                     </div>
-                    <span id="passwordHelpInline" class="form-text mt-auto mb-2">
+                    <span id="passwordHelpInline-<?=$id?>" class="form-text mt-auto mb-2">
                         /ml
                     </span>
-                    <button type="button" id="edit-deleteChemRow" data-row-id="<?= $id ?>" class="btn btn-grad mt-auto py-2 px-3"><i
+                    <button type="button" data-row-id="<?= $id ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
                             class="bi bi-dash-circle text-light"></i></button>
                 </div>
 
@@ -578,26 +580,27 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
         mysqli_stmt_close($stmt);
         exit();
     } else {
+        $idd = uniqid();
         ?>
-        <div class="row" id="row-#">
+        <div class="row" id="row-<?=$idd?>">
             <div class="col-lg-4 mb-2">
-                <label for="edit-chemBrandUsed-" class="form-label fw-light" id="edit-chemBrandUsed-label">Chemical
+                <label for="edit-chemBrandUsed-<?=$idd?>" class="form-label fw-light">Chemical
                     Used:</label>
-                <select id="edit-chemBrandUsed-" name="edit_chemBrandUsed[]" class="form-select">
+                <select id="edit-chemBrandUsed-<?=$idd?>" name="edit_chemBrandUsed[]" class="form-select">
                     <?php get_chem($conn); ?>
                 </select>
             </div>
 
-            <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly" id='container-amountUsed'>
+            <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
                 <div class="d-flex flex-column">
-                    <label for="edit-amountUsed-" class="form-label fw-light" id="edit-amountUsed-label">Amount:</label>
-                    <input type="number" name="edit-amountUsed[]" maxlength="4" id="edit-amountUsed-"
-                        class="form-control form-add me-3" autocomplete="one-time-code">
+                    <label for="edit-amountUsed-<?=$idd?>" class="form-label fw-light" id="edit-amountUsed-label">Amount:</label>
+                    <input type="number" <?= $status != 'Accepted' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
+                        id="edit-amountUsed-<?=$idd?>" class="form-control form-add me-3" autocomplete="one-time-code" <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
                 </div>
                 <span id="passwordHelpInline" class="form-text mt-auto mb-2">
                     /ml
                 </span>
-                <button type="button" id="edit-deleteChemRow" data-row-id="" class="btn btn-grad mt-auto py-2 px-3"><i
+                <button type="button" data-row-id="<?$idd?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
                         class="bi bi-dash-circle text-light"></i></button>
             </div>
         </div>
@@ -608,26 +611,30 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
 }
 
 if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
+
+    $status = $_GET['status'];
+
+    $idd = uniqid();
     ?>
-    <div class="row" id="row-#">
+    <div class="row" id="row-<?=$idd?>">
         <div class="col-lg-4 mb-2">
-            <label for="edit-chemBrandUsed-" class="form-label fw-light" id="edit-chemBrandUsed-label">Chemical
+            <label for="edit-chemBrandUsed-<?=$idd?>" class="form-label fw-light">Chemical
                 Used:</label>
-            <select id="edit-chemBrandUsed-" name="edit_chemBrandUsed[]" class="form-select">
+            <select id="edit-chemBrandUsed-<?=$idd?>" name="edit_chemBrandUsed[]" class="form-select">
                 <?php get_chem($conn); ?>
             </select>
         </div>
 
-        <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly" id='container-amountUsed'>
+        <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
-                <label for="edit-amountUsed-" class="form-label fw-light" id="edit-amountUsed-label">Amount:</label>
-                <input type="number" name="edit-amountUsed[]" maxlength="4" id="edit-amountUsed-"
-                    class="form-control form-add me-3" autocomplete="one-time-code">
+                <label for="edit-amountUsed-<?=$idd?>" class="form-label fw-light">Amount:</label>
+                <input type="number" <?= $status != 'Accepted' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
+                    id="edit-amountUsed-<?=$idd?>" class="form-control form-add me-3" autocomplete="one-time-code" <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
             </div>
             <span id="passwordHelpInline" class="form-text mt-auto mb-2">
                 /ml
             </span>
-            <button type="button" id="edit-deleteChemRow" data-row-id="" class="btn btn-grad mt-auto py-2 px-3"><i
+            <button type="button" data-row-id="<?=$idd?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
                     class="bi bi-dash-circle text-light"></i></button>
         </div>
     </div>
@@ -805,7 +812,7 @@ if (isset($_POST['pack_exp']) && $_POST['pack_exp'] === 'true') {
         return $duration['error'];
     }
 
-    $fdate = date("Y-m-d",strtotime($date . "+ $duration years"));
+    $fdate = date("Y-m-d", strtotime($date . "+ $duration years"));
 
     echo $fdate;
     exit();

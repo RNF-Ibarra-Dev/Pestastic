@@ -19,17 +19,11 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $pexp = $_POST['add-packageExpiry'] ?? null;
     $problems = $_POST['pest_problems'] ?? []; //array
     $chemUsed = $_POST['add_chemBrandUsed'] ?? []; //arrya
-    // $amtUsed = $_POST['add_amountUsed'] ?? []; //array
     $note = $_POST['add-notes'];
     $status = $_POST['add-status'];
     $session = $_POST['add-session'] ?? null;
     $saPwd = $_POST['saPwd'];
 
-    // if ($package === '#') {
-    //     http_response_code(400);
-    //     echo json_encode(['type' => 'empty', 'errorMessage' => 'Invalid Transaction Session Count.']);
-    //     exit();
-    // }
 
     if ($package != 'none') {
         if (!in_array($package, $packageIds)) {
@@ -58,22 +52,27 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     //     exit();
     // }
 
-    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatment) || empty($problems) || empty($chemUsed) || empty($status) || empty($treatment) || empty($t_type) || empty($$note) || empty($address)) {
-        // header('Content-Type: application/json');
+    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($problems) || empty($chemUsed) || empty($status) || empty($t_type) || empty($address)) {
         http_response_code(400);
         echo json_encode(['type' => 'emptyinput', 'errorMessage' => "All input fields are required."]);
         exit();
     }
 
-    if($package != null){
-        if(empty($session)){
+    if ($package != null) {
+        if (empty($session)) {
             http_response_code(400);
-            echo json_encode(['type'=>'emptyinput', 'errorMessage' => "Session count is required."]);
+            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Session count is required."]);
             exit();
         }
-        if(empty($pstart) || empty($pexp)){
+        if (empty($pstart) || empty($pexp)) {
             http_response_code(400);
-            echo json_encode(['type'=>'emptyinput', 'errorMessage' => "Please Input Package Warranty Start."]);
+            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Package Warranty Start."]);
+            exit();
+        }
+    } else {
+        if (empty($treatment)) {
+            http_response_code(400);
+            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Treatment Assigned."]);
             exit();
         }
     }
@@ -98,7 +97,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-    $transaction = newTransaction($conn, $customerName, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp);
+    $transaction = newTransaction($conn, $customerName, $address, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp);
 
     if (!isset($transaction['success'])) {
         http_response_code(400);
@@ -139,16 +138,30 @@ if (isset($_POST['delete']) && $_POST['delete'] === 'true') {
 if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $transId = $_POST['edit-transId'];
     $customerName = $_POST['edit-customerName'];
+    $address = $_POST['edit-address'];
     $techId = $_POST['edit-technicianName'] ?? [];
     $treatmentDate = $_POST['edit-treatmentDate'];
-    $treatment = $_POST['edit-treatment'];
+    $treatmentTime = $_POST['edit-treatmentTime'];
+    $treatment = $_POST['edit-treatment'] ?? null;
+    $ttype = $_POST['edit-treatmentType'];
+    $package = $_POST['edit-package'] ?? null;
+    $pstart = $_POST['edit-start'] ?? null;
+    $pexp = $_POST['edit-expiry'] ?? null;
+    $session = $_POST['edit-session'] ?? null;
     $problems = $_POST['pest_problems'] ?? []; //array
     $chemUsed = $_POST['edit_chemBrandUsed'] ?? []; //arrya
-    $amtUsed = $_POST['edit-amountUsed'] ?? []; //array
+    $amtUsed = $_POST['edit-amountUsed'] ?? null; //array
     $status = $_POST['edit-status'];
+    $note = $_POST['edit-note'] ?? null;
     $saPwd = $_POST['edit-saPwd'];
 
     $allowedUpdateStatus = ['Pending', 'Accepted'];
+
+    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatmentTime) || empty($problems) || empty($chemUsed) || empty($status) || empty($ttype) || empty($address)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'emptyinput', 'errorMessage' => "All input fields are required."]);
+        exit();
+    }
 
     $oStatus = check_status($conn, $transId);
     // no transId
@@ -168,6 +181,20 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         exit();
     }
 
+    if ($package != 'none') {
+        if (!in_array($package, $packageIds)) {
+            http_response_code(400);
+            echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Package. Please Try Again.']);
+            exit();
+        }
+        $treatment = get_package_treatment($conn, $package);
+        if (isset($treatment['error'])) {
+            http_response_code(400);
+            echo json_encode(['type' => 'invalid_id', 'errorMessage' => $treatment['error']]);
+            exit();
+        }
+    }
+
     $data = [
         'transId' => $transId,
         'customer' => $customerName,
@@ -177,7 +204,15 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         'problems' => $problems,
         'chemUsed' => $chemUsed,
         'amtUsed' => $amtUsed,
-        'status' => $status
+        'status' => $status,
+        'address' => $address,
+        'treatmentTime' => $treatmentTime,
+        'ttype' => $ttype,
+        'package' => $package,
+        'session' => $session,
+        'pstart' => $pstart,
+        'pexp' => $pexp,
+        'note' => $note
     ];
 
     if (!validate($conn, $saPwd)) {
@@ -189,7 +224,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $update = update_transaction($conn, $data, $techId, $chemUsed, $amtUsed, $problems);
     if (!isset($update['success'])) {
         http_response_code(400);
-        echo $update['errorMessage'];
+        echo $update['errorMessage'] . ' ' . $update['line'] . ' ' . $update['file'];
     } else {
         echo json_encode([
             'success' => 'Transaction Updated.',
