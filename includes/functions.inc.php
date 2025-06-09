@@ -622,9 +622,19 @@ function get_amt_used($conn, $chemid, $transid)
     if (!is_numeric($chemid) || !is_numeric($transid)) {
         return ['error' => 'Invalid ID.' . $chemid . ' ' . $transid];
     }
-    $sql = "SELECT amt_used FROM transaction_chemicals WHERE chem_id = $chemid AND trans_id = $transid;";
-    $result = mysqli_query($conn, $sql);
+    $sql = "SELECT amt_used FROM transaction_chemicals WHERE chem_id = ? AND trans_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
 
+    if(!mysqli_stmt_prepare($stmt, $sql)){
+        return ['error'=>'get_amt_used() stmt failed'];
+    }
+    mysqli_stmt_bind_param($stmt, 'ii', $chemid, $transid);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if(!$result){
+        return ['error'=>"result error" . mysqli_stmt_error($stmt)];
+    }
     if (mysqli_num_rows($result) > 0) {
         if ($row = mysqli_fetch_assoc($result)) {
             return $row['amt_used'];
@@ -632,14 +642,15 @@ function get_amt_used($conn, $chemid, $transid)
     } else {
         return ['error' => 'No row returned from transaction.' . " chem id = $chemid | trans id = $transid"];
     }
-
 }
+
 function update_trans_chem_revert($conn, $id, $trans_id)
 {
     $transamt = get_amt_used($conn, $id, $trans_id);
     if (isset($transamt['error'])) {
         return $transamt['error'];
     }
+    // return ['error' => "oamt = $transamt"];
 
     $updatesql = "UPDATE chemicals SET chemLevel = chemLevel + ? WHERE id = ?;";
     $updatestmt = mysqli_stmt_init($conn);
@@ -652,7 +663,7 @@ function update_trans_chem_revert($conn, $id, $trans_id)
     mysqli_stmt_execute($updatestmt);
 
     if (mysqli_stmt_affected_rows($updatestmt) > 0) {
-        return true;
+        return 'tite';
     } else {
         return ['error' => 'Revert Failed.' . mysqli_stmt_error($updatestmt)];
     }
@@ -721,13 +732,14 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         }
 
         $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transData['transId']);
-
         if ($transData['status'] === 'Accepted' || $transData['status'] === 'Completed') {
             // get transaction chemicals previous amount used
             for ($i = 0; $i < count($chemUsed); $i++) {
 
                 // $amt_used = $amtUsed[$i];
-
+                if ($amtUsed[$i] === '') {
+                    throw new Exception("Amount used should not be empty.");
+                }
                 // compare new data to old
                 if (in_array($chemUsed[$i], $existingChems)) {
                     // get previous amount and set it to var $prevtransamt
@@ -751,7 +763,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                         $chemname = get_chemical_name($conn, $chemUsed[$i]);
                         throw new Exception("Insufficient Chemical: " . $chemname);
                     } else {
-                        $amount = 0 - ($amtUsed[$i]);
+                        $amount = "-" . $amtUsed[$i];
                         $reflect = reflect_trans_chem($conn, $amount, $chemUsed[$i]);
                         if (isset($reflect['error'])) {
                             throw new Exception("New chemical error: " . $reflect['error']);
@@ -809,13 +821,17 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
             if (isset($delete['error'])) {
                 throw new Exception('Error: ' . $delete['error']);
             }
-
             //function to revert chemical to their original value. Unless Completed.
             foreach ($delChems as $key => $delChemss) {
-                // throw new Exception($key . $delChemss);
-                $revert = update_trans_chem_revert($conn, $delChemss, $transData['transId']);
+                // throw new Exception("chem id: $delChemss transaction id: " . $transData['transId']);
+                $prevamttorestore = prev_trans_amt($conn, $delChemss, $transData['transId']);
+                // throw new Exception("$prevamttorestore $delChemss " . var_export($delChems));
+                $chemId = $delChemss;
+                $revert = update_trans_chem_revert($conn, $chemId, $transData['transId']);
                 if (isset($revert['error'])) {
                     throw new Exception("Error: " . $revert['error'] . " 813: Current Del Chem ID: $delChemss | Transaction ID: " . $transData['transId']);
+                } else {
+                    throw new Exception($revert);
                 }
             }
 
@@ -896,6 +912,10 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                     throw new Exception("chem stmt failed");
                 }
                 for ($i = 0; $i < count($chemUsed); $i++) {
+                    $oamt = prev_trans_amt($conn, $chemUsed[$i], $transData['transId']);
+                    if ($amtUsed[$i] == $oamt) {
+                        continue;
+                    }
                     $chemNames = get_chemical_name($conn, $chemUsed[$i]);
                     if (!$chemNames) {
                         throw new Exception('failed to fetch chemical name');
@@ -904,7 +924,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                     mysqli_stmt_execute($chemStmt);
                     $chemAR += mysqli_stmt_affected_rows($chemStmt);
                     if (!mysqli_stmt_affected_rows($chemStmt) > 0) {
-                        throw new Exception("Update failed. $chemNames " . $amtUsed[$i]);
+                        throw new Exception("Update failed. $chemNames " . $amtUsed[$i] . mysqli_stmt_error($chemStmt));
                     }
                 }
             } else {

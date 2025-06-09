@@ -195,7 +195,7 @@
                                         </div>
 
                                         <div class="col-lg-3">
-                                            <label for="add-session" class="form-label fw-light">Session Number</label>
+                                            <label for="add-session" class="form-label fw-light text-nowrap">Session Number</label>
                                             <input type="number" name="add-session" class="form-control form-add"
                                                 id="add-session" placeholder="e.g. 2" autocomplete="one-time-code"
                                                 disabled>
@@ -476,7 +476,7 @@
                                             </select>
                                         </div>
                                         <div class="col-lg-2">
-                                            <label for="edit-session" class="form-label fw-light">Session
+                                            <label for="edit-session" class="form-label text-nowrap fw-light">Session
                                                 number:</label>
                                             <input type="text" class="form-control-plaintext ps-3" id="edit-session"
                                                 name="edit-session" readonly>
@@ -488,7 +488,7 @@
                                                 disabled>
                                         </div>
                                         <div class="col-lg-2">
-                                            <label for="view-expiry" class="form-label fw-light">Warranty
+                                            <label for="view-expiry" class="form-label text-nowrap fw-light">Warranty
                                                 Expiry:</label>
                                             <input class="form-control-plaintext ps-3" placeholder="--/--/--"
                                                 id="view-expiry" disabled readonly>
