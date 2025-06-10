@@ -85,7 +85,7 @@ include('tablecontents/tables.php');
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
                                             <label for="chemLevel" class="form-label fw-light">Chemical Level </label>
-                                            <input type="text" name="chemLevel" id="chemLevel" class="form-control">
+                                            <input type="number" name="chemLevel" id="chemLevel" class="form-control">
                                         </div>
                                         <div class="col-lg-6 mb-2">
                                             <label for="expDate" class="form-label fw-light">Expiry Date</label>
@@ -142,8 +142,8 @@ include('tablecontents/tables.php');
             <!-- add new chemical -->
             <form id="addForm">
                 <div class="row g-2 text-dark">
-                    <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="addModal" tabindex="-1"
-                        aria-labelledby="create" aria-hidden="true">
+                    <div class="modal-lg modal fade text-dark modal-edit" data-bs-backdrop="static" id="addModal"
+                        tabindex="-1" aria-labelledby="create" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
@@ -154,35 +154,51 @@ include('tablecontents/tables.php');
                                 <div class="modal-body">
                                     <!-- <input type="hidden" name="id" id="id" class="form-control"> -->
                                     <div class="row mb-2">
-                                        <div class="col-lg-6 mb-2">
+                                        <div class="col-lg-4 mb-2">
                                             <label for="name" class="form-label fw-light">Chemical Name</label>
                                             <input type="text" name="name" id="add-name" class="form-control form-add"
                                                 autocomplete="one-time-code">
                                         </div>
-                                        <div class="col-lg-6 mb-2">
+                                        <div class="col-lg-4 mb-2">
                                             <label for="chemBrand" class="form-label fw-light">Chemical Brand</label>
                                             <input type="text" name="chemBrand" id="add-chemBrand"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
-                                    </div>
-
-                                    <div class="row mb-2">
-                                        <div class="col-lg-6 mb-2">
+                                        <div class="col-lg-4 mb-2">
                                             <label for="chemLevel" class="form-label fw-light">Chemical Level </label>
                                             <input type="text" name="chemLevel" id="add-chemLevel"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-lg-6 mb-2">
+                                            <label for="expDate" class="form-label fw-light">Date Received</label>
+                                            <input type="date" name="expDate" id="add-dateReceived"
+                                                class="form-control form-add">
+                                            <div class="text-body-secondary fw-light text-muted mt-2">
+                                                Note: if not specified, date received will be the date today.
+                                            </div>
+                                        </div>
                                         <div class="col-lg-6 mb-2">
                                             <label for="expDate" class="form-label fw-light">Expiry Date</label>
-                                            <input type="date" name="expDate" id="add-expDate" min="2025-01-01"
+                                            <input type="date" name="expDate" id="add-expDate"
                                                 class="form-control form-add">
-                                            <div id="passwordHelpBlock" class="form-text">
+                                            <div class="text-body-secondary fw-light text-muted mt-2">
                                                 Note: specify expiry date or default date will be set.
                                             </div>
                                         </div>
                                     </div>
+                                    <div id="addMoreChem"></div>
+                                    <button type="button" class="btn btn-grad" id="addMoreChemBtn">Add More
+                                        Chemical</button>
+                                    <input type="checkbox" class="btn-check" name="approveCheck" id="add-approved"
+                                        autocomplete="off">
+                                    <label class="btn btn-outline-dark mt-2" for="add-approved">Approve All
+                                        Chemicals</label>
+
                                     <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
-                                        id="emptyInput"></p>
+                                        id="emptyInput">
+                                    </p>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
@@ -221,7 +237,8 @@ include('tablecontents/tables.php');
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-target="#addModal"
-                                    data-bs-toggle="modal">Go back</button>
+                                    data-bs-toggle="modal">Go
+                                    back</button>
                                 <button type="submit" class="btn btn-grad" id="submitAdd" disabled-id="edit-confirm"
                                     disabled-name="delete">Add New Chemical</button>
                             </div>
@@ -435,6 +452,9 @@ include('tablecontents/tables.php');
 
         const pageurl = 'tablecontents/pagination.php';
         const dataurl = 'tablecontents/chemicals.php';
+
+
+        // const addexpdatee = document.getElementBy
 
         $(document).on('click', '#approvemulti', async function () {
             $('#multiapprove')[0].reset();
