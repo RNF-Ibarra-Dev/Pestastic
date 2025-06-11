@@ -284,12 +284,12 @@ function createOpSupAccount($conn, $firstName, $lastName, $username, $email, $pw
     }
 }
 
-function addChemical($conn, $name, $brand, $level, $expdate, $request = 0)
+function addChemical($conn, $name, $brand, $level, $expdate, $dateadded, $notes, $receivedDate, $cb, $ub, $branch, $request = 0)
 {
     if (!$request) {
-        $sql = "INSERT INTO chemicals (name, brand, chemLevel, expiryDate) VALUES (?, ?, ?, ?);";
+        $sql = "INSERT INTO chemicals (name, brand, chemLevel, expiryDate, added_at, notes, branch) VALUES (?, ?, ?, ?, ?, ?, ?);";
     } else {
-        $sql = "INSERT INTO chemicals (name, brand, chemLevel, expiryDate, request) VALUES (?, ?, ?, ?, ?);";
+        $sql = "INSERT INTO chemicals (name, brand, chemLevel, expiryDate, added_at, notes, branch, request) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
     }
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -298,7 +298,7 @@ function addChemical($conn, $name, $brand, $level, $expdate, $request = 0)
     }
 
     if (!$request) {
-        mysqli_stmt_bind_param($stmt, 'ssss', $name, $brand, $level, $expdate);
+        mysqli_stmt_bind_param($stmt, 'ssss', $name, $brand, $level, $expdate, $dateadded, $notes, $branch);
     } else {
         mysqli_stmt_bind_param($stmt, 'ssssi', $name, $brand, $level, $expdate, $request);
     }
@@ -863,7 +863,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
             if (isset($revert['error'])) {
                 throw new Exception("Error: " . $revert['error'] . " 864: Current Del Chem ID: $delChems | Transaction ID: " . $transData['transId']);
             } else {
-                 // throw new Exception($revert);
+                // throw new Exception($revert);
             }
 
             $fchems = array_merge($chemUsed, array_diff($existingChems, $delChems));
@@ -1223,6 +1223,8 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             $_SESSION["techUsn"] = $userExists['username'];
             $_SESSION["firstName"] = $userExists['firstName'];
             $_SESSION["lastName"] = $userExists['lastName'];
+            $_SESSION['empId'] = $userExists['techEmpId'];
+            $_SESSION['branch'] = $userExists['user_branch'];
             header("location: ../technician/index.php?tech_login=success");
             exit();
         }
@@ -1240,7 +1242,9 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             $_SESSION["fname"] = $userExists['baFName'];
             $_SESSION["lname"] = $userExists['baLName'];
             $_SESSION["baUsn"] = $userExists['baUsn'];
+            $_SESSION['empId'] = $userExists['baEmpId'];
             $_SESSION['baEmail'] = $userExists['baEmail'];
+            $_SESSION['branch'] = $userExists['user_branch'];
             header("location: ../os/index.php?os_login=success");
             exit();
         } else {
@@ -1259,7 +1263,9 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             session_start();
             $_SESSION["saID"] = $userExists['saID'];
             $_SESSION["saUsn"] = $userExists['saUsn'];
+            $_SESSION['empId'] = $userExists['saEmpId'];
             $_SESSION['saEmail'] = $userExists['saEmail'];
+            $_SESSION['branch'] = $userExists['user_branch'];
             header("location: ../superadmin/index.php?sa_login=success");
             exit();
         } else {

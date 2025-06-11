@@ -18,11 +18,11 @@ if (isset($_GET['search'])) {
             $level = $row["chemLevel"];
             $expDate = $row["expiryDate"];
             $request = $row['request'];
-?>
+            ?>
             <tr>
                 <td scope="row">
                     <?=
-                    $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval! Contact manager for more information.'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval! Contact manager for more information.'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
@@ -32,15 +32,15 @@ if (isset($_GET['search'])) {
                     <div class="d-flex justify-content-center">
                         <?php
                         if ($request === "1") {
-                        ?>
+                            ?>
                             <button type="button" id="approvebtn" class="btn btn-sidebar" data-bs-toggle="modal"
                                 data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?= $name ?>"><i
                                     class="bi bi-check-circle"></i></button>
                             <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
                                 data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-x-octagon"></i></button>
-                        <?php
+                            <?php
                         } else {
-                        ?>
+                            ?>
                             <button type="button" id="editbtn" class="btn btn-sidebar" data-bs-toggle="modal"
                                 data-bs-target="#editModal" data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>"
                                 data-brand="<?= htmlspecialchars($brand) ?>" data-level="<?= htmlspecialchars($level) ?>"
@@ -52,7 +52,7 @@ if (isset($_GET['search'])) {
                 </td>
             </tr>
 
-        <?php
+            <?php
         }
     } else {
         // echo json_encode(['']);
@@ -103,14 +103,17 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 
 // add
 if (isset($_POST['action']) && $_POST['action'] == 'add') {
-    // $id = $_POST['id'];  
     $loggedId = $_SESSION['saID'];
     $loggedUsn = $_SESSION['saUsn'];
-    $approveCheck = $_POST['approveCheck'] ?? null;
-    $name = mysqli_real_escape_string($conn, $_POST['name']);
-    $brand = mysqli_real_escape_string($conn, $_POST['chemBrand']);
-    $level = mysqli_real_escape_string($conn, $_POST['chemLevel']);
-    $expDate = $_POST['expDate'];
+    $branch = $_SESSION['branch'];
+    $empId = $_SESSION['empId'];
+    $approveCheck = $_POST['approveCheck'] ?? 1;
+    $notes = $_POST['notes'] ?? [];
+    $name = $_POST['name'] ?? [];
+    $receivedDate = $_POST['receivedDate'] ?? [];   
+    $brand = $_POST['chemBrand'] ?? [];
+    $level = $_POST['chemLevel'] ?? [];
+    $expDate = $_POST['expDate'] ?? [];
     $saPwd = $_POST['saPwd'];
 
     if (!empty($expDate)) {
@@ -256,11 +259,11 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
             $level = $row["chemLevel"];
             $expDate = $row["expiryDate"];
             $request = $row['request'];
-        ?>
+            ?>
             <tr class="text-center">
                 <td scope="row">
                     <?=
-                    $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
@@ -270,20 +273,20 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
                     <div class="d-flex justify-content-center">
                         <?php
                         if ($request === "1") {
-                        ?>
+                            ?>
                             <input type="checkbox" class="btn-check" value="<?= $id ?>" name="stocks[]" id="c-<?= $id ?>"
                                 autocomplete="off">
                             <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i
                                     class="bi bi-check-circle me-2"></i>Approve</label>
-                        <?php
+                            <?php
                         } else {
-                        ?>
+                            ?>
                             <p class="text-muted">Approved.</p>
                         <?php } ?>
                     </div>
                 </td>
             </tr>
-    <?php
+            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='5' class='text-center'>No Stock Requests.</td></tr>";
@@ -294,39 +297,44 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
     ?>
     <div class="add-row-container">
         <hr class="my-2">
-        <div class="row mb-2">
+        <div class="row mb-2 pe-2">
             <div class="col-lg-4 mb-2">
                 <label for="name" class="form-label fw-light">Chemical Name</label>
-                <input type="text" name="name[]" id="add-name" class="form-control form-add"
-                    autocomplete="one-time-code">
+                <input type="text" name="name[]" id="add-name" class="form-control form-add" autocomplete="one-time-code">
             </div>
             <div class="col-lg-4 mb-2">
                 <label for="chemBrand" class="form-label fw-light">Chemical Brand</label>
-                <input type="text" name="chemBrand[]" id="add-chemBrand"
-                    class="form-control form-add" autocomplete="one-time-code">
+                <input type="text" name="chemBrand[]" id="add-chemBrand" class="form-control form-add"
+                    autocomplete="one-time-code">
             </div>
-            <div class="col-lg-4 mb-2">
+            <div class="col-lg-3 mb-2">
                 <label for="chemLevel" class="form-label fw-light">Chemical Level </label>
-                <input type="text" name="chemLevel[]" id="add-chemLevel"
-                    class="form-control form-add" autocomplete="one-time-code">
+                <input type="text" name="chemLevel[]" id="add-chemLevel" class="form-control form-add"
+                    autocomplete="one-time-code">
             </div>
+            <button type="button" class="btn btn-grad remove-btn col-1 mt-auto mb-2"><i
+                    class="bi bi-dash-circle"></i></button>
         </div>
         <div class="row mb-2">
-            <div class="col-lg-5 mb-2">
+            <div class="col-lg-4 mb-2">
                 <label for="expDate" class="form-label fw-light">Date Received</label>
-                <input type="date" name="receivedDate[]" id="add-dateReceived"
-                    class="form-control form-add">
+                <input type="date" name="receivedDate[]" id="add-dateReceived" class="form-control form-add">
             </div>
-            <div class="col-lg-5 mb-2">
+            <div class="col-lg-4 mb-2">
                 <label for="expDate" class="form-label fw-light">Expiry Date</label>
-                <input type="date" name="expDate[]" id="add-expDate"
-                    class="form-control form-add">
+                <input type="date" name="expDate[]" id="add-expDate" class="form-control form-add">
             </div>
-            <button type="button" class="btn btn-grad remove-btn col-2 mt-auto mb-2"><i class="bi bi-dash-circle"></i></button>
+
+            <div class="col-4 mb-2">
+                <label for="notes" class="form-label fw-light">Short Note</label>
+                <textarea name="notes[]" id="notes" class="form-control"
+                    placeholder="Optional short note . . . "></textarea>
+            </div>
+
         </div>
     </div>
 
-<?php
+    <?php
 }
 
 
