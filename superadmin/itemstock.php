@@ -11,7 +11,6 @@ include('tablecontents/tables.php');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manager - Inventory</title>
-    <!-- <link rel="stylesheet" href="../../css/style.css"> -->
     <?php include('header.links.php'); ?>
     <style>
         table#approvechemtable tr td,
@@ -156,32 +155,32 @@ include('tablecontents/tables.php');
                                     <div class="row mb-2">
                                         <div class="col-lg-4 mb-2">
                                             <label for="name" class="form-label fw-light">Chemical Name</label>
-                                            <input type="text" name="name" id="add-name" class="form-control form-add"
+                                            <input type="text" name="name[]" id="add-name" class="form-control form-add"
                                                 autocomplete="one-time-code">
                                         </div>
                                         <div class="col-lg-4 mb-2">
                                             <label for="chemBrand" class="form-label fw-light">Chemical Brand</label>
-                                            <input type="text" name="chemBrand" id="add-chemBrand"
+                                            <input type="text" name="chemBrand[]" id="add-chemBrand"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
                                         <div class="col-lg-4 mb-2">
                                             <label for="chemLevel" class="form-label fw-light">Chemical Level </label>
-                                            <input type="text" name="chemLevel" id="add-chemLevel"
+                                            <input type="text" name="chemLevel[]" id="add-chemLevel"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
                                     </div>
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
                                             <label for="expDate" class="form-label fw-light">Date Received</label>
-                                            <input type="date" name="expDate" id="add-dateReceived"
+                                            <input type="date" name="receivedDate[]" id="add-dateReceived"
                                                 class="form-control form-add">
                                             <div class="text-body-secondary fw-light text-muted mt-2">
-                                                Note: if not specified, date received will be the date today.
+                                                Note: if not specified, date received will set the date today.
                                             </div>
                                         </div>
                                         <div class="col-lg-6 mb-2">
                                             <label for="expDate" class="form-label fw-light">Expiry Date</label>
-                                            <input type="date" name="expDate" id="add-expDate"
+                                            <input type="date" name="expDate[]" id="add-expDate"
                                                 class="form-control form-add">
                                             <div class="text-body-secondary fw-light text-muted mt-2">
                                                 Note: specify expiry date or default date will be set.
@@ -189,22 +188,42 @@ include('tablecontents/tables.php');
                                         </div>
                                     </div>
                                     <div id="addMoreChem"></div>
-                                    <button type="button" class="btn btn-grad" id="addMoreChemBtn">Add More
-                                        Chemical</button>
-                                    <input type="checkbox" class="btn-check" name="approveCheck" id="add-approved"
-                                        autocomplete="off">
-                                    <label class="btn btn-outline-dark mt-2" for="add-approved">Approve All
-                                        Chemicals</label>
+                                    <hr class="mt-2 mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn btn-grad" id="addMoreChemBtn"><i class="bi bi-plus-circle-dotted  me-2"></i> Add More
+                                            Chemical</button>
+                                        <input type="checkbox" class="btn-check" name="approveCheck" id="add-approved"
+                                            autocomplete="off">
+                                        <label class="btn btn-outline-dark d-inline-flex align-content-center py-2" for="add-approved"><i id="flaskApproveAll" class="bi bi-flask me-2"></i>Approve All
+                                            Chemicals</label>
+                                    </div>
 
                                     <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
                                         id="emptyInput">
                                     </p>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
+                                <div class="modal-footer d-flex justify-content-between">
+                                    <button type="button" class="btn btn-grad" data-bs-toggle="modal" data-bs-target="#areyousureaboutthat">Cancel</button>
                                     <button type="button" class="btn btn-grad" disabled-id="submitAdd"
                                         data-bs-toggle="modal" data-bs-target="#confirmAdd">Proceed & Confirm</button>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade text-dark modal-edit" id="areyousureaboutthat" data-bs-backdrop="static">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title">
+                                <h1 class="modal-title fs-5 text-light">Cancel New Chemical Stock Entry?</h1>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to stop this chemical entry?
+                            </div>
+                            <div class="modal-footer d-flex justify-content-between">
+                                <button type="button" class="btn btn-grad" data-bs-target="#addModal"
+                                    data-bs-toggle="modal">Go Back</button>
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel Entry</button>
                             </div>
                         </div>
                     </div>
@@ -449,14 +468,37 @@ include('tablecontents/tables.php');
 
 
     <script>
-
         const pageurl = 'tablecontents/pagination.php';
         const dataurl = 'tablecontents/chemicals.php';
 
+        $(document).on('click', '.remove-btn', function() {
+            $(this).parent().parent().remove();
+        })
+
+        $(document).on('click', '#addMoreChemBtn', function() {
+            $.get(dataurl, "addrow=true")
+                .done(function(data) {
+                    $('#addMoreChem').append(data);
+                })
+                .fail(function(e, s, em) {
+                    console.log(e);
+                });
+        });
+
+        $(document).on('change', '#add-approved', function() {
+            // let flask = $('#flaskApproveAll');
+            if ($(this).is(':checked')) {
+                $("#flaskApproveAll").removeClass('bi-flask');
+                $("#flaskApproveAll").addClass('bi-flask-fill');
+            } else {
+                $("#flaskApproveAll").removeClass('bi-flask-fill');
+                $("#flaskApproveAll").addClass('bi-flask');
+            }
+        });
 
         // const addexpdatee = document.getElementBy
 
-        $(document).on('click', '#approvemulti', async function () {
+        $(document).on('click', '#approvemulti', async function() {
             $('#multiapprove')[0].reset();
             const reqlist = await stock_requests();
             if (reqlist) {
@@ -464,7 +506,7 @@ include('tablecontents/tables.php');
             }
         });
 
-        $(document).on('change', '#checkall', function () {
+        $(document).on('change', '#checkall', function() {
             $('#checkicon').toggleClass('bi-square bi-check-square');
             var checked = $(this).prop('checked');
             $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
@@ -490,7 +532,7 @@ include('tablecontents/tables.php');
             }
         }
 
-        $(document).on('submit', '#multiapprove', async function (e) {
+        $(document).on('submit', '#multiapprove', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -533,7 +575,7 @@ include('tablecontents/tables.php');
         })
 
 
-        $(document).on('click', '#approvebtn', async function () {
+        $(document).on('click', '#approvebtn', async function() {
             $('#confirmapprove')[0].reset();
             let chemId = $(this).data('id');
             let name = $(this).data('name');
@@ -541,7 +583,7 @@ include('tablecontents/tables.php');
             $('#chemname').html(name);
         });
 
-        $(document).on('submit', '#confirmapprove', async function (e) {
+        $(document).on('submit', '#confirmapprove', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -583,7 +625,7 @@ include('tablecontents/tables.php');
             }
         });
 
-        $(document).ready(async function () {
+        $(document).ready(async function() {
             get_sa_id();
             await loadpage(1);
         });
@@ -597,7 +639,7 @@ include('tablecontents/tables.php');
                         pagenav: 'true',
                         active: pageno
                     },
-                    success: async function (res) {
+                    success: async function(res) {
                         $('#pagination').empty();
                         $('#pagination').append(res);
                         // set active page
@@ -626,11 +668,11 @@ include('tablecontents/tables.php');
                         // sends the current page no.
                         currentpage: page
                     },
-                    success: function (data) {
+                    success: function(data) {
                         $('#chemicalTable').empty();
                         $('#chemicalTable').append(data);
                     },
-                    error: function (err) {
+                    error: function(err) {
                         alert('loadtable func error:' + err);
                     }
                 });
@@ -641,7 +683,7 @@ include('tablecontents/tables.php');
 
         }
 
-        $('#pagination').on('click', '.page-link', async function (e) {
+        $('#pagination').on('click', '.page-link', async function(e) {
             e.preventDefault();
 
             let currentpage = $(this).data('page');
@@ -663,17 +705,17 @@ include('tablecontents/tables.php');
 
 
         // search
-        $(function () {
+        $(function() {
             let timeout = null;
 
-            $('#searchbar').keyup(function () {
+            $('#searchbar').keyup(function() {
                 clearTimeout(timeout);
                 $('#chemicalTable').empty();
                 // $('#chemicalTable').append($('#loader'))
                 // $('#loader').removeClass('visually-hidden');
                 $('#loader').css('display', 'block');
 
-                timeout = setTimeout(async function () {
+                timeout = setTimeout(async function() {
                     var search = $('#searchbar').val();
                     try {
                         const searchChem = await $.ajax({
@@ -683,7 +725,7 @@ include('tablecontents/tables.php');
                             data: {
                                 search: search
                             },
-                            success: async function (searchChem, status) {
+                            success: async function(searchChem, status) {
                                 if (!search == '') {
                                     $('#chemicalTable').empty();
                                     // $('#loader').addClass('visually-hidden');
@@ -712,7 +754,7 @@ include('tablecontents/tables.php');
         function get_sa_id() {
             $.post(dataurl, {
                 managerId: true
-            }, function (data, status) {
+            }, function(data, status) {
                 // console.log(data + ' status ' + status);
                 $('#idForDeletion').val(data);
                 // var saID = data;
@@ -723,8 +765,8 @@ include('tablecontents/tables.php');
         }
 
         // edit chemical
-        $(function () {
-            $('#editChemForm').on('submit', async function (e) {
+        $(function() {
+            $('#editChemForm').on('submit', async function(e) {
                 e.preventDefault();
                 try {
                     const data = await $.ajax({
@@ -837,7 +879,7 @@ include('tablecontents/tables.php');
         }
 
         // delete item
-        $(document).on('click', '#delbtn', async function () {
+        $(document).on('click', '#delbtn', async function() {
             $('#deleteForm')[0].reset();
             get_sa_id();
             var chemID = $(this).data('id');
@@ -845,7 +887,7 @@ include('tablecontents/tables.php');
             // $('#manPass').disableAutoFill();
             // $('#delChemId').val(chemID);
             var saID = $('#idForDeletion').val();
-            $('#delsub').off('click').on('click', async function () {
+            $('#delsub').off('click').on('click', async function() {
                 try {
                     var saPass = $('#manPass').val();
                     console.log(chemID + saID + saPass);
@@ -858,7 +900,7 @@ include('tablecontents/tables.php');
 
         })
 
-        $('#addForm').on('submit', async function (e) {
+        $('#addForm').on('submit', async function(e) {
             e.preventDefault();
             // var chemId = $('#add-id').val();
             // var name = $('#add-name').val();
@@ -867,6 +909,7 @@ include('tablecontents/tables.php');
             // var expdate = $('#add-expDate').val();
 
             // e.preventDefault();
+            console.log($(this).serialize());
             try {
                 const add = await $.ajax({
                     type: 'POST',
@@ -908,7 +951,7 @@ include('tablecontents/tables.php');
                         $('input.form-add').addClass('border border-warning').fadeIn(400);
                         $('#emptyInput').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
                         break;
-                    // confirmation modal part:
+                        // confirmation modal part:
                     case 'wrongPwd':
                         console.log(error.responseJSON.error);
                         $('#addPwd').addClass('border border-warning').fadeIn(400);
@@ -927,7 +970,7 @@ include('tablecontents/tables.php');
         })
 
         // get specific chemical information when edit btn is clicked
-        $(document).on('click', '#editbtn', function () {
+        $(document).on('click', '#editbtn', function() {
             var chemId = $(this).data('id');
             var name = $(this).data('name');
             var brand = $(this).data('brand');
