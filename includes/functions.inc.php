@@ -284,26 +284,35 @@ function createOpSupAccount($conn, $firstName, $lastName, $username, $email, $pw
     }
 }
 
-function addChemv2($conn, $data)
+function addChemv2($conn, $dataArr, $branch, $addby, $request)
 {
     mysqli_begin_transaction($conn);
     try {
-        $sql = "INSERT INTO chemicals (name, brand, chemLevel, expiryDate, added_at, notes, branch";
-        $sql .= isset($data['request']) ? ", request) VALUES (?, ?, ?, ?, ?, ?, ?, ?);" : ") VALUES (?, ?, ?, ?, ?, ?, ?);";
+        $sql = "INSERT INTO chemicals (name, brand, chemLevel, expiryDate, date_received, notes, branch, request, added_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
         $stmt = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             echo "stmt failed";
             exit();
         }
+        $affectedRows = 0;
+        for ($i = 0; $i < count($dataArr['name']); $i++) {
+            $cnote = $dataArr['notes'][$i] ?? '';
+            $notes = $cnote === '' ? null : $cnote;
+            mysqli_stmt_bind_param($stmt, 'ssissssis', $dataArr['name'][$i], $dataArr['brand'][$i], $dataArr['level'][$i], $dataArr['eDate'][$i], $dataArr['rDate'][$i], $notes, $branch, $request, $addby);
+            if (!mysqli_stmt_execute($stmt)) {
+                throw new Exception("Error at " . $dataArr['name'] . ' ' . $dataArr['brand']);
+            }
+            $affectedRows++;
+        }
 
-        foreach ($data as $key => $value) {
-
+        if ($affectedRows != count($dataArr['name'])) {
+            throw new Exception("Data entry error. Incomplete insertion. Please Try Again. " . mysqli_stmt_affected_rows($stmt) . count($dataArr['name']));
         }
         mysqli_commit($conn);
     } catch (Exception $e) {
         mysqli_rollback($conn);
         return [
-            'dataPassed' => $data,
+            'dataPassed' => $dataArr,
             'errorMessage' => $e->getMessage(),
             'line' => $e->getLine(),
             'file' => $e->getFile(),

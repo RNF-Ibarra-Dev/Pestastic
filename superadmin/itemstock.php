@@ -188,7 +188,7 @@ include('tablecontents/tables.php');
                                         </div>
                                         <div class="col-4 mb-2">
                                             <label for="notes" class="form-label fw-light">Short Note</label>
-                                            <textarea name="notes" id="notes" class="form-control"
+                                            <textarea name="notes[]" id="notes" class="form-control"
                                                 placeholder="Optional short note . . . "></textarea>
                                         </div>
                                     </div>
@@ -206,9 +206,7 @@ include('tablecontents/tables.php');
                                             Chemicals</label>
                                     </div>
 
-                                    <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
-                                        id="emptyInput">
-                                    </p>
+                                    
                                 </div>
                                 <div class="modal-footer d-flex justify-content-between">
                                     <button type="button" class="btn btn-grad" data-bs-toggle="modal"
@@ -257,11 +255,8 @@ include('tablecontents/tables.php');
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
                                 </div>
-                                <p class='text-center alert alert-info p-1 w-50 mx-auto my-0 visually-hidden'
-                                    id="add-incPass"></p>
-                                <!-- <div id="passwordHelpBlock" class="form-text">
-                                Note: deletion of chemicals are irreversible.
-                            </div> -->
+                               <p class="text-center alert alert-info w-75 mx-auto d-none" id="aea">
+                                    </p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-target="#addModal"
@@ -932,15 +927,8 @@ include('tablecontents/tables.php');
 
         })
 
-        $('#addForm').on('submit', async function (e) {
+        $(document).on('submit', '#addForm', async function (e) {
             e.preventDefault();
-            // var chemId = $('#add-id').val();
-            // var name = $('#add-name').val();
-            // var brand = $('#add-chemBrand').val();
-            // var level = $('#add-chemLevel').val();
-            // var expdate = $('#add-expDate').val();
-
-            // e.preventDefault();
             console.log($(this).serialize());
             try {
                 const add = await $.ajax({
@@ -950,12 +938,12 @@ include('tablecontents/tables.php');
                     dataType: 'json'
                 });
                 // console.log('heelk');
-                if (add && add.success) {
+                if (add.success) {
                     $('#chemicalTable').empty();
                     await loadpage(1);
                     $('#confirmAdd').modal('hide');
                     // $('#tableAlert').removeClass('visually-hidden').html(add.success).hide().fadeIn(400).delay(2000).fadeOut(1000).addClass('visually-hidden');
-                    $('#tableAlert').css('display', 'block').html(data.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                    $('#tableAlert').css('display', 'block').html(add.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
 
                     $('#addForm')[0].reset();
                     // success yah
@@ -963,41 +951,9 @@ include('tablecontents/tables.php');
                 // console.log('rire');
 
             } catch (error) {
-                switch (error.responseJSON.type) {
-                    case 'addFailed':
-                        console.log(error.responseJSON.error);
-                        $('input.form-add').addClass('border border-warning').fadeIn(400);
-                        $('#addPwd').addClass('border border-warning').fadeIn(400);
-                        $('#emptyInput').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        $('#add-incPass').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        break;
-                    case 'emptyInput':
-                        console.log(error.responseJSON.error);
-                        $('input.form-add').addClass('border border-warning').fadeIn(400);
-                        $('#addPwd').addClass('border border-warning').fadeIn(400);
-                        $('#emptyInput').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        $('#add-incPass').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        break;
-                    case 'addFailed':
-                        console.log(error.responseJSON.error);
-                        $('input.form-add').addClass('border border-warning').fadeIn(400);
-                        $('#emptyInput').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        break;
-                    // confirmation modal part:
-                    case 'wrongPwd':
-                        console.log(error.responseJSON.error);
-                        $('#addPwd').addClass('border border-warning').fadeIn(400);
-                        $('#add-incPass').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        break;
-                    case 'emptyPwd':
-                        console.log(error.responseJSON.error);
-                        $('#addPwd').addClass('border border-warning').fadeIn(400);
-                        $('#add-incPass').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        break;
-                    default:
-                        alert('unknown error.');
-                        break;
-                }
+                console.log(error);
+                $('#addForm input').addClass('border border-warning').fadeIn(400);
+                $('#aea').html(error.responseText).removeClass('d-none').fadeIn(400).delay(2000).fadeOut(1000);
             }
         })
 

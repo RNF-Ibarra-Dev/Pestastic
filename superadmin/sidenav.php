@@ -47,13 +47,13 @@
                 <div class="text-light fw-lighter fs-7">Item Stock</div>
             </a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'equipments.php' ? 'btn-active' : ''; ?>"
                 href="equipments.php">
                 <i class="bi bi-tools me-3"></i>
                 <div class="text-light fw-lighter fs-7">Equipment</div>
             </a>
-        </li>
+        </li> -->
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'queue.php' ? 'btn-active' : ''; ?>"
                 href="queue.php">

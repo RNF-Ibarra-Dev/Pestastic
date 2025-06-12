@@ -102,60 +102,63 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 }
 
 // add
-if (isset($_POST['action']) && $_POST['action'] == 'add') {
+if (isset($_POST['action']) && $_POST['action'] === 'add') {
     $loggedId = $_SESSION['saID'];
     $loggedUsn = $_SESSION['saUsn'];
     $branch = $_SESSION['branch'];
     $empId = $_SESSION['empId'];
-    $approveCheck = $_POST['approveCheck'] ?? 1;
-    $notes = $_POST['notes'] ?? [];
+    $request = isset($_POST['approveCheck']) ? 0 : 1;
+    $notes = $_POST['notes'];
     $name = $_POST['name'] ?? [];
-    $receivedDate = $_POST['receivedDate'] ?? [];   
+    $receivedDate = $_POST['receivedDate'] ?? [];
     $brand = $_POST['chemBrand'] ?? [];
     $level = $_POST['chemLevel'] ?? [];
     $expDate = $_POST['expDate'] ?? [];
     $saPwd = $_POST['saPwd'];
 
+    $addedBy = "[$loggedId] - $loggedUsn";
+
+    if (empty($name) && empty($brand) && empty($level)) {
+        http_response_code(400);
+        echo 'Fields cannot be empty.';
+        exit;
+    }
+
+    if (empty($saPwd)) {
+        http_response_code(400);
+        echo 'Empty Password.';
+        exit;
+    }
+
+    if (!validate($conn, $saPwd)) {
+        http_response_code(400);
+        echo 'Wrong Password.';
+        exit;
+    }
+
+
     $data = [
-        'id' => $loggedId,
-        'branch' => $branch,
-        'usn' => $loggedUsn,
-        'empId' => $empId,
-        'approveCheck' => $approveCheck,
+        'brand' => $brand,
+        'level' => $level,
         'notes' => $notes,
         'name' => $name,
         'rDate' => $receivedDate,
         'eDate' => $expDate,
     ];
+    // echo var_dump($data);
+    // exit();
 
-
-    if (!empty($name) && !empty($brand) && !empty($level)) {
-        if (!empty($saPwd)) {
-            if (validate($conn, $saPwd) == true) {
-                if (addChemical($conn, $name, $brand, $level, $formatDate) == true) {
-                    // http_response_code(200);
-                    echo json_encode(['type' => 'dsfs', 'success' => 'Chemical Added!']);
-                    exit;
-                } else {
-                    http_response_code(400);
-                    echo json_encode(['type' => 'addFailed', 'error' => 'Function to add chemical failed.']);
-                    exit;
-                }
-            } else {
-                http_response_code(400);
-                echo json_encode(['type' => 'wrongPwd', 'error' => 'Wrong Password.']);
-                exit;
-            }
-        } else {
-            http_response_code(400);
-            echo json_encode(['type' => 'emptyPwd', 'error' => 'Empty Password.']);
-            exit;
-        }
-    } else {
+    $a = addChemv2($conn, $data, $branch, $addedBy, $request);
+    if (isset($a['errorMessage'])) {
         http_response_code(400);
-        echo json_encode(['type' => 'emptyInput', 'error' => 'Fields cannot be empty.']);
+        echo $a['errorMessage'] . ' at line ' . $a['line'] . ' data: ' . json_encode($a['dataPassed']);
         exit;
+    } else {
+        http_response_code(200);
+            echo json_encode(['success' => 'Chemical Entry Added!']);
+        exit();
     }
+
 }
 
 // delete
