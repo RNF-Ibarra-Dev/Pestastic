@@ -284,6 +284,34 @@ function createOpSupAccount($conn, $firstName, $lastName, $username, $email, $pw
     }
 }
 
+function addChemv2($conn, $data)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "INSERT INTO chemicals (name, brand, chemLevel, expiryDate, added_at, notes, branch";
+        $sql .= isset($data['request']) ? ", request) VALUES (?, ?, ?, ?, ?, ?, ?, ?);" : ") VALUES (?, ?, ?, ?, ?, ?, ?);";
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            echo "stmt failed";
+            exit();
+        }
+
+        foreach ($data as $key => $value) {
+
+        }
+        mysqli_commit($conn);
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'dataPassed' => $data,
+            'errorMessage' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+            'stringTrace' => $e->getTraceAsString()
+        ];
+    }
+
+}
 function addChemical($conn, $name, $brand, $level, $expdate, $dateadded, $notes, $receivedDate, $cb, $ub, $branch, $request = 0)
 {
     if (!$request) {

@@ -116,11 +116,18 @@ if (isset($_POST['action']) && $_POST['action'] == 'add') {
     $expDate = $_POST['expDate'] ?? [];
     $saPwd = $_POST['saPwd'];
 
-    if (!empty($expDate)) {
-        $formatDate = date('Y-m-d', strtotime($expDate));
-    } else {
-        $formatDate = '2025-01-01';
-    }
+    $data = [
+        'id' => $loggedId,
+        'branch' => $branch,
+        'usn' => $loggedUsn,
+        'empId' => $empId,
+        'approveCheck' => $approveCheck,
+        'notes' => $notes,
+        'name' => $name,
+        'rDate' => $receivedDate,
+        'eDate' => $expDate,
+    ];
+
 
     if (!empty($name) && !empty($brand) && !empty($level)) {
         if (!empty($saPwd)) {
@@ -318,11 +325,11 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
         <div class="row mb-2">
             <div class="col-lg-4 mb-2">
                 <label for="expDate" class="form-label fw-light">Date Received</label>
-                <input type="date" name="receivedDate[]" id="add-dateReceived" class="form-control form-add">
+                <input type="date" name="receivedDate[]" id="add-dateReceived" class="form-control form-add form-date">
             </div>
             <div class="col-lg-4 mb-2">
                 <label for="expDate" class="form-label fw-light">Expiry Date</label>
-                <input type="date" name="expDate[]" id="add-expDate" class="form-control form-add">
+                <input type="date" name="expDate[]" id="add-expDate" class="form-control form-add form-date">
             </div>
 
             <div class="col-4 mb-2">

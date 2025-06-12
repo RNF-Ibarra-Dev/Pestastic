@@ -173,7 +173,7 @@ include('tablecontents/tables.php');
                                         <div class="col-lg-4 mb-2">
                                             <label for="expDate" class="form-label fw-light">Date Received</label>
                                             <input type="date" name="receivedDate[]" id="add-dateReceived"
-                                                class="form-control form-add">
+                                                class="form-control form-add form-date">
                                             <div class="text-body-secondary fw-light text-muted mt-2">
                                                 Note: if not specified, date received will set the date today.
                                             </div>
@@ -181,7 +181,7 @@ include('tablecontents/tables.php');
                                         <div class="col-lg-4 mb-2">
                                             <label for="expDate" class="form-label fw-light">Expiry Date</label>
                                             <input type="date" name="expDate[]" id="add-expDate"
-                                                class="form-control form-add">
+                                                class="form-control form-add form-date">
                                             <div class="text-body-secondary fw-light text-muted mt-2">
                                                 Note: specify expiry date or default date will be set.
                                             </div>
@@ -475,24 +475,47 @@ include('tablecontents/tables.php');
 
     </div>
 
+    <?php include('footer.links.php'); ?>
 
     <script>
         const pageurl = 'tablecontents/pagination.php';
         const dataurl = 'tablecontents/chemicals.php';
 
+
+        let d = $("input.form-date");
+        function flatpickrdate(d) {
+            flatpickr(d, {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "F j, Y",
+            });
+        }
+
+        $(document).on('shown.bs.modal', "#addModal", function () {
+            flatpickrdate(d);
+            $("#addMoreChem").empty();
+            $("#addForm")[0].reset();
+        });
+
         $(document).on('click', '.remove-btn', function () {
             $(this).parent().parent().remove();
         })
 
-        $(document).on('click', '#addMoreChemBtn', function () {
+        $(document).on('click', '#addMoreChemBtn', async function () {
             $.get(dataurl, "addrow=true")
                 .done(function (data) {
                     $('#addMoreChem').append(data);
+                    flatpickr("#addMoreChem input.form-date", {
+                        dateFormat: "Y-m-d",
+                        altInput: true,
+                        altFormat: "F j, Y",
+                    });
                 })
                 .fail(function (e, s, em) {
                     console.log(e);
                 });
         });
+
 
         $(document).on('change', '#add-approved', function () {
             // let flask = $('#flaskApproveAll');
@@ -993,7 +1016,6 @@ include('tablecontents/tables.php');
             $('#expDate').val(expdate);
         })
     </script>
-    <?php include('footer.links.php'); ?>
 </body>
 
 </html>
