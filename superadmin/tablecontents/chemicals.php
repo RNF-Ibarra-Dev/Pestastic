@@ -362,6 +362,33 @@ if(isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true'){
         exit();
     }
 
+    mysqli_stmt_bind_param($stmt, 'i', $chemId);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    
+    $data = [];
+    if(mysqli_num_rows($res) > 0){
+        if($row = mysqli_fetch_assoc($res)){
+            $data['name'] = $row['name'];
+            $data['brand'] = $row['brand'];
+            $data['level'] = $row['chemLevel'];
+            $data['expDate'] = $row['expiryDate'];
+            $data['addat'] = $row['added_at'];
+            $data['upat'] = $row['updated_at'];
+            $data['notes'] = $row['notes'];
+            $data['branch'] = $row['branch'];
+            $data['addby'] = $row['added_by'];
+            $data['upby'] = $row['updated_by'];
+            $data['daterec'] = $row['date_received'];
+        }
+    } else{
+        echo "Invalid ID. Make sure the chemical exist.";
+        exit();
+    }
+
+    echo json_encode($data);
+    mysqli_stmt_close($stmt);
+    exit();
     
 }
 
