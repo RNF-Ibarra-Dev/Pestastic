@@ -55,12 +55,12 @@ include('tablecontents/tables.php');
             <!-- edit chemical -->
             <form id="editChemForm">
                 <div class="row g-2 text-dark">
-                    <div class="modal fade text-dark modal-edit" id="editModal" data-bs-backdrop="static" tabindex="-1"
+                    <div class="modal-lg modal fade text-dark modal-edit" id="editModal" data-bs-backdrop="static" tabindex="-1"
                         aria-labelledby="edit" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
-                                    <h1 class="modal-title fs-5">Edit Chemical Details</h1>
+                                    <h1 class="modal-title fs-5">View/Edit Chemical Details</h1>
                                     <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                             class="bi text-light bi-x"></i></button>
                                 </div>
@@ -69,32 +69,44 @@ include('tablecontents/tables.php');
                                     <input type="hidden" name="id" id="id" class="form-control">
                                     <div class="row mb-2">
 
-                                        <div class="col-lg-6 mb-2">
-                                            <label for="nam" class="form-label fw-light">Chemical Name</label>
-                                            <input type="text" name="name" id="name" class="form-control"
+                                        <div class="col-lg-4 mb-2">
+                                            <label for="nam" class="form-label fw-light">Chemical Name:</label>
+                                            <input type="text" name="name" id="edit-name" class="form-control-plaintext" readonly
                                                 autocomplete="off">
                                         </div>
-                                        <div class="col-lg-6 mb-2">
-                                            <label for="chemBrand" class="form-label fw-light">Chemical Brand</label>
-                                            <input type="text" name="chemBrand" id="chemBrand" class="form-control"
+                                        <div class="col-lg-4 mb-2">
+                                            <label for="chemBrand" class="form-label fw-light">Chemical Brand:</label>
+                                            <input type="text" name="chemBrand" id="edit-chemBrand" class="form-control-plaintext" readonly
                                                 autocomplete="off">
+                                        </div>
+                                        <div class="col-lg-4 mb-2">
+                                            <label for="chemLevel" class="form-label fw-light">Chemical Level: </label>
+                                            <input type="number" name="chemLevel" id="edit-chemLevel" class="form-control-plaintext" readonly>
                                         </div>
                                     </div>
 
                                     <div class="row mb-2">
                                         <div class="col-lg-4 mb-2">
-                                            <label for="chemLevel" class="form-label fw-light">Chemical Level </label>
-                                            <input type="number" name="chemLevel" id="chemLevel" class="form-control">
+                                            <label for="expDate" class="form-label fw-light">Date Received:</label>
+                                            <input type="date" name="receivedDate" id="edit-dateReceived" class="form-control-plaintext form-add form-date" disabled>
                                         </div>
                                         <div class="col-lg-4 mb-2">
-                                            <label for="expDate" class="form-label fw-light">Expiry Date</label>
-                                            <input type="date" name="expDate" id="expDate" min="2025-01-01"
-                                                class="form-control" autocomplete="off">
+                                            <label for="expDate" class="form-label fw-light">Expiry Date:</label>
+                                            <input type="date" name="edit-expDate" id="edit-expDate"
+                                                class="form-control-plaintext form-date" autocomplete="off" disabled>
+                                        </div>
+                                        <div class="col-4 mb-2">
+                                            <label for="notes" class="form-label fw-light">Short Note:</label>
+                                            <textarea name="notes" id="edit-notes" style="resize: none !important;" class="form-control-plaintext"
+                                                readonly></textarea>
                                         </div>
                                     </div>
+
+
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-grad" id="toggleEditBtn">Edit</button>
                                     <button type="button" class="btn btn-grad" DISABLED-id="submitEdit"
                                         data-bs-target="#confirmEdit" data-bs-toggle="modal">Proceed</button>
                                 </div>
@@ -206,7 +218,7 @@ include('tablecontents/tables.php');
                                             Chemicals</label>
                                     </div>
 
-                                    
+
                                 </div>
                                 <div class="modal-footer d-flex justify-content-between">
                                     <button type="button" class="btn btn-grad" data-bs-toggle="modal"
@@ -255,8 +267,8 @@ include('tablecontents/tables.php');
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
                                 </div>
-                               <p class="text-center alert alert-info w-75 mx-auto d-none" id="aea">
-                                    </p>
+                                <p class="text-center alert alert-info w-75 mx-auto d-none" id="aea">
+                                </p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-target="#addModal"
@@ -478,6 +490,7 @@ include('tablecontents/tables.php');
 
 
         let d = $("input.form-date");
+
         function flatpickrdate(d) {
             flatpickr(d, {
                 dateFormat: "Y-m-d",
@@ -486,19 +499,19 @@ include('tablecontents/tables.php');
             });
         }
 
-        $(document).on('shown.bs.modal', "#addModal", function () {
+        $(document).on('shown.bs.modal', "#addModal", function() {
             flatpickrdate(d);
             $("#addMoreChem").empty();
             $("#addForm")[0].reset();
         });
 
-        $(document).on('click', '.remove-btn', function () {
+        $(document).on('click', '.remove-btn', function() {
             $(this).parent().parent().remove();
         })
 
-        $(document).on('click', '#addMoreChemBtn', async function () {
+        $(document).on('click', '#addMoreChemBtn', async function() {
             $.get(dataurl, "addrow=true")
-                .done(function (data) {
+                .done(function(data) {
                     $('#addMoreChem').append(data);
                     flatpickr("#addMoreChem input.form-date", {
                         dateFormat: "Y-m-d",
@@ -506,13 +519,13 @@ include('tablecontents/tables.php');
                         altFormat: "F j, Y",
                     });
                 })
-                .fail(function (e, s, em) {
+                .fail(function(e, s, em) {
                     console.log(e);
                 });
         });
 
 
-        $(document).on('change', '#add-approved', function () {
+        $(document).on('change', '#add-approved', function() {
             // let flask = $('#flaskApproveAll');
             if ($(this).is(':checked')) {
                 $("#flaskApproveAll").removeClass('bi-flask');
@@ -525,7 +538,7 @@ include('tablecontents/tables.php');
 
         // const addexpdatee = document.getElementBy
 
-        $(document).on('click', '#approvemulti', async function () {
+        $(document).on('click', '#approvemulti', async function() {
             $('#multiapprove')[0].reset();
             const reqlist = await stock_requests();
             if (reqlist) {
@@ -533,7 +546,7 @@ include('tablecontents/tables.php');
             }
         });
 
-        $(document).on('change', '#checkall', function () {
+        $(document).on('change', '#checkall', function() {
             $('#checkicon').toggleClass('bi-square bi-check-square');
             var checked = $(this).prop('checked');
             $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
@@ -559,7 +572,7 @@ include('tablecontents/tables.php');
             }
         }
 
-        $(document).on('submit', '#multiapprove', async function (e) {
+        $(document).on('submit', '#multiapprove', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -602,7 +615,7 @@ include('tablecontents/tables.php');
         })
 
 
-        $(document).on('click', '#approvebtn', async function () {
+        $(document).on('click', '#approvebtn', async function() {
             $('#confirmapprove')[0].reset();
             let chemId = $(this).data('id');
             let name = $(this).data('name');
@@ -610,7 +623,7 @@ include('tablecontents/tables.php');
             $('#chemname').html(name);
         });
 
-        $(document).on('submit', '#confirmapprove', async function (e) {
+        $(document).on('submit', '#confirmapprove', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -652,7 +665,7 @@ include('tablecontents/tables.php');
             }
         });
 
-        $(document).ready(async function () {
+        $(document).ready(async function() {
             get_sa_id();
             await loadpage(1);
         });
@@ -666,7 +679,7 @@ include('tablecontents/tables.php');
                         pagenav: 'true',
                         active: pageno
                     },
-                    success: async function (res) {
+                    success: async function(res) {
                         $('#pagination').empty();
                         $('#pagination').append(res);
                         // set active page
@@ -695,11 +708,11 @@ include('tablecontents/tables.php');
                         // sends the current page no.
                         currentpage: page
                     },
-                    success: function (data) {
+                    success: function(data) {
                         $('#chemicalTable').empty();
                         $('#chemicalTable').append(data);
                     },
-                    error: function (err) {
+                    error: function(err) {
                         alert('loadtable func error:' + err);
                     }
                 });
@@ -710,7 +723,7 @@ include('tablecontents/tables.php');
 
         }
 
-        $('#pagination').on('click', '.page-link', async function (e) {
+        $('#pagination').on('click', '.page-link', async function(e) {
             e.preventDefault();
 
             let currentpage = $(this).data('page');
@@ -732,17 +745,17 @@ include('tablecontents/tables.php');
 
 
         // search
-        $(function () {
+        $(function() {
             let timeout = null;
 
-            $('#searchbar').keyup(function () {
+            $('#searchbar').keyup(function() {
                 clearTimeout(timeout);
                 $('#chemicalTable').empty();
                 // $('#chemicalTable').append($('#loader'))
                 // $('#loader').removeClass('visually-hidden');
                 $('#loader').css('display', 'block');
 
-                timeout = setTimeout(async function () {
+                timeout = setTimeout(async function() {
                     var search = $('#searchbar').val();
                     try {
                         const searchChem = await $.ajax({
@@ -752,7 +765,7 @@ include('tablecontents/tables.php');
                             data: {
                                 search: search
                             },
-                            success: async function (searchChem, status) {
+                            success: async function(searchChem, status) {
                                 if (!search == '') {
                                     $('#chemicalTable').empty();
                                     // $('#loader').addClass('visually-hidden');
@@ -781,7 +794,7 @@ include('tablecontents/tables.php');
         function get_sa_id() {
             $.post(dataurl, {
                 managerId: true
-            }, function (data, status) {
+            }, function(data, status) {
                 // console.log(data + ' status ' + status);
                 $('#idForDeletion').val(data);
                 // var saID = data;
@@ -792,8 +805,8 @@ include('tablecontents/tables.php');
         }
 
         // edit chemical
-        $(function () {
-            $('#editChemForm').on('submit', async function (e) {
+        $(function() {
+            $('#editChemForm').on('submit', async function(e) {
                 e.preventDefault();
                 try {
                     const data = await $.ajax({
@@ -906,7 +919,7 @@ include('tablecontents/tables.php');
         }
 
         // delete item
-        $(document).on('click', '#delbtn', async function () {
+        $(document).on('click', '#delbtn', async function() {
             $('#deleteForm')[0].reset();
             get_sa_id();
             var chemID = $(this).data('id');
@@ -914,7 +927,7 @@ include('tablecontents/tables.php');
             // $('#manPass').disableAutoFill();
             // $('#delChemId').val(chemID);
             var saID = $('#idForDeletion').val();
-            $('#delsub').off('click').on('click', async function () {
+            $('#delsub').off('click').on('click', async function() {
                 try {
                     var saPass = $('#manPass').val();
                     console.log(chemID + saID + saPass);
@@ -927,7 +940,7 @@ include('tablecontents/tables.php');
 
         })
 
-        $(document).on('submit', '#addForm', async function (e) {
+        $(document).on('submit', '#addForm', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -955,22 +968,49 @@ include('tablecontents/tables.php');
                 $('#addForm input').addClass('border border-warning').fadeIn(400);
                 $('#aea').html(error.responseText).removeClass('d-none').fadeIn(400).delay(2000).fadeOut(1000);
             }
-        })
+        });
 
+        async function get_chem_details(id) {
+            return $.get(dataurl, {
+                id: id,
+                chemDetails: 'true'
+            })
+            .success(function(d, s){
+                return d;
+            })
+            .fail(function(e){
+                console.log(e);
+            })
+        }
+
+        let editdates = ('#editChemForm input.form-date');
+        flatpickr(editdates, {
+            dateFormat: "Y-m-d"
+        });
         // get specific chemical information when edit btn is clicked
-        $(document).on('click', '#editbtn', function () {
-            var chemId = $(this).data('id');
-            var name = $(this).data('name');
-            var brand = $(this).data('brand');
-            var level = $(this).data('level');
-            var expdate = $(this).data('expdate');
+        $(document).on('click', '#editbtn', async function() {
+            let id = $(this).data('chem');
+            let deets = await get_chem_details(id);
 
-            $('#id').val(chemId);
-            $('#name').val(name);
-            $('#chemBrand').val(brand);
-            $('#chemLevel').val(level);
-            $('#expDate').val(expdate);
-        })
+            if(deets){
+                $('#editChemForm')[0].reset();
+                $('#editChemForm').modal('show');
+            } 
+        });
+
+        $(document).on('click', '#toggleEditBtn', async function() {
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel').attr('readonly', function(i, a) {
+                return a ? false : true;
+            });
+            $("#edit-expDate, #edit-dateReceived").attr('disabled', function(i, a) {
+                return a ? false : true;
+            });
+
+            $("#toggleEditBtn").html(function(i, a) {
+                return a.includes('Close Edit') ? 'Edit' : 'Close Edit';
+            });
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived').toggleClass('form-control-plaintext form-control');
+        });
     </script>
 </body>
 

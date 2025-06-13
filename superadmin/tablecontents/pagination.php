@@ -132,6 +132,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $level = $row["chemLevel"];
             $expDate = $row["expiryDate"];
             $request = $row['request'];
+            $now = date("Y-m-d");
+
     ?>
             <tr class="text-center">
                 <td scope="row">
@@ -141,25 +143,24 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
                 <td><?= htmlspecialchars($level) ?></td>
-                <td><?= htmlspecialchars($expDate) ?></td>
+                <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>"><?= htmlspecialchars($expDate) ?></td>
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
                         if ($request === "1") {
                         ?>
                             <button type="button" id="approvebtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?=$name?>"><i
+                                data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?= $name ?>"><i
                                     class="bi bi-check-circle"></i></button>
                             <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
                                 data-bs-target="#deleteModal" data-id="<?= $id ?>"><i
                                     class="bi bi-x-octagon"></i></button>
                         <?php
                         } else {
+
                         ?>
                             <button type="button" id="editbtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#editModal" data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>"
-                                data-brand="<?= htmlspecialchars($brand) ?>" data-level="<?= htmlspecialchars($level) ?>"
-                                data-expdate="<?= htmlspecialchars($expDate) ?>"><i class="bi bi-pencil-square"></i></button>
+                                data-bs-target="#editModal" data-chem="<?= $id ?>"><i class="bi bi-pencil-square"></i></button>
                             <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
                                 data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
                         <?php } ?>

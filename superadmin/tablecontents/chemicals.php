@@ -347,6 +347,22 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
     <?php
 }
 
+if(isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true'){
+    $chemId = $_GET['id'];
+    if(!is_numeric($chemId)){
+        echo 'Invalid ID';
+        exit();
+    }
 
+    $sql = "SELECT * FROM chemicals WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt, $sql)){
+        echo 'stmt failed.';
+        exit();
+    }
+
+    
+}
 
 ?>
