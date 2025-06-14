@@ -92,7 +92,7 @@ include('tablecontents/tables.php');
                                         <div class="col-lg-4 mb-2">
                                             <label for="edit-dateReceived" class="form-label fw-light">Date
                                                 Received:</label>
-                                            <input type="date" name="receivedDate" id="edit-dateReceived"
+                                            <input type="date" name="edit-receivedDate" id="edit-dateReceived"
                                                 class="ps-2 form-control-plaintext form-add form-date" disabled>
                                         </div>
                                         <div class="col-lg-4 mb-2">
@@ -100,10 +100,11 @@ include('tablecontents/tables.php');
                                             <input type="date" name="edit-expDate" id="edit-expDate"
                                                 class="ps-2 form-control-plaintext form-date" autocomplete="off"
                                                 disabled>
+                                            <p class="fw-light text-center alert alert-warning py-1 px-3 d-none" id="expdatewarning"></p>
                                         </div>
                                         <div class="col-4 mb-2">
                                             <label for="edit-notes" class="form-label fw-light">Short Note:</label>
-                                            <textarea name="notes" id="edit-notes" style="resize: none !important;"
+                                            <textarea name="edit-notes" id="edit-notes" style="resize: none !important;"
                                                 class="ps-2 form-control-plaintext" readonly></textarea>
                                         </div>
                                     </div>
@@ -118,7 +119,7 @@ include('tablecontents/tables.php');
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
                                     <button type="button" onclick="toggle()" class="btn btn-grad"
                                         id="toggleEditBtn">Edit</button>
-                                    <button type="button" class="btn btn-grad" id="submitEdit"
+                                    <button type="button" class="btn btn-grad d-none" id="submitEdit"
                                         data-bs-target="#confirmEdit" data-bs-toggle="modal">Proceed</button>
                                 </div>
                             </div>
@@ -813,42 +814,32 @@ include('tablecontents/tables.php');
         }
 
         // edit chemical
-        $(function () {
-            $('#editChemForm').on('submit', async function (e) {
-                e.preventDefault();
-                console.log($(this).serialize());
-                try {
-                    const data = await $.ajax({
-                        type: 'POST',
-                        url: dataurl,
-                        data: $(this).serialize() + '&action=edit',
-                        dataType: 'json'
-                    });
-                    if (data.success) {
-                        // console.log(data.success);
-                        $("#chemicalTable").empty();
-                        // const theFuckingData = await get_data();
-                        // $('#chemicalTable').append(theFuckingData);
-                        await loadpage(1);
-                        $('#confirmEdit').modal('hide');
-                        // $('#tableAlert').removeClass('visually-hidden').html(data.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        $('#tableAlert').css('display', 'block').html(data.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        $('#editChemForm')[0].reset();
-
-                        // get_data().then(function () {
-                        //     $('#editModal').modal('hide');
-                        // })
-                    }
-                } catch (error) {
-                    let err = error.responseText;
-                    $('#incPass').removeClass('visually-hidden').html(err).hide().fadeIn(400).delay(1500).fadeOut(1000);
-
+        $(document).on('submit', '#editChemForm', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            try {
+                const data = await $.ajax({
+                    type: 'POST',
+                    url: dataurl,
+                    data: $(this).serialize() + '&action=edit',
+                    dataType: 'json'
+                });
+                if (data.success) {
+                    $("#chemicalTable").empty();
+                    await loadpage(1);
+                    $('#tableAlert').css('display', 'block').html(data.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                    $('#editChemForm')[0].reset();
+                    $('#confirmEdit').modal('hide');
+                } else {
+                    alert("Invalid Response");
                 }
+            } catch (error) {
+                let err = error.responseText;
+                $('#incPass').removeClass('visually-hidden').html(err).hide().fadeIn(400).delay(1500).fadeOut(1000);
 
+            }
+        });
 
-            })
-
-        })
 
         async function delete_chem(id, pwd, chemId) {
             // var saID = $('#idForDeletion').val();
@@ -974,8 +965,10 @@ include('tablecontents/tables.php');
         flatpickr(editdates, {
             dateFormat: "Y-m-d"
         });
+
         let toggled = false;
         function toggle() {
+            $('#submitEdit').toggleClass('d-none');
             $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel').attr('readonly', function (i, a) {
                 return a ? false : true;
             });
@@ -1003,13 +996,21 @@ include('tablecontents/tables.php');
                 return details.req == 1 ? true : false;
             });
 
+            var today = new Date();
+            var exp = new Date(details.expDate);
+            if (exp <= today) {
+                $("#expdatewarning").html('Caution. Chemical Expired.').toggleClass('d-none');
+            } else{
+                $('#expdatewarning').html('').addClass('d-none');
+            }
+
             $("#edit-id").val(details.id);
             $('#edit-name').val(details.name);
             $('#edit-chemBrand').val(details.brand);
             $('#edit-chemLevel').val(details.level);
             $('#edit-dateReceived').val(details.daterec);
             $('#edit-expDate').val(details.expDate);
-            $('#edit-notes').val(details.notes ?? 'No Note');
+            $('#edit-notes').val(details.notes);
             $('#addinfo').html(function () {
                 return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
             });

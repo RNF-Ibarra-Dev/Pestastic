@@ -92,7 +92,7 @@ function check_request($conn, $id)
                 return false;
             }
         }
-    } else{
+    } else {
         echo "ID missing at database.";
         exit();
     }
@@ -103,41 +103,49 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 
     $id = $_POST['edit-id'];
     $checkReq = check_request($conn, $id);
-    if($checkReq){
+    if ($checkReq) {
         echo "Unable to edit unapproved chemical.";
         exit();
     }
 
+    $usn = $_SESSION['saUsn'];
+    $saID = $_SESSION['saID'];
+    $usn = $_SESSION['saUsn'];
+    $branch = $_SESSION['branch'];
+    $empId = $_SESSION['empId'];
+
+    $upBy = "$usn | Employee no. $empId";
+
     $name = $_POST['edit-name'];
     $brand = $_POST['edit-chemBrand'];
     $level = $_POST['edit-chemLevel'];
-    $expDate = $_POST['edit-expDate'];
-    $dateRec = $_POST['edit-dateReceived'];
+    $expDate = $_POST['edit-expDate'] ?? null;
+    $dateRec = $_POST['edit-receivedDate'] ?? null;
     $notes = $_POST['edit-notes'];
     $pwd = $_POST['saPwd'];
 
     if (empty($name || $brand || $level)) {
         http_response_code(400);
-        echo json_encode(['type' => 'emptyinput', 'error' => 'Make sure to fill up required forms.']);
+        echo 'Make sure to fill up required forms.';
     }
 
-
-
-    if (validate($conn, $pwd) == true) {
-        if (editChem($conn, $id, $name, $brand, $level, $expDate) == true) {
-            // echo 'changes saved';
-            echo json_encode(['success' => 'Changes Saved.']);
-            exit();
-        } else {
-            http_response_code(400);
-            echo json_encode(['type' => 'update', 'error' => 'No Changes Made.']);
-            exit();
-        }
-    } else {
-        http_response_code(400);
-        echo json_encode(['type' => 'pwd', 'error' => 'Incorrect Password']);
+    if (!validate($conn, $pwd)) {
+        echo 'Incorrect Password.';
         exit();
     }
+
+    $edit = editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes, $branch, $upBy);
+
+    if (isset($edit['error'])) {
+        http_response_code(400);
+        echo $edit['error'];
+        exit();
+    }
+
+    http_response_code(200);
+    echo json_encode(['success' => "Chemical Updated!"]);
+    exit();
+
 }
 
 // add

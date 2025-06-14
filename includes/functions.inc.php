@@ -1312,32 +1312,41 @@ function loginMultiUser($conn, $uidEmail, $pwd)
     }
 }
 
-function editChem($conn, $id, $name, $brand, $level, $expDate, $request = 0)
+function editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes, $branch, $upBy, $request = 0)
 {
-    if ($request != 0) {
-        $sql = "UPDATE chemicals SET name = ?, brand = ?, chemLevel = ?, expiryDate = ?, request = ? WHERE id = ?;";
-    } else {
-        $sql = "UPDATE chemicals SET name = ?, brand = ?, chemLevel = ?, expiryDate = ? WHERE id = ?;";
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "UPDATE chemicals SET name = ?, brand = ?, chemLevel = ?, expiryDate = ?, notes = ?, branch = ?, updated_by = ?, date_received = ?";
+        $request == 0 ? $sql .= " WHERE id = ?;" : $sql .= ", request = ? WHERE id = ?";
+
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("edit chem stmt error");
+        }
+
+        if ($request != 0) {
+            mysqli_stmt_bind_param($stmt, "sssssissii", $name, $brand, $level, $expDate, $notes, $branch, $upBy, $dateRec, $request, $id);
+        } else {
+            mysqli_stmt_bind_param($stmt, "sssssissi", $name, $brand, $level, $expDate, $notes, $branch, $upBy, $dateRec, $id);
+        }
+
+        mysqli_stmt_execute($stmt);
+
+        if (mysqli_stmt_affected_rows($stmt) > 0) {
+            mysqli_commit($conn);
+            return true;
+        } else {
+            throw new Exception("Error. No changes are made.");
+        }
+
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage(),
+            'line' => $e->getLine()
+        ];
     }
 
-    $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        echo "<span class='alert alert-danger'>SQL statement error.</span>";
-        exit();
-    }
-
-    if ($request != 0) {
-        mysqli_stmt_bind_param($stmt, "ssssii", $name, $brand, $level, $expDate, $request, $id);
-    } else {
-        mysqli_stmt_bind_param($stmt, "ssssi", $name, $brand, $level, $expDate, $id);
-    }
-    mysqli_stmt_execute($stmt);
-
-    if (mysqli_stmt_affected_rows($stmt) > 0) {
-        return true;
-    } else {
-        return false;
-    }
 }
 
 function activeUser()
