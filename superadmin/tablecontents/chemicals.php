@@ -66,15 +66,54 @@ if (isset($_POST["managerId"])) {
     echo $_SESSION['saID'];
 }
 
+function check_request($conn, $id)
+{
+    if (!is_numeric($id)) {
+        echo "Invalid ID." . $id;
+        exit();
+    }
+    $sql = "SELECT request FROM chemicals WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo "check_request stmt failed.";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
+            if ($row['request'] === 1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    } else{
+        echo "ID missing at database.";
+        exit();
+    }
+
+}
 // edit
 if (isset($_POST['action']) && $_POST['action'] == 'edit') {
-    // echo json_encode(['greet' => 'hello']);
 
-    $id = $_POST['id'];
-    $name = $_POST['name'];
-    $brand = $_POST['chemBrand'];
-    $level = $_POST['chemLevel'];
-    $expDate = $_POST['expDate'];
+    $id = $_POST['edit-id'];
+    $checkReq = check_request($conn, $id);
+    if($checkReq){
+        echo "Unable to edit unapproved chemical.";
+        exit();
+    }
+
+    $name = $_POST['edit-name'];
+    $brand = $_POST['edit-chemBrand'];
+    $level = $_POST['edit-chemLevel'];
+    $expDate = $_POST['edit-expDate'];
+    $dateRec = $_POST['edit-dateReceived'];
+    $notes = $_POST['edit-notes'];
     $pwd = $_POST['saPwd'];
 
     if (empty($name || $brand || $level)) {
@@ -155,7 +194,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         exit;
     } else {
         http_response_code(200);
-            echo json_encode(['success' => 'Chemical Entry Added!']);
+        echo json_encode(['success' => 'Chemical Entry Added!']);
         exit();
     }
 
@@ -221,7 +260,7 @@ if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
         exit();
     }
 
-    echo json_encode(['success' => 'Stock approved and added to inventory officially.']);
+    echo json_encode(['success' => 'Stock enties approved and added to inventory officially.']);
     exit();
 }
 
@@ -347,9 +386,9 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
     <?php
 }
 
-if(isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true'){
+if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
     $chemId = $_GET['id'];
-    if(!is_numeric($chemId)){
+    if (!is_numeric($chemId)) {
         echo 'Invalid ID';
         exit();
     }
@@ -357,7 +396,7 @@ if(isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true'){
     $sql = "SELECT * FROM chemicals WHERE id = ?;";
     $stmt = mysqli_stmt_init($conn);
 
-    if(!mysqli_stmt_prepare($stmt, $sql)){
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
         echo 'stmt failed.';
         exit();
     }
@@ -365,10 +404,10 @@ if(isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true'){
     mysqli_stmt_bind_param($stmt, 'i', $chemId);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
-    
+
     $data = [];
-    if(mysqli_num_rows($res) > 0){
-        if($row = mysqli_fetch_assoc($res)){
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
             $data['name'] = $row['name'];
             $data['brand'] = $row['brand'];
             $data['level'] = $row['chemLevel'];
@@ -380,8 +419,10 @@ if(isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true'){
             $data['addby'] = $row['added_by'];
             $data['upby'] = $row['updated_by'];
             $data['daterec'] = $row['date_received'];
+            $data['req'] = $row['request'];
+            $data['id'] = $row['id'];
         }
-    } else{
+    } else {
         echo "Invalid ID. Make sure the chemical exist.";
         exit();
     }
@@ -389,7 +430,7 @@ if(isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true'){
     echo json_encode($data);
     mysqli_stmt_close($stmt);
     exit();
-    
+
 }
 
 ?>

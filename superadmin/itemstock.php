@@ -66,24 +66,24 @@ include('tablecontents/tables.php');
                                 </div>
                                 <div class="modal-body">
                                     <!-- <input type="hidden" name="edit" value="edit-chemical"> -->
-                                    <input type="hidden" name="id" id="id" class="form-control">
+                                    <input type="hidden" name="edit-id" id="edit-id" class="form-control">
                                     <div class="row mb-2">
 
                                         <div class="col-lg-4 mb-2">
                                             <label for="edit-name" class="form-label fw-light">Chemical Name:</label>
-                                            <input type="text" name="name" id="edit-name"
+                                            <input type="text" name="edit-name" id="edit-name"
                                                 class="ps-2 form-control-plaintext" readonly autocomplete="off">
                                         </div>
                                         <div class="col-lg-4 mb-2">
                                             <label for="edit-chemBrand" class="form-label fw-light">Chemical
                                                 Brand:</label>
-                                            <input type="text" name="chemBrand" id="edit-chemBrand"
+                                            <input type="text" name="edit-chemBrand" id="edit-chemBrand"
                                                 class="ps-2 form-control-plaintext" readonly autocomplete="off">
                                         </div>
                                         <div class="col-lg-4 mb-2">
                                             <label for="edit-chemLevel" class="form-label fw-light">Chemical Level:
                                             </label>
-                                            <input type="number" name="chemLevel" id="edit-chemLevel"
+                                            <input type="number" name="edit-chemLevel" id="edit-chemLevel"
                                                 class="ps-2 form-control-plaintext" readonly>
                                         </div>
                                     </div>
@@ -107,7 +107,7 @@ include('tablecontents/tables.php');
                                                 class="ps-2 form-control-plaintext" readonly></textarea>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="row mb-2">
                                         <span class="text-body-secondary text-muted" id="addinfo"></span>
                                         <span class="text-body-secondary text-muted" id="updateinfo"></span>
@@ -116,8 +116,9 @@ include('tablecontents/tables.php');
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="button" onclick="toggle()" class="btn btn-grad" id="toggleEditBtn">Edit</button>
-                                    <button type="button" class="btn btn-grad" DISABLED-id="submitEdit"
+                                    <button type="button" onclick="toggle()" class="btn btn-grad"
+                                        id="toggleEditBtn">Edit</button>
+                                    <button type="button" class="btn btn-grad" id="submitEdit"
                                         data-bs-target="#confirmEdit" data-bs-toggle="modal">Proceed</button>
                                 </div>
                             </div>
@@ -815,6 +816,7 @@ include('tablecontents/tables.php');
         $(function () {
             $('#editChemForm').on('submit', async function (e) {
                 e.preventDefault();
+                console.log($(this).serialize());
                 try {
                     const data = await $.ajax({
                         type: 'POST',
@@ -838,31 +840,9 @@ include('tablecontents/tables.php');
                         // })
                     }
                 } catch (error) {
-                    // responseJSON converts the error data passed into JSON?
-                    switch (error.responseJSON.type) {
-                        case 'update':
-                            // console.log(error.responseJSON.pwd);
-                            $('input#pwd').addClass('border border-warning-subtle').fadeIn(400);
-                            $('#incPass').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(1500).fadeOut(1000);
-                            break;
-                        case 'pwd':
-                            // console.log(error.responseJSON.pwd);
-                            $('input#pwd').addClass('border border-danger-subtle').fadeIn(400);
-                            $('#incPass').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(1500).fadeOut(1000);
-                            break;
-                        case 'emptyinput':
-                            // console.log(error.responseJSON.pwd);
-                            $('input#pwd').addClass('border border-danger-subtle').fadeIn(400);
-                            $('#incPass').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(1500).fadeOut(1000);
-                            break;
-                        default:
-                            alert('unknown error.');
-                            break;
-                    }
-                    // console.log(error.responseJSON.wrongPwd);
-                    // $('input#pwd').addClass('border border-danger-subtle').fadeIn(400);
-                    // $('#incPass').removeClass('visually-hidden').html(error.responseJSON.wrongPwd).hide().fadeIn(400);
-                    // console.log(error.responseJSON.error, error.status, error.statusText, error.responseText);
+                    let err = error.responseText;
+                    $('#incPass').removeClass('visually-hidden').html(err).hide().fadeIn(400).delay(1500).fadeOut(1000);
+
                 }
 
 
@@ -1007,7 +987,7 @@ include('tablecontents/tables.php');
                 return a.includes('Close Edit') ? 'Edit' : 'Close Edit';
             });
             $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived').toggleClass('form-control-plaintext form-control');
-            
+
             return toggled = toggled ? false : true;
         }
 
@@ -1018,16 +998,22 @@ include('tablecontents/tables.php');
             let deets = await get_chem_details(id);
             var details = JSON.parse(deets);
             console.log(details);
+
+            $('#submitEdit, #toggleEditBtn').attr('disabled', function () {
+                return details.req == 1 ? true : false;
+            });
+
+            $("#edit-id").val(details.id);
             $('#edit-name').val(details.name);
             $('#edit-chemBrand').val(details.brand);
             $('#edit-chemLevel').val(details.level);
             $('#edit-dateReceived').val(details.daterec);
             $('#edit-expDate').val(details.expDate);
             $('#edit-notes').val(details.notes ?? 'No Note');
-            $('#addinfo').html(function(){
-                return details.addby === 'No Record' ? 'Added at: ' + details.addat :  'Added at: ' + details.addat + ' by ' + details.addby;
+            $('#addinfo').html(function () {
+                return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
             });
-            $('#updateinfo').html(function(){
+            $('#updateinfo').html(function () {
                 return details.upby === 'No Update Record' ? 'Updated at: ' + details.upat : 'Updated at: ' + details.upat + ' by ' + details.upby;
             });
 
@@ -1038,6 +1024,7 @@ include('tablecontents/tables.php');
             $('#editModal').modal('show');
 
         });
+
 
         // $(document).on('click', '#toggleEditBtn', function () {
         //     toggle();
