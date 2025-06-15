@@ -1206,6 +1206,8 @@
         let toggled = false;
 
         async function toggle() {
+            // let package = 
+           
             $("#view-customerName, #edit-session").attr("readonly", function (i, attr) {
                 if (attr) {
                     $(this).removeClass('form-control-plaintext');
@@ -1262,6 +1264,16 @@
             $('#edit-treatmentType').toggleClass('d-none');
             $('#edit-package-select').toggleClass('d-none');
             $('#edit-noteContainer').toggleClass('d-none');
+
+             if($('#edit-package-select').val() != 'none'){
+                $('#edit-treatment').attr('disabled', function (i, a){
+                    return a ? a : true;
+                });
+                $('#edit-session, #edit-start').attr('disabled', function (i, a){
+                    return a ? false : a;
+                });
+            }
+
             return toggled = true;
         }
 
