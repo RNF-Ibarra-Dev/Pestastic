@@ -22,6 +22,11 @@ body {
   /*     overflow: visible;*/
 }
 
+.account-settings-icon {
+  position: absolute !important;
+  right: 1rem !important;
+}
+
 .sa-content {
   overflow: auto !important;
 }
@@ -542,23 +547,23 @@ table.os-table {
   border: 1px solid white;
 }
 
-.fc .fc-toolbar.fc-header-toolbar{
-  margin: 0.80rem 0;
+.fc .fc-toolbar.fc-header-toolbar {
+  margin: 0.8rem 0;
 }
 
-.text-custom-success{
+.text-custom-success {
   color: #b3ffb2 !important;
 }
 
-.text-custom-danger{
+.text-custom-danger {
   color: #e1737d !important;
 }
 
-.fc-event-title-container{
+.fc-event-title-container {
   padding: 0 0.25rem !important;
 }
 
-.fc-event-main{
+.fc-event-main {
   /* padding: 0 0.25rem !important; */
   display: flex !important;
   justify-content: center !important;
