@@ -3,62 +3,7 @@ session_start();
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
-if (isset($_GET['search'])) {
-    $search = $_GET['search'];
-    $sql = "SELECT * FROM chemicals WHERE name LIKE '%" . $search . "%' OR brand LIKE '%" . $search . "%' OR chemLevel LIKE '%" . $search . "%' OR expiryDate LIKE '%" . $search . "%' ORDER BY request DESC, id DESC;";
 
-    $result = mysqli_query($conn, $sql);
-    $numrows = mysqli_num_rows($result);
-    // echo $numrows;   
-    if ($numrows > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $name = $row["name"];
-            $brand = $row["brand"];
-            $level = $row["chemLevel"];
-            $expDate = $row["expiryDate"];
-            $request = $row['request'];
-            ?>
-            <tr>
-                <td scope="row">
-                    <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval! Contact manager for more information.'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
-                    ?>
-                </td>
-                <td><?= htmlspecialchars($brand) ?></td>
-                <td><?= htmlspecialchars($level) ?></td>
-                <td><?= htmlspecialchars($expDate) ?></td>
-                <td>
-                    <div class="d-flex justify-content-center">
-                        <?php
-                        if ($request === "1") {
-                            ?>
-                            <button type="button" id="approvebtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?= $name ?>"><i
-                                    class="bi bi-check-circle"></i></button>
-                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-x-octagon"></i></button>
-                            <?php
-                        } else {
-                            ?>
-                            <button type="button" id="editbtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#editModal" data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>"
-                                data-brand="<?= htmlspecialchars($brand) ?>" data-level="<?= htmlspecialchars($level) ?>"
-                                data-expdate="<?= htmlspecialchars($expDate) ?>"><i class="bi bi-pencil-square"></i></button>
-                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
-                        <?php } ?>
-                    </div>
-                </td>
-            </tr>
-
-            <?php
-        }
-    } else {
-        // echo json_encode(['']);
-        echo "<tr><td scope='row' colspan='5' class='text-center'>Your search does not exist.</td></tr>";
-    }
-}
 
 // get manager ID for verification in modifying the chemical table
 if (isset($_POST["managerId"])) {

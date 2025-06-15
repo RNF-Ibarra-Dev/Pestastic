@@ -133,18 +133,19 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $expDate = $row["expiryDate"];
             $request = $row['request'];
             $now = date("Y-m-d");
+            $exp = date_create($expDate);
 
             ?>
             <tr class="text-center">
                 <td scope="row">
                     <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
-                <td><?= htmlspecialchars($level) ?></td>
+                <td class="<?=$level <= 10 ? 'text-danger' : ($level <= 50 ? 'text-warning' : '' )?>"><?= htmlspecialchars($level) . ' ml'?></td>
                 <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
-                    <?= htmlspecialchars($expDate) ?></td>
+                    <?= htmlspecialchars(date_format($exp, "F j, Y")) ?></td>
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
@@ -173,6 +174,68 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <?php
         }
     } else {
+        echo "<tr><td scope='row' colspan='5' class='text-center'>Your search does not exist.</td></tr>";
+    }
+}
+
+if (isset($_GET['search'])) {
+    $search = $_GET['search'];
+    $sql = "SELECT * FROM chemicals WHERE name LIKE '%" . $search . "%' OR brand LIKE '%" . $search . "%' OR chemLevel LIKE '%" . $search . "%' OR expiryDate LIKE '%" . $search . "%' ORDER BY request DESC, id DESC;";
+
+    $result = mysqli_query($conn, $sql);
+    $numrows = mysqli_num_rows($result);
+    // echo $numrows;   
+    if ($numrows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $name = $row["name"];
+            $brand = $row["brand"];
+            $level = $row["chemLevel"];
+            $expDate = $row["expiryDate"];
+            $request = $row['request'];
+            $now = date("Y-m-d");
+            $exp = date_create($expDate);
+
+            ?>
+            <tr class="text-center">
+                <td scope="row">
+                    <?=
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                    ?>
+                </td>
+                <td><?= htmlspecialchars($brand) ?></td>
+                <td class="<?=$level <= 10 ? 'text-danger' : ($level <= 50 ? 'text-warning' : '' )?>"><?= htmlspecialchars($level) . ' ml'?></td>
+                <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
+                    <?= htmlspecialchars(date_format($exp, "F j, Y")) ?></td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <?php
+                        if ($request === "1") {
+                            ?>
+                            <button type="button" id="approvebtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?= $name ?>"><i
+                                    class="bi bi-check-circle"></i></button>
+                            <button type="button" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
+                                    class="bi bi-info-circle"></i></button>
+                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-x-octagon"></i></button>
+                            <?php
+                        } else {
+
+                            ?>
+                            <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
+                                    class="bi bi-info-circle"></i></button>
+                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
+                        <?php } ?>
+                    </div>
+                </td>
+            </tr>
+
+            <?php
+        }
+    } else {
+        // echo json_encode(['']);
         echo "<tr><td scope='row' colspan='5' class='text-center'>Your search does not exist.</td></tr>";
     }
 }

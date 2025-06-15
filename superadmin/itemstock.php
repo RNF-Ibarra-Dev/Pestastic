@@ -768,7 +768,7 @@ include('tablecontents/tables.php');
                     var search = $('#searchbar').val();
                     try {
                         const searchChem = await $.ajax({
-                            url: dataurl,
+                            url: 'tablecontents/pagination.php',
                             type: 'GET',
                             dataType: 'html',
                             data: {
