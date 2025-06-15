@@ -40,16 +40,23 @@ include('tablecontents/tables.php');
             <!-- navbar -->
             <?php include('navbar.php'); ?>
             <!-- content -->
-            <div class="hstack gap-3 mt-5 mx-4">
+            <div class="hstack gap-3 my-3 mx-4">
+                <button type="button" id="hideentries"
+                    class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 w-25 px-2 text-light"
+                    title="Hide Entries"><i class="bi bi-eye-slash me-2"></i><span id="hideEnText">Hide
+                        Entries</span></button>
                 <input class="form-control form-custom me-auto p-2 text-light" type="search" placeholder="Search . . ."
                     id="searchbar" name="searchforafuckingchemical" autocomplete="one-time-code">
-                <button type="button" id="approvemulti" class="btn btn-sidebar py-3 px-4 text-light"
-                    data-bs-toggle="modal" data-bs-toggle="tooltip" data-bs-target="#multiapproveModal"
-                    title="Approve multiple stocks"><i class="bi bi-list-check"></i></button>
-                <div class="vr"></div>
-                <button type="button" id="loadChem" class="btn btn-sidebar text-light py-3 px-4" data-bs-toggle="modal"
+                <button type="button" id="approvemulti"
+                    class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 px-4 text-light" data-bs-toggle="modal"
+                    data-bs-toggle="tooltip" data-bs-target="#multiapproveModal" title="Approve multiple stocks"><i
+                        class="bi bi-list-check"></i></button>
+                <!-- <div class="vr"></div> -->
+                <button type="button" id="loadChem"
+                    class="btn btn-sidebar bg-light bg-opacity-25 rounded text-light py-2 px-4" data-bs-toggle="modal"
                     data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
                         class="bi bi-plus-square"></i></button>
+
             </div>
 
             <!-- edit chemical -->
@@ -100,7 +107,8 @@ include('tablecontents/tables.php');
                                             <input type="date" name="edit-expDate" id="edit-expDate"
                                                 class="ps-2 form-control-plaintext form-date" autocomplete="off"
                                                 disabled>
-                                            <p class="fw-light text-center alert alert-warning py-1 px-3 d-none" id="expdatewarning"></p>
+                                            <p class="fw-light text-center alert alert-warning py-1 px-3 d-none"
+                                                id="expdatewarning"></p>
                                         </div>
                                         <div class="col-4 mb-2">
                                             <label for="edit-notes" class="form-label fw-light">Short Note:</label>
@@ -459,7 +467,7 @@ include('tablecontents/tables.php');
 
                 <table class="table align-middle table-hover m-4 os-table w-100 text-light">
                     <caption>Chemicals with <i class="bi bi-exclamation-diamond"></i> are stock entries made by
-                        Operation Supervisors.</caption>
+                        Operation Supervisors and is required to be reviewed.</caption>
                     <thead>
                         <tr class="text-center">
                             <th scope="col">Name</th>
@@ -679,14 +687,15 @@ include('tablecontents/tables.php');
             await loadpage(1);
         });
 
-        async function loadpagination(pageno) {
+        async function loadpagination(pageno, entries = false) {
             try {
                 return $.ajax({
                     type: 'GET',
                     url: pageurl,
                     data: {
                         pagenav: 'true',
-                        active: pageno
+                        active: pageno,
+                        entries: entries
                     },
                     success: async function (res) {
                         $('#pagination').empty();
@@ -707,30 +716,45 @@ include('tablecontents/tables.php');
             }
         }
 
-        async function loadtable(page) {
-            try {
-                return $.ajax({
-                    type: 'GET',
-                    url: pageurl,
-                    data: {
-                        table: 'true',
-                        // sends the current page no.
-                        currentpage: page
-                    },
-                    success: function (data) {
-                        $('#chemicalTable').empty();
-                        $('#chemicalTable').append(data);
-                    },
-                    error: function (err) {
-                        alert('loadtable func error:' + err);
-                    }
-                });
+        let entryHidden = false;
+        async function hide_entries() {
+            entryHidden = !entryHidden ? true : false;
+            await loadtable(1, entryHidden);
+            await loadpagination(1, entryHidden);
 
-            } catch (error) {
-                alert(error);
+            if (entryHidden) {
+                $('#hideentries > i').removeClass('bi-eye-slash').addClass('bi-eye');
+                $('#hideEnText').text('Show Entries');
+            } else {
+                $('#hideentries > i').removeClass('bi-eye').addClass('bi-eye-slash');
+                $('#hideEnText').text('Hide Entries');
             }
+            return entryHidden;
+        }
+
+        async function loadtable(page = 1, hide_entries = false) {
+            $.ajax({
+                type: 'GET',
+                url: pageurl,
+                data: {
+                    table: 'true',
+                    currentpage: page,
+                    hideentries: hide_entries
+                },
+                success: function (data) {
+                    $('#chemicalTable').empty();
+                    $('#chemicalTable').append(data);
+                },
+                error: function (err) {
+                    alert('loadtable func error:' + err);
+                }
+            });
 
         }
+
+        $(document).on('click', '#hideentries', async function () {
+            await hide_entries();
+        });
 
         $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
@@ -744,12 +768,12 @@ include('tablecontents/tables.php');
 
             // $('#pagination').empty();
             // await loadpagination(currentpage);
-            await loadpage(currentpage);
+            await loadpage(currentpage, entryHidden);
         })
 
-        async function loadpage(page) {
-            await loadtable(page);
-            await loadpagination(page);
+        async function loadpage(page, entryHidden = false) {
+            await loadtable(page, entryHidden);
+            await loadpagination(page, entryHidden);
         }
 
 
@@ -1000,7 +1024,7 @@ include('tablecontents/tables.php');
             var exp = new Date(details.expDate);
             if (exp <= today) {
                 $("#expdatewarning").html('Caution. Chemical Expired.').toggleClass('d-none');
-            } else{
+            } else {
                 $('#expdatewarning').html('').addClass('d-none');
             }
 

@@ -9,7 +9,28 @@ $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
 
+function row_status($conn, $entries = false)
+{
+    $rowCount = "SELECT * FROM chemicals";
+    $rowCount .= $entries === 'true' ? ' WHERE request = 0;' : ';';
+    $countResult = mysqli_query($conn, $rowCount);
+    $totalRows = mysqli_num_rows($countResult);
+    $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
+
+    return ['pages' => $totalPages, 'rows' => $totalRows];
+}
+
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
+    $entries = $_GET['entries'];
+
+
+    if ($entries === 'true') {
+        $rowstatus = row_status($conn, $entries);
+        $totalRows = $rowstatus['rows'];
+        $totalPages = $rowstatus['pages'];
+    } else{
+        $GLOBALS['totalPages'];
+    }
     ?>
 
 
@@ -114,10 +135,18 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
+    $hideentries = $_GET['hideentries'];
+
+    // echo var_dump($hideentries);
+    // exit();
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT * FROM chemicals ORDER BY request DESC, id DESC LIMIT " . $limitstart
+    $sql = "SELECT * FROM chemicals ";
+
+    $sql .= $hideentries === 'true' ? "WHERE request = 0 " : '';
+
+    $sql .= "ORDER BY request DESC, id DESC LIMIT " . $limitstart
         . ", " . $pageRows . ";";
 
     $result = mysqli_query($conn, $sql);
@@ -143,9 +172,12 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
-                <td class="<?=$level <= 10 ? 'text-danger' : ($level <= 50 ? 'text-warning' : '' )?>"><?= htmlspecialchars($level) . ' ml'?></td>
+                <td class="<?= $level <= 10 ? 'text-danger' : ($level <= 50 ? 'text-warning' : '') ?>">
+                    <?= htmlspecialchars($level) . ' ml' ?>
+                </td>
                 <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
-                    <?= htmlspecialchars(date_format($exp, "F j, Y")) ?></td>
+                    <?= htmlspecialchars(date_format($exp, "F j, Y")) ?>
+                </td>
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
@@ -204,9 +236,12 @@ if (isset($_GET['search'])) {
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
-                <td class="<?=$level <= 10 ? 'text-danger' : ($level <= 50 ? 'text-warning' : '' )?>"><?= htmlspecialchars($level) . ' ml'?></td>
+                <td class="<?= $level <= 10 ? 'text-danger' : ($level <= 50 ? 'text-warning' : '') ?>">
+                    <?= htmlspecialchars($level) . ' ml' ?>
+                </td>
                 <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
-                    <?= htmlspecialchars(date_format($exp, "F j, Y")) ?></td>
+                    <?= htmlspecialchars(date_format($exp, "F j, Y")) ?>
+                </td>
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
