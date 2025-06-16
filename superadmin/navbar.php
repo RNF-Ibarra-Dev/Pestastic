@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-sm navbar-dark bg-light bg-opacity-25 shadow navbar-sticky">
     <div class="container-fluid">
         <button type="button" data-bs-target="#settings" data-bs-toggle="modal"
-            class="navbar-brand btn user-icon ms-auto"><i alt="user"
+            class="navbar-brand btn user-icon ms-auto rounded-circle shadow-lg p-0"><i alt="user"
                 class="rounded-circle bi bi-person ms-auto"></i></button>
     </div>
 </nav>
