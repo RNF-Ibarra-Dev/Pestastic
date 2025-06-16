@@ -718,6 +718,7 @@ include('tablecontents/tables.php');
 
         let entryHidden = false;
         async function hide_entries() {
+            $('#searchbar').val('');
             entryHidden = !entryHidden ? true : false;
             await loadtable(1, entryHidden);
             await loadpagination(1, entryHidden);
@@ -796,21 +797,21 @@ include('tablecontents/tables.php');
                             type: 'GET',
                             dataType: 'html',
                             data: {
-                                search: search
+                                search: search,
+                                entries: entryHidden
                             },
                             success: async function (searchChem, status) {
                                 if (!search == '') {
+                                    $('#pagination').addClass('d-none');
                                     $('#chemicalTable').empty();
                                     // $('#loader').addClass('visually-hidden');
                                     $('#loader').attr('style', 'display: none !important;');
                                     $('#chemicalTable').append(searchChem);
+
                                 } else {
-                                    // $('#chemicalTable').empty();
-                                    // $('#loader').addClass('visually-hidden');
                                     $('#loader').attr('style', 'display: none !important;');
-                                    await loadpage(1);
-                                    // $('#chemicalTable').append(load);
-                                    // console.log(status);
+                                    await loadpage(1, entryHidden);
+                                    $('#pagination').removeClass('d-none');
                                 }
                             }
                         });

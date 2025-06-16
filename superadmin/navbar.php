@@ -18,18 +18,18 @@
             <div class="modal-body pb-2 px-2 gap-2 d-flex flex-column">
                 <ul class="list-group">
                     <li class="list-group-item p-0 rounded-top-4">
-                        <a href=""
+                        <a href="accountsettings.php"
                             class="nav-link btn btn-sidebar m-0 py-2 rounded-top-4 fw-light d-flex flex-column align-items-center justify-content-center gap">
                             <i class="bi bi-gear fs-5 account-settings-icon"></i>
-                            <span class="fs-5">Manage Account</span>
+                            <span class="fs-5">Account</span>
                             <span class="secondary-body-text fw-light text-muted">Change Password | Change Name</span>
                         </a>
                     </li>
                     <li class="list-group-item p-0 rounded-bottom-4">
-                        <a href=""
+                        <a href="contents.php"
                             class="nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center flex-column justify-content-center gap rounded-bottom-4">
                             <i class="bi bi-gear fs-5 account-settings-icon"></i>
-                            <span class="fs-5">Manage Content</span>
+                            <span class="fs-5">Content</span>
                             <span class="secondary-body-text fw-light text-muted">Treatments | Customer Problems |
                                 Branches</span>
                         </a>
@@ -52,10 +52,6 @@
                     </li>
                 </ul>
             </div>
-            <!-- <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div> -->
         </div>
     </div>
 </div>

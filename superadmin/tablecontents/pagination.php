@@ -28,7 +28,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
         $rowstatus = row_status($conn, $entries);
         $totalRows = $rowstatus['rows'];
         $totalPages = $rowstatus['pages'];
-    } else{
+    } else {
         $GLOBALS['totalPages'];
     }
     ?>
@@ -212,9 +212,21 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
-    $sql = "SELECT * FROM chemicals WHERE name LIKE '%" . $search . "%' OR brand LIKE '%" . $search . "%' OR chemLevel LIKE '%" . $search . "%' OR expiryDate LIKE '%" . $search . "%' ORDER BY request DESC, id DESC;";
+    $entries = $_GET['entries'];
+    $sql = "SELECT * FROM chemicals WHERE (name LIKE ? OR brand LIKE ? OR chemLevel LIKE ? OR expiryDate LIKE ?) ";
 
-    $result = mysqli_query($conn, $sql);
+    $sql .= $entries === 'true' ? "AND request = 0 ORDER BY request DESC, id DESC;" : 'ORDER BY id DESC;';
+
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo "<tr><td scope='row' colspan='5' class='text-center'>Error. Search stmt failed.</td></tr>";
+        exit();
+    }
+
+    $search = "%" . $search . "%";
+    mysqli_stmt_bind_param($stmt, 'ssss', $search, $search, $search, $search);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $numrows = mysqli_num_rows($result);
     // echo $numrows;   
     if ($numrows > 0) {
@@ -232,7 +244,7 @@ if (isset($_GET['search'])) {
             <tr class="text-center">
                 <td scope="row">
                     <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                        $request == '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
