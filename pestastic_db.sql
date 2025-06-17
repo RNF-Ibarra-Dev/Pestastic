@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 16, 2025 at 05:00 PM
+-- Generation Time: Jun 17, 2025 at 10:47 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -226,15 +226,16 @@ CREATE TABLE `superadmin` (
   `saPwd` varchar(128) NOT NULL,
   `saEmpId` varchar(15) NOT NULL,
   `saBirthdate` date NOT NULL DEFAULT '1930-01-01',
-  `user_branch` int(11) NOT NULL DEFAULT 1
+  `user_branch` int(11) NOT NULL DEFAULT 1,
+  `saLName` varchar(128) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `superadmin`
 --
 
-INSERT INTO `superadmin` (`saID`, `saUsn`, `saName`, `saEmail`, `saPwd`, `saEmpId`, `saBirthdate`, `user_branch`) VALUES
-(1, 'sAdmin', 'superAdmin', 'sAdmin@email.com', 'sAdmin', '123', '1930-01-01', 1);
+INSERT INTO `superadmin` (`saID`, `saUsn`, `saName`, `saEmail`, `saPwd`, `saEmpId`, `saBirthdate`, `user_branch`, `saLName`) VALUES
+(1, 'sAdmin', 'super', 'sAdmin@email.com', 'sAdmin', '123', '1930-01-01', 1, 'admin');
 
 -- --------------------------------------------------------
 
