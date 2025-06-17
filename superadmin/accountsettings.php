@@ -26,27 +26,44 @@ require("startsession.php");
             <!-- content -->
             <div class="container-fluid p-0 d-flex align-content-center flex-column">
                 <form id="accountsettings">
+                    <input type="hidden" name="id" id="id">
                     <h3 class="fw-light text-center fw-semibold mb-2">Account Information</h3>
                     <div class="container bg-light bg-opacity-25 border border-light w-50 mx-auto rounded-3 p-3 pb-3">
                         <div class="d-flex flex-column gap-2 mx-3">
                             <div class="container gap-3 p-0 d-flex justify-content-between">
                                 <div class="col p-0">
                                     <label for="fname" class="form-label fw-bold mb-1">First Name:</label>
-                                    <input type="text" class="form-control-plaintext text-light ps-2" id="fname" name="fname" autocomplete="off">
+                                    <input type="text" class="form-control-plaintext text-light ps-2" id="fname"
+                                        name="fname" autocomplete="off" readonly>
                                 </div>
                                 <div class="col p-0">
                                     <label for="lname" class="form-label fw-bold mb-1">Last Name:</label>
-                                    <input type="text" class="form-control-plaintext text-light ps-2" id="lname" name="lname" autocomplete="off">
+                                    <input type="text" class="form-control-plaintext text-light ps-2" id="lname"
+                                        name="lname" autocomplete="off" readonly>
                                 </div>
                             </div>
-                            <label for="username" class="form-label fw-bold mb-0">Username:</label>
-                            <input type="text" class="form-control-plaintext text-light ps-2" id="username" name="username" autocomplete="off">
+                            <div class="container gap-3 p-0 d-flex justify-content-between">
+                                <div class="col p-0">
+                                    <label for="username" class="form-label fw-bold mb-1">Username:</label>
+                                    <input type="text" class="form-control-plaintext text-light ps-2" id="username"
+                                        name="username" autocomplete="off" readonly>
+                                </div>
+                                <div class="col p-0">
+                                    <label for="empid" class="form-label fw-bold mb-1">Employee ID:</label>
+                                    <input type="text" class="form-control-plaintext text-light ps-2" id="empid"
+                                        name="empid" autocomplete="off" readonly>
+                                </div>
+                            </div>
                             <label for="email" class="form-label fw-bold mb-0">Email:</label>
-                            <input type="text" class="form-control-plaintext text-light ps-2" id="email" name="email" autocomplete="off">
+                            <input type="text" class="form-control-plaintext text-light ps-2" id="email" name="email"
+                                autocomplete="off" readonly>
                             <label for="password" class="form-label fw-bold mb-0 d-none pwd-label">Password:</label>
-                            <input type="password" class="form-control d-none" id="password" name="password" autocomplete="new-password">
-                            <label for="password" class="form-label fw-bold mb-0 d-none pwd-label" >Repeat Password:</label>
-                            <input type="password" class="form-control d-none" id="password" name="password" autocomplete="new-password">
+                            <input type="password" class="form-control d-none" id="password" name="password"
+                                autocomplete="new-password">
+                            <label for="rpassword" class="form-label fw-bold mb-0 d-none pwd-label">Repeat
+                                Password:</label>
+                            <input type="password" class="form-control d-none" id="rpassword" name="rpassword"
+                                autocomplete="new-password">
                             <label for="birthdate" class="form-label fw-bold mb-0">Birthdate:</label>
                             <input type="date" class="form-control ps-2 d-none" id="birthdate" name="birthdate">
                             <p class="text-light ms-2" id="displaybd"></p>
@@ -68,51 +85,72 @@ require("startsession.php");
             dateFormat: "F j, Y"
         });
 
-        $(document).ready(async function() {
+        $(document).ready(async function () {
             $.get(dataUrl, {
-                    acc: true,
-                    accountId: <?= $_SESSION['saID'] ?>
-                })
-                .done(function(d) {
+                acc: true,
+                accountId: <?= $_SESSION['saID'] ?>
+            })
+                .done(function (d) {
+                    console.log(d);
                     let data = JSON.parse(d);
                     console.log(data);
                     $('#fname').val(data.fname);
                     $('#lname').val(data.lname);
                     $("#username").val(data.usn);
                     $('#email').val(data.email);
+                    $('#empid').val(data.empId);
                     birthdate.setDate(data.displaydate);
                     $('#displaybd').html(data.displaydate);
+                    $('id').val(data.id);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     alert(e);
                 })
-                .always(function(e) {
-                    // console.log(e);
+                .always(function (e) {
+                    console.log(e);
                 })
         });
 
         async function toggle_input(input_id) {
-
             if ($(`#${input_id}`).hasClass('form-control-plaintext')) {
                 $(`#${input_id}`).removeClass('form-control-plaintext text-light').addClass('form-control');
-            }else{
+                $(`#${input_id}`).attr('readonly', false);
+            } else {
                 $(`#${input_id}`).removeClass('form-control').addClass('form-control-plaintext text-light');
+                $(`#${input_id}`).attr('readonly', true);
             }
         }
 
-        $(document).on('click', "#editbtn", async function() {
+        $(document).on('click', "#editbtn", async function () {
             Promise.all([
                 await toggle_input('fname'),
                 await toggle_input('lname'),
                 await toggle_input('username'),
-                await toggle_input('email')
+                await toggle_input('email'),
+                await toggle_input('empid')
             ]);
-            $("#displaybd, #password, #passwordlabel, .pwd-label, #birthdate, #submitbtn").toggleClass('d-none');
+            $("#displaybd, #password, #rpassword, #passwordlabel, .pwd-label, #birthdate, #submitbtn").toggleClass('d-none');
+            $("#editbtn").html(function (i, a) {
+                return a.includes('Edit Information') ? 'Close Editor' : 'Edit Information';
+            })
         });
 
-        $(document).on('submit', '#accountsettings', async function(e){
+        $(document).on('submit', '#accountsettings', async function (e) {
+            console.log($(this).serialize());
             e.preventDefault();
-        })
+            $.ajax({
+                url: dataUrl,
+                method: 'POST',
+                dataType: 'json',
+                data: $(this).serialize() + "&editacc=true"
+            })
+                .done(async function (d) {
+                    console.log(d);
+                })
+                .fail(async function (e) {
+                    console.log(e);
+                })
+        });
     </script>
 
 </body>

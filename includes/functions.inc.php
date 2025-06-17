@@ -116,6 +116,7 @@ function userExists($conn, $username, $email)
 }
 
 
+
 $userTypes = [
     'sa' => [
         'id' => 'saID',
@@ -169,8 +170,35 @@ function multiUserExists($conn, $username, $email)
             return $row;
         }
     }
-    return false;
     mysqli_stmt_close($stmt);
+    return false;
+}
+function invalid_emp_id($conn, $empId)
+{
+
+    global $userTypes;
+    $stmt = mysqli_stmt_init($conn);
+
+    foreach ($userTypes as $role => $details) {
+        $userTable = $details['table'];
+        $userEmpId = $details['empId'];
+
+        $sql = "SELECT * FROM $userTable WHERE $userEmpId = ?;";
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            return false;
+        }
+
+        mysqli_stmt_bind_param($stmt, 'i', $empId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        if ($row = mysqli_fetch_assoc($result)) {
+            return $row;
+        }
+    }
+    mysqli_stmt_close($stmt);
+    return false;
 }
 
 function checkExistingAccs($conn, $username, $email, $id)
@@ -281,6 +309,38 @@ function createOpSupAccount($conn, $firstName, $lastName, $username, $email, $pw
         return true;
     } else {
         return ['error' => 'Account creation failed. Please contact administration.'];
+    }
+}
+
+function modify_sa($conn, $fname, $lname, $username, $email, $pwd = '', $bd, $empid, $id)
+{
+
+    $sql = "UPDATE superadmin SET saUsn = ?, saName = ?, saLName = ?, saEmail = ?, saBirthdate = ?, saEmpId = ?";
+    $stmt = mysqli_stmt_init($conn);
+
+    $types = "sssssi";
+    $data = [$username, $fname, $lname, $email, $bd, $empid];
+    if (!empty($pwd)) {
+        $sql .= ", saPwd = ?";
+        $types .= 's';
+        $data[] = $pwd;
+    }
+
+    $sql .= " WHERE saID = ?;";
+    $types .= "i";
+    $data[] = $id;
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ["error" => "modification stmt error"];
+    }
+
+    mysqli_stmt_bind_param($stmt, $types, ...$data);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_stmt_affected_rows($stmt) > 0) {
+        return true;
+    } else {
+        return ['error' => 'Update failed. ' . mysqli_stmt_error($stmt)];
     }
 }
 
