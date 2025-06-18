@@ -89,6 +89,10 @@ require("startsession.php");
         });
 
         $(document).ready(async function() {
+            await load_user();
+        });
+
+        async function load_user() {
             $.get(dataUrl, {
                     acc: true,
                     accountId: <?= $_SESSION['saID'] ?>
@@ -112,7 +116,7 @@ require("startsession.php");
                 .always(function(e) {
                     // console.log(e);
                 })
-        });
+        }
 
         async function toggle_input(input_id) {
             if ($(`#${input_id}`).hasClass('form-control-plaintext')) {
@@ -122,6 +126,7 @@ require("startsession.php");
                 $(`#${input_id}`).removeClass('form-control').addClass('form-control-plaintext text-light');
                 $(`#${input_id}`).attr('readonly', true);
             }
+            await load_user();
         }
 
         async function toggle() {

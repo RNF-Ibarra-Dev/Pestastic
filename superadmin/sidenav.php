@@ -75,12 +75,6 @@
                 <div class="text-light fw-lighter fs-7">Create Account</div>
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link btn btn-sidebar my-1 ps-2 " href="../includes/logout.inc.php">
-                <i class="bi bi-box-arrow-left me-3"></i>
-                <div class="text-light fw-lighter fs-7">Log out</div>
-            </a>
-        </li>
     </ul>
 
 </aside>

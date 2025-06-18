@@ -8,7 +8,7 @@ require("startsession.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings | Account</title>
+    <title>Settings | Contents</title>
     <?php include('header.links.php'); ?>
 
 </head>
@@ -23,6 +23,14 @@ require("startsession.php");
             <!-- navbar -->
             <?php include('navbar.php'); ?>
             <!-- content -->
+            <div class="container-fluid h-100 justify-content-center d-flex flex-column">
+                <h2 class="fw-medium text-center">Manage Contents</h2>
+                <div class="container bg-light bg-opacity-25 rounded border border-light">
+                    <p class="fw-medium fs-4 m-0">Transaction Contents</p>
+                    <hr class="border border-light my-2">
+                </div>
+            </div>
+
         </main>
 
     </div>
