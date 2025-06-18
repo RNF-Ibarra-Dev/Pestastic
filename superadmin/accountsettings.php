@@ -24,10 +24,10 @@ require("startsession.php");
             <!-- navbar -->
             <?php include('navbar.php'); ?>
             <!-- content -->
-            <div class="container-fluid p-0 d-flex align-content-center flex-column">
-                <form id="accountsettings">
+            <div class="container-fluid p-0 d-flex h-100 justify-content-center flex-column">
+                <form id="accountsettings" class="my-5">
                     <input type="hidden" name="id" id="id">
-                    <h3 class="fw-light text-center fw-semibold mb-2">Account Information</h3>
+                    <h2 class="fw-light text-center fw-semibold mb-3">User Information</h2>
                     <div class="container bg-light bg-opacity-25 border border-light w-50 mx-auto rounded-3 p-3 pb-3">
                         <div class="d-flex flex-column gap-2 mx-3">
                             <div class="container gap-3 p-0 d-flex justify-content-between">
@@ -57,6 +57,9 @@ require("startsession.php");
                             <label for="email" class="form-label fw-bold mb-0">Email:</label>
                             <input type="text" class="form-control-plaintext text-light ps-2" id="email" name="email"
                                 autocomplete="off" readonly>
+                            <label for="oldpassword" class="form-label fw-bold mb-0 d-none pwd-label">Old Password:</label>
+                            <input type="password" class="form-control d-none" id="oldpassword" name="oldpassword"
+                                autocomplete="new-password">
                             <label for="password" class="form-label fw-bold mb-0 d-none pwd-label">Password:</label>
                             <input type="password" class="form-control d-none" id="password" name="password"
                                 autocomplete="new-password">
@@ -68,15 +71,15 @@ require("startsession.php");
                             <input type="date" class="form-control ps-2 d-none" id="birthdate" name="birthdate">
                             <p class="text-light ms-2" id="displaybd"></p>
 
+                            <div class="alert alert-info text-center m-0 mt-2" style="display: none" id="alert"></div>
+
                             <button type="button" class="btn btn-grad mt-3" id="editbtn">Edit Information</button>
                             <button type="submit" class="btn btn-grad d-none" id="submitbtn">Submit</button>
                         </div>
                     </div>
                 </form>
             </div>
-
         </main>
-
     </div>
     <?php include('footer.links.php'); ?>
     <script>
@@ -85,12 +88,12 @@ require("startsession.php");
             dateFormat: "F j, Y"
         });
 
-        $(document).ready(async function () {
+        $(document).ready(async function() {
             $.get(dataUrl, {
-                acc: true,
-                accountId: <?= $_SESSION['saID'] ?>
-            })
-                .done(function (d) {
+                    acc: true,
+                    accountId: <?= $_SESSION['saID'] ?>
+                })
+                .done(function(d) {
                     console.log(d);
                     let data = JSON.parse(d);
                     console.log(data);
@@ -101,13 +104,13 @@ require("startsession.php");
                     $('#empid').val(data.empId);
                     birthdate.setDate(data.displaydate);
                     $('#displaybd').html(data.displaydate);
-                    $('id').val(data.id);
+                    $('#id').val(data.id);
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     alert(e);
                 })
-                .always(function (e) {
-                    console.log(e);
+                .always(function(e) {
+                    // console.log(e);
                 })
         });
 
@@ -121,7 +124,7 @@ require("startsession.php");
             }
         }
 
-        $(document).on('click', "#editbtn", async function () {
+        async function toggle() {
             Promise.all([
                 await toggle_input('fname'),
                 await toggle_input('lname'),
@@ -129,26 +132,35 @@ require("startsession.php");
                 await toggle_input('email'),
                 await toggle_input('empid')
             ]);
-            $("#displaybd, #password, #rpassword, #passwordlabel, .pwd-label, #birthdate, #submitbtn").toggleClass('d-none');
-            $("#editbtn").html(function (i, a) {
+            $("#displaybd, #password, #rpassword, #oldpassword, #passwordlabel, .pwd-label, #birthdate, #submitbtn").toggleClass('d-none');
+            $("#editbtn").html(function(i, a) {
                 return a.includes('Edit Information') ? 'Close Editor' : 'Edit Information';
             })
+        }
+
+        $(document).on('click', "#editbtn", async function() {
+            await toggle();
         });
 
-        $(document).on('submit', '#accountsettings', async function (e) {
+        $(document).on('submit', '#accountsettings', async function(e) {
             console.log($(this).serialize());
             e.preventDefault();
             $.ajax({
-                url: dataUrl,
-                method: 'POST',
-                dataType: 'json',
-                data: $(this).serialize() + "&editacc=true"
-            })
-                .done(async function (d) {
-                    console.log(d);
+                    url: dataUrl,
+                    method: 'POST',
+                    dataType: 'json',
+                    data: $(this).serialize() + "&editacc=true"
                 })
-                .fail(async function (e) {
+                .done(async function(d) {
+                    // alert(d.success);
+                    toggle();
+                    $("#alert").html(d.success).fadeIn(500).delay(2000).fadeOut(1000);
+                })
+                .fail(async function(e) {
                     console.log(e);
+                    // alert(e);
+                    $("#alert").html(e.responseText).fadeIn(500).delay(2000).fadeOut(1000);
+
                 })
         });
     </script>

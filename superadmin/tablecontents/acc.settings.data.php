@@ -60,15 +60,30 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
     $lname = $_POST['lname'];
     $username = $_POST['username'];
     $email = $_POST['email'];
+    $opwd = $_POST['oldpassword'];
     $pwd = $_POST['password'];
     $rpwd = $_POST['rpassword'];
     $bd = $_POST['birthdate'];
     $empid = $_POST['empid'];
 
-    if($id != $_SESSION['saID']){
+    if(empty($fname) || empty($lname) || empty($email) || empty($bd) ||empty($empid) || empty($username)){
         http_response_code(400);
-        echo "Invalid session ID. Refresh page and try again.";
+        echo "Incomplete inputs. Please confirm and submit again.";
+        exit();
+    }
 
+    if ($id != $_SESSION['saID']) {
+        http_response_code(400);
+        echo "Invalid session ID. Refresh page and try again. " . $id . ' ' . $_SESSION['saID'];
+        exit();
+    }
+
+    if(!empty($pwd) || !empty($opwd) || !empty($rpwd)){
+        if(!validate($conn, $opwd)){
+            http_response_code(400);
+            echo "Incorrect old password.";
+            exit();
+        }
     }
 
     $birthdate = date_create($bd);
@@ -104,29 +119,35 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
         exit();
     }
 
-    if (multiUserExists($conn, $username, $email)) {
-        http_response_code(400);
-        echo "User already exists.";
-        exit();
+    $existing_user = multiUserExists($conn, $username, $email);
+
+    if ($existing_user) {
+        if ($existing_user['saUsn'] != $_SESSION['saUsn'] && $existing_user['saID'] != $_SESSION['saID']) {
+            http_response_code(400);
+            echo "User already exists";
+            exit();
+        }
     }
 
-    if (invalid_emp_id($conn, $empid)) {
-        http_response_code(400);
-        echo "Employee ID already exists.";
-        exit();
+    if ($empfunc = invalid_emp_id($conn, $empid)) {
+        if ($empfunc['saUsn'] != $_SESSION['saUsn'] && $empfunc['saID'] != $_SESSION['saID']) {
+            http_response_code(400);
+            echo "User already exists";
+            exit();
+        }
     }
 
     $edit = modify_sa($conn, $fname, $lname, $username, $email, $pwd, $bdd, $empid, $id);
 
-    if(isset($edit['error'])){
+    if (isset($edit['error'])) {
         http_response_code(400);
         echo $edit['error'];
         exit();
-    } elseif($edit){
+    } elseif ($edit) {
         http_response_code(200);
-        echo $edit;
+        echo json_encode(['success' => "Account Modified."]);
         exit();
-    } else{
+    } else {
         http_response_code(400);
         echo "unknown error.";
         exit();

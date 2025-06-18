@@ -173,6 +173,7 @@ function multiUserExists($conn, $username, $email)
     mysqli_stmt_close($stmt);
     return false;
 }
+
 function invalid_emp_id($conn, $empId)
 {
 
@@ -336,11 +337,12 @@ function modify_sa($conn, $fname, $lname, $username, $email, $pwd = '', $bd, $em
 
     mysqli_stmt_bind_param($stmt, $types, ...$data);
     mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
 
-    if (mysqli_stmt_affected_rows($stmt) > 0) {
+    if (mysqli_affected_rows($conn) > 0) {
         return true;
     } else {
-        return ['error' => 'Update failed. ' . mysqli_stmt_error($stmt)];
+        return ['error' => 'Update failed. Please make sure to check for new changes. ' . mysqli_stmt_error($stmt)];
     }
 }
 
@@ -379,7 +381,6 @@ function addChemv2($conn, $dataArr, $branch, $addby, $request)
             'stringTrace' => $e->getTraceAsString()
         ];
     }
-
 }
 function addChemical($conn, $name, $brand, $level, $expdate, $dateadded, $notes, $receivedDate, $cb, $ub, $branch, $request = 0)
 {
@@ -1398,7 +1399,6 @@ function editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes,
         } else {
             throw new Exception("Error. No changes are made.");
         }
-
     } catch (Exception $e) {
         mysqli_rollback($conn);
         return [
@@ -1406,7 +1406,6 @@ function editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes,
             'line' => $e->getLine()
         ];
     }
-
 }
 
 function activeUser()
