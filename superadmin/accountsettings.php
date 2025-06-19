@@ -18,7 +18,7 @@ require("startsession.php");
 
     <div class="sa-bg container-fluid p-0 h-100 d-flex">
         <!-- sidebar -->
-        <?php include('sidenav.php'); ?>
+        <?php include('settings.sidenav.php'); ?>
         <!-- main content -->
         <main class="sa-content col-sm-10 p-0 container-fluid">
             <!-- navbar -->

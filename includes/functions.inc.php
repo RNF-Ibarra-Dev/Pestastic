@@ -1717,3 +1717,30 @@ function delete_equipment($conn, $id)
         return ['error' => mysqli_stmt_error($stmt)];
     }
 }
+
+function get_branch_details($conn, $branch_id)
+{
+    if (!is_numeric($branch_id)) {
+        return 'invalid id';
+    }
+
+    $sql = "SELECT * FROM branches WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return 'stmt error.';
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $branch_id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
+            return $row;
+        }
+    } else {
+        return 'no row returned.';
+    }
+}
+

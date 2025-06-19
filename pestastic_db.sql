@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 17, 2025 at 10:47 AM
+-- Generation Time: Jun 19, 2025 at 10:08 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -544,18 +544,19 @@ DELIMITER ;
 
 CREATE TABLE `treatments` (
   `id` int(11) NOT NULL,
-  `t_name` varchar(125) NOT NULL
+  `t_name` varchar(125) NOT NULL,
+  `branch` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `treatments`
 --
 
-INSERT INTO `treatments` (`id`, `t_name`) VALUES
-(1, 'Wooden Structures Treatment'),
-(2, 'Termite Powder Application'),
-(3, 'Soil Injection'),
-(4, 'Termite Control');
+INSERT INTO `treatments` (`id`, `t_name`, `branch`) VALUES
+(1, 'Wooden Structures Treatment', 1),
+(2, 'Termite Powder Application', 1),
+(3, 'Soil Injection', 1),
+(4, 'Termite Control', 1);
 
 --
 -- Indexes for dumped tables
@@ -651,7 +652,8 @@ ALTER TABLE `transaction_technicians`
 -- Indexes for table `treatments`
 --
 ALTER TABLE `treatments`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_treatments_branch` (`branch`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -781,6 +783,12 @@ ALTER TABLE `transaction_problems`
 ALTER TABLE `transaction_technicians`
   ADD CONSTRAINT `transaction_technicians_ibfk_1` FOREIGN KEY (`trans_id`) REFERENCES `transactions` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `transaction_technicians_ibfk_2` FOREIGN KEY (`tech_id`) REFERENCES `technician` (`technicianId`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `treatments`
+--
+ALTER TABLE `treatments`
+  ADD CONSTRAINT `fk_treatments_branch` FOREIGN KEY (`branch`) REFERENCES `branches` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
