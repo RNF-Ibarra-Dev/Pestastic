@@ -13,32 +13,33 @@ if (isset($_GET['append']) && $_GET['append'] === 'treatment') {
             $name = $row['t_name'];
             $brnchid = $row['branch'];
             $brnch = get_branch_details($conn, $brnchid);
-?>
+            ?>
             <tr class="text-center">
                 <td>
                     <input type="checkbox" name="trtmnt_chk[]" value="<?= htmlspecialchars($id) ?>" class="form-check-input">
                 </td>
                 <td><?= htmlspecialchars($name) ?></td>
                 <td><?= htmlspecialchars($brnch['name'] . ' (' . $brnch['location'] . ')') ?></td>
+                <td class="p-0"><button type="button" class="btn m-0 w-100 py-2 h-100 rounded-0 btn-sidebar">Edit</button></td>
             </tr>
-        <?php
+            <?php
 
         }
         ?>
         <tr>
-            <td colspan="3" class="p-0">
+            <td colspan="4" class="p-0">
                 <div class="row p-0 m-0">
-                    <button type="button" class="col btn w-100 py-2 rounded-0" data-bs-toggle="modal" data-bs-target="#trtmnt_mdl">Add More</button>
-                    <button type="button" class="col btn w-100 py-2 rounded-0" data-bs-toggle="modal" data-bs-target="#trtmnt_del">Delete Selected</button>
+                    <button type="button" class="col btn w-100 py-2 rounded-0 btn-sidebar" data-bs-toggle="modal"
+                        data-bs-target="#trtmnt_mdl">Add More</button>
+                    <button type="button" class="col btn w-100 py-2 rounded-0 btn-sidebar" data-bs-toggle="modal"
+                        data-bs-target="#trtmnt_del">Delete Selected</button>
                 </div>
             </td>
-            <!-- <td colspanasdasd="2" class="col text-center p-0"><button type="button" class="btn w-100" data-bs-toggle="modal" data-bs-target="#trtmnt_del">Delete Selected</button></td>
-            <td colspanasdasd="2" class="col text-center p-0"><button type="button" class="btn w-100" data-bs-toggle="modal" data-bs-target="#trtmnt_mdl">Add More</button></td> -->
         </tr>
-    <?php
+        <?php
 
     } else {
-    ?>
+        ?>
         <td colspan="3" class="text-center">No Treatments Detected.</td>
         <?php
     }
@@ -56,9 +57,9 @@ if (isset($_GET['append']) && $_GET['append'] === 'trtmnt_branch_cont') {
             $id = $row['id'];
             $name = $row['name'];
             $location = $row['location'];
-        ?>
+            ?>
             <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($name . ' (' . $location . ')') ?></option>
-<?php
+            <?php
         }
     } else {
         ?>

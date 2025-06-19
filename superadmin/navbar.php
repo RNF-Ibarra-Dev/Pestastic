@@ -7,7 +7,7 @@
 </nav>
 
 
-<div class="modal fade" id="settings" tabindex="-1" data-bs-backdrop="false">
+<div class="modal fade bg-dark bg-opacity-25" id="settings" tabindex="-1" >
     <div class="modal-dialog mt-5 me-4 w-25 shadow-lg">
         <div class="modal-content text-dark rounded-4 border-0 shadow-lg">
             <div class="modal-header position-relative">

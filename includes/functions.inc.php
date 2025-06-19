@@ -1744,3 +1744,46 @@ function get_branch_details($conn, $branch_id)
     }
 }
 
+function add_treatment($conn, $name, $branch)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "INSERT INTO treatments (t_name, branch) VALUES (?, ?);";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("stmt failed.");
+        }
+
+        mysqli_stmt_bind_param($stmt, 'si', $name, $branch);
+        mysqli_stmt_execute($stmt);
+    
+
+        if (mysqli_affected_rows($conn) > 0) {
+            mysqli_commit($conn);
+            return true;
+        } else {
+            throw new Exception("Failed to add treatment " . $name);
+        }
+
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ];
+    }
+}
+
+function get_branches_array($conn)
+{
+    $branches = [];
+
+    $bsql = "SELECT * FROM branches;";
+    $bres = mysqli_query($conn, $bsql);
+    while ($row = mysqli_fetch_assoc($bres)) {
+        $branches[] = $row['id'];
+    }
+    return $branches;
+}

@@ -37,17 +37,22 @@ require("startsession.php");
                                     </th>
                                     <th scope="col">Treatment</th>
                                     <th scope="col">Branch</th>
+                                    <th scope="col"><i class="bi bi-pencil-square"></i></th>
                                 </tr>
                             </thead>
                             <tbody id="treatment">
                             </tbody>
                         </table>
+                        <p class="text-center alert alert-info w-75 mx-auto" style="display: none;" id="trtmnt_table_alert">
+                        </p>
                     </div>
+
                     <p class="fw-medium fs-5 m-0">Problems</p>
                     <hr class="mt-1 mb-2 opacity-50">
                     <form action="" id="problemform">
                         <div id="problems"></div>
                     </form>
+
                     <p class="fw-medium fs-5 m-0">Branches</p>
                     <hr class="mt-1 mb-2 opacity-50">
                     <form action="" id="branchesform">
@@ -61,7 +66,8 @@ require("startsession.php");
 
         <!-- modals -->
         <form id="treatment_form">
-            <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static" id="trtmnt_mdl" tabindex="0">
+            <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static" id="trtmnt_mdl"
+                tabindex="0">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
@@ -73,25 +79,21 @@ require("startsession.php");
                             <div class="row mb-2">
                                 <div class="col">
                                     <label for="trtmnt_input" class="form-label fw-light fs-5">Treatment Name:</label>
-                                    <input type="text" id="trtmnt_input" class="form-control">
+                                    <input type="text" id="trtmnt_input" name="treatment" class="form-control">
                                 </div>
                                 <div class="col">
-                                    <label for="trtmnt_input_branch" class="form-label fw-light fs-5">Branch:</label>
-                                    <select name="trtmnt_input_branch" id="trtmnt_input_branch" class="form-select">
+                                    <label for="trtmnt_branch" class="form-label fw-light fs-5">Branch:</label>
+                                    <select name="trtmnt_branch" id="tbranch" class="form-select">
                                         <div id="trtmnt_branch_cont"></div>
-                                    </select>                        
+                                    </select>
                                 </div>
                             </div>
-                            <div id="passwordHelpBlock" class="form-text">
-                                Note: Approving stock entries will officially make the stocks a part of the
-                                inventory.
-                            </div>
-                            <p class="text-center alert alert-info w-75 mx-auto visually-hidden" id="approve-errmsg">
-                            </p>
+
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
-                            <button type="button" data-bs-toggle="modal" class="btn btn-grad" data-bs-target="#cnfrm_trtmnt">Proceed</button>
+                            <button type="button" data-bs-toggle="modal" class="btn btn-grad"
+                                data-bs-target="#cnfrm_trtmnt">Proceed</button>
                         </div>
                     </div>
                 </div>
@@ -106,18 +108,20 @@ require("startsession.php");
                         </div>
                         <div class="modal-body">
                             <div class="row mb-2">
-
+                                <label for="approve-inputpwd" class="form-label fw-light">Enter manager
+                                    <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                <div class="col-6 mb-2">
+                                    <input type="password" name="trtmnt_pwd" class="form-control">
+                                </div>
                             </div>
-                            <div id="passwordHelpBlock" class="form-text">
-                                Note: Approving stock entries will officially make the stocks a part of the
-                                inventory.
-                            </div>
-                            <p class="text-center alert alert-info w-75 mx-auto visually-hidden" id="approve-errmsg">
+                            <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                id="trtmnt_alert">
                             </p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-grad" data-bs-toggle="modal" data-bs-target="#trtmnt_mdl">Go Back</button>
-                            <button type="submit" class="btn btn-grad">Fuck and submit</button>
+                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#trtmnt_mdl">Go Back</button>
+                            <button type="submit" class="btn btn-grad">Add Treatment</button>
                         </div>
                     </div>
                 </div>
@@ -128,26 +132,50 @@ require("startsession.php");
     <?php include('footer.links.php'); ?>
     <script>
         const dataurl = "tablecontents/contents.data.php";
+        const configurl = "tablecontents/contents.config.php";
 
         async function append(container) {
             $.get(dataurl, {
-                    append: container
-                })
-                .done(function(d) {
+                append: container
+            })
+                .done(function (d) {
+                    $(`#${container}`).empty();
                     $(`#${container}`).append(d);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e.responseText);
                 })
         }
 
-        $(document).ready(async function() {
+        $(document).ready(async function () {
             Promise.all([
                 await append('treatment'),
                 await append('trtmnt_branch_cont')
             ])
-            
+
         });
+
+        $(document).on('submit', '#treatment_form', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            $.ajax({
+                url: configurl,
+                dataType: 'json',
+                method: "POST",
+                data: $(this).serialize() + "&add-treatment=true"
+            })
+                .done(async function (d) {
+                    console.log(d);
+                    await append('treatment');
+                    $('#cnfrm_trtmnt').modal('hide');
+                    $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    console.log(e.responseJSON.error);
+                    $('#trtmnt_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
+                })
+        })
 
     </script>
 </body>
