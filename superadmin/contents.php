@@ -29,7 +29,7 @@ require("startsession.php");
                     <p class="fw-medium fs-5 m-0">Treatments</p>
                     <hr class="mt-1 mb-2 opacity-50">
                     <div class="table-responsive justify-content-center">
-                        <table class="table align-middle table-hover p-2 w-100">
+                        <table class="table align-middle table-bordered table-hover p-2 w-100">
                             <thead>
                                 <tr class="text-center">
                                     <th scope="col">
@@ -61,7 +61,7 @@ require("startsession.php");
 
         <!-- modals -->
         <form id="treatment_form">
-            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="trtmnt_mdl" tabindex="0">
+            <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static" id="trtmnt_mdl" tabindex="0">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
@@ -71,7 +71,16 @@ require("startsession.php");
                         </div>
                         <div class="modal-body">
                             <div class="row mb-2">
-                               shit
+                                <div class="col">
+                                    <label for="trtmnt_input" class="form-label fw-light fs-5">Treatment Name:</label>
+                                    <input type="text" id="trtmnt_input" class="form-control">
+                                </div>
+                                <div class="col">
+                                    <label for="trtmnt_input_branch" class="form-label fw-light fs-5">Branch:</label>
+                                    <select name="trtmnt_input_branch" id="trtmnt_input_branch" class="form-select">
+                                        <div id="trtmnt_branch_cont"></div>
+                                    </select>                        
+                                </div>
                             </div>
                             <div id="passwordHelpBlock" class="form-text">
                                 Note: Approving stock entries will officially make the stocks a part of the
@@ -97,7 +106,7 @@ require("startsession.php");
                         </div>
                         <div class="modal-body">
                             <div class="row mb-2">
-                               
+
                             </div>
                             <div id="passwordHelpBlock" class="form-text">
                                 Note: Approving stock entries will officially make the stocks a part of the
@@ -121,18 +130,25 @@ require("startsession.php");
         const dataurl = "tablecontents/contents.data.php";
 
         async function append(container) {
-            $.get(dataurl, { append: container })
-                .done(function (d) {
+            $.get(dataurl, {
+                    append: container
+                })
+                .done(function(d) {
                     $(`#${container}`).append(d);
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e.responseText);
                 })
         }
 
-        $(document).ready(async function () {
-            await append('treatment');
+        $(document).ready(async function() {
+            Promise.all([
+                await append('treatment'),
+                await append('trtmnt_branch_cont')
+            ])
+            
         });
+
     </script>
 </body>
 
