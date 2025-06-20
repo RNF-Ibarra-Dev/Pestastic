@@ -1837,3 +1837,32 @@ function edit_treatment($conn, $tname, $branch, $id)
         ];
     }
 }
+
+function delete_treatment($conn, $ids)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "DELETE FROM treatments WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception('stmt failed.');
+        }
+        for ($i = 0; count($ids) > $i; $i++) {
+            mysqli_stmt_bind_param($stmt, 'i', $ids[$i]);
+            mysqli_stmt_execute($stmt);
+            if (!mysqli_stmt_affected_rows($stmt) > 0) {
+                throw new Exception("Error. Failed to delete id: $ids[$i]");
+            }
+        }
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ];
+    }
+}

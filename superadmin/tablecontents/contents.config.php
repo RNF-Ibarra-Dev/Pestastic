@@ -104,3 +104,29 @@ if (isset($_POST['edit']) && $_POST['edit'] === 'true') {
         exit();
     }
 }
+
+if(isset($_POST['delete']) && $_POST['delete'] === 'true'){
+    $ids = $_POST['trt_chk'] ?? [];
+    $pwd = $_POST['pwd'];
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => "Incorrect Password."]);
+        exit();
+    }
+
+    $delete = delete_treatment($conn, $ids);
+    if (isset($delete['error'])) {
+        http_response_code(400);
+        echo $delete['error'] . ' at line ' . $delete['line'] . ' at file ' . $delete['file'];
+        exit();
+    } elseif ($delete) {
+        http_response_code(200);
+        echo json_encode(['success' => "Treatment/s Deleted"]);
+        exit();
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Unknown Error Occured.' . ' ' . $delete]);
+        exit();
+    }
+}

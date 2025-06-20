@@ -29,23 +29,24 @@ require("startsession.php");
                     <p class="fw-medium fs-5 m-0">Treatments</p>
                     <hr class="mt-1 mb-2 opacity-50">
                     <div class="table-responsive justify-content-center">
-                        <table class="table align-middle table-bordered table-hover p-2 w-100">
-                            <thead>
-                                <tr class="text-center">
-                                    <th scope="col">
-                                        <input type="checkbox" onclick="" class="form-check-input">
-                                    </th>
-                                    <th scope="col">Treatment</th>
-                                    <th scope="col">Branch</th>
-                                    <th scope="col"><i class="bi bi-pencil-square"></i></th>
-                                </tr>
-                            </thead>
-                            <form id="trt_del_form">
+                        <form id="trt_del_form">
+                            <table class="table align-middle table-bordered table-hover p-2 w-100">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th scope="col">
+                                            <input type="checkbox" id="checkallbtn" class="form-check-input">
+                                        </th>
+                                        <th scope="col">Treatment</th>
+                                        <th scope="col">Branch</th>
+                                        <th scope="col"><i class="bi bi-pencil-square"></i></th>
+                                    </tr>
+                                </thead>
                                 <tbody id="treatment">
                                 </tbody>
-                            </form>
-                        </table>
-                        <p class="text-center alert alert-info w-75 mx-auto" style="display: none;" id="trtmnt_table_alert">
+                            </table>
+                        </form>
+                        <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                            id="trtmnt_table_alert">
                         </p>
                     </div>
 
@@ -81,7 +82,8 @@ require("startsession.php");
                             <div class="row mb-2">
                                 <div class="col">
                                     <label for="trtmnt_input" class="form-label fw-light fs-5">Treatment Name:</label>
-                                    <input type="text" id="trtmnt_input" name="treatment" class="form-control" autocomplete="one-time-code">
+                                    <input type="text" id="trtmnt_input" name="treatment" class="form-control"
+                                        autocomplete="one-time-code">
                                 </div>
                                 <div class="col">
                                     <label for="trt_addbranch" class="form-label fw-light fs-5">Branch:</label>
@@ -120,8 +122,7 @@ require("startsession.php");
                             </p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                data-bs-target="#trtmnt_mdl">Go Back</button>
+                            <button type="button" class="btn btn-grad" data-bs-toggle="modal" data-bs-target="#trtmnt_mdl">Go Back</button>
                             <button type="submit" class="btn btn-grad">Add Treatment</button>
                         </div>
                     </div>
@@ -144,7 +145,8 @@ require("startsession.php");
                             <div class="row mb-2">
                                 <div class="col">
                                     <label for="trt_edit_input" class="form-label fw-light fs-5">Treatment Name:</label>
-                                    <input type="text" id="trt_edit_input" name="treatment" class="form-control" autocomplete="one-time-code">
+                                    <input type="text" id="trt_edit_input" name="treatment" class="form-control"
+                                        autocomplete="one-time-code">
                                 </div>
                                 <div class="col">
                                     <label for="trt_editbranch" class="form-label fw-light fs-5">Branch:</label>
@@ -192,6 +194,36 @@ require("startsession.php");
             </div>
         </form>
 
+        <form id="del_confirm">
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="del_trt" tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Confirm Delete Treatment</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <label for="approve-inputpwd" class="form-label fw-light">Enter manager
+                                    <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                <div class="col-6 mb-2">
+                                    <input type="password" name="pwd" class="form-control">
+                                </div>
+                            </div>
+                            <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                id="trt_del_alert">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-grad">Delete Treatment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
     </div>
     <?php include('footer.links.php'); ?>
     <script>
@@ -200,59 +232,63 @@ require("startsession.php");
 
         async function append(container) {
             return $.get(dataurl, {
-                    append: container
-                })
-                .done(function(d) {
+                append: container
+            })
+                .done(function (d) {
                     $(`#${container}`).empty();
                     $(`#${container}`).append(d);
                     return true;
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e.responseText);
                 })
         }
 
-        $(document).ready(async function() {
+        $(document).ready(async function () {
             await append('treatment');
             await append('trt_addbranch');
-
         });
 
-        $(document).on('submit', '#treatment_form', async function(e) {
+        $(document).on("click", "#add_trt", function () {
+            $('#treatment_form')[0].reset();
+            $('#trtmnt_mdl').modal('show');
+        })
+
+        $(document).on('submit', '#treatment_form', async function (e) {
             e.preventDefault();
             // console.log($(this).serialize());
             $.ajax({
-                    url: configurl,
-                    dataType: 'json',
-                    method: "POST",
-                    data: $(this).serialize() + "&add-treatment=true"
-                })
-                .done(async function(d) {
+                url: configurl,
+                dataType: 'json',
+                method: "POST",
+                data: $(this).serialize() + "&add-treatment=true"
+            })
+                .done(async function (d) {
                     console.log(d);
                     await append('treatment');
                     $('#cnfrm_trtmnt').modal('hide');
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                     console.log(e.responseJSON.error);
                     $('#trtmnt_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .always(function(a) {
+                .always(function (a) {
                     console.log(a);
                 })
         });
 
         // async function get()
 
-        $(document).on('click', '.trt-edit', async function() {
+        $(document).on('click', '.trt-edit', async function () {
             let id = $(this).data('trt');
             let branch = await append('trt_editbranch');
 
             $.get(dataurl, {
-                    trt_details: id
-                })
-                .done(async function(d) {
+                trt_details: id
+            })
+                .done(async function (d) {
                     let deets = JSON.parse(d);
                     console.log(deets);
                     // alert(deets.t_name);
@@ -263,33 +299,74 @@ require("startsession.php");
                         $('#trt_edit_modal').modal('show');
                     }
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     alert(e.responseText);
-                    console.log('from fail');
                 });
         });
 
-        $(document).on('submit', '#edit_treatment_form', async function(e) {
+        $(document).on('submit', '#edit_treatment_form', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             $.ajax({
-                    method: 'POST',
-                    url: configurl,
-                    dataType: 'json',
-                    data: $(this).serialize() + "&edit=true"
-                })
-                .done(function(d) {
+                method: 'POST',
+                url: configurl,
+                dataType: 'json',
+                data: $(this).serialize() + "&edit=true"
+            })
+                .done(function (d) {
                     // alert(d);
                     append('treatment');
                     // console.log(d);
                     $('#trt_edit_confirm').modal('hide');
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function(e) {
-                    console.log(e);
+                .fail(function (e) {
+                    // console.log(e);
                     $('#trtmnt_edit_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-        })
+        });
+
+        $(document).on('change', '#checkallbtn', async function () {
+            var checked = $(this).prop('checked');
+            $('tbody#treatment input[type="checkbox"]').prop('checked', checked);
+        });
+
+        async function delete_treatment(data) {
+            console.log(data);
+            return $.ajax({
+                method: "POST",
+                url: configurl,
+                dataType: 'json',
+                data: data + "&delete=true"
+            })
+                .done(function (d) {
+                    console.log(d); 
+                    append('treatment');
+                    $('#del_trt').modal('hide');
+                    $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $('#trt_del_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
+                })
+        }
+
+        $(document).on('click', '#delete_selected', async function () {
+            var form = $('#trt_del_form');
+            var formdata = form.serialize();
+            // console.log(formdata);
+            if (formdata.length == 0) {
+                alert('No checked treatment.');
+            } else {
+                $('#del_trt').modal('show');
+            }
+        });
+
+        $(document).on('submit', '#del_confirm', async function (e) {
+            e.preventDefault();
+            let data = $("#trt_del_form").serialize() + '&' + $('#del_confirm').serialize();
+            await delete_treatment(data);
+        });
     </script>
 </body>
 
