@@ -40,8 +40,10 @@ require("startsession.php");
                                     <th scope="col"><i class="bi bi-pencil-square"></i></th>
                                 </tr>
                             </thead>
-                            <tbody id="treatment">
-                            </tbody>
+                            <form id="trt_del_form">
+                                <tbody id="treatment">
+                                </tbody>
+                            </form>
                         </table>
                         <p class="text-center alert alert-info w-75 mx-auto" style="display: none;" id="trtmnt_table_alert">
                         </p>
@@ -79,12 +81,11 @@ require("startsession.php");
                             <div class="row mb-2">
                                 <div class="col">
                                     <label for="trtmnt_input" class="form-label fw-light fs-5">Treatment Name:</label>
-                                    <input type="text" id="trtmnt_input" name="treatment" class="form-control">
+                                    <input type="text" id="trtmnt_input" name="treatment" class="form-control" autocomplete="one-time-code">
                                 </div>
                                 <div class="col">
-                                    <label for="trtmnt_branch" class="form-label fw-light fs-5">Branch:</label>
-                                    <select name="trtmnt_branch" id="tbranch" class="form-select">
-                                        <div id="trtmnt_branch_cont"></div>
+                                    <label for="trt_addbranch" class="form-label fw-light fs-5">Branch:</label>
+                                    <select name="trtmnt_branch" id="trt_addbranch" class="form-select">
                                     </select>
                                 </div>
                             </div>
@@ -102,7 +103,7 @@ require("startsession.php");
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
-                            <h1 class="modal-title fs-5">Add Treatment</h1>
+                            <h1 class="modal-title fs-5">Confirm Adding New Treatment</h1>
                             <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
                                     class="bi bi-x text-light"></i></button>
                         </div>
@@ -128,6 +129,69 @@ require("startsession.php");
             </div>
         </form>
 
+        <form id="edit_treatment_form">
+            <input type="hidden" name="id" id="trt_edit_id" required>
+            <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static" id="trt_edit_modal"
+                tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Edit Treatment</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <label for="trt_edit_input" class="form-label fw-light fs-5">Treatment Name:</label>
+                                    <input type="text" id="trt_edit_input" name="treatment" class="form-control" autocomplete="one-time-code">
+                                </div>
+                                <div class="col">
+                                    <label for="trt_editbranch" class="form-label fw-light fs-5">Branch:</label>
+                                    <select name="branch" id="trt_editbranch" class="form-select">
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            <button type="button" data-bs-toggle="modal" class="btn btn-grad"
+                                data-bs-target="#trt_edit_confirm">Proceed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="trt_edit_confirm" tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Confirm Changes</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <label for="approve-inputpwd" class="form-label fw-light">Enter manager
+                                    <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                <div class="col-6 mb-2">
+                                    <input type="password" name="pwd" class="form-control">
+                                </div>
+                            </div>
+                            <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                id="trtmnt_edit_alert">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#trt_edit_modal">Go Back</button>
+                            <button type="submit" class="btn btn-grad">Update Treatment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
     </div>
     <?php include('footer.links.php'); ?>
     <script>
@@ -135,48 +199,97 @@ require("startsession.php");
         const configurl = "tablecontents/contents.config.php";
 
         async function append(container) {
-            $.get(dataurl, {
-                append: container
-            })
-                .done(function (d) {
+            return $.get(dataurl, {
+                    append: container
+                })
+                .done(function(d) {
                     $(`#${container}`).empty();
                     $(`#${container}`).append(d);
+                    return true;
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e.responseText);
                 })
         }
 
-        $(document).ready(async function () {
-            Promise.all([
-                await append('treatment'),
-                await append('trtmnt_branch_cont')
-            ])
+        $(document).ready(async function() {
+            await append('treatment');
+            await append('trt_addbranch');
 
         });
 
-        $(document).on('submit', '#treatment_form', async function (e) {
+        $(document).on('submit', '#treatment_form', async function(e) {
             e.preventDefault();
-            console.log($(this).serialize());
+            // console.log($(this).serialize());
             $.ajax({
-                url: configurl,
-                dataType: 'json',
-                method: "POST",
-                data: $(this).serialize() + "&add-treatment=true"
-            })
-                .done(async function (d) {
+                    url: configurl,
+                    dataType: 'json',
+                    method: "POST",
+                    data: $(this).serialize() + "&add-treatment=true"
+                })
+                .done(async function(d) {
                     console.log(d);
                     await append('treatment');
                     $('#cnfrm_trtmnt').modal('hide');
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                     console.log(e.responseJSON.error);
                     $('#trtmnt_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-        })
+                .always(function(a) {
+                    console.log(a);
+                })
+        });
 
+        // async function get()
+
+        $(document).on('click', '.trt-edit', async function() {
+            let id = $(this).data('trt');
+            let branch = await append('trt_editbranch');
+
+            $.get(dataurl, {
+                    trt_details: id
+                })
+                .done(async function(d) {
+                    let deets = JSON.parse(d);
+                    console.log(deets);
+                    // alert(deets.t_name);
+                    if (branch) {
+                        $("#trt_edit_id").val(deets.id)
+                        $("#trt_edit_input").val(deets.t_name);
+                        $("#trt_editbranch").val(deets.branch);
+                        $('#trt_edit_modal').modal('show');
+                    }
+                })
+                .fail(function(e) {
+                    alert(e.responseText);
+                    console.log('from fail');
+                });
+        });
+
+        $(document).on('submit', '#edit_treatment_form', async function(e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            $.ajax({
+                    method: 'POST',
+                    url: configurl,
+                    dataType: 'json',
+                    data: $(this).serialize() + "&edit=true"
+                })
+                .done(function(d) {
+                    // alert(d);
+                    append('treatment');
+                    // console.log(d);
+                    $('#trt_edit_confirm').modal('hide');
+                    $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
+                })
+                .fail(function(e) {
+                    console.log(e);
+                    $('#trtmnt_edit_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
+                })
+        })
     </script>
 </body>
 

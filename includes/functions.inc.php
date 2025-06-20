@@ -1757,7 +1757,7 @@ function add_treatment($conn, $name, $branch)
 
         mysqli_stmt_bind_param($stmt, 'si', $name, $branch);
         mysqli_stmt_execute($stmt);
-    
+
 
         if (mysqli_affected_rows($conn) > 0) {
             mysqli_commit($conn);
@@ -1765,7 +1765,6 @@ function add_treatment($conn, $name, $branch)
         } else {
             throw new Exception("Failed to add treatment " . $name);
         }
-
     } catch (Exception $e) {
         mysqli_rollback($conn);
         return [
@@ -1786,4 +1785,55 @@ function get_branches_array($conn)
         $branches[] = $row['id'];
     }
     return $branches;
+}
+
+function get_treatment_details($conn, $id)
+{
+    $sql = "SELECT * FROM treatments WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'stmt failed.'];
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($res) > 0) {
+        $row = mysqli_fetch_assoc($res);
+        return $row;
+    } else {
+        return ['error' => 'Treatment not found.'];
+    }
+}
+
+function edit_treatment($conn, $tname, $branch, $id)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "UPDATE treatments SET t_name = ?, branch = ? WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception('stmt failed.');
+        }
+
+        mysqli_stmt_bind_param($stmt, 'sii', $tname, $branch, $id);
+        mysqli_stmt_execute($stmt);
+
+        if (mysqli_affected_rows($conn) > 0) {
+            mysqli_commit($conn);
+            return true;
+        } else {
+            throw new Exception('Update Failed.');
+        }
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ];
+    }
 }

@@ -629,7 +629,7 @@ include('tablecontents/tables.php');
                         break;
                 }
             }
-        })
+        });
 
 
         $(document).on('click', '#approvebtn', async function() {
