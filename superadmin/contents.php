@@ -26,7 +26,7 @@ require("startsession.php");
             <div class="container-fluid h-75 d-flex flex-column mt-3 px-5">
                 <h2 class="fw-bold text-center">Manage Contents</h2>
                 <div class="container bg-light bg-opacity-25 rounded border border-light py-4 px-3  ">
-                    <p class="fw-medium fs-4 m-0">Treatments</p>
+                    <p class="fw-medium fs-4 m-0 text-center">Treatments</p>
                     <hr class="mt-1 mb-2 opacity-50">
                     <div class="table-responsive justify-content-center">
                         <form id="trt_del_form">
@@ -50,7 +50,7 @@ require("startsession.php");
                         </p>
                     </div>
 
-                    <p class="fw-medium fs-4 m-0">Problems</p>
+                    <p class="fw-medium fs-4 m-0 text-center">Problems</p>
                     <hr class="mt-1 mb-2 opacity-50">
                     <div class="table-responsive justify-content-center">
                         <form id="problemform">
@@ -72,16 +72,43 @@ require("startsession.php");
                         </p>
                     </div>
 
-                    <p class="fw-medium fs-5 m-0">Branches</p>
+                    <p class="fw-medium fs-4 m-0 text-center">Branches</p>
                     <hr class="mt-1 mb-2 opacity-50">
-                    <form action="" id="branchesform">
-                        <div id="branches"></div>
+                    <form id="branchesform">
+                        <table class="table align-middle table-bordered table-hover p-2 w-100">
+                            <thead>
+                                <tr class="text-center">
+                                    <th scope="col">
+                                        <input type="checkbox" id="checkallbranch" class="form-check-input">
+                                    </th>
+                                    <th scope="col">Branch</th>
+                                    <th scope="col">Location</th>
+                                    <th scope="col"><i class="bi bi-pencil-square"></i></th>
+                                </tr>
+                            </thead>
+                            <tbody id="branches"></tbody>
+                        </table>
                     </form>
 
-                    <p class="fw-medium fs-5 m-0">Packages</p>
+                    <p class="fw-medium fs-4 m-0 text-center">Packages</p>
                     <hr class="mt-1 mb-2 opacity-50">
-                    <form action="" id="branchesform">
-                        <div id="branches"></div>
+                    <form id="packagesform">
+                        <table class="table align-middle table-bordered table-hover p-2 w-100">
+                            <thead>
+                                <tr class="text-center">
+                                    <th scope="col">
+                                        <input type="checkbox" id="checkallbranch" class="form-check-input">
+                                    </th>
+                                    <th scope="col">Package</th>
+                                    <th scope="col">Session Count</th>
+                                    <th scope="col">Warranty Count</th>
+                                    <th scope="col">Treatment</th>
+                                    <th scope="col">Branch</th>
+                                    <th scope="col"><i class="bi bi-pencil-square"></i></th>
+                                </tr>
+                            <tbody id="packages"></tbody>
+                            </thead>
+                        </table>
                     </form>
 
                 </div>
@@ -337,7 +364,8 @@ require("startsession.php");
                     </div>
                 </div>
             </div>
-            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="conf_edit_prob_modal" tabindex="0">
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="conf_edit_prob_modal"
+                tabindex="0">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
@@ -368,7 +396,8 @@ require("startsession.php");
         </form>
 
         <form id="del_edit_confirm">
-            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="conf_del_prob_modal" tabindex="0">
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="conf_del_prob_modal"
+                tabindex="0">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
@@ -383,16 +412,180 @@ require("startsession.php");
                                 <div class="col-6 mb-2">
                                     <input type="password" name="pwd" class="form-control">
                                 </div>
-                                <p class="text-body-secondary text-muted">Note: Deleting record/s are irreversible. Proceed with caution.</p>
+                                <p class="text-body-secondary text-muted">Note: Deleting record/s are irreversible.
+                                    Proceed with caution.</p>
                             </div>
                             <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
                                 id="prob_del_alert">
                             </p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                data-bs-target="#prob_edit_modal">Go Back</button>
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-grad">Update Pest Problem</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- branches modals -->
+        <form id="branch_add_form">
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="branch_add_modal" tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Add New Branch</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <label for="branchname" class="form-label fw-light fs-5">Branch Name:</label>
+                                    <input type="text" id="branchname" name="branch[]" class="form-control"
+                                        autocomplete="one-time-code">
+                                </div>
+                                <div class="col-6">
+                                    <label for="branchloc" class="form-label fw-light fs-5">Location:</label>
+                                    <input type="text" id="branchloc" name="location[]" class="form-control"
+                                        autocomplete="one-time-code">
+                                </div>
+                            </div>
+                            <div id="branch_add_container"></div>
+                            <button class="btn btn-grad py-2 mt-4" type="button" id="branch_add_row"><i
+                                    class="bi bi-plus-circle me-2"></i>Add More</button>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            <button type="button" data-bs-toggle="modal" class="btn btn-grad"
+                                data-bs-target="#branch_add_conf_modal">Proceed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="branch_add_conf_modal"
+                tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">New Branch Confirmation</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <label for="approve-inputpwd" class="form-label fw-light">Enter manager
+                                    <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                <div class="col-6 mb-2">
+                                    <input type="password" name="pwd" class="form-control">
+                                </div>
+                            </div>
+                            <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                id="branch_add_alert">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#branch_add_modal">Go Back</button>
+                            <button type="submit" class="btn btn-grad">Add New Branch</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <form id="branch_edit_form">
+            <input type="hidden" name="id" id="branch_edit_id_input">
+            <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static" id="branch_edit_modal"
+                tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Update Branch Information</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <label for="br_edit_input" class="form-label fw-light fs-5">Pest Problem:</label>
+                                    <input type="text" id="br_edit_input" name="branch" class="form-control"
+                                        autocomplete="one-time-code">
+                                </div>
+                                <div class="col-6">
+                                    <label for="br_loc_edit_input" class="form-label fw-light fs-5">Location:</label>
+                                    <input type="text" id="br_loc_edit_input" name="location" class="form-control"
+                                        autocomplete="one-time-code">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            <button type="button" data-bs-toggle="modal" class="btn btn-grad"
+                                data-bs-target="#branch_edit_conf_modal">Proceed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="branch_edit_conf_modal"
+                tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Update Branch Confirmation</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <label for="approve-inputpwd" class="form-label fw-light">Enter manager
+                                    <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                <div class="col-6 mb-2">
+                                    <input type="password" name="pwd" class="form-control">
+                                </div>
+                            </div>
+                            <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                id="branch_edit_alert">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#branch_edit_modal">Go Back</button>
+                            <button type="submit" class="btn btn-grad">Update Branch</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <form id="branch_del_form">
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="branch_del_modal" tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Confirm Branch Deletion</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <label for="approve-inputpwd" class="form-label fw-light">Enter manager
+                                    <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                <div class="col-6 mb-2">
+                                    <input type="password" name="pwd" class="form-control">
+                                </div>
+                                <p class="text-body-secondary text-muted">Note: Deleting record/s are irreversible.
+                                    Proceed with caution.</p>
+                            </div>
+                            <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                id="branch_del_alert">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-grad">Delete Branch</button>
                         </div>
                     </div>
                 </div>
@@ -407,65 +600,66 @@ require("startsession.php");
 
         async function append(container) {
             return $.get(dataurl, {
-                    append: container
-                })
-                .done(function(d) {
+                append: container
+            })
+                .done(function (d) {
                     $(`#${container}`).empty();
                     $(`#${container}`).append(d);
                     return true;
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e.responseText);
                     return false;
                 })
         }
 
-        $(document).ready(async function() {
+        $(document).ready(async function () {
             await append('treatment');
             await append('trt_addbranch');
             await append('problems');
+            await append('branches');
         });
 
-        $(document).on("click", "#add_trt", function() {
+        $(document).on("click", "#add_trt", function () {
             $('#treatment_form')[0].reset();
             $('#trtmnt_mdl').modal('show');
         })
 
-        $(document).on('submit', '#treatment_form', async function(e) {
+        $(document).on('submit', '#treatment_form', async function (e) {
             e.preventDefault();
             // console.log($(this).serialize());
             $.ajax({
-                    url: configurl,
-                    dataType: 'json',
-                    method: "POST",
-                    data: $(this).serialize() + "&add-treatment=true"
-                })
-                .done(async function(d) {
+                url: configurl,
+                dataType: 'json',
+                method: "POST",
+                data: $(this).serialize() + "&add-treatment=true"
+            })
+                .done(async function (d) {
                     console.log(d);
                     await append('treatment');
                     $('#cnfrm_trtmnt').modal('hide');
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                     console.log(e.responseJSON.error);
                     $('#trtmnt_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .always(function(a) {
+                .always(function (a) {
                     console.log(a);
                 })
         });
 
         // async function get()
 
-        $(document).on('click', '.trt-edit', async function() {
+        $(document).on('click', '.trt-edit', async function () {
             let id = $(this).data('trt');
             let branch = await append('trt_editbranch');
 
             $.get(dataurl, {
-                    trt_details: id
-                })
-                .done(async function(d) {
+                trt_details: id
+            })
+                .done(async function (d) {
                     let deets = JSON.parse(d);
                     console.log(deets);
                     // alert(deets.t_name);
@@ -476,34 +670,34 @@ require("startsession.php");
                         $('#trt_edit_modal').modal('show');
                     }
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     alert(e.responseText);
                 });
         });
 
-        $(document).on('submit', '#edit_treatment_form', async function(e) {
+        $(document).on('submit', '#edit_treatment_form', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             $.ajax({
-                    method: 'POST',
-                    url: configurl,
-                    dataType: 'json',
-                    data: $(this).serialize() + "&edit=true"
-                })
-                .done(function(d) {
+                method: 'POST',
+                url: configurl,
+                dataType: 'json',
+                data: $(this).serialize() + "&edit=true"
+            })
+                .done(function (d) {
                     // alert(d);
                     append('treatment');
                     // console.log(d);
                     $('#trt_edit_confirm').modal('hide');
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     // console.log(e);
                     $('#trtmnt_edit_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         });
 
-        $(document).on('change', '#checkallbtn', async function() {
+        $(document).on('change', '#checkallbtn', async function () {
             var checked = $(this).prop('checked');
             $('tbody#treatment input[type="checkbox"]').prop('checked', checked);
         });
@@ -511,24 +705,24 @@ require("startsession.php");
         async function delete_treatment(data) {
             console.log(data);
             return $.ajax({
-                    method: "POST",
-                    url: configurl,
-                    dataType: 'json',
-                    data: data + "&delete=true"
-                })
-                .done(function(d) {
+                method: "POST",
+                url: configurl,
+                dataType: 'json',
+                data: data + "&delete=true"
+            })
+                .done(function (d) {
                     console.log(d);
                     append('treatment');
                     $('#del_trt').modal('hide');
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                     $('#trt_del_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         }
 
-        $(document).on('click', '#delete_selected', async function() {
+        $(document).on('click', '#delete_selected', async function () {
             var form = $('#trt_del_form');
             var formdata = form.serialize();
             // console.log(formdata);
@@ -539,102 +733,102 @@ require("startsession.php");
             }
         });
 
-        $(document).on('submit', '#del_confirm', async function(e) {
+        $(document).on('submit', '#del_confirm', async function (e) {
             e.preventDefault();
             let data = $("#trt_del_form").serialize() + '&' + $('#del_confirm').serialize();
             await delete_treatment(data);
         });
 
-        $(document).on('click', '#add_prob', async function() {
+        $(document).on('click', '#add_prob', async function () {
             $("#prob_add_form")[0].reset();
             $("#prob_add_modal").modal('show');
         });
 
         async function append_row(container) {
             return $.get(dataurl, {
-                    row: container
-                })
-                .done(function(d) {
+                row: container
+            })
+                .done(function (d) {
                     $(`#${container}`).append(d);
                     return true;
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     return 'Error at append_row function: ' + e.responseText;
                     // console.log(e);
                 });
         }
 
-        $('#prob_add_form').on('click', '#add_prob_row', async function() {
+        $('#prob_add_form').on('click', '#add_prob_row', async function () {
             let appendrow = await append_row('prob_input_container');
             if (!appendrow) {
                 console.log(appendrow);
             }
         });
 
-        $('#prob_input_container').on('click', '.del-prob-row-btn', function() {
+        $('#prob_input_container').on('click', '.del-prob-row-btn', function () {
             $(this).parent().parent().remove();
         });
 
-        $(document).on('submit', '#prob_add_form', async function(e) {
+        $(document).on('submit', '#prob_add_form', async function (e) {
             e.preventDefault();
             await $.ajax({
-                    method: "POST",
-                    url: configurl,
-                    dataType: 'json',
-                    data: $(this).serialize() + "&addProb=true"
-                })
-                .done(async function(d) {
+                method: "POST",
+                url: configurl,
+                dataType: 'json',
+                data: $(this).serialize() + "&addProb=true"
+            })
+                .done(async function (d) {
                     let table = await append('problems');
                     if (table) {
                         $('#prob_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                         $('#conf_prob_add').modal('hide');
                     }
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                     $('#prob_add_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         })
 
-        $(document).on('click', 'button.prob-edit', async function() {
+        $(document).on('click', 'button.prob-edit', async function () {
             let prob = $(this).data('prob');
             $("#prob_edit_form")[0].reset();
             // console.log(prob);
 
             $.get(dataurl, {
-                    getprob: true,
-                    id: prob
-                })
-                .done(async function(d) {
+                getprob: true,
+                id: prob
+            })
+                .done(async function (d) {
                     let dd = JSON.parse(d);
                     // console.log(dd);
                     $("#edit_prob_input").val(dd.problems);
                     $("#edit_prob_id").val(dd.id);
                     $("#prob_edit_modal").modal('show');
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                     alert("Error fetching pest problem details.");
                 });
         });
 
-        $(document).on('submit', '#prob_edit_form', async function(e) {
+        $(document).on('submit', '#prob_edit_form', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             await $.ajax({
-                    method: "POST",
-                    dataType: 'json',
-                    url: configurl,
-                    data: $(this).serialize() + "&editprob=true"
-                })
-                .done(async function(d) {
+                method: "POST",
+                dataType: 'json',
+                url: configurl,
+                data: $(this).serialize() + "&editprob=true"
+            })
+                .done(async function (d) {
                     let table = await append('problems');
                     if (table) {
                         $('#prob_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                         $('#conf_edit_prob_modal').modal('hide');
                     }
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                     let er = e.responseJSON;
                     let err = typeof er != 'undefined' ? er.error : e.responseText;
@@ -645,32 +839,32 @@ require("startsession.php");
         async function delete_pproblem(data) {
             console.log(data);
             return $.ajax({
-                    method: "POST",
-                    url: configurl,
-                    dataType: 'json',
-                    data: data + "&deleteprob=true"
-                })
-                .done(function(d) {
+                method: "POST",
+                url: configurl,
+                dataType: 'json',
+                data: data + "&deleteprob=true"
+            })
+                .done(async function (d) {
                     console.log(d);
                     append('problems');
                     $('#conf_del_prob_modal').modal('hide');
                     $('#prob_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function(e) {
-                     console.log(e);
+                .fail(function (e) {
+                    console.log(e);
                     let er = e.responseJSON;
                     let err = typeof er != 'undefined' ? er.error : e.responseText;
                     $('#prob_del_alert').html(err).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         }
 
-        $('#problemform').on('change','#checkallprob', function(){
+        $('#problemform').on('change', '#checkallprob', function () {
             let checked = $("#checkallprob").prop('checked');
 
             $("tbody#problems tr td input[type='checkbox']").prop('checked', checked);
         })
-        
-        $("#problemform").on('click', '#delete_prob_btn', function() {
+
+        $("#problemform").on('click', '#delete_prob_btn', function () {
             var form = $('#problemform');
             var formdata = form.serialize();
             // console.log(formdata);
@@ -681,12 +875,44 @@ require("startsession.php");
             }
         })
 
-        $(document).on('submit', '#del_edit_confirm', async function(e) {
+        $(document).on('submit', '#del_edit_confirm', async function (e) {
             e.preventDefault();
-            console.log($(this).serialize() + "&" + $("#problemform").serialize());
+            // console.log($(this).serialize() + "&" + $("#problemform").serialize());
             let data = $(this).serialize() + "&" + $("#problemform").serialize();
             await delete_pproblem(data);
         });
+
+        $(document).on('click', '#branch_addbtn', function () {
+            $("#branch_add_form")[0].reset();
+            $("#branch_add_modal").modal('show');
+        });
+
+        $('#branch_add_form').on('click', '#branch_add_row', async function () {
+            let appendrow = await append_row('branch_add_container');
+            if (!appendrow) {
+                console.log(appendrow);
+            }
+        });
+
+        $("#branch_add_form").on('click', '.edit-prob-row-btn', function(){
+            $(this).parent().parent().remove();
+        });
+
+        $(document).on('submit', "#branch_add_form", async function(e){
+            e.preventDefault();
+            await $.ajax({
+                method: 'POST',
+                url: configurl,
+                dataType: 'json',
+                data: $(this).serialize() + "&branchadd=true"
+            })
+            .done(async function(d){
+                let append = await append('branches');
+                if(append){
+
+                }
+            })
+        })
     </script>
 </body>
 

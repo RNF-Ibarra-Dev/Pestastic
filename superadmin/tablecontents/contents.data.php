@@ -13,7 +13,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'treatment') {
             $name = $row['t_name'];
             $brnchid = $row['branch'];
             $brnch = get_branch_details($conn, $brnchid);
-?>
+            ?>
             <tr class="text-center">
                 <td>
                     <input type="checkbox" name="trt_chk[]" value="<?= htmlspecialchars($id) ?>" class="form-check-input">
@@ -23,7 +23,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'treatment') {
                 <td class="p-0"><button type="button" class="btn m-0 w-100 py-2 h-100 rounded-0 btn-sidebar trt-edit"
                         data-trt="<?= htmlspecialchars($id) ?>">Edit</button></td>
             </tr>
-        <?php
+            <?php
 
         }
         ?>
@@ -37,12 +37,12 @@ if (isset($_GET['append']) && $_GET['append'] === 'treatment') {
                 </div>
             </td>
         </tr>
-    <?php
+        <?php
 
     } else {
-    ?>
+        ?>
         <td colspan="3" class="text-center">No Treatments Detected.</td>
-    <?php
+        <?php
     }
 }
 
@@ -51,16 +51,16 @@ if (isset($_GET['append']) && ($_GET['append'] === 'trt_addbranch' || $_GET['app
     $res = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($res) > 0) {
-    ?>
+        ?>
         <option>Select Branch</option>
         <?php
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             $name = $row['name'];
             $location = $row['location'];
-        ?>
+            ?>
             <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($name . ' (' . $location . ')') ?></option>
-        <?php
+            <?php
         }
     } else {
         ?>
@@ -100,7 +100,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'problems') {
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             $prob = $row['problems'];
-        ?>
+            ?>
             <tr class="text-center">
                 <td>
                     <input type="checkbox" name="prob_chk[]" value="<?= htmlspecialchars($id) ?>" class="form-check-input">
@@ -109,7 +109,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'problems') {
                 <td class="p-0"><button type="button" class="btn m-0 w-100 py-2 h-100 rounded-0 btn-sidebar prob-edit"
                         data-prob="<?= htmlspecialchars($id) ?>">Edit</button></td>
             </tr>
-        <?php
+            <?php
         }
         ?>
         <tr>
@@ -121,12 +121,12 @@ if (isset($_GET['append']) && $_GET['append'] === 'problems') {
                 </div>
             </td>
         </tr>
-    <?php
+        <?php
 
     } else {
-    ?>
+        ?>
         <td colspan="3" class="text-center">No Pest Problem Detected.</td>
-    <?php
+        <?php
     }
 }
 
@@ -142,7 +142,7 @@ if (isset($_GET['row']) && $_GET['row'] === 'prob_input_container') {
             <button type="button" class="btn btn-grad mt-auto del-prob-row-btn"><i class="bi bi-dash-circle"></i></button>
         </div>
     </div>
-<?php
+    <?php
 }
 
 if (isset($_GET['getprob']) && $_GET['getprob'] === 'true') {
@@ -159,9 +159,64 @@ if (isset($_GET['getprob']) && $_GET['getprob'] === 'true') {
         http_response_code(400);
         echo $details['error'];
         exit();
-    } else{
+    } else {
         http_response_code(200);
         echo json_encode($details);
         exit();
     }
+}
+
+if (isset($_GET['append']) && $_GET['append'] === 'branches') {
+    $sql = "SELECT * FROM branches;";
+    $res = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($res) > 0) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            $id = $row['id'];
+            $name = $row['name'];
+            $loc = $row['location'];
+            ?>
+            <tr class="text-center">
+                <td>
+                    <input type="checkbox" name="branch[]" value="<?= htmlspecialchars($id) ?>" class="form-check-input">
+                </td>
+                <td><?= htmlspecialchars($name) ?></td>
+                <td><?= htmlspecialchars($loc) ?></td>
+                <td class="p-0"><button type="button" class="btn m-0 w-100 py-2 h-100 rounded-0 btn-sidebar branch-edit"
+                        data-branch="<?= htmlspecialchars($id) ?>">Edit</button></td>
+            </tr>
+            <?php
+
+        }
+        ?>
+        <tr>
+            <td colspan="4" class="p-0">
+                <div class="row p-0 m-0">
+                    <button type="button" class="col btn w-100 py-2 rounded-0 btn-sidebar" id="branch_addbtn">Add More</button>
+                    <button type="button" id="branch_delbtn" class="col btn w-100 py-2 rounded-0 btn-sidebar">Delete
+                        Selected</button>
+                </div>
+            </td>
+        </tr>
+        <?php
+    }
+}
+
+if (isset($_GET['row']) && $_GET['row'] === 'branch_add_container') {
+    $id = uniqid();
+    ?>
+    <div class="row mb-2">
+        <div class="col-6">
+            <label for="branchname_<?= $id ?>" class="form-label fw-light fs-5">Branch Name:</label>
+            <input type="text" id="branchname_<?= $id ?>" name="branch[]" class="form-control" autocomplete="one-time-code">
+        </div>
+        <div class="col-5">
+            <label for="branchloc_<?= $id ?>" class="form-label fw-light fs-5">Location:</label>
+            <input type="text" id="branchloc_<?= $id ?>" name="location[]" class="form-control" autocomplete="one-time-code">
+        </div>
+        <div class="col-1 d-flex">
+            <button type="button" class="btn btn-grad mt-auto edit-prob-row-btn"><i class="bi bi-dash-circle"></i></button>
+        </div>
+    </div>
+    <?php
 }
