@@ -567,6 +567,15 @@ require("startsession.php");
                     $('#prob_add_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         })
+
+        $('#prob_add_form').on('click', '.prob-edit', function(){
+            let prob = $(this).data('prob');
+
+            $.get(dataurl, {getprob: true, id: prob})
+            .done(async function(d){
+                
+            })
+        });
     </script>
 </body>
 

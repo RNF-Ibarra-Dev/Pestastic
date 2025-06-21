@@ -135,12 +135,24 @@ if (isset($_GET['row']) && $_GET['row'] === 'prob_input_container') {
     ?>
     <div class="row mb-2">
         <div class="col-8">
-            <label for="prob_name-<?=$id?>" class="form-label fw-light fs-5">Pest Problem:</label>
-            <input type="text" id="prob_name-<?=$id?>" name="prob[]" class="form-control" autocomplete="one-time-code">
+            <label for="prob_name-<?= $id ?>" class="form-label fw-light fs-5">Pest Problem:</label>
+            <input type="text" id="prob_name-<?= $id ?>" name="prob[]" class="form-control" autocomplete="one-time-code">
         </div>
         <div class="col-auto d-flex">
             <button type="button" class="btn btn-grad mt-auto del-prob-row-btn"><i class="bi bi-dash-circle"></i></button>
         </div>
     </div>
     <?php
+}
+
+if (isset($_GET['getprob']) && $_GET['getprob'] === 'true') {
+    $id = $_GET['id'];
+
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo "Invalid ID.";
+        exit();
+    }
+
+    
 }
