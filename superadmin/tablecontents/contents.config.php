@@ -152,11 +152,11 @@ if (isset($_POST['addProb']) && $_POST['addProb'] === 'true') {
     $add = add_problem($conn, $prob);
     if (isset($add['error'])) {
         http_response_code(400);
-        echo $delete['error'] . ' at line ' . $add['line'] . ' at file ' . $add['file'];
+        echo $add['error'] . ' at line ' . $add['line'] . ' at file ' . $add['file'];
         exit();
     } elseif ($add) {
         http_response_code(200);
-        echo json_encode(['success' => "Treatment/s Deleted"]);
+        echo json_encode(['success' => "Pest Problems Added."]);
         exit();
     } else {
         http_response_code(400);

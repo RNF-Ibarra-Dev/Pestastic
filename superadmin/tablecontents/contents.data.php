@@ -93,7 +93,7 @@ if (isset($_GET['trt_details'])) {
 
 
 if (isset($_GET['append']) && $_GET['append'] === 'problems') {
-    $sql = "SELECT * FROM pest_problems;";
+    $sql = "SELECT * FROM pest_problems ORDER BY id ASC;";
     $res = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($res) > 0) {

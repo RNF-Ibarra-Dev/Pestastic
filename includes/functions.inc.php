@@ -1878,7 +1878,7 @@ function add_problem($conn, $prob)
             throw new Exception('stmt failed.');
         }
         for ($i = 0; count($prob) > $i; $i++) {
-            mysqli_stmt_bind_param($stmt, 'i', $prob[$i]);
+            mysqli_stmt_bind_param($stmt, 's', $prob[$i]);
             mysqli_stmt_execute($stmt);
             if (!mysqli_stmt_affected_rows($stmt) > 0) {
                 throw new Exception("Error. Failed to delete id: $prob[$i]");
@@ -1886,6 +1886,7 @@ function add_problem($conn, $prob)
         }
 
         mysqli_commit($conn);
+        return true;
     } catch (Exception $e) {
         mysqli_rollback($conn);
         return [
