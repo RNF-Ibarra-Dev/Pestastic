@@ -90,3 +90,57 @@ if (isset($_GET['trt_details'])) {
         exit();
     }
 }
+
+
+if (isset($_GET['append']) && $_GET['append'] === 'problems') {
+    $sql = "SELECT * FROM pest_problems;";
+    $res = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($res) > 0) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            $id = $row['id'];
+            $prob = $row['problems'];
+            ?>
+            <tr class="text-center">
+                <td>
+                    <input type="checkbox" name="prob_chk[]" value="<?= htmlspecialchars($id) ?>" class="form-check-input">
+                </td>
+                <td><?= htmlspecialchars($prob) ?></td>
+                <td class="p-0"><button type="button" class="btn m-0 w-100 py-2 h-100 rounded-0 btn-sidebar prob-edit"
+                        data-prob="<?= htmlspecialchars($id) ?>">Edit</button></td>
+            </tr>
+            <?php
+        }
+        ?>
+        <tr>
+            <td colspan="3" class="p-0">
+                <div class="row p-0 m-0">
+                    <button type="button" class="col btn w-100 py-2 rounded-0 btn-sidebar" id="add_prob">Add More</button>
+                    <button type="button" id="delete_prob" class="col btn w-100 py-2 rounded-0 btn-sidebar">Delete
+                        Selected</button>
+                </div>
+            </td>
+        </tr>
+        <?php
+
+    } else {
+        ?>
+        <td colspan="3" class="text-center">No Pest Problem Detected.</td>
+        <?php
+    }
+}
+
+if (isset($_GET['row']) && $_GET['row'] === 'prob_input_container') {
+    $id = uniqid();
+    ?>
+    <div class="row mb-2">
+        <div class="col-8">
+            <label for="prob_name-<?=$id?>" class="form-label fw-light fs-5">Pest Problem:</label>
+            <input type="text" id="prob_name-<?=$id?>" name="prob[]" class="form-control" autocomplete="one-time-code">
+        </div>
+        <div class="col-auto d-flex">
+            <button type="button" class="btn btn-grad mt-auto del-prob-row-btn"><i class="bi bi-dash-circle"></i></button>
+        </div>
+    </div>
+    <?php
+}

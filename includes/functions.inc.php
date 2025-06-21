@@ -1866,3 +1866,32 @@ function delete_treatment($conn, $ids)
         ];
     }
 }
+
+function add_problem($conn, $prob)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "INSERT INTO pest_problems (problems) VALUES (?);";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception('stmt failed.');
+        }
+        for ($i = 0; count($prob) > $i; $i++) {
+            mysqli_stmt_bind_param($stmt, 'i', $prob[$i]);
+            mysqli_stmt_execute($stmt);
+            if (!mysqli_stmt_affected_rows($stmt) > 0) {
+                throw new Exception("Error. Failed to delete id: $prob[$i]");
+            }
+        }
+
+        mysqli_commit($conn);
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ];
+    }
+}

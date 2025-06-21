@@ -105,7 +105,7 @@ if (isset($_POST['edit']) && $_POST['edit'] === 'true') {
     }
 }
 
-if(isset($_POST['delete']) && $_POST['delete'] === 'true'){
+if (isset($_POST['delete']) && $_POST['delete'] === 'true') {
     $ids = $_POST['trt_chk'] ?? [];
     $pwd = $_POST['pwd'];
 
@@ -129,4 +129,39 @@ if(isset($_POST['delete']) && $_POST['delete'] === 'true'){
         echo json_encode(['error' => 'Unknown Error Occured.' . ' ' . $delete]);
         exit();
     }
+}
+
+if (isset($_POST['addProb']) && $_POST['addProb'] === 'true') {
+    $prob = $_POST['prob'] ?? [];
+    $pwd = $_POST['pwd'];
+
+    for ($i = 0; $i < count($prob); $i++) {
+        if (!preg_match("/^[a-zA-Z\s'-]*$/", $prob[$i])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid Treatment Name ' . $prob[$i]]);
+            exit();
+        }
+    }
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid Password.']);
+        exit();
+    }
+
+    $add = add_problem($conn, $prob);
+    if (isset($add['error'])) {
+        http_response_code(400);
+        echo $delete['error'] . ' at line ' . $add['line'] . ' at file ' . $add['file'];
+        exit();
+    } elseif ($add) {
+        http_response_code(200);
+        echo json_encode(['success' => "Treatment/s Deleted"]);
+        exit();
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Unknown Error Occured.' . ' ' . $add]);
+        exit();
+    }
+
 }

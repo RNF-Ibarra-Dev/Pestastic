@@ -23,10 +23,10 @@ require("startsession.php");
             <!-- navbar -->
             <?php include('navbar.php'); ?>
             <!-- content -->
-            <div class="container-fluid h-75 justify-content-center d-flex flex-column">
+            <div class="container-fluid h-75 d-flex flex-column mt-3 px-5">
                 <h2 class="fw-bold text-center">Manage Contents</h2>
-                <div class="container bg-light bg-opacity-25 rounded border border-light py-4 px-3">
-                    <p class="fw-medium fs-5 m-0">Treatments</p>
+                <div class="container bg-light bg-opacity-25 rounded border border-light py-4 px-3  ">
+                    <p class="fw-medium fs-4 m-0">Treatments</p>
                     <hr class="mt-1 mb-2 opacity-50">
                     <div class="table-responsive justify-content-center">
                         <form id="trt_del_form">
@@ -50,11 +50,27 @@ require("startsession.php");
                         </p>
                     </div>
 
-                    <p class="fw-medium fs-5 m-0">Problems</p>
+                    <p class="fw-medium fs-4 m-0">Problems</p>
                     <hr class="mt-1 mb-2 opacity-50">
-                    <form action="" id="problemform">
-                        <div id="problems"></div>
-                    </form>
+                    <div class="table-responsive justify-content-center">
+                        <form action="" id="problemform">
+                            <table class="table align-middle table-bordered table-hover p-2 w-100">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th scope="col">
+                                            <input type="checkbox" id="checkallprob" class="form-check-input">
+                                        </th>
+                                        <th scope="col">Pest Problem</th>
+                                        <th scope="col"><i class="bi bi-pencil-square"></i></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="problems"></tbody>
+                            </table>
+                        </form>
+                        <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                            id="prob_table_alert">
+                        </p>
+                    </div>
 
                     <p class="fw-medium fs-5 m-0">Branches</p>
                     <hr class="mt-1 mb-2 opacity-50">
@@ -62,9 +78,15 @@ require("startsession.php");
                         <div id="branches"></div>
                     </form>
 
+                    <p class="fw-medium fs-5 m-0">Packages</p>
+                    <hr class="mt-1 mb-2 opacity-50">
+                    <form action="" id="branchesform">
+                        <div id="branches"></div>
+                    </form>
+
                 </div>
             </div>
-
+            <div class="container h-75"></div>
         </main>
 
         <!-- modals -->
@@ -122,7 +144,8 @@ require("startsession.php");
                             </p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-grad" data-bs-toggle="modal" data-bs-target="#trtmnt_mdl">Go Back</button>
+                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#trtmnt_mdl">Go Back</button>
                             <button type="submit" class="btn btn-grad">Add Treatment</button>
                         </div>
                     </div>
@@ -224,6 +247,130 @@ require("startsession.php");
             </div>
         </form>
 
+        <!-- problems modals -->
+        <form id="prob_add_form">
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="prob_add_modal" tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Add Pest Problem</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <div class="col-8">
+                                    <label for="prob_name" class="form-label fw-light fs-5">Pest Problem:</label>
+                                    <input type="text" id="prob_name" name="prob[]" class="form-control"
+                                        autocomplete="one-time-code">
+                                </div>
+                            </div>
+                            <div id="prob_input_container"></div>
+                            <button class="btn btn-grad py-2 mt-4" type="button" id="add_prob_row"><i
+                                    class="bi bi-plus-circle me-2"></i>Add More</button>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            <button type="button" data-bs-toggle="modal" class="btn btn-grad"
+                                data-bs-target="#conf_prob_add">Proceed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="conf_prob_add" tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Confirm Adding New Pest Problem</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <label for="approve-inputpwd" class="form-label fw-light">Enter manager
+                                    <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                <div class="col-6 mb-2">
+                                    <input type="password" name="pwd" class="form-control">
+                                </div>
+                            </div>
+                            <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                id="prob_add_alert">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#prob_add_modal">Go Back</button>
+                            <button type="submit" class="btn btn-grad">Add Treatment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <form id="prob_edit_form">
+            <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static" id="prob_edit_modal"
+                tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Add Treatment</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <label for="trtmnt_input" class="form-label fw-light fs-5">Treatment Name:</label>
+                                    <input type="text" id="trtmnt_input" name="treatment" class="form-control"
+                                        autocomplete="one-time-code">
+                                </div>
+                                <div class="col">
+                                    <label for="trt_addbranch" class="form-label fw-light fs-5">Branch:</label>
+                                    <select name="trtmnt_branch" id="trt_addbranch" class="form-select">
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            <button type="button" data-bs-toggle="modal" class="btn btn-grad"
+                                data-bs-target="#cnfrm_trtmnt">Proceed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="cnfrm_trtmnt" tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Confirm Adding New Treatment</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <label for="approve-inputpwd" class="form-label fw-light">Enter manager
+                                    <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                <div class="col-6 mb-2">
+                                    <input type="password" name="trtmnt_pwd" class="form-control">
+                                </div>
+                            </div>
+                            <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                id="trtmnt_alert">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#trtmnt_mdl">Go Back</button>
+                            <button type="submit" class="btn btn-grad">Add Treatment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
     </div>
     <?php include('footer.links.php'); ?>
     <script>
@@ -241,12 +388,14 @@ require("startsession.php");
                 })
                 .fail(function (e) {
                     console.log(e.responseText);
+                    return false;
                 })
         }
 
         $(document).ready(async function () {
             await append('treatment');
             await append('trt_addbranch');
+            await append('problems');
         });
 
         $(document).on("click", "#add_trt", function () {
@@ -340,7 +489,7 @@ require("startsession.php");
                 data: data + "&delete=true"
             })
                 .done(function (d) {
-                    console.log(d); 
+                    console.log(d);
                     append('treatment');
                     $('#del_trt').modal('hide');
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
@@ -367,6 +516,57 @@ require("startsession.php");
             let data = $("#trt_del_form").serialize() + '&' + $('#del_confirm').serialize();
             await delete_treatment(data);
         });
+
+        $(document).on('click', '#add_prob', async function () {
+            $("#prob_add_form")[0].reset();
+            $("#prob_add_modal").modal('show');
+        });
+
+        async function append_row(container) {
+            return $.get(dataurl, {
+                row: container
+            })
+                .done(function (d) {
+                    $(`#${container}`).append(d);
+                    return true;
+                })
+                .fail(function (e) {
+                    return 'Error at append_row function: ' + e.responseText;
+                    // console.log(e);
+                });
+        }
+
+        $('#prob_add_form').on('click', '#add_prob_row', async function () {
+            let appendrow = await append_row('prob_input_container');
+            if (!appendrow) {
+                console.log(appendrow);
+            }
+        });
+
+        $('#prob_input_container').on('click', '.del-prob-row-btn', function () {
+            $(this).parent().parent().remove();
+        });
+
+        $(document).on('submit', '#prob_add_form', async function (e) {
+            e.preventDefault();
+            await $.ajax({
+                method: "POST",
+                url: configurl,
+                dataType: 'json',
+                data: $(this).serialize() + "&addProb=true"
+            })
+                .done(async function (d) {
+                    let table = await append('problems');
+                    if (table) {
+                        $('#prob_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
+                        $('#conf_prob_add').modal('hide');
+                    }
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $('#prob_add_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
+                })
+        })
     </script>
 </body>
 
