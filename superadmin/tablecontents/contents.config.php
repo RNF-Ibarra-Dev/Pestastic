@@ -131,11 +131,20 @@ if (isset($_POST['delete']) && $_POST['delete'] === 'true') {
     }
 }
 
+// pest problems
+
 if (isset($_POST['addProb']) && $_POST['addProb'] === 'true') {
     $prob = $_POST['prob'] ?? [];
     $pwd = $_POST['pwd'];
 
+    if (count(array_unique($prob)) != count($prob)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Duplicate Pest Problem Names.']);
+        exit();
+    }
+
     for ($i = 0; $i < count($prob); $i++) {
+        $prob[$i] = trim($prob[$i]);
         if (!preg_match("/^[a-zA-Z\s'-]*$/", $prob[$i])) {
             http_response_code(400);
             echo json_encode(['error' => 'Invalid Treatment Name ' . $prob[$i]]);
@@ -163,5 +172,76 @@ if (isset($_POST['addProb']) && $_POST['addProb'] === 'true') {
         echo json_encode(['error' => 'Unknown Error Occured.' . ' ' . $add]);
         exit();
     }
+}
 
+if (isset($_POST['editprob']) && $_POST['editprob'] === 'true') {
+    $id = $_POST['pid'];
+    $prob = trim($_POST['prob']);
+    $pwd = $_POST['pwd'];
+
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid ID.']);
+        exit();
+    }
+
+    if (!preg_match("/^[a-zA-Z\s'-]*$/", $prob)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid Treatment Name.']);
+        exit();
+    }
+
+    if (empty($prob)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Name should not be empty.']);
+        exit();
+    }
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid Password.']);
+        exit();
+    }
+
+    $edit = edit_pprob($conn, $id, $prob);
+    if (isset($edit['error'])) {
+        http_response_code(400);
+        echo $edit['error'] . ' at line ' . $edit['line'] . ' at file ' . $edit['file'];
+        exit();
+    } elseif ($edit) {
+        http_response_code(200);
+        echo json_encode(['success' => "Pest Problem $prob Updated."]);
+        exit();
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Unknown Error Occured.']);
+        exit();
+    }
+}
+
+
+if (isset($_POST['deleteprob']) && $_POST['deleteprob'] === 'true') {
+    $prob = $_POST['prob_chk'] ?? [];
+    $pwd = $_POST['pwd'];
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => "Incorrect Password."]);
+        exit();
+    }
+
+    $delete = delete_pprob($conn, $prob);
+    if (isset($delete['error'])) {
+        http_response_code(400);
+        echo $delete['error'] . ' at line ' . $delete['line'] . ' at file ' . $delete['file'];
+        exit();
+    } elseif ($delete) {
+        http_response_code(200);
+        echo json_encode(['success' => "Pest Problem/s Deleted."]);
+        exit();
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Unknown Error Occured.' . ' ' . $delete]);
+        exit();
+    }
 }

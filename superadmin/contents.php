@@ -53,7 +53,7 @@ require("startsession.php");
                     <p class="fw-medium fs-4 m-0">Problems</p>
                     <hr class="mt-1 mb-2 opacity-50">
                     <div class="table-responsive justify-content-center">
-                        <form action="" id="problemform">
+                        <form id="problemform">
                             <table class="table align-middle table-bordered table-hover p-2 w-100">
                                 <thead>
                                     <tr class="text-center">
@@ -301,7 +301,7 @@ require("startsession.php");
                         <div class="modal-footer">
                             <button type="button" class="btn btn-grad" data-bs-toggle="modal"
                                 data-bs-target="#prob_add_modal">Go Back</button>
-                            <button type="submit" class="btn btn-grad">Add Treatment</button>
+                            <button type="submit" class="btn btn-grad">Add New Pest Problem</button>
                         </div>
                     </div>
                 </div>
@@ -309,26 +309,22 @@ require("startsession.php");
         </form>
 
         <form id="prob_edit_form">
+            <input type="hidden" name="pid" id="edit_prob_id">
             <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static" id="prob_edit_modal"
                 tabindex="0">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
-                            <h1 class="modal-title fs-5">Add Treatment</h1>
+                            <h1 class="modal-title fs-5">Update Pest Problem</h1>
                             <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
                                     class="bi bi-x text-light"></i></button>
                         </div>
                         <div class="modal-body">
                             <div class="row mb-2">
                                 <div class="col">
-                                    <label for="trtmnt_input" class="form-label fw-light fs-5">Treatment Name:</label>
-                                    <input type="text" id="trtmnt_input" name="treatment" class="form-control"
+                                    <label for="edit_prob_input" class="form-label fw-light fs-5">Pest Problem:</label>
+                                    <input type="text" id="edit_prob_input" name="prob" class="form-control"
                                         autocomplete="one-time-code">
-                                </div>
-                                <div class="col">
-                                    <label for="trt_addbranch" class="form-label fw-light fs-5">Branch:</label>
-                                    <select name="trtmnt_branch" id="trt_addbranch" class="form-select">
-                                    </select>
                                 </div>
                             </div>
 
@@ -336,16 +332,16 @@ require("startsession.php");
                         <div class="modal-footer">
                             <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
                             <button type="button" data-bs-toggle="modal" class="btn btn-grad"
-                                data-bs-target="#cnfrm_trtmnt">Proceed</button>
+                                data-bs-target="#conf_edit_prob_modal">Proceed</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="cnfrm_trtmnt" tabindex="0">
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="conf_edit_prob_modal" tabindex="0">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
-                            <h1 class="modal-title fs-5">Confirm Adding New Treatment</h1>
+                            <h1 class="modal-title fs-5">Confirm Pest Problem Modification</h1>
                             <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
                                     class="bi bi-x text-light"></i></button>
                         </div>
@@ -354,17 +350,49 @@ require("startsession.php");
                                 <label for="approve-inputpwd" class="form-label fw-light">Enter manager
                                     <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                 <div class="col-6 mb-2">
-                                    <input type="password" name="trtmnt_pwd" class="form-control">
+                                    <input type="password" name="pwd" class="form-control">
                                 </div>
                             </div>
                             <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
-                                id="trtmnt_alert">
+                                id="prob_edit_alert">
                             </p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                data-bs-target="#trtmnt_mdl">Go Back</button>
-                            <button type="submit" class="btn btn-grad">Add Treatment</button>
+                                data-bs-target="#prob_edit_modal">Go Back</button>
+                            <button type="submit" class="btn btn-grad">Update Pest Problem</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <form id="del_edit_confirm">
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="conf_del_prob_modal" tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Confirm Pest Problem Deletion</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <label for="approve-inputpwd" class="form-label fw-light">Enter manager
+                                    <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                <div class="col-6 mb-2">
+                                    <input type="password" name="pwd" class="form-control">
+                                </div>
+                                <p class="text-body-secondary text-muted">Note: Deleting record/s are irreversible. Proceed with caution.</p>
+                            </div>
+                            <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                id="prob_del_alert">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#prob_edit_modal">Go Back</button>
+                            <button type="submit" class="btn btn-grad">Update Pest Problem</button>
                         </div>
                     </div>
                 </div>
@@ -379,65 +407,65 @@ require("startsession.php");
 
         async function append(container) {
             return $.get(dataurl, {
-                append: container
-            })
-                .done(function (d) {
+                    append: container
+                })
+                .done(function(d) {
                     $(`#${container}`).empty();
                     $(`#${container}`).append(d);
                     return true;
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e.responseText);
                     return false;
                 })
         }
 
-        $(document).ready(async function () {
+        $(document).ready(async function() {
             await append('treatment');
             await append('trt_addbranch');
             await append('problems');
         });
 
-        $(document).on("click", "#add_trt", function () {
+        $(document).on("click", "#add_trt", function() {
             $('#treatment_form')[0].reset();
             $('#trtmnt_mdl').modal('show');
         })
 
-        $(document).on('submit', '#treatment_form', async function (e) {
+        $(document).on('submit', '#treatment_form', async function(e) {
             e.preventDefault();
             // console.log($(this).serialize());
             $.ajax({
-                url: configurl,
-                dataType: 'json',
-                method: "POST",
-                data: $(this).serialize() + "&add-treatment=true"
-            })
-                .done(async function (d) {
+                    url: configurl,
+                    dataType: 'json',
+                    method: "POST",
+                    data: $(this).serialize() + "&add-treatment=true"
+                })
+                .done(async function(d) {
                     console.log(d);
                     await append('treatment');
                     $('#cnfrm_trtmnt').modal('hide');
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                     console.log(e.responseJSON.error);
                     $('#trtmnt_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .always(function (a) {
+                .always(function(a) {
                     console.log(a);
                 })
         });
 
         // async function get()
 
-        $(document).on('click', '.trt-edit', async function () {
+        $(document).on('click', '.trt-edit', async function() {
             let id = $(this).data('trt');
             let branch = await append('trt_editbranch');
 
             $.get(dataurl, {
-                trt_details: id
-            })
-                .done(async function (d) {
+                    trt_details: id
+                })
+                .done(async function(d) {
                     let deets = JSON.parse(d);
                     console.log(deets);
                     // alert(deets.t_name);
@@ -448,34 +476,34 @@ require("startsession.php");
                         $('#trt_edit_modal').modal('show');
                     }
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     alert(e.responseText);
                 });
         });
 
-        $(document).on('submit', '#edit_treatment_form', async function (e) {
+        $(document).on('submit', '#edit_treatment_form', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             $.ajax({
-                method: 'POST',
-                url: configurl,
-                dataType: 'json',
-                data: $(this).serialize() + "&edit=true"
-            })
-                .done(function (d) {
+                    method: 'POST',
+                    url: configurl,
+                    dataType: 'json',
+                    data: $(this).serialize() + "&edit=true"
+                })
+                .done(function(d) {
                     // alert(d);
                     append('treatment');
                     // console.log(d);
                     $('#trt_edit_confirm').modal('hide');
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     // console.log(e);
                     $('#trtmnt_edit_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         });
 
-        $(document).on('change', '#checkallbtn', async function () {
+        $(document).on('change', '#checkallbtn', async function() {
             var checked = $(this).prop('checked');
             $('tbody#treatment input[type="checkbox"]').prop('checked', checked);
         });
@@ -483,24 +511,24 @@ require("startsession.php");
         async function delete_treatment(data) {
             console.log(data);
             return $.ajax({
-                method: "POST",
-                url: configurl,
-                dataType: 'json',
-                data: data + "&delete=true"
-            })
-                .done(function (d) {
+                    method: "POST",
+                    url: configurl,
+                    dataType: 'json',
+                    data: data + "&delete=true"
+                })
+                .done(function(d) {
                     console.log(d);
                     append('treatment');
                     $('#del_trt').modal('hide');
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                     $('#trt_del_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         }
 
-        $(document).on('click', '#delete_selected', async function () {
+        $(document).on('click', '#delete_selected', async function() {
             var form = $('#trt_del_form');
             var formdata = form.serialize();
             // console.log(formdata);
@@ -511,70 +539,153 @@ require("startsession.php");
             }
         });
 
-        $(document).on('submit', '#del_confirm', async function (e) {
+        $(document).on('submit', '#del_confirm', async function(e) {
             e.preventDefault();
             let data = $("#trt_del_form").serialize() + '&' + $('#del_confirm').serialize();
             await delete_treatment(data);
         });
 
-        $(document).on('click', '#add_prob', async function () {
+        $(document).on('click', '#add_prob', async function() {
             $("#prob_add_form")[0].reset();
             $("#prob_add_modal").modal('show');
         });
 
         async function append_row(container) {
             return $.get(dataurl, {
-                row: container
-            })
-                .done(function (d) {
+                    row: container
+                })
+                .done(function(d) {
                     $(`#${container}`).append(d);
                     return true;
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     return 'Error at append_row function: ' + e.responseText;
                     // console.log(e);
                 });
         }
 
-        $('#prob_add_form').on('click', '#add_prob_row', async function () {
+        $('#prob_add_form').on('click', '#add_prob_row', async function() {
             let appendrow = await append_row('prob_input_container');
             if (!appendrow) {
                 console.log(appendrow);
             }
         });
 
-        $('#prob_input_container').on('click', '.del-prob-row-btn', function () {
+        $('#prob_input_container').on('click', '.del-prob-row-btn', function() {
             $(this).parent().parent().remove();
         });
 
-        $(document).on('submit', '#prob_add_form', async function (e) {
+        $(document).on('submit', '#prob_add_form', async function(e) {
             e.preventDefault();
             await $.ajax({
-                method: "POST",
-                url: configurl,
-                dataType: 'json',
-                data: $(this).serialize() + "&addProb=true"
-            })
-                .done(async function (d) {
+                    method: "POST",
+                    url: configurl,
+                    dataType: 'json',
+                    data: $(this).serialize() + "&addProb=true"
+                })
+                .done(async function(d) {
                     let table = await append('problems');
                     if (table) {
                         $('#prob_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                         $('#conf_prob_add').modal('hide');
                     }
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                     $('#prob_add_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         })
 
-        $('#prob_add_form').on('click', '.prob-edit', function(){
+        $(document).on('click', 'button.prob-edit', async function() {
             let prob = $(this).data('prob');
+            $("#prob_edit_form")[0].reset();
+            // console.log(prob);
 
-            $.get(dataurl, {getprob: true, id: prob})
-            .done(async function(d){
-                
-            })
+            $.get(dataurl, {
+                    getprob: true,
+                    id: prob
+                })
+                .done(async function(d) {
+                    let dd = JSON.parse(d);
+                    // console.log(dd);
+                    $("#edit_prob_input").val(dd.problems);
+                    $("#edit_prob_id").val(dd.id);
+                    $("#prob_edit_modal").modal('show');
+                })
+                .fail(function(e) {
+                    console.log(e);
+                    alert("Error fetching pest problem details.");
+                });
+        });
+
+        $(document).on('submit', '#prob_edit_form', async function(e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            await $.ajax({
+                    method: "POST",
+                    dataType: 'json',
+                    url: configurl,
+                    data: $(this).serialize() + "&editprob=true"
+                })
+                .done(async function(d) {
+                    let table = await append('problems');
+                    if (table) {
+                        $('#prob_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
+                        $('#conf_edit_prob_modal').modal('hide');
+                    }
+                })
+                .fail(function(e) {
+                    console.log(e);
+                    let er = e.responseJSON;
+                    let err = typeof er != 'undefined' ? er.error : e.responseText;
+                    $('#prob_edit_alert').html(err).fadeIn(750).delay(5000).fadeOut(2000);
+                });
+        });
+
+        async function delete_pproblem(data) {
+            console.log(data);
+            return $.ajax({
+                    method: "POST",
+                    url: configurl,
+                    dataType: 'json',
+                    data: data + "&deleteprob=true"
+                })
+                .done(function(d) {
+                    console.log(d);
+                    append('problems');
+                    $('#conf_del_prob_modal').modal('hide');
+                    $('#prob_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
+                })
+                .fail(function(e) {
+                     console.log(e);
+                    let er = e.responseJSON;
+                    let err = typeof er != 'undefined' ? er.error : e.responseText;
+                    $('#prob_del_alert').html(err).fadeIn(750).delay(5000).fadeOut(2000);
+                })
+        }
+
+        $('#problemform').on('change','#checkallprob', function(){
+            let checked = $("#checkallprob").prop('checked');
+
+            $("tbody#problems tr td input[type='checkbox']").prop('checked', checked);
+        })
+        
+        $("#problemform").on('click', '#delete_prob_btn', function() {
+            var form = $('#problemform');
+            var formdata = form.serialize();
+            // console.log(formdata);
+            if (formdata.length == 0) {
+                alert('No checked treatment.');
+            } else {
+                $('#conf_del_prob_modal').modal('show');
+            }
+        })
+
+        $(document).on('submit', '#del_edit_confirm', async function(e) {
+            e.preventDefault();
+            console.log($(this).serialize() + "&" + $("#problemform").serialize());
+            let data = $(this).serialize() + "&" + $("#problemform").serialize();
+            await delete_pproblem(data);
         });
     </script>
 </body>

@@ -13,7 +13,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'treatment') {
             $name = $row['t_name'];
             $brnchid = $row['branch'];
             $brnch = get_branch_details($conn, $brnchid);
-            ?>
+?>
             <tr class="text-center">
                 <td>
                     <input type="checkbox" name="trt_chk[]" value="<?= htmlspecialchars($id) ?>" class="form-check-input">
@@ -23,7 +23,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'treatment') {
                 <td class="p-0"><button type="button" class="btn m-0 w-100 py-2 h-100 rounded-0 btn-sidebar trt-edit"
                         data-trt="<?= htmlspecialchars($id) ?>">Edit</button></td>
             </tr>
-            <?php
+        <?php
 
         }
         ?>
@@ -37,12 +37,12 @@ if (isset($_GET['append']) && $_GET['append'] === 'treatment') {
                 </div>
             </td>
         </tr>
-        <?php
+    <?php
 
     } else {
-        ?>
+    ?>
         <td colspan="3" class="text-center">No Treatments Detected.</td>
-        <?php
+    <?php
     }
 }
 
@@ -51,16 +51,16 @@ if (isset($_GET['append']) && ($_GET['append'] === 'trt_addbranch' || $_GET['app
     $res = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($res) > 0) {
-        ?>
+    ?>
         <option>Select Branch</option>
         <?php
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             $name = $row['name'];
             $location = $row['location'];
-            ?>
+        ?>
             <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($name . ' (' . $location . ')') ?></option>
-            <?php
+        <?php
         }
     } else {
         ?>
@@ -100,7 +100,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'problems') {
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             $prob = $row['problems'];
-            ?>
+        ?>
             <tr class="text-center">
                 <td>
                     <input type="checkbox" name="prob_chk[]" value="<?= htmlspecialchars($id) ?>" class="form-check-input">
@@ -109,24 +109,24 @@ if (isset($_GET['append']) && $_GET['append'] === 'problems') {
                 <td class="p-0"><button type="button" class="btn m-0 w-100 py-2 h-100 rounded-0 btn-sidebar prob-edit"
                         data-prob="<?= htmlspecialchars($id) ?>">Edit</button></td>
             </tr>
-            <?php
+        <?php
         }
         ?>
         <tr>
             <td colspan="3" class="p-0">
                 <div class="row p-0 m-0">
                     <button type="button" class="col btn w-100 py-2 rounded-0 btn-sidebar" id="add_prob">Add More</button>
-                    <button type="button" id="delete_prob" class="col btn w-100 py-2 rounded-0 btn-sidebar">Delete
+                    <button type="button" id="delete_prob_btn" class="col btn w-100 py-2 rounded-0 btn-sidebar">Delete
                         Selected</button>
                 </div>
             </td>
         </tr>
-        <?php
+    <?php
 
     } else {
-        ?>
+    ?>
         <td colspan="3" class="text-center">No Pest Problem Detected.</td>
-        <?php
+    <?php
     }
 }
 
@@ -142,7 +142,7 @@ if (isset($_GET['row']) && $_GET['row'] === 'prob_input_container') {
             <button type="button" class="btn btn-grad mt-auto del-prob-row-btn"><i class="bi bi-dash-circle"></i></button>
         </div>
     </div>
-    <?php
+<?php
 }
 
 if (isset($_GET['getprob']) && $_GET['getprob'] === 'true') {
@@ -154,5 +154,14 @@ if (isset($_GET['getprob']) && $_GET['getprob'] === 'true') {
         exit();
     }
 
-    
+    $details = get_pest_problem_details($conn, $id);
+    if (isset($details['error'])) {
+        http_response_code(400);
+        echo $details['error'];
+        exit();
+    } else{
+        http_response_code(200);
+        echo json_encode($details);
+        exit();
+    }
 }
