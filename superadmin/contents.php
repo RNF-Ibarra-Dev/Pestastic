@@ -72,44 +72,52 @@ require("startsession.php");
                         </p>
                     </div>
 
-                    <p class="fw-medium fs-4 m-0 text-center">Branches</p>
-                    <hr class="mt-1 mb-2 opacity-50">
-                    <form id="branchesform">
-                        <table class="table align-middle table-bordered table-hover p-2 w-100">
-                            <thead>
-                                <tr class="text-center">
-                                    <th scope="col">
-                                        <input type="checkbox" id="checkallbranch" class="form-check-input">
-                                    </th>
-                                    <th scope="col">Branch</th>
-                                    <th scope="col">Location</th>
-                                    <th scope="col"><i class="bi bi-pencil-square"></i></th>
-                                </tr>
-                            </thead>
-                            <tbody id="branches"></tbody>
-                        </table>
-                    </form>
+                    <div class="table-responsive justify-content-center">
+                        <p class="fw-medium fs-4 m-0 text-center">Branches</p>
+                        <hr class="mt-1 mb-2 opacity-50">
+                        <form id="branchesform">
+                            <table class="table align-middle table-bordered table-hover p-2 w-100">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th scope="col">
+                                            <input type="checkbox" id="checkallbranch" class="form-check-input">
+                                        </th>
+                                        <th scope="col">Branch</th>
+                                        <th scope="col">Location</th>
+                                        <th scope="col"><i class="bi bi-pencil-square"></i></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="branches"></tbody>
+                            </table>
+                        </form>
+                        <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                            id="branch_table_alert"></p>
+                    </div>
 
-                    <p class="fw-medium fs-4 m-0 text-center">Packages</p>
-                    <hr class="mt-1 mb-2 opacity-50">
-                    <form id="packagesform">
-                        <table class="table align-middle table-bordered table-hover p-2 w-100">
-                            <thead>
-                                <tr class="text-center">
-                                    <th scope="col">
-                                        <input type="checkbox" id="checkallbranch" class="form-check-input">
-                                    </th>
-                                    <th scope="col">Package</th>
-                                    <th scope="col">Session Count</th>
-                                    <th scope="col">Warranty Count</th>
-                                    <th scope="col">Treatment</th>
-                                    <th scope="col">Branch</th>
-                                    <th scope="col"><i class="bi bi-pencil-square"></i></th>
-                                </tr>
-                            <tbody id="packages"></tbody>
-                            </thead>
-                        </table>
-                    </form>
+                    <div class="table-responsive justify-content-center">
+                        <p class="fw-medium fs-4 m-0 text-center">Packages</p>
+                        <hr class="mt-1 mb-2 opacity-50">
+                        <form id="packagesform">
+                            <table class="table align-middle table-bordered table-hover p-2 w-100">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th scope="col">
+                                            <input type="checkbox" id="checkallbranch" class="form-check-input">
+                                        </th>
+                                        <th scope="col">Package</th>
+                                        <th scope="col">Session Count</th>
+                                        <th scope="col">Warranty Count</th>
+                                        <th scope="col">Treatment</th>
+                                        <th scope="col">Branch</th>
+                                        <th scope="col"><i class="bi bi-pencil-square"></i></th>
+                                    </tr>
+                                <tbody id="packages"></tbody>
+                                </thead>
+                            </table>
+                        </form>
+                        <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                            id="package_table_alert"></p>
+                    </div>
 
                 </div>
             </div>
@@ -814,7 +822,7 @@ require("startsession.php");
 
         $(document).on('submit', '#prob_edit_form', async function (e) {
             e.preventDefault();
-            console.log($(this).serialize());
+            // console.log($(this).serialize());
             await $.ajax({
                 method: "POST",
                 dataType: 'json',
@@ -894,25 +902,125 @@ require("startsession.php");
             }
         });
 
-        $("#branch_add_form").on('click', '.edit-prob-row-btn', function(){
+        $("#branch_add_form").on('click', '.edit-prob-row-btn', function () {
             $(this).parent().parent().remove();
         });
 
-        $(document).on('submit', "#branch_add_form", async function(e){
+        $(document).on('submit', "#branch_add_form", async function (e) {
             e.preventDefault();
+            console.log($(this).serialize());
             await $.ajax({
                 method: 'POST',
                 url: configurl,
                 dataType: 'json',
                 data: $(this).serialize() + "&branchadd=true"
             })
-            .done(async function(d){
-                let append = await append('branches');
-                if(append){
+                .done(async function (d) {
+                    let table = await append('branches');
+                    if (table) {
+                        $('#branch_add_conf_modal').modal('hide');
+                        $('#branch_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
+                    } else {
+                        alert("Append returned false. Please refresh browser.");
+                    }
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    let err = typeof e.responseJSON == 'undefined' ? e.responseText : e.responseJSON.error;
+                    $('#branch_add_alert').html(err).fadeIn(750).delay(5000).fadeOut(2000);
+                })
+        });
+
+        $('#branches').on('click', '.branch-edit', function () {
+            $("#branch_edit_form")[0].reset();
+            let branch = $(this).data('branch');
+
+            $.get(dataurl, { editbranch: true, id: branch })
+                .done(function (data) {
+                    let d = JSON.parse(data);
+                    console.log(d);
+                    $("#branch_edit_id_input").val(d.id);
+                    $("#br_edit_input").val(d.name);
+                    $("#br_loc_edit_input").val(d.location);
+                    $('#branch_edit_modal').modal('show');
+                })
+                .fail(function (e) {
+                    console.log(e);
+                })
+        });
+
+        $(document).on('submit', '#branch_edit_form', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            await $.ajax({
+                method: "POST",
+                url: configurl,
+                dataType: 'json',
+                data: $(this).serialize() + "&branchedit=true"
+            })
+                .done(async function (d) {
+                    let table = await append('branches');
+                    if (table) {
+                        $('#branch_edit_conf_modal').modal('hide');
+                        $('#branch_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
+                    } else {
+                        alert("Append returned false. Please refresh browser.");
+                    }
+                })
+                .fail(async function (e) {
+                    console.log(e);
+                    let err = typeof e.responseJSON == 'undefined' ? e.responseText : e.responseJSON.error;
+                    $('#branch_edit_alert').html(err).fadeIn(750).delay(5000).fadeOut(2000);
+                })
+        })
+
+        $('#branchesform').on('change', '#checkallbranch', function () {
+            let chk = $("#checkallbranch").prop('checked');
+            $("tbody#branches tr td input[type='checkbox']").prop('checked', chk);
+        });
+
+        async function branch_delete(data) {
+            return await $.ajax({
+                method: "POST",
+                url: configurl,
+                dataType: 'json',
+                data: data
+            })
+                .done(async function (d) {
+                    let table = await append('branches');
+                    if (table) {
+                        $('#branch_del_modal').modal('hide');
+                        $('#branch_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
+                        return true;
+                    } else {
+                        alert("Append returned false. Please refresh browser.");
+                        return false;
+                    }
+                })
+                .fail(async function (e) {
+                    console.log(e);
+                    let err = typeof e.responseJSON == 'undefined' ? e.responseText : e.responseJSON.error;
+                    $('#branch_del_alert').html(err).fadeIn(750).delay(5000).fadeOut(2000);
+                })
+        }
+
+        $(document).on('submit', '#branch_del_form', async function (e) {
+            e.preventDefault();
+            if ($("#branchesform").serialize().length() == 0) {
+                alert('No selected row.');
+            } else {
+                console.log($(this).serialize() + "&" + $('#branchesform').serialize());
+                let data = $(this).serialize() + "&" + $('#branchesform').serialize() + "&branchdelete=true";
+                let del = await branch_delete(data);
+
+                if (del) {
 
                 }
-            })
+            }
+
         })
+
+
     </script>
 </body>
 

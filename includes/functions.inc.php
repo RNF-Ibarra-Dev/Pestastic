@@ -1881,7 +1881,7 @@ function add_problem($conn, $prob)
             mysqli_stmt_bind_param($stmt, 's', $prob[$i]);
             mysqli_stmt_execute($stmt);
             if (!mysqli_stmt_affected_rows($stmt) > 0) {
-                throw new Exception("Error. Failed to delete id: $prob[$i]");
+                throw new Exception("Error. Failed to add $prob[$i]");
             }
         }
 
@@ -1966,6 +1966,92 @@ function delete_pprob($conn, $ids)
         }
         mysqli_commit($conn);
         return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ];
+    }
+}
+
+function add_branch($conn, $branch, $location)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "INSERT INTO branches (name, location) VALUES (?, ?);";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception('stmt failed.');
+        }
+
+        if(count($branch) != count($location)){
+            throw new Exception("Values missing. Branch count: " . count($branch) . ' | Location Count: ' . count($location));
+        }
+
+        for ($i = 0; count($branch) > $i; $i++) {
+            mysqli_stmt_bind_param($stmt, 'ss', $branch[$i], $location[$i]);
+            mysqli_stmt_execute($stmt);
+            if (!mysqli_stmt_affected_rows($stmt) > 0) {
+                throw new Exception("Error. Failed to add $branch[$i]");
+            }
+        }
+
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ];
+    }
+}
+
+function _branch_details($conn, $id)
+{
+    $sql = "SELECT * FROM pest_problems WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'stmt failed.'];
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($res) > 0) {
+        $row = mysqli_fetch_assoc($res);
+        return $row;
+    } else {
+        return ['error' => 'Pest Problem not found.'];
+    }
+}
+
+function edit_branch($conn, $id, $branch, $location)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "UPDATE branches SET name = ?, location = ? WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception('stmt failed.');
+        }
+
+        mysqli_stmt_bind_param($stmt, 'ssi', $branch, $location, $id);
+        mysqli_stmt_execute($stmt);
+
+        if (mysqli_affected_rows($conn) > 0) {
+            mysqli_commit($conn);
+            return true;
+        } else {
+            throw new Exception('Update Failed.');
+        }
     } catch (Exception $e) {
         mysqli_rollback($conn);
         return [

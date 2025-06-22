@@ -245,3 +245,114 @@ if (isset($_POST['deleteprob']) && $_POST['deleteprob'] === 'true') {
         exit();
     }
 }
+
+// branches
+
+if (isset($_POST['branchadd']) && $_POST['branchadd'] === 'true') {
+    $branch = $_POST['branch'] ?? [];
+    $location = $_POST['location'] ?? [];
+    $pwd = $_POST['pwd'];
+
+    if (count(array_unique($branch)) != count($branch)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Duplicate Branch Name.']);
+        exit();
+    }
+
+    for ($i = 0; $i < count($branch); $i++) {
+        $branch[$i] = trim($branch[$i]);
+        if (!preg_match("/^[a-zA-Z\s'-]*$/", $branch[$i])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid Branch Name ' . $branch[$i]]);
+            exit();
+        }
+    }
+
+    if (empty($branch) || empty($location)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Inputs should not be empty.']);
+        exit();
+    }
+
+    for ($i = 0; $i < count($location); $i++) {
+        $location[$i] = trim($location[$i]);
+        if (!preg_match("/^[a-zA-Z0-9.\s'-]*$/", $location[$i])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid Location Name ' . $location[$i]]);
+            exit();
+        }
+    }
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid Password.']);
+        exit();
+    }
+
+    $add = add_branch($conn, $branch, $location);
+    if (isset($add['error'])) {
+        http_response_code(400);
+        echo $add['error'] . ' at line ' . $add['line'] . ' at file ' . $add['file'];
+        exit();
+    } elseif ($add) {
+        http_response_code(200);
+        echo json_encode(['success' => "New Branch Added."]);
+        exit();
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Unknown Error Occured.' . ' ' . $add]);
+        exit();
+    }
+}
+
+if (isset($_POST['branchedit']) && $_POST['branchedit'] === 'true') {
+    $id = $_POST['id'];
+    $branch = trim($_POST['branch']);
+    $location = trim($_POST['location']);
+    $pwd = $_POST['pwd'];
+
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid ID.']);
+        exit();
+    }
+
+    if (!preg_match("/^[a-zA-Z\s'-]*$/", $branch)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid Branch Name ' . $branch]);
+        exit();
+    }
+
+    if (!preg_match("/^[a-zA-Z0-9.\s'-]*$/", $location)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid Location Name ' . $location]);
+        exit();
+    }
+
+    if (empty($branch) || empty($location)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Inputs should not be empty.']);
+        exit();
+    }
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid Password.']);
+        exit();
+    }
+
+    $edit = edit_branch($conn, $id, $branch, $location);
+    if (isset($edit['error'])) {
+        http_response_code(400);
+        echo $edit['error'] . ' at line ' . $edit['line'] . ' at file ' . $edit['file'];
+        exit();
+    } elseif ($edit) {
+        http_response_code(200);
+        echo json_encode(['success' => "Branch Updated."]);
+        exit();
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Unknown Error Occured.']);
+        exit();
+    }
+}

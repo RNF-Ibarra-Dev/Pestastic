@@ -212,11 +212,33 @@ if (isset($_GET['row']) && $_GET['row'] === 'branch_add_container') {
         </div>
         <div class="col-5">
             <label for="branchloc_<?= $id ?>" class="form-label fw-light fs-5">Location:</label>
-            <input type="text" id="branchloc_<?= $id ?>" name="location[]" class="form-control" autocomplete="one-time-code">
+            <input type="text" id="branchloc_<?= $id ?>" name="location[]" class="form-control"
+                autocomplete="one-time-code">
         </div>
         <div class="col-1 d-flex">
             <button type="button" class="btn btn-grad mt-auto edit-prob-row-btn"><i class="bi bi-dash-circle"></i></button>
         </div>
     </div>
     <?php
+}
+
+if (isset($_GET['editbranch']) && $_GET['editbranch'] === 'true') {
+    $id = $_GET['id'];
+
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo "Invalid ID.";
+        exit();
+    }
+
+    $details = get_branch_details($conn, $id);
+    if (is_string($details)) {
+        http_response_code(400);
+        echo $details;
+        exit();
+    } else {
+        http_response_code(200);
+        echo json_encode($details);
+        exit();
+    }
 }
