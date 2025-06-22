@@ -600,6 +600,205 @@ require("startsession.php");
             </div>
         </form>
 
+        <!-- packages modals -->
+        <form id="package_add_form">
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="package_add_modal" tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Add New Package</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <label for="package_name" class="form-label fw-light fs-5">Package Name:</label>
+                                    <input type="text" id="package_name" name="name[]" class="form-control"
+                                        autocomplete="one-time-code">
+                                </div>
+                                <div class="col-3">
+                                    <label for="session" class="form-label fw-light fs-5">Session Count:</label>
+                                    <input type="number" id="session" name="session[]" class="form-control"
+                                        autocomplete="one-time-code">
+                                </div>
+                                <div class="col-3">
+                                    <label for="warranty" class="form-label fw-light fs-5">Warranty Count:</label>
+                                    <input type="number" id="warranty" name="warranty[]" class="form-control"
+                                        autocomplete="one-time-code">
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <label for="add_package_branch" class="form-label fw-light fs-5">Branch:</label>
+                                    <select name="branch[]" id="add_package_branch" class="form-select">
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label for="add_package_trt" class="form-label fw-light fs-5">Package
+                                        Treatment:</label>
+                                    <select name="treatment[]" id="add_package_trt" class="form-select">
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="package_add_container"></div>
+                            <button class="btn btn-grad py-2 mt-4" type="button" id="package_add_row"><i
+                                    class="bi bi-plus-circle me-2"></i>Add More</button>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            <button type="button" data-bs-toggle="modal" class="btn btn-grad"
+                                data-bs-target="#package_add_conf_modal">Proceed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="package_add_conf_modal"
+                tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">New Package Confirmation</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <label for="approve-inputpwd" class="form-label fw-light">Enter manager
+                                    <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                <div class="col-6 mb-2">
+                                    <input type="password" name="pwd" class="form-control">
+                                </div>
+                            </div>
+                            <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                id="package_add_alert">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#package_add_modal">Go Back</button>
+                            <button type="submit" class="btn btn-grad">Add New Package</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <form id="package_edit_form">
+            <input type="hidden" name="id" id="package_edit_id_input">
+            <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static" id="package_edit_modal"
+                tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Update Package Information</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <label for="package_name" class="form-label fw-light fs-5">Package Name:</label>
+                                    <input type="text" id="package_name" name="name[]" class="form-control"
+                                        autocomplete="one-time-code">
+                                </div>
+                                <div class="col-3">
+                                    <label for="session" class="form-label fw-light fs-5">Session Count:</label>
+                                    <input type="number" id="session" name="session[]" class="form-control"
+                                        autocomplete="one-time-code">
+                                </div>
+                                <div class="col-3">
+                                    <label for="warranty" class="form-label fw-light fs-5">Warranty Count:</label>
+                                    <input type="number" id="warranty" name="warranty[]" class="form-control"
+                                        autocomplete="one-time-code">
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <label for="add_package_branch" class="form-label fw-light fs-5">Branch:</label>
+                                    <select name="branch[]" id="add_package_branch" class="form-select">
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label for="add_package_trt" class="form-label fw-light fs-5">Package
+                                        Treatment:</label>
+                                    <select name="treatment[]" id="add_package_trt" class="form-select">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            <button type="button" data-bs-toggle="modal" class="btn btn-grad"
+                                data-bs-target="#package_edit_conf_modal">Proceed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="package_edit_conf_modal"
+                tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Update Branch Confirmation</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <label for="approve-inputpwd" class="form-label fw-light">Enter manager
+                                    <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                <div class="col-6 mb-2">
+                                    <input type="password" name="pwd" class="form-control">
+                                </div>
+                            </div>
+                            <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                id="package_edit_alert">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#package_edit_modal">Go Back</button>
+                            <button type="submit" class="btn btn-grad">Update Package</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <form id="branch_del_form">
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="branch_del_modal" tabindex="0">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Confirm Branch Deletion</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <label for="approve-inputpwd" class="form-label fw-light">Enter manager
+                                    <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                <div class="col-6 mb-2">
+                                    <input type="password" name="pwd" class="form-control">
+                                </div>
+                                <p class="text-body-secondary text-muted">Note: Deleting record/s are irreversible.
+                                    Proceed with caution.</p>
+                            </div>
+                            <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                id="branch_del_alert">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-grad">Delete Branch</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
     </div>
     <?php include('footer.links.php'); ?>
     <script>
@@ -626,6 +825,7 @@ require("startsession.php");
             await append('trt_addbranch');
             await append('problems');
             await append('branches');
+            await append('packages');
         });
 
         $(document).on("click", "#add_trt", function () {
@@ -1004,22 +1204,77 @@ require("startsession.php");
                 })
         }
 
-        $(document).on('submit', '#branch_del_form', async function (e) {
-            e.preventDefault();
-            if ($("#branchesform").serialize().length() == 0) {
+        $(document).on('click', '#branch_delbtn', async function () {
+            let form = $("#branchesform").serialize();
+            if (form.length === 0) {
                 alert('No selected row.');
             } else {
-                console.log($(this).serialize() + "&" + $('#branchesform').serialize());
-                let data = $(this).serialize() + "&" + $('#branchesform').serialize() + "&branchdelete=true";
-                let del = await branch_delete(data);
-
-                if (del) {
-
-                }
+                $("#branch_del_modal").modal('show');
             }
+        });
 
+        $(document).on('submit', '#branch_del_form', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize() + "&" + $('#branchesform').serialize());
+            let data = $(this).serialize() + "&" + $('#branchesform').serialize() + "&branchdelete=true";
+            await branch_delete(data);
+        });
+
+        $(document).on('click', '#package_addbtn', async function () {
+            $("#package_add_form")[0].reset();
+
+            let padd = Promise.all([
+                await append('add_package_trt'),
+                await append('add_package_branch')
+            ]);
+
+            if (padd) {
+                $("#package_add_modal").modal('show');
+            } else {
+                alert('Error fetching select information.');
+            }
+        });
+
+        $("#package_add_form").on('click', '#package_add_row', function () {
+            $.get(dataurl, { addpackagerow: true })
+                .done(function (d) {
+                    $("#package_add_container").append(d);
+                })
+                .fail(function (e) {
+                    alert(e);
+                })
+        });
+
+        $('#package_add_container').on('click', '.delete-package-row', function () {
+            $(this).parent().parent().remove();
+        });
+
+        $('body').on('submit', '#package_add_form', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            await $.ajax({
+                method: "POST",
+                url: configurl,
+                dataType: 'json',
+                data: $(this).serialize() + "&addpackage=true"
+            })
+                .done(async function (d) {
+                    let table = await append('packages');
+                    if (table) {
+                        $('#package_add_conf_modal').modal('hide');
+                        $('#package_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
+                        return true;
+                    } else {
+                        alert("Append returned false. Please refresh browser.");
+                        return false;
+                    }
+                })
+                .fail(async function (e) {
+                    console.log(e);
+                    let err = typeof e.responseJSON == 'undefined' ? e.responseText : e.responseJSON.error;
+                    $('#package_add_alert').html(err).fadeIn(750).delay(5000).fadeOut(2000);
+                })
         })
-
 
     </script>
 </body>

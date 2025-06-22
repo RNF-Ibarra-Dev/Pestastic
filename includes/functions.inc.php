@@ -1987,7 +1987,7 @@ function add_branch($conn, $branch, $location)
             throw new Exception('stmt failed.');
         }
 
-        if(count($branch) != count($location)){
+        if (count($branch) != count($location)) {
             throw new Exception("Values missing. Branch count: " . count($branch) . ' | Location Count: ' . count($location));
         }
 
@@ -2052,6 +2052,75 @@ function edit_branch($conn, $id, $branch, $location)
         } else {
             throw new Exception('Update Failed.');
         }
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ];
+    }
+}
+
+
+function delete_branch($conn, $ids)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "DELETE FROM branches WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception('stmt failed.');
+        }
+        for ($i = 0; count($ids) > $i; $i++) {
+            mysqli_stmt_bind_param($stmt, 'i', $ids[$i]);
+            mysqli_stmt_execute($stmt);
+            if (!mysqli_stmt_affected_rows($stmt) > 0) {
+                throw new Exception("Error. Failed to delete id: $ids[$i]");
+            }
+        }
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ];
+    }
+}
+
+function add_package($conn, $name, $session, $warranty, $branch, $treatment)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "INSERT INTO packages (name, session_count, year_warranty, treatment, branch) VALUES (?, ?, ?, ?, ?);";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("stmt failed.");
+        }
+
+        if (
+            count($name) !== count($session) ||
+            count($session) !== count($warranty) ||
+            count($warranty) !== count($branch) ||
+            count($branch) !== count($treatment)
+        ) {
+            throw new Exception("Error. Values missing.");
+        }
+
+        for ($i = 0; $i < count($name); $i++) {
+            mysqli_stmt_bind_param($stmt, 'siiii', $name[$i], $session[$i], $warranty[$i], $treatment[$i], $branch[$i]);
+            mysqli_stmt_execute($stmt);
+            if (!mysqli_stmt_affected_rows($stmt) > 0) {
+                throw new Exception("Error. Failed to add $name[$i]");
+            }
+        }
+        mysqli_commit($conn);
+        return true;
     } catch (Exception $e) {
         mysqli_rollback($conn);
         return [

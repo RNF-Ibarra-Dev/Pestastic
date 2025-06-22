@@ -187,7 +187,7 @@ if (isset($_POST['editprob']) && $_POST['editprob'] === 'true') {
 
     if (!preg_match("/^[a-zA-Z\s'-]*$/", $prob)) {
         http_response_code(400);
-        echo json_encode(['error' => 'Invalid Treatment Name.']);
+        echo json_encode(['error' => 'Invalid Pest Problem Name.']);
         exit();
     }
 
@@ -237,7 +237,8 @@ if (isset($_POST['deleteprob']) && $_POST['deleteprob'] === 'true') {
         exit();
     } elseif ($delete) {
         http_response_code(200);
-        echo json_encode(['success' => "Pest Problem/s Deleted."]);
+        $pprob = count($prob) == 1 ? "pest problem" : "pest problems";
+        echo json_encode(['success' => "Selected $pprob Deleted."]);
         exit();
     } else {
         http_response_code(400);
@@ -353,6 +354,112 @@ if (isset($_POST['branchedit']) && $_POST['branchedit'] === 'true') {
     } else {
         http_response_code(400);
         echo json_encode(['error' => 'Unknown Error Occured.']);
+        exit();
+    }
+}
+
+if (isset($_POST['branchdelete']) && $_POST['branchdelete'] === 'true') {
+    $id = $_POST['branch'] ?? [];
+    $pwd = $_POST['pwd'];
+
+    for ($i = 0; $i < count($id); $i++) {
+        if (!is_numeric($id[$i])) {
+            http_response_code(400);
+            echo json_encode(['error' => "Invalid ID $id."]);
+            exit();
+        }
+    }
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => "Incorrect Password."]);
+        exit();
+    }
+
+    $delete = delete_branch($conn, $id);
+    if (isset($delete['error'])) {
+        http_response_code(400);
+        echo $delete['error'] . ' at line ' . $delete['line'] . ' at file ' . $delete['file'];
+        exit();
+    } elseif ($delete) {
+        http_response_code(200);
+        $branch = count($id) == 1 ? "branch" : "branches";
+        echo json_encode(['success' => "Selected $branch Deleted."]);
+        exit();
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Unknown Error Occured.' . ' ' . $delete]);
+        exit();
+    }
+}
+
+if (isset($_POST['addpackage']) && $_POST['addpackage'] === 'true') {
+    $name = $_POST['name'] ?? [];
+    $session = $_POST['session'] ?? [];
+    $warranty = $_POST['warranty'] ?? [];
+    $branch = $_POST['branch'] ?? [];
+    $treatment = $_POST['treatment'] ?? [];
+    $pwd = $_POST['pwd'];
+
+    // echo var_dump($name);
+    // exit;
+
+    for ($i = 0; $i < count($session); $i++) {
+        if (empty($name[$i]) || empty($session[$i]) || empty($warranty[$i]) || empty($branch[$i]) || empty($treatment[$i])) {
+            http_response_code(400);
+            echo json_encode(['error' => "Fields should not be empty."]);
+            exit();
+        }
+        if (!is_numeric($session[$i])) {
+            http_response_code(400);
+            echo json_encode(['error' => "Invalid session $session[$i]."]);
+            exit();
+        }
+        if (!is_numeric($warranty[$i])) {
+            http_response_code(400);
+            echo json_encode(['error' => "Invalid warranty $warranty[$i]."]);
+            exit();
+        }
+        if (!is_numeric($treatment[$i])) {
+            http_response_code(400);
+            echo json_encode(['error' => "Invalid treatment ID $treatment[$i]."]);
+            exit();
+        }
+        if (!is_numeric($branch[$i])) {
+            http_response_code(400);
+            echo json_encode(['error' => "Invalid branch ID $branch[$i]."]);
+            exit();
+        }
+    }
+
+    for ($i = 0; $i < count($name); $i++) {
+        $name[$i] = trim($name[$i]);
+        if (!preg_match("/^[a-zA-Z0-9\s'-]*$/", $name[$i])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid Package Name ' . $name[$i]]);
+            exit();
+        }
+    }
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid Password.']);
+        exit();
+    }
+
+    $add = add_package($conn, $name, $session, $warranty, $branch, $treatment);
+    if (isset($add['error'])) {
+        http_response_code(400);
+        echo $add['error'] . ' at line ' . $add['line'] . ' at file ' . $add['file'];
+        exit();
+    } elseif ($add) {
+        http_response_code(200);
+        $package = count($name) == 1 ? 'Package' : 'Packages';
+        echo json_encode(['success' => "New $package Added."]);
+        exit();
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Unknown Error Occured.' . ' ' . $add]);
         exit();
     }
 }
