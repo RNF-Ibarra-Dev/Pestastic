@@ -621,7 +621,7 @@ require("startsession.php");
                                     <label for="session" class="form-label fw-light fs-5">Session Count:</label>
                                     <div class="d-flex align-items-center">
                                         <input type="number" id="session" name="session[]" class="w-25 form-control"
-                                        autocomplete="one-time-code">
+                                            autocomplete="one-time-code">
                                         <p class="ms-3 mb-0">Session/s</p>
                                     </div>
                                 </div>
@@ -629,7 +629,7 @@ require("startsession.php");
                                     <label for="warranty" class="form-label fw-light fs-5">Warranty Count:</label>
                                     <div class="d-flex align-items-center">
                                         <input type="number" id="warranty" name="warranty[]" class="w-25 form-control"
-                                        autocomplete="one-time-code">
+                                            autocomplete="one-time-code">
                                         <p class="ms-3 mb-0">Year/s</p>
                                     </div>
                                 </div>
@@ -779,12 +779,12 @@ require("startsession.php");
             </div>
         </form>
 
-        <form id="branch_del_form">
-            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="branch_del_modal" tabindex="0">
+        <form id="package_del_form">
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="package_del_modal" tabindex="0">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
-                            <h1 class="modal-title fs-5">Confirm Branch Deletion</h1>
+                            <h1 class="modal-title fs-5">Confirm Package Deletion</h1>
                             <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
                                     class="bi bi-x text-light"></i></button>
                         </div>
@@ -799,12 +799,12 @@ require("startsession.php");
                                     Proceed with caution.</p>
                             </div>
                             <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
-                                id="branch_del_alert">
+                                id="package_del_alert">
                             </p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-grad">Delete Branch</button>
+                            <button type="submit" class="btn btn-grad">Delete Package</button>
                         </div>
                     </div>
                 </div>
@@ -1321,39 +1321,79 @@ require("startsession.php");
             $("#package_edit_modal").modal('show');
         });
 
-        $('body').on('submit', '#package_edit_form', async function(e){
+        $('body').on('submit', '#package_edit_form', async function(e) {
             e.preventDefault();
             // console.log($(this).serialize());
 
             await $.ajax({
-                method: "POST",
-                url: configurl,
-                dataType: 'json',
-                data: $(this).serialize() + "&packageedit=true"
-            })
-            .done(async function(d){
-                let table = await append('packages');
-                if(table){
-                    $("#package_table_alert").html(d.success).fadeIn(750).delay(1750).fadeOut(1000);
-                    $("#package_edit_conf_modal").modal('hide');
-                }else{
-                    alert("Failed to update table. Please refresh browser.");
-                }
-            })
-            .fail(function(e){
-                console.log(e);
-                let err = typeof e.responseJSON === 'undefined' ? e.responseText : e.responseJSON.error;
-                $("#package_edit_alert").html(err).fadeIn(750).delay(2000).fadeOut(1000);
-            })
+                    method: "POST",
+                    url: configurl,
+                    dataType: 'json',
+                    data: $(this).serialize() + "&packageedit=true"
+                })
+                .done(async function(d) {
+                    let table = await append('packages');
+                    if (table) {
+                        $("#package_table_alert").html(d.success).fadeIn(750).delay(1750).fadeOut(1000);
+                        $("#package_edit_conf_modal").modal('hide');
+                    } else {
+                        alert("Failed to update table. Please refresh browser.");
+                    }
+                })
+                .fail(function(e) {
+                    console.log(e);
+                    let err = typeof e.responseJSON === 'undefined' ? e.responseText : e.responseJSON.error;
+                    $("#package_edit_alert").html(err).fadeIn(750).delay(2000).fadeOut(1000);
+                })
         });
 
-        $(document).on('click', '#checkallpackage', function(){
+        $(document).on('click', '#checkallpackage', function() {
             let checked = $(this).prop('checked');
 
-            $('#packages tr td input[type="checkbox"]').prop('checked', checked);   
+            $('#packages tr td input[type="checkbox"]').prop('checked', checked);
         });
 
-        
+        async function delete_package(data) {
+            return await $.ajax({
+                    method: "POST",
+                    url: configurl,
+                    dataType: 'json',
+                    data: data
+                })
+                .done(async function(d) {
+                    let table = await append('packages');
+                    if(table){
+                        $("#package_table_alert").html(d.success).fadeIn(750).delay(2000).fadeOut(1000);
+                        $("#package_del_modal").modal('hide');
+                        return true;
+                    } else{
+                        return false;
+                    }
+                })
+                .fail(function(e) {
+                    let err = typeof e.responseJSON == 'undefined' ? e.responseText : e.responseJSON.error;
+                    $("#package_del_alert").html(err).fadeIn(750).delay(2000).fadeOut(1000);
+                })
+        }
+
+        $("#packagesform").on('click', '#package_delbtn', async function() {
+            let form = $("#packagesform").serialize();
+
+            if (form.length > 0) {
+                $("#package_del_form")[0].reset();
+                $("#package_del_modal").modal('show');
+            } else {
+                alert("Select Package to Delete!");
+            }
+        });
+
+        $(document).on('submit', '#package_del_form', async function(e) {
+            e.preventDefault();
+            let checked = $("#packagesform").serialize() + "&" + $(this).serialize();
+            let data = checked + "&packagedel=true";
+            console.log(data);
+            await delete_package(data);
+        })
     </script>
 </body>
 

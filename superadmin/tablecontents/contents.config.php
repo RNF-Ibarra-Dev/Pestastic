@@ -534,3 +534,44 @@ if (isset($_POST['packageedit']) && $_POST['packageedit'] === 'true') {
         exit();
     }
 }
+
+
+if (isset($_POST['packagedel']) && $_POST['packagedel'] === 'true') {
+    $id = $_POST['package'] ?? [];
+    $pwd = $_POST['pwd'];
+
+    for ($i = 0; $i < count($id); $i++) {
+        if (!is_numeric($id[$i])) {
+            http_response_code(400);
+            echo json_encode(['error' => "Invalid ID $id."]);
+            exit();
+        }
+        if (empty($id[$i])){
+            http_response_code(400);
+            echo json_encode(['error' => "Some data are empty. Please refresh your browser."]);
+            exit();
+        }
+    }
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => "Incorrect Password."]);
+        exit();
+    }
+
+    $delete = delete_package($conn, $id);
+    if (isset($delete['error'])) {
+        http_response_code(400);
+        echo $delete['error'] . ' at line ' . $delete['line'] . ' at file ' . $delete['file'];
+        exit();
+    } elseif ($delete) {
+        http_response_code(200);
+        $package = count($id) == 1 ? "package" : "packages";
+        echo json_encode(['success' => "Selected $package Deleted."]);
+        exit();
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Unknown Error Occured.' . ' ' . $delete]);
+        exit();
+    }
+}
