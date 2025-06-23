@@ -463,3 +463,74 @@ if (isset($_POST['addpackage']) && $_POST['addpackage'] === 'true') {
         exit();
     }
 }
+
+if (isset($_POST['packageedit']) && $_POST['packageedit'] === 'true') {
+    $id = $_POST['id'];
+    $name = trim($_POST['name']);
+    $warranty = $_POST['warranty'];
+    $session = $_POST['session'];
+    $branch = $_POST['branch'];
+    $treatment = $_POST['treatment'];
+    $id = $_POST['id'];
+
+    $pwd = $_POST['pwd'];
+
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid Package ID.']);
+        exit();
+    }
+    if (!is_numeric($warranty)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid warranty count.']);
+        exit();
+    }
+    if (!is_numeric($session)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid session count.']);
+        exit();
+    }
+    if (!is_numeric($branch)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Branch ID not recognized.']);
+        exit();
+    }
+    if (!is_numeric($treatment)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Treatment ID not recognized.']);
+        exit();
+    }
+
+    if (!preg_match("/^[a-zA-Z0-9\s'-]*$/", $name)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid Package Name ' . $name]);
+        exit();
+    }
+
+    if (empty($branch) || empty($name) || empty($warranty) || empty($session) || empty($treatment)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Inputs should not be empty.']);
+        exit();
+    }
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid Password.']);
+        exit();
+    }
+
+    $edit = edit_package($conn, $id, $branch, $name, $warranty, $session, $treatment);
+    if (isset($edit['error'])) {
+        http_response_code(400);
+        echo $edit['error'] . ' at line ' . $edit['line'] . ' at file ' . $edit['file'];
+        exit();
+    } elseif ($edit) {
+        http_response_code(200);
+        echo json_encode(['success' => "Branch Updated."]);
+        exit();
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Unknown Error Occured.']);
+        exit();
+    }
+}

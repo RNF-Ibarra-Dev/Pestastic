@@ -102,7 +102,7 @@ require("startsession.php");
                                 <thead>
                                     <tr class="text-center">
                                         <th scope="col">
-                                            <input type="checkbox" id="checkallbranch" class="form-check-input">
+                                            <input type="checkbox" id="checkallpackage" class="form-check-input">
                                         </th>
                                         <th scope="col">Package</th>
                                         <th scope="col">Session Count</th>
@@ -602,7 +602,7 @@ require("startsession.php");
 
         <!-- packages modals -->
         <form id="package_add_form">
-            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="package_add_modal" tabindex="0">
+            <div class="modal-lg modal fade text-dark modal-edit" data-bs-backdrop="static" id="package_add_modal" tabindex="0">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
@@ -619,13 +619,19 @@ require("startsession.php");
                                 </div>
                                 <div class="col-3">
                                     <label for="session" class="form-label fw-light fs-5">Session Count:</label>
-                                    <input type="number" id="session" name="session[]" class="form-control"
+                                    <div class="d-flex align-items-center">
+                                        <input type="number" id="session" name="session[]" class="w-25 form-control"
                                         autocomplete="one-time-code">
+                                        <p class="ms-3 mb-0">Session/s</p>
+                                    </div>
                                 </div>
                                 <div class="col-3">
                                     <label for="warranty" class="form-label fw-light fs-5">Warranty Count:</label>
-                                    <input type="number" id="warranty" name="warranty[]" class="form-control"
+                                    <div class="d-flex align-items-center">
+                                        <input type="number" id="warranty" name="warranty[]" class="w-25 form-control"
                                         autocomplete="one-time-code">
+                                        <p class="ms-3 mb-0">Year/s</p>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -699,31 +705,37 @@ require("startsession.php");
                         <div class="modal-body">
                             <div class="row mb-2">
                                 <div class="col-6">
-                                    <label for="package_name" class="form-label fw-light fs-5">Package Name:</label>
-                                    <input type="text" id="package_name" name="name[]" class="form-control"
+                                    <label for="edit_package_name" class="form-label fw-light fs-5">Package Name:</label>
+                                    <input type="text" id="edit_package_name" name="name" class="form-control"
                                         autocomplete="one-time-code">
                                 </div>
                                 <div class="col-3">
-                                    <label for="session" class="form-label fw-light fs-5">Session Count:</label>
-                                    <input type="number" id="session" name="session[]" class="form-control"
-                                        autocomplete="one-time-code">
+                                    <label for="edit_package_session" class="form-label fw-light fs-5">Session Count:</label>
+                                    <div class="d-flex align-items-center">
+                                        <input type="number" id="edit_package_session" name="session" class="w-25 form-control"
+                                            autocomplete="one-time-code">
+                                        <p class="ms-3 mb-0">Session/s</p>
+                                    </div>
                                 </div>
                                 <div class="col-3">
-                                    <label for="warranty" class="form-label fw-light fs-5">Warranty Count:</label>
-                                    <input type="number" id="warranty" name="warranty[]" class="form-control"
-                                        autocomplete="one-time-code">
+                                    <label for="edit_package_warranty" class="form-label fw-light fs-5">Warranty Count:</label>
+                                    <div class="d-flex align-items-center">
+                                        <input type="number" id="edit_package_warranty" name="warranty" class="w-25 form-control"
+                                            autocomplete="one-time-code">
+                                        <p class="ms-3 mb-0">Year/s</p>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6">
-                                    <label for="add_package_branch" class="form-label fw-light fs-5">Branch:</label>
-                                    <select name="branch[]" id="add_package_branch" class="form-select">
+                                    <label for="edit_package_branch" class="form-label fw-light fs-5">Branch:</label>
+                                    <select name="branch" id="edit_package_branch" class="form-select">
                                     </select>
                                 </div>
                                 <div class="col-6">
-                                    <label for="add_package_trt" class="form-label fw-light fs-5">Package
+                                    <label for="edit_package_trt" class="form-label fw-light fs-5">Package
                                         Treatment:</label>
-                                    <select name="treatment[]" id="add_package_trt" class="form-select">
+                                    <select name="treatment" id="edit_package_trt" class="form-select">
                                     </select>
                                 </div>
                             </div>
@@ -741,7 +753,7 @@ require("startsession.php");
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
-                            <h1 class="modal-title fs-5">Update Branch Confirmation</h1>
+                            <h1 class="modal-title fs-5">Update Package Confirmation</h1>
                             <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
                                     class="bi bi-x text-light"></i></button>
                         </div>
@@ -807,20 +819,20 @@ require("startsession.php");
 
         async function append(container) {
             return $.get(dataurl, {
-                append: container
-            })
-                .done(function (d) {
+                    append: container
+                })
+                .done(function(d) {
                     $(`#${container}`).empty();
                     $(`#${container}`).append(d);
                     return true;
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e.responseText);
                     return false;
                 })
         }
 
-        $(document).ready(async function () {
+        $(document).ready(async function() {
             await append('treatment');
             await append('trt_addbranch');
             await append('problems');
@@ -828,46 +840,46 @@ require("startsession.php");
             await append('packages');
         });
 
-        $(document).on("click", "#add_trt", function () {
+        $(document).on("click", "#add_trt", function() {
             $('#treatment_form')[0].reset();
             $('#trtmnt_mdl').modal('show');
         })
 
-        $(document).on('submit', '#treatment_form', async function (e) {
+        $(document).on('submit', '#treatment_form', async function(e) {
             e.preventDefault();
             // console.log($(this).serialize());
             $.ajax({
-                url: configurl,
-                dataType: 'json',
-                method: "POST",
-                data: $(this).serialize() + "&add-treatment=true"
-            })
-                .done(async function (d) {
+                    url: configurl,
+                    dataType: 'json',
+                    method: "POST",
+                    data: $(this).serialize() + "&add-treatment=true"
+                })
+                .done(async function(d) {
                     console.log(d);
                     await append('treatment');
                     $('#cnfrm_trtmnt').modal('hide');
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                     console.log(e.responseJSON.error);
                     $('#trtmnt_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .always(function (a) {
+                .always(function(a) {
                     console.log(a);
                 })
         });
 
         // async function get()
 
-        $(document).on('click', '.trt-edit', async function () {
+        $(document).on('click', '.trt-edit', async function() {
             let id = $(this).data('trt');
             let branch = await append('trt_editbranch');
 
             $.get(dataurl, {
-                trt_details: id
-            })
-                .done(async function (d) {
+                    trt_details: id
+                })
+                .done(async function(d) {
                     let deets = JSON.parse(d);
                     console.log(deets);
                     // alert(deets.t_name);
@@ -878,34 +890,34 @@ require("startsession.php");
                         $('#trt_edit_modal').modal('show');
                     }
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     alert(e.responseText);
                 });
         });
 
-        $(document).on('submit', '#edit_treatment_form', async function (e) {
+        $(document).on('submit', '#edit_treatment_form', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             $.ajax({
-                method: 'POST',
-                url: configurl,
-                dataType: 'json',
-                data: $(this).serialize() + "&edit=true"
-            })
-                .done(function (d) {
+                    method: 'POST',
+                    url: configurl,
+                    dataType: 'json',
+                    data: $(this).serialize() + "&edit=true"
+                })
+                .done(function(d) {
                     // alert(d);
                     append('treatment');
                     // console.log(d);
                     $('#trt_edit_confirm').modal('hide');
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     // console.log(e);
                     $('#trtmnt_edit_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         });
 
-        $(document).on('change', '#checkallbtn', async function () {
+        $(document).on('change', '#checkallbtn', async function() {
             var checked = $(this).prop('checked');
             $('tbody#treatment input[type="checkbox"]').prop('checked', checked);
         });
@@ -913,24 +925,24 @@ require("startsession.php");
         async function delete_treatment(data) {
             console.log(data);
             return $.ajax({
-                method: "POST",
-                url: configurl,
-                dataType: 'json',
-                data: data + "&delete=true"
-            })
-                .done(function (d) {
+                    method: "POST",
+                    url: configurl,
+                    dataType: 'json',
+                    data: data + "&delete=true"
+                })
+                .done(function(d) {
                     console.log(d);
                     append('treatment');
                     $('#del_trt').modal('hide');
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                     $('#trt_del_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         }
 
-        $(document).on('click', '#delete_selected', async function () {
+        $(document).on('click', '#delete_selected', async function() {
             var form = $('#trt_del_form');
             var formdata = form.serialize();
             // console.log(formdata);
@@ -941,102 +953,102 @@ require("startsession.php");
             }
         });
 
-        $(document).on('submit', '#del_confirm', async function (e) {
+        $(document).on('submit', '#del_confirm', async function(e) {
             e.preventDefault();
             let data = $("#trt_del_form").serialize() + '&' + $('#del_confirm').serialize();
             await delete_treatment(data);
         });
 
-        $(document).on('click', '#add_prob', async function () {
+        $(document).on('click', '#add_prob', async function() {
             $("#prob_add_form")[0].reset();
             $("#prob_add_modal").modal('show');
         });
 
         async function append_row(container) {
             return $.get(dataurl, {
-                row: container
-            })
-                .done(function (d) {
+                    row: container
+                })
+                .done(function(d) {
                     $(`#${container}`).append(d);
                     return true;
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     return 'Error at append_row function: ' + e.responseText;
                     // console.log(e);
                 });
         }
 
-        $('#prob_add_form').on('click', '#add_prob_row', async function () {
+        $('#prob_add_form').on('click', '#add_prob_row', async function() {
             let appendrow = await append_row('prob_input_container');
             if (!appendrow) {
                 console.log(appendrow);
             }
         });
 
-        $('#prob_input_container').on('click', '.del-prob-row-btn', function () {
+        $('#prob_input_container').on('click', '.del-prob-row-btn', function() {
             $(this).parent().parent().remove();
         });
 
-        $(document).on('submit', '#prob_add_form', async function (e) {
+        $(document).on('submit', '#prob_add_form', async function(e) {
             e.preventDefault();
             await $.ajax({
-                method: "POST",
-                url: configurl,
-                dataType: 'json',
-                data: $(this).serialize() + "&addProb=true"
-            })
-                .done(async function (d) {
+                    method: "POST",
+                    url: configurl,
+                    dataType: 'json',
+                    data: $(this).serialize() + "&addProb=true"
+                })
+                .done(async function(d) {
                     let table = await append('problems');
                     if (table) {
                         $('#prob_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                         $('#conf_prob_add').modal('hide');
                     }
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                     $('#prob_add_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         })
 
-        $(document).on('click', 'button.prob-edit', async function () {
+        $(document).on('click', 'button.prob-edit', async function() {
             let prob = $(this).data('prob');
             $("#prob_edit_form")[0].reset();
             // console.log(prob);
 
             $.get(dataurl, {
-                getprob: true,
-                id: prob
-            })
-                .done(async function (d) {
+                    getprob: true,
+                    id: prob
+                })
+                .done(async function(d) {
                     let dd = JSON.parse(d);
                     // console.log(dd);
                     $("#edit_prob_input").val(dd.problems);
                     $("#edit_prob_id").val(dd.id);
                     $("#prob_edit_modal").modal('show');
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                     alert("Error fetching pest problem details.");
                 });
         });
 
-        $(document).on('submit', '#prob_edit_form', async function (e) {
+        $(document).on('submit', '#prob_edit_form', async function(e) {
             e.preventDefault();
             // console.log($(this).serialize());
             await $.ajax({
-                method: "POST",
-                dataType: 'json',
-                url: configurl,
-                data: $(this).serialize() + "&editprob=true"
-            })
-                .done(async function (d) {
+                    method: "POST",
+                    dataType: 'json',
+                    url: configurl,
+                    data: $(this).serialize() + "&editprob=true"
+                })
+                .done(async function(d) {
                     let table = await append('problems');
                     if (table) {
                         $('#prob_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                         $('#conf_edit_prob_modal').modal('hide');
                     }
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                     let er = e.responseJSON;
                     let err = typeof er != 'undefined' ? er.error : e.responseText;
@@ -1047,18 +1059,18 @@ require("startsession.php");
         async function delete_pproblem(data) {
             console.log(data);
             return $.ajax({
-                method: "POST",
-                url: configurl,
-                dataType: 'json',
-                data: data + "&deleteprob=true"
-            })
-                .done(async function (d) {
+                    method: "POST",
+                    url: configurl,
+                    dataType: 'json',
+                    data: data + "&deleteprob=true"
+                })
+                .done(async function(d) {
                     console.log(d);
                     append('problems');
                     $('#conf_del_prob_modal').modal('hide');
                     $('#prob_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                     let er = e.responseJSON;
                     let err = typeof er != 'undefined' ? er.error : e.responseText;
@@ -1066,13 +1078,13 @@ require("startsession.php");
                 })
         }
 
-        $('#problemform').on('change', '#checkallprob', function () {
+        $('#problemform').on('change', '#checkallprob', function() {
             let checked = $("#checkallprob").prop('checked');
 
             $("tbody#problems tr td input[type='checkbox']").prop('checked', checked);
         })
 
-        $("#problemform").on('click', '#delete_prob_btn', function () {
+        $("#problemform").on('click', '#delete_prob_btn', function() {
             var form = $('#problemform');
             var formdata = form.serialize();
             // console.log(formdata);
@@ -1083,39 +1095,39 @@ require("startsession.php");
             }
         })
 
-        $(document).on('submit', '#del_edit_confirm', async function (e) {
+        $(document).on('submit', '#del_edit_confirm', async function(e) {
             e.preventDefault();
             // console.log($(this).serialize() + "&" + $("#problemform").serialize());
             let data = $(this).serialize() + "&" + $("#problemform").serialize();
             await delete_pproblem(data);
         });
 
-        $(document).on('click', '#branch_addbtn', function () {
+        $(document).on('click', '#branch_addbtn', function() {
             $("#branch_add_form")[0].reset();
             $("#branch_add_modal").modal('show');
         });
 
-        $('#branch_add_form').on('click', '#branch_add_row', async function () {
+        $('#branch_add_form').on('click', '#branch_add_row', async function() {
             let appendrow = await append_row('branch_add_container');
             if (!appendrow) {
                 console.log(appendrow);
             }
         });
 
-        $("#branch_add_form").on('click', '.edit-prob-row-btn', function () {
+        $("#branch_add_form").on('click', '.edit-prob-row-btn', function() {
             $(this).parent().parent().remove();
         });
 
-        $(document).on('submit', "#branch_add_form", async function (e) {
+        $(document).on('submit', "#branch_add_form", async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             await $.ajax({
-                method: 'POST',
-                url: configurl,
-                dataType: 'json',
-                data: $(this).serialize() + "&branchadd=true"
-            })
-                .done(async function (d) {
+                    method: 'POST',
+                    url: configurl,
+                    dataType: 'json',
+                    data: $(this).serialize() + "&branchadd=true"
+                })
+                .done(async function(d) {
                     let table = await append('branches');
                     if (table) {
                         $('#branch_add_conf_modal').modal('hide');
@@ -1124,19 +1136,22 @@ require("startsession.php");
                         alert("Append returned false. Please refresh browser.");
                     }
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                     let err = typeof e.responseJSON == 'undefined' ? e.responseText : e.responseJSON.error;
                     $('#branch_add_alert').html(err).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         });
 
-        $('#branches').on('click', '.branch-edit', function () {
+        $('#branches').on('click', '.branch-edit', function() {
             $("#branch_edit_form")[0].reset();
             let branch = $(this).data('branch');
 
-            $.get(dataurl, { editbranch: true, id: branch })
-                .done(function (data) {
+            $.get(dataurl, {
+                    editbranch: true,
+                    id: branch
+                })
+                .done(function(data) {
                     let d = JSON.parse(data);
                     console.log(d);
                     $("#branch_edit_id_input").val(d.id);
@@ -1144,21 +1159,21 @@ require("startsession.php");
                     $("#br_loc_edit_input").val(d.location);
                     $('#branch_edit_modal').modal('show');
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                 })
         });
 
-        $(document).on('submit', '#branch_edit_form', async function (e) {
+        $(document).on('submit', '#branch_edit_form', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             await $.ajax({
-                method: "POST",
-                url: configurl,
-                dataType: 'json',
-                data: $(this).serialize() + "&branchedit=true"
-            })
-                .done(async function (d) {
+                    method: "POST",
+                    url: configurl,
+                    dataType: 'json',
+                    data: $(this).serialize() + "&branchedit=true"
+                })
+                .done(async function(d) {
                     let table = await append('branches');
                     if (table) {
                         $('#branch_edit_conf_modal').modal('hide');
@@ -1167,26 +1182,26 @@ require("startsession.php");
                         alert("Append returned false. Please refresh browser.");
                     }
                 })
-                .fail(async function (e) {
+                .fail(async function(e) {
                     console.log(e);
                     let err = typeof e.responseJSON == 'undefined' ? e.responseText : e.responseJSON.error;
                     $('#branch_edit_alert').html(err).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         })
 
-        $('#branchesform').on('change', '#checkallbranch', function () {
+        $('#branchesform').on('change', '#checkallbranch', function() {
             let chk = $("#checkallbranch").prop('checked');
             $("tbody#branches tr td input[type='checkbox']").prop('checked', chk);
         });
 
         async function branch_delete(data) {
             return await $.ajax({
-                method: "POST",
-                url: configurl,
-                dataType: 'json',
-                data: data
-            })
-                .done(async function (d) {
+                    method: "POST",
+                    url: configurl,
+                    dataType: 'json',
+                    data: data
+                })
+                .done(async function(d) {
                     let table = await append('branches');
                     if (table) {
                         $('#branch_del_modal').modal('hide');
@@ -1197,14 +1212,14 @@ require("startsession.php");
                         return false;
                     }
                 })
-                .fail(async function (e) {
+                .fail(async function(e) {
                     console.log(e);
                     let err = typeof e.responseJSON == 'undefined' ? e.responseText : e.responseJSON.error;
                     $('#branch_del_alert').html(err).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         }
 
-        $(document).on('click', '#branch_delbtn', async function () {
+        $(document).on('click', '#branch_delbtn', async function() {
             let form = $("#branchesform").serialize();
             if (form.length === 0) {
                 alert('No selected row.');
@@ -1213,14 +1228,14 @@ require("startsession.php");
             }
         });
 
-        $(document).on('submit', '#branch_del_form', async function (e) {
+        $(document).on('submit', '#branch_del_form', async function(e) {
             e.preventDefault();
             console.log($(this).serialize() + "&" + $('#branchesform').serialize());
             let data = $(this).serialize() + "&" + $('#branchesform').serialize() + "&branchdelete=true";
             await branch_delete(data);
         });
 
-        $(document).on('click', '#package_addbtn', async function () {
+        $(document).on('click', '#package_addbtn', async function() {
             $("#package_add_form")[0].reset();
 
             let padd = Promise.all([
@@ -1235,30 +1250,32 @@ require("startsession.php");
             }
         });
 
-        $("#package_add_form").on('click', '#package_add_row', function () {
-            $.get(dataurl, { addpackagerow: true })
-                .done(function (d) {
+        $("#package_add_form").on('click', '#package_add_row', function() {
+            $.get(dataurl, {
+                    addpackagerow: true
+                })
+                .done(function(d) {
                     $("#package_add_container").append(d);
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     alert(e);
                 })
         });
 
-        $('#package_add_container').on('click', '.delete-package-row', function () {
+        $('#package_add_container').on('click', '.delete-package-row', function() {
             $(this).parent().parent().remove();
         });
 
-        $('body').on('submit', '#package_add_form', async function (e) {
+        $('body').on('submit', '#package_add_form', async function(e) {
             e.preventDefault();
             console.log($(this).serialize());
             await $.ajax({
-                method: "POST",
-                url: configurl,
-                dataType: 'json',
-                data: $(this).serialize() + "&addpackage=true"
-            })
-                .done(async function (d) {
+                    method: "POST",
+                    url: configurl,
+                    dataType: 'json',
+                    data: $(this).serialize() + "&addpackage=true"
+                })
+                .done(async function(d) {
                     let table = await append('packages');
                     if (table) {
                         $('#package_add_conf_modal').modal('hide');
@@ -1269,13 +1286,74 @@ require("startsession.php");
                         return false;
                     }
                 })
-                .fail(async function (e) {
+                .fail(async function(e) {
                     console.log(e);
                     let err = typeof e.responseJSON == 'undefined' ? e.responseText : e.responseJSON.error;
                     $('#package_add_alert').html(err).fadeIn(750).delay(5000).fadeOut(2000);
                 })
-        })
+        });
 
+        $("#packages").on('click', '.package-edit', async function() {
+            $('#package_edit_form')[0].reset();
+            let id = $(this).data('package');
+            // console.log(id);
+            await append('edit_package_trt');
+            await append('edit_package_branch');
+
+            $.get(dataurl, {
+                    packagedetails: true,
+                    id: id
+                })
+                .done(async function(data) {
+                    // alert(data);
+                    let d = JSON.parse(data);
+                    // console.log(d);
+                    $("#package_edit_id_input").val(d.id);
+                    $("#edit_package_name").val(d.name);
+                    $("#edit_package_session").val(d.session_count);
+                    $("#edit_package_warranty").val(d.year_warranty);
+                    $("#edit_package_branch").val(d.branch);
+                    $("#edit_package_trt").val(d.treatment);
+                })
+                .fail(function(e) {
+                    alert(e);
+                })
+            $("#package_edit_modal").modal('show');
+        });
+
+        $('body').on('submit', '#package_edit_form', async function(e){
+            e.preventDefault();
+            // console.log($(this).serialize());
+
+            await $.ajax({
+                method: "POST",
+                url: configurl,
+                dataType: 'json',
+                data: $(this).serialize() + "&packageedit=true"
+            })
+            .done(async function(d){
+                let table = await append('packages');
+                if(table){
+                    $("#package_table_alert").html(d.success).fadeIn(750).delay(1750).fadeOut(1000);
+                    $("#package_edit_conf_modal").modal('hide');
+                }else{
+                    alert("Failed to update table. Please refresh browser.");
+                }
+            })
+            .fail(function(e){
+                console.log(e);
+                let err = typeof e.responseJSON === 'undefined' ? e.responseText : e.responseJSON.error;
+                $("#package_edit_alert").html(err).fadeIn(750).delay(2000).fadeOut(1000);
+            })
+        });
+
+        $(document).on('click', '#checkallpackage', function(){
+            let checked = $(this).prop('checked');
+
+            $('#packages tr td input[type="checkbox"]').prop('checked', checked);   
+        });
+
+        
     </script>
 </body>
 

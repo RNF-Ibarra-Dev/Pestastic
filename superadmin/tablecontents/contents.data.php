@@ -13,7 +13,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'treatment') {
             $name = $row['t_name'];
             $brnchid = $row['branch'];
             $brnch = get_branch_details($conn, $brnchid);
-            ?>
+?>
             <tr class="text-center">
                 <td>
                     <input type="checkbox" name="trt_chk[]" value="<?= htmlspecialchars($id) ?>" class="form-check-input">
@@ -23,7 +23,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'treatment') {
                 <td class="p-0"><button type="button" class="btn m-0 w-100 py-2 h-100 rounded-0 btn-sidebar trt-edit"
                         data-trt="<?= htmlspecialchars($id) ?>">Edit</button></td>
             </tr>
-            <?php
+        <?php
 
         }
         ?>
@@ -37,12 +37,12 @@ if (isset($_GET['append']) && $_GET['append'] === 'treatment') {
                 </div>
             </td>
         </tr>
-        <?php
+    <?php
 
     } else {
-        ?>
+    ?>
         <td colspan="3" class="text-center">No Treatments Detected.</td>
-        <?php
+    <?php
     }
 }
 
@@ -52,16 +52,16 @@ function branch_options($conn)
     $res = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($res) > 0) {
-        ?>
+    ?>
         <option value="">Select Branch</option>
         <?php
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             $name = $row['name'];
             $location = $row['location'];
-            ?>
+        ?>
             <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($name . ' (' . $location . ')') ?></option>
-            <?php
+        <?php
         }
     } else {
         ?>
@@ -70,7 +70,7 @@ function branch_options($conn)
     }
 }
 
-if (isset($_GET['append']) && ($_GET['append'] === 'trt_addbranch' || $_GET['append'] === 'trt_editbranch' || $_GET['append'] === 'add_package_branch')) {
+if (isset($_GET['append']) && ($_GET['append'] === 'trt_addbranch' || $_GET['append'] === 'trt_editbranch' || $_GET['append'] === 'add_package_branch' || $_GET['append'] === 'edit_package_branch')) {
     branch_options($conn);
 }
 
@@ -105,7 +105,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'problems') {
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             $prob = $row['problems'];
-            ?>
+        ?>
             <tr class="text-center">
                 <td>
                     <input type="checkbox" name="prob_chk[]" value="<?= htmlspecialchars($id) ?>" class="form-check-input">
@@ -114,7 +114,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'problems') {
                 <td class="p-0"><button type="button" class="btn m-0 w-100 py-2 h-100 rounded-0 btn-sidebar prob-edit"
                         data-prob="<?= htmlspecialchars($id) ?>">Edit</button></td>
             </tr>
-            <?php
+        <?php
         }
         ?>
         <tr>
@@ -126,12 +126,12 @@ if (isset($_GET['append']) && $_GET['append'] === 'problems') {
                 </div>
             </td>
         </tr>
-        <?php
+    <?php
 
     } else {
-        ?>
+    ?>
         <td colspan="3" class="text-center">No Pest Problem Detected.</td>
-        <?php
+    <?php
     }
 }
 
@@ -180,7 +180,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'branches') {
             $id = $row['id'];
             $name = $row['name'];
             $loc = $row['location'];
-            ?>
+    ?>
             <tr class="text-center">
                 <td>
                     <input type="checkbox" name="branch[]" value="<?= htmlspecialchars($id) ?>" class="form-check-input">
@@ -190,7 +190,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'branches') {
                 <td class="p-0"><button type="button" class="btn m-0 w-100 py-2 h-100 rounded-0 btn-sidebar branch-edit"
                         data-branch="<?= htmlspecialchars($id) ?>">Edit</button></td>
             </tr>
-            <?php
+        <?php
 
         }
         ?>
@@ -203,7 +203,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'branches') {
                 </div>
             </td>
         </tr>
-        <?php
+    <?php
     }
 }
 
@@ -264,20 +264,20 @@ if (isset($_GET['append']) && $_GET['append'] === 'packages') {
             $bid = $row['branch'];
             $b = get_branch_details($conn, $bid);
             $branch = $b['name'];
-            ?>
+    ?>
             <tr class="text-center">
                 <td>
                     <input type="checkbox" name="package[]" value="<?= htmlspecialchars($id) ?>" class="form-check-input">
                 </td>
                 <td><?= htmlspecialchars($name) ?></td>
                 <td><?= htmlspecialchars($session . ' ' . ($session == 1 ? "Session" : "Sessions")) ?></td>
-                <td><?= htmlspecialchars("$year Years") ?></td>
+                <td><?= htmlspecialchars($year . ' ' . ($year == 1 ? "Year" : "years")) ?></td>
                 <td><?= htmlspecialchars($treatment) ?></td>
                 <td><?= htmlspecialchars($branch) ?></td>
                 <td class="p-0"><button type="button" class="btn m-0 w-100 py-2 h-100 rounded-0 btn-sidebar package-edit"
-                        data-branch="<?= htmlspecialchars($id) ?>">Edit</button></td>
+                        data-package="<?= htmlspecialchars($id) ?>">Edit</button></td>
             </tr>
-            <?php
+        <?php
 
         }
         ?>
@@ -290,7 +290,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'packages') {
                 </div>
             </td>
         </tr>
-        <?php
+    <?php
     }
 }
 
@@ -300,24 +300,24 @@ function package_options($conn)
     $res = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($res) > 0) {
-        ?>
+    ?>
         <option value="">Select Treatment</option>
         <?php
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             $name = $row['t_name'];
-            ?>
+        ?>
             <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($name) ?></option>
-            <?php
+        <?php
         }
     } else {
         ?>
         <option disabled>No Treatments Available</option>
-        <?php
+    <?php
     }
 }
 
-if (isset($_GET['append']) && $_GET['append'] === 'add_package_trt') {
+if (isset($_GET['append']) && ($_GET['append'] === 'add_package_trt' || $_GET['append'] === 'edit_package_trt')) {
     package_options($conn);
 }
 
@@ -363,5 +363,31 @@ if (isset($_GET['addpackagerow']) && $_GET['addpackagerow'] === 'true') {
             <button type="button" class="mt-3 w-25 mx-auto btn btn-grad delete-package-row">Delete Row</button>
         </div>
     </div>
-    <?php
+<?php
+}
+
+if (isset($_GET['packagedetails']) && $_GET['packagedetails'] === 'true') {
+    $id = $_GET['id'];
+
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo "Invalid ID.";
+        exit();
+    }
+
+    $details = get_package_details($conn, $id);
+
+    if (isset($details['error'])) {
+        http_response_code(400);
+        echo $details['error'];
+        exit;
+    } elseif (is_array($details)) {
+        http_response_code(200);
+        echo json_encode($details);
+        exit;
+    } else {
+        http_response_code(400);
+        echo $details;
+        exit;
+    }
 }

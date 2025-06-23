@@ -2130,3 +2130,88 @@ function add_package($conn, $name, $session, $warranty, $branch, $treatment)
         ];
     }
 }
+
+function get_package_details($conn, $id)
+{
+    if (!is_numeric($id)) {
+        return ['error' => 'Invalid ID'];
+    }
+
+    $sql = "SELECT * FROM packages WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'stmt failed.'];
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $details = [];
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
+            // $details['id'] = $row['id'];
+            // $details['name'] = $row['name'];
+            // $details['session'] = $row['session_count'];
+            // $details['warranty'] = $row['year_warranty'];
+            // $treatment = get_treatment_details($conn, $row['treatment']);
+            // $details['treatment'] = $treatment['t_name'];
+            // $b = get_branch_details($conn, $row['branch']);
+            // $details['branch'] = $b['name'];
+
+            return $row;
+        }
+    } else {
+        return ['error' => 'No data found'];
+    }
+}
+
+function check_branch_id($conn, $id)
+{
+    $sql = "SELECT * FROM branches;";
+    $res = mysqli_query($conn, $sql);
+
+    $ids = [];
+    if (mysqli_num_rows($res) > 0) {
+        while ($r = mysqli_fetch_assoc($res)) {
+            $ids[] = $r['id'];
+        }
+        if (in_array($id, $ids)) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
+
+function edit_package($conn, $id, $branch, $name, $warranty, $session, $treatment)
+{
+
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "UPDATE packages SET name = ?, session_count = ?, year_warranty = ?, treatment = ?, branch = ? WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("stmt failed.");
+        }
+
+        mysqli_stmt_bind_param($stmt, 'siiiii', $name, $session, $warranty, $treatment, $branch, $id);
+        mysqli_stmt_execute($stmt);
+        if (mysqli_affected_rows($conn) > 0) {
+            mysqli_commit($conn);
+            return true;
+        } else{
+            throw new Exception("Update failed.");
+        }
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ];
+    }
+}
