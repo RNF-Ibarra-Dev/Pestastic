@@ -14,7 +14,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
     if ($lsr) {
         $num = mysqli_num_rows($lsr);
         if ($num > 0) {
-            $lchems = $num == 1 ? 'chemical' : 'chemicals';
+            $lchems = $num == 1 ? 'Chemical' : 'Chemicals';
             $response['notif'] .=
                 "<li class='list-group-item p-0'>
             <a href='itemstock.php'

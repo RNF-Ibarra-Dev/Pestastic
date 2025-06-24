@@ -8,19 +8,20 @@ $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
-function treatment_name($conn, $id){
-    if(!is_numeric($id)){
+function treatment_name($conn, $id)
+{
+    if (!is_numeric($id)) {
         return "Invalid ID. ID passed: " . $id;
     }
 
     $sql = "SELECT t_name FROM treatments WHERE id = $id;";
     $res = mysqli_query($conn, $sql);
 
-    if(mysqli_num_rows($res) > 0){
-        if($row = mysqli_fetch_assoc($res)){
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
             return $row['t_name'];
         }
-    }else{
+    } else {
         return "No treatment found.";
     }
 }
@@ -90,7 +91,15 @@ if (isset($_GET['search'])) {
                 <td><?= htmlspecialchars($customerName) ?></td>
                 <td><?= htmlspecialchars($treatmentDate) ?></td>
                 <td><?= htmlspecialchars($t_name) ?></td>
-                <td><?= htmlspecialchars($status) ?></td>
+                <td>
+                    <?=
+                        $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
+                             class='btn btn-sidebar rounded-pill border-0 p-0 me-2'><span class = 'text-light badge rounded-pill text-bg-warning bg-opacity-25'>Pending</span></a>" :
+                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50'>$status</span>" :
+                            ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50'>$status</span>" :
+                                ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light'>$status</span>" : $status)))
+                        ?>
+                </td>
                 <td>
                     <div class="d-flex justify-content-center">
                         <button id="tableDetails" disable-data-bs-toggle="modal" disabled-data-bs-target="#details-modal"
@@ -267,8 +276,11 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
-                        $status === 'Pending' ? "<button type='button' id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
-                             class='btn btn-sidebar me-2'>Pending</button>" : htmlspecialchars($status)
+                        $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
+                             class='btn btn-sidebar rounded-pill border-0 p-0 me-2'><span class = 'text-light badge rounded-pill text-bg-warning bg-opacity-25'>Pending</span></a>" :
+                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50'>$status</span>" :
+                            ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50'>$status</span>" :
+                                ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light'>$status</span>" : $status)))
                         ?>
                 </td>
                 <td>

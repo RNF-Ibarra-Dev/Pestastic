@@ -1,6 +1,6 @@
 <aside class="sa-sidebar col-sm-2 d-flex flex-column shadow bg-light bg-opacity-25">
     <div class="mt-2 d-flex align-content-center">
-        <a href="index.php" class="mx-auto border border-light rounded-pill btn btn-sidebar overflow-hidden shadow-sm">
+        <a href="index.php" class="bg-dark bg-opacity-25 mx-auto border border-light rounded-pill btn btn-sidebar overflow-hidden shadow-sm">
             <img src="../img/pestasticlogoonly.png" alt="Pestastic_logo"
                 class="mx-auto my-2 img-fluid" style="max-height: 5rem">
         </a>
