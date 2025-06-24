@@ -31,11 +31,11 @@ body {
   overflow: auto !important;
 }
 
-.navbar-sticky{
-    position: sticky !important ;
-    top: 0;
-    z-index: 100 !important;
-    backdrop-filter: blur(2px);
+.navbar-sticky {
+  position: sticky !important ;
+  top: 0;
+  z-index: 100 !important;
+  backdrop-filter: blur(2px);
 }
 
 ::-webkit-scrollbar-track {
@@ -115,26 +115,32 @@ input:focus {
 }
 
 .bg-official {
-  background: rgb(227, 207, 147);
-  background: -moz-linear-gradient(
-    0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 30%,
-    rgba(13, 73, 91, 1) 88%
-  );
+  background: #bbc9ad;
   background: -webkit-linear-gradient(
     0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 30%,
-    rgba(13, 73, 91, 1) 88%
+    rgba(187, 201, 173, 1) 0%,
+    rgba(135, 171, 133, 1) 10%,
+    rgba(121, 158, 119, 1) 17%,
+    rgba(9, 75, 92, 1) 79%,
+    rgba(3, 44, 56, 1) 93%
+  );
+  background: -moz-linear-gradient(
+    0deg,
+    rgba(187, 201, 173, 1) 0%,
+    rgba(135, 171, 133, 1) 10%,
+    rgba(121, 158, 119, 1) 17%,
+    rgba(9, 75, 92, 1) 79%,
+    rgba(3, 44, 56, 1) 93%
   );
   background: linear-gradient(
     0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 30%,
-    rgba(13, 73, 91, 1) 88%
+    rgba(187, 201, 173, 1) 0%,
+    rgba(135, 171, 133, 1) 10%,
+    rgba(121, 158, 119, 1) 17%,
+    rgba(9, 75, 92, 1) 79%,
+    rgba(3, 44, 56, 1) 93%
   );
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e3cf93", endColorstr="#0d495b", GradientType=1);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#BBC9AD", endColorstr="#032C38", GradientType=0);
 }
 
 .img-round {
