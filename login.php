@@ -843,7 +843,7 @@ if (!isset($_SESSION["techId"]) && !isset($_SESSION['baID']) && !isset($_SESSION
                 </div>
                 <div class="col-5 px-5 border-start">
                     <form action="includes/login.inc.php" method="post" class="d-flex py-2 ps-3 pe-5 flex-column">
-                        <img src="img/clearlogo.png" alt width="75" height="75" class="mb-1 align-self-center rounded">
+                        <img src="img/logo.svg" alt='logo' width="75" height="75" class="mb-1 mt-2 align-self-center rounded">
                         <p class="fs-2 fw-medium text-light text-center">Login</p>
                         <div class="form-floating form-custom mb-2">
                             <input type="text" name="userEmail" class="form-control" id="floatingInput"

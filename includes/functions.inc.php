@@ -144,6 +144,32 @@ $userTypes = [
     ]
 ];
 
+function check_email($conn, $email)
+{
+    global $userTypes;
+    $stmt = mysqli_stmt_init($conn);
+    foreach ($userTypes as $role => $details) {
+        $userEmail = $details['email'];
+        $userTable = $details['table'];
+
+        $sql = "SELECT * FROM $userTable WHERE $userEmail = ?;";
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            echo "find email stmt error.";
+            exit();
+        }
+        mysqli_stmt_bind_param($stmt, 's', $email);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        if ($row = mysqli_fetch_assoc($result)) {
+            return $row;
+        }
+    }
+    mysqli_stmt_close($stmt);
+    return false;
+}
+
+
+
 function multiUserExists($conn, $username, $email)
 {
 
