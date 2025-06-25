@@ -24,7 +24,7 @@ include("header.php");
 
     <div
         class="w-25 d-inline-flex flex-column align-items-center justify-content-center container bg-light bg-opacity-25 rounded-4 shadow-lg">
-        <form id="resetpass">
+        <form id="resetpass" class="h-100 d-flex flex-column">
             <div class="px-2 my-auto d-flex flex-column">
                 <img src="img/logo.svg" alt="logo" style="width: 6rem !important" class="mx-auto mb-3">
                 <h1 class="fs-2 fw-bold text-light text-center">Reset Password</h1>
@@ -34,10 +34,11 @@ include("header.php");
                         placeholder="Email">
                     <label for="floatingInput">Email</label>
                 </div>
-                <p class="alert alert-info text-center" id="alert" style="display: none">aslkjd</p>
-                <button type="submit" class="btn btn-sidebar text-light border px-3 py-2 w-100">Send Email</button>
+                <button type="submit" class="btn btn-form-submit bg-light bg-opacity-75 border px-3 py-2 w-100">Send Email</button>
+                <p class="alert alert-info text-center mt-2" id="alert" style="display: none"></p>
 
             </div>
+            <a href="login.php" class="btn btn-form-submit bg-dark bg-opacity-50 text-light border px-3 py-2 mb-3 w-100 mt-auto">Go back and log in</a>
         </form>
     </div>
 

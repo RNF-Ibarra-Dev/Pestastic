@@ -33,7 +33,7 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
     // echo time();
     // exit();
 
-    if (time() < $expiry) {
+    if (time() > $expiry) {
         http_response_code(400);
         echo "Your token has not expired yet. Please check your email.";
         exit();
@@ -59,8 +59,27 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
     mysqli_stmt_execute($stmt);
 
     if (mysqli_stmt_affected_rows($stmt) > 0) {
+
+        $mail = require __DIR__ . "/../mailer.php";
+
+        $mail->setFrom("noreply@example.com");
+        $mail->addAddress($email);
+        $mail->Subject = "Password Reset";
+        $mail->Body = <<<END
+
+        Click <a href = "localhost/resetpassword.php?token=$token">here</a> to reset your password.
+
+        END;
+
+        try {
+            $mail->send();
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo "Failed to send to email. Error: {$mail->ErrorInfo}";
+            exit();
+        }
         http_response_code(200);
-        echo json_encode(['success' => 'Link to change your password has been emailed.']);
+        echo json_encode(['success' => 'Email sent, please check your inbox.']);
         exit();
     } else {
         http_response_code(400);
