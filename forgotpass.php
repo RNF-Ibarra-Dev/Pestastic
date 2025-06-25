@@ -24,21 +24,23 @@ include("header.php");
 
     <div
         class="w-25 d-inline-flex flex-column align-items-center justify-content-center container bg-light bg-opacity-25 rounded-4 shadow-lg">
-        <form id="resetpass" class="h-100 d-flex flex-column">
-            <div class="px-2 my-auto d-flex flex-column">
+        <form id="resetpass" class="h-75 d-flex flex-column">
+            <div class="px-2 mt-5 d-flex flex-column">
                 <img src="img/logo.svg" alt="logo" style="width: 6rem !important" class="mx-auto mb-3">
                 <h1 class="fs-2 fw-bold text-light text-center">Reset Password</h1>
                 <p class="fw-light text-light text-center">Please provide the email of the account.</p>
                 <div class="form-floating form-custom mb-2">
-                    <input type="text" name="email" class="form-control" id="floatingInput"
-                        placeholder="Email">
+                    <input type="text" name="email" class="form-control" id="floatingInput" placeholder="Email">
                     <label for="floatingInput">Email</label>
                 </div>
-                <button type="submit" class="btn btn-form-submit bg-light bg-opacity-75 border px-3 py-2 w-100">Send Email</button>
-                <p class="alert alert-info text-center mt-2" id="alert" style="display: none"></p>
+                <button type="submit" class="btn btn-form-submit bg-light bg-opacity-75 border px-3 py-2 w-100">Send
+                    Email</button>
 
             </div>
-            <a href="login.php" class="btn btn-form-submit bg-dark bg-opacity-50 text-light border px-3 py-2 mb-3 w-100 mt-auto">Go back and log in</a>
+            <p class="alert alert-info text-center mt-2" id="alert" style="display: none"></p>
+            <a href="login.php"
+                class="btn btn-form-submit bg-dark bg-opacity-50 text-light border px-3 py-2 mb-3 w-100 mt-auto">Go back
+                and log in</a>
         </form>
     </div>
 
@@ -47,18 +49,18 @@ include("header.php");
 <?= include('footer.php') ?>
 
 <script>
-    $(document).on('submit', '#resetpass', function(e) {
+    $(document).on('submit', '#resetpass', function (e) {
         e.preventDefault();
         $.ajax({
-                method: "POST",
-                url: 'includes/resetpass.inc.php',
-                dataType: 'json',
-                data: $(this).serialize() + "&reset=true"
-            })
-            .done(function(d) {
+            method: "POST",
+            url: 'includes/resetpass.inc.php',
+            dataType: 'json',
+            data: $(this).serialize() + "&reset=true"
+        })
+            .done(function (d) {
                 console.log(d);
             })
-            .fail(function(e) {
+            .fail(function (e) {
                 console.log(e);
                 $("#alert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
             })

@@ -28,17 +28,26 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
 
     $token_hash = hash('sha256', $token);
 
-    $expiry = date("Y-m-d H:i:s", time() + 60 * 5);
+    $now = time();
     // http_response_code(400);
     // echo time();
     // exit();
 
-    if (time() > $expiry) {
+    // check for existing reset pass expiry
+    $expiry = check_expiry($conn, $email);
+    $e = strtotime($expiry);
+    // if none, set new expiry
+    if (!$expiry || ($now < $e)) {
+        $expiry = date("Y-m-d H:i:s", time() + 60 * 5);
+    } else {
         http_response_code(400);
-        echo "Your token has not expired yet. Please check your email.";
+        echo "Your link is still valid. Please check your inbox. now: $now | exp: $e $expiry";
         exit();
-    }
+    } 
 
+    http_response_code(400);
+    echo strtotime($expiry) . ' ' . strtotime($now);
+    exit;
     $sql = "INSERT INTO reset_password
                 (email, reset_token_hash,
                 reset_token_expires_at) 
@@ -62,12 +71,12 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
 
         $mail = require __DIR__ . "/../mailer.php";
 
-        $mail->setFrom("noreply@example.com");
+        $mail->setFrom("noreply@gmail.com");
         $mail->addAddress($email);
         $mail->Subject = "Password Reset";
         $mail->Body = <<<END
 
-        Click <a href = "localhost/resetpassword.php?token=$token">here</a> to reset your password.
+        Click <a href = "localhost/Pestastic/resetpassword.php?token=$token">here</a> to reset your password.
 
         END;
 
@@ -75,7 +84,7 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
             $mail->send();
         } catch (Exception $e) {
             http_response_code(400);
-            echo "Failed to send to email. Error: {$mail->ErrorInfo}";
+            echo "Failed to send to email. {$mail->ErrorInfo}";
             exit();
         }
         http_response_code(200);

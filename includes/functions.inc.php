@@ -168,7 +168,26 @@ function check_email($conn, $email)
     return false;
 }
 
+function check_expiry($conn, $email)
+{
+    $sql = "SELECT reset_token_expires_at FROM reset_password WHERE email = ?;";
+    $stmt = mysqli_stmt_init($conn);
 
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo "stmt error";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 's', $email);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    if ($row = mysqli_fetch_assoc($res)) {
+        return $row['reset_token_expires_at'];
+    }
+    return false;
+
+}
 
 function multiUserExists($conn, $username, $email)
 {
