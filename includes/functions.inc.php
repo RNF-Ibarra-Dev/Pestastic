@@ -144,6 +144,27 @@ $userTypes = [
     ]
 ];
 
+function email_token($conn, $token){
+    $token_hash = hash('sha256', $token);
+
+    $sql = "SELECT * FROM reset_password WHERE reset_token_hash = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt, $sql)){
+        echo "stmt failed.";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 's', $token_hash);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    if($row = mysqli_fetch_assoc($res)){
+        return $row['email'];
+    }
+    return false;
+}
+
 function check_email($conn, $email)
 {
     global $userTypes;

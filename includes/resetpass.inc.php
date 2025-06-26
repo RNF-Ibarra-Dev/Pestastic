@@ -100,3 +100,17 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
 if(isset($_POST['newpass']) && $_POST['newpass'] === 'true'){
     
 }
+
+if(isset($_POST['chktoken']) && $_POST['chktoken'] === 'true'){
+    $token = $_POST['token'];
+
+    $email = email_token($conn, $token);
+    if($email){
+        http_response_code(200);
+        echo $email;
+        exit();
+    }
+    http_response_code(400);
+    return false;
+    exit(); 
+}

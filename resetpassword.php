@@ -31,15 +31,17 @@ include("header.php");
                 <img src="img/logo.svg" alt="logo" style="width: 6rem !important" class="mx-auto mb-3">
                 <h1 class="fs-2 fw-bold text-light text-center">New Password</h1>
                 <p class="fw-light text-light text-center">Type your new password.</p>
-                <div class="form-floating form-custom" style="margin-bottom: -1rem;">
+                <div class="form-floating form-custom mb-2">
                     <input type="password" name="pwd" class="form-control" id="pwd" placeholder="Password" autocomplete="new-password">
-                    <i class="bi bi-eye-slash text-light eye-slash-pwd" id="pwdtoggle"></i>
                     <label for="pwd">Password</label>
                 </div>
-                <div class="form-floating form-custom ">
+                <div class="form-floating form-custom mb-2">
                     <input type="password" name="email" class="form-control" id="rpwd" placeholder="Repeat Password" autocomplete="new-password">
-                    <i class="bi bi-eye-slash text-light eye-slash-pwd" id="rpwdtoggle"></i>
                     <label for="rpwd">Repeat Password</label>
+                </div>
+                <div class="form-check mb-2 ms-1 show-password">
+                    <input type="checkbox" id="showpwd" class="form-check-input">
+                    <label for="showpwd" class="form-check-label text-light align-middle ms-2">Show Password</label>
                 </div>
                 <button type="submit"
                     class="btn btn-form-submit bg-light bg-opacity-75 border px-3 py-2 w-100">Submit</button>
@@ -52,20 +54,52 @@ include("header.php");
 </body>
 
 <script>
-    $(document).on('submit', '#resetpass', async function(e){
+    // console.log(params.has('token'));
+    // console.log(params.get('token'));
+
+    $(document).ready(function() {
+        var params = new URLSearchParams(window.location.search);
+        $('#resetpass input, #resetpass button').prop('disabled', true);
+        if (!params.has('token')) {
+            $("#alert").html("Unrestricted Access. Redirecting . . .").show();
+            setTimeout(() => {
+                $(location).attr('href', "index.php");
+            }, 3000);
+        } else {
+            const token = params.get('token');
+            console.log(token);
+            $.post('includes/resetpass.inc.php', {
+                    token: token,
+                    chktoken: true
+                })
+                .done(function(d) {
+                    console.log(d);
+
+                })
+                .fail(function(e) {
+                    console.log(e);
+                    setTimeout(() => {
+                        $(location).attr('href', 'forgotpass.php');
+                    }, 3000);
+                    $("#alert").html("Invalid Token. Request for another token. Redirecting . . .").show();
+                })
+        }
+    })
+
+    $(document).on('submit', '#resetpass', async function(e) {
         e.preventDefault();
         await $.ajax({
-            method: "POST",
-            url: "includes/resetpass.inc.php",
-            dataType: "json",
-            data: $(this).serialize() + "&newpass=true"
-        })
-        .done(function(d){
+                method: "POST",
+                url: "includes/resetpass.inc.php",
+                dataType: "json",
+                data: $(this).serialize() + "&newpass=true"
+            })
+            .done(function(d) {
 
-        })
-        .fail(function(e){
-            
-        })
+            })
+            .fail(function(e) {
+
+            })
     })
 </script>
 

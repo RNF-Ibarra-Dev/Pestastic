@@ -28,13 +28,12 @@ include("header.php");
             <img src="img/logo.svg" alt="logo" style="width: 6rem !important" class="mx-auto mb-3">
             <div class="px-2 mt-5 mx-auto">
                 <h1 class="fs-2 fw-bold text-light text-center">Reset Password</h1>
-                <p class="fw-light text-light text-center">Please provide the email of the account.</p>
+                <p class="fw-light text-light text-center">Please provide the email of the account. The mail will contain the link to reset your password.</p>
                 <div class="form-floating form-custom mb-2">
                     <input type="text" name="email" class="form-control" id="email" placeholder="Email">
                     <label for="email">Email</label>
                 </div>
-                <button type="submit" class="btn btn-form-submit bg-light bg-opacity-75 border px-3 py-2 w-100">Send
-                    Email</button>
+                <button type="submit" class="btn btn-form-submit bg-light bg-opacity-75 border px-3 py-2 w-100">Send Link</button>
             </div>
             <div class="d-flex mt-4 text-light justify-content-center">
                 <div class=" spinner-border" role="status" id="spinner" style="display: none ;">
@@ -44,7 +43,7 @@ include("header.php");
             </p>
         </form>
         <a href="login.php"
-            class="btn btn-form-submit bg-dark bg-opacity-50 text-light border px-3 py-2 mb-3 w-100">Go
+            class="btn btn-form-submit bg-dark bg-opacity-50 text-light border px-3 py-2 mb-3 mx-2">Go
             back
             and log in</a>
     </div>
