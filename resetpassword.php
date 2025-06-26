@@ -24,19 +24,20 @@ include("header.php");
 
 <body class="d-flex py-4 bg-body-tertiary bg-official-login">
 
-    <div
-        class="w-25 d-inline-flex flex-column align-items-center justify-content-center container bg-light bg-opacity-25 rounded-4 shadow-lg">
-        <form id="resetpass" class="h-75 d-flex flex-column">
-            <div class="px-2 mt-5 d-flex flex-column">
-                <img src="img/logo.svg" alt="logo" style="width: 6rem !important" class="mx-auto mb-3">
+    <div class="w-25 d-flex flex-column align-items-center container bg-light bg-opacity-25 rounded-4 shadow-lg">
+        <form id="resetpass" class="w-100 d-flex flex-column mt-5">
+            <img src="img/logo.svg" alt="logo" style="width: 6rem !important" class="mx-auto mb-3">
+            <div class="mt-5 px-2">
                 <h1 class="fs-2 fw-bold text-light text-center">New Password</h1>
                 <p class="fw-light text-light text-center">Type your new password.</p>
                 <div class="form-floating form-custom mb-2">
-                    <input type="password" name="pwd" class="form-control" id="pwd" placeholder="Password" autocomplete="new-password">
+                    <input type="password" name="pwd" class="form-control" id="pwd" placeholder="Password"
+                        autocomplete="one-time-code">
                     <label for="pwd">Password</label>
                 </div>
                 <div class="form-floating form-custom mb-2">
-                    <input type="password" name="email" class="form-control" id="rpwd" placeholder="Repeat Password" autocomplete="new-password">
+                    <input type="password" name="rpwd" class="form-control" id="rpwd" placeholder="Repeat Password"
+                        autocomplete="one-time-code">
                     <label for="rpwd">Repeat Password</label>
                 </div>
                 <div class="form-check mb-2 ms-1 show-password">
@@ -45,7 +46,6 @@ include("header.php");
                 </div>
                 <button type="submit"
                     class="btn btn-form-submit bg-light bg-opacity-75 border px-3 py-2 w-100">Submit</button>
-
             </div>
             <p class="alert alert-info text-center mt-2" id="alert" style="display: none"></p>
         </form>
@@ -53,11 +53,13 @@ include("header.php");
 
 </body>
 
+<?= include('footer.php') ?>
+
 <script>
     // console.log(params.has('token'));
     // console.log(params.get('token'));
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         var params = new URLSearchParams(window.location.search);
         $('#resetpass input, #resetpass button').prop('disabled', true);
         if (!params.has('token')) {
@@ -69,38 +71,62 @@ include("header.php");
             const token = params.get('token');
             console.log(token);
             $.post('includes/resetpass.inc.php', {
-                    token: token,
-                    chktoken: true
-                })
-                .done(function(d) {
+                token: token,
+                chktoken: true
+            })
+                .done(function (d) {
                     console.log(d);
-
+                    $('#resetpass input, #resetpass button').prop('disabled', false);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                     setTimeout(() => {
-                        $(location).attr('href', 'forgotpass.php');
+                        $(location).attr('href', 'forgotpass.php?invalidtoken=true');
                     }, 3000);
                     $("#alert").html("Invalid Token. Request for another token. Redirecting . . .").show();
                 })
         }
+    });
+
+    $(document).on('change', '#showpwd', function () {
+        let checked = $(this).prop('checked');
+        if (!checked) {
+            $('.form-floating input').prop('type', 'password');
+        } else {
+            $('.form-floating input').prop('type', 'text');
+        }
     })
 
-    $(document).on('submit', '#resetpass', async function(e) {
+    $('.form-floating input').keyup(function () {
+        setTimeout(() => {
+            if ($("#pwd").val() != $("#rpwd").val()) {
+                $(".form-floating input").addClass('border-danger');
+                $("button").prop('disabled', true);
+                $("#alert").html('Password do not match.').fadeIn(500);
+            } else {
+                $("button").prop('disabled', false);
+                $("#alert").html('Password do not match.').fadeOut(1000);
+            }
+        }, 1000);
+    })
+
+    $(document).on('submit', '#resetpass', async function (e) {
+        var params = new URLSearchParams(window.location.search);
         e.preventDefault();
+        // console.log($(this).serialize());
         await $.ajax({
-                method: "POST",
-                url: "includes/resetpass.inc.php",
-                dataType: "json",
-                data: $(this).serialize() + "&newpass=true"
+            method: "POST",
+            url: "includes/resetpass.inc.php",
+            dataType: "json",
+            data: $(this).serialize() + "&newpass=true&token=" + params.get('token')
+        })
+            .done(function (d) {
+                console.log(d);
+                $('#alert').html(d.success).fadeIn(500).delay(2000).fadeOut(1000);
             })
-            .done(function(d) {
-
+            .fail(function (e) {
+                console.log(e);
+                $('#alert').html(e.responseText).fadeIn(500).delay(2000).fadeOut(1000);
             })
-            .fail(function(e) {
-
-            })
-    })
+    });
 </script>
-
-<?= include('footer.php') ?>

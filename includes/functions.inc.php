@@ -144,13 +144,14 @@ $userTypes = [
     ]
 ];
 
-function email_token($conn, $token){
+function email_token($conn, $token)
+{
     $token_hash = hash('sha256', $token);
 
     $sql = "SELECT * FROM reset_password WHERE reset_token_hash = ?;";
     $stmt = mysqli_stmt_init($conn);
 
-    if(!mysqli_stmt_prepare($stmt, $sql)){
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
         echo "stmt failed.";
         exit();
     }
@@ -159,10 +160,87 @@ function email_token($conn, $token){
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
-    if($row = mysqli_fetch_assoc($res)){
+    if ($row = mysqli_fetch_assoc($res)) {
         return $row['email'];
     }
     return false;
+}
+
+function get_table($conn, $email)
+{
+    global $userTypes;
+    $stmt = mysqli_stmt_init($conn);
+    $rtable = [];
+    foreach ($userTypes as $role => $details) {
+        $table = $details['table'];
+        $pwdcol = $details['pwd'];
+        $temail = $details['email'];
+
+        $sql = "SELECT * FROM $table WHERE $temail = ?;";
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            return false;
+        }
+
+        mysqli_stmt_bind_param($stmt, 's', $email);
+        mysqli_stmt_execute($stmt);
+        $res = mysqli_stmt_get_result($stmt);
+        if (mysqli_num_rows($res) > 0) {
+            $rtable['tablename'] = $table;
+            $rtable['pwdcol'] = $pwdcol;
+            $rtable['emailcol'] = $temail;
+            return $rtable;
+        }
+    }
+    return false;
+}
+
+function reset_password($conn, $pwd, $email, $token)
+{
+    $emailfromtoken = email_token($conn, $token);
+    if ($emailfromtoken != $email) {
+        return false;
+    }
+
+    $tdetails = get_table($conn, $email);
+    if (!$tdetails) {
+        echo 'Email not found from our database. ' . json_encode($tdetails);
+        exit();
+    }
+    $table = $tdetails['tablename'];
+    $pwdcol = $tdetails['pwdcol'];
+    $emailcol = $tdetails['emailcol'];
+
+    mysqli_begin_transaction($conn);
+    try {
+        // throw new Exception("tablename: $table, pwdcol: $pwdcol, emailcol: $emailcol");
+        $sql = "UPDATE FROM $table SET $pwdcol = ? WHERE $emailcol = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("stmt failed.");
+        }
+
+        mysqli_stmt_bind_param($stmt, 'ss', $pwd, $email);
+        mysqli_stmt_execute($stmt);
+
+        if (mysqli_stmt_affected_rows($stmt) > 0) {
+            // mysqli_commit($conn);
+            throw new Exception("new pwd: $pwd, email: $email");
+            // return true;
+        }
+        throw new Exception("Failed to set new password.");
+
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        $error = "Error at line " . $e->getLine() . ". " . $e->getMessage() . " File: " . $e->getFile();
+        return [
+            'error' => $error,
+            'line' => $e->getLine(),
+            'msg' => $e->getMessage(),
+            'file' => $e->getFile()
+        ];
+    }
 }
 
 function check_email($conn, $email)

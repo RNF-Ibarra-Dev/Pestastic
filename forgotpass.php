@@ -23,27 +23,28 @@ include("header.php");
 <body class="d-flex py-4 bg-body-tertiary bg-official-login">
 
     <div
-        class="w-25 d-flex flex-column align-items-center justify-content-center container bg-light bg-opacity-25 rounded-4 shadow-lg">
-        <form id="resetpass" class="h-75 d-flex flex-column">
+        class="w-25 d-flex flex-column align-items-center container bg-light bg-opacity-25 rounded-4 shadow-lg">
+        <form id="resetpass" class="w-100 mt-5 h-100 d-flex flex-column">
             <img src="img/logo.svg" alt="logo" style="width: 6rem !important" class="mx-auto mb-3">
-            <div class="px-2 mt-5 mx-auto">
+            <div class="px-2 mt-5">
                 <h1 class="fs-2 fw-bold text-light text-center">Reset Password</h1>
-                <p class="fw-light text-light text-center">Please provide the email of the account. The mail will contain the link to reset your password.</p>
+                <p class="fw-light text-light text-center">Please provide the email of the account. The mail will
+                    contain the link to reset your password.</p>
                 <div class="form-floating form-custom mb-2">
                     <input type="text" name="email" class="form-control" id="email" placeholder="Email">
                     <label for="email">Email</label>
                 </div>
-                <button type="submit" class="btn btn-form-submit bg-light bg-opacity-75 border px-3 py-2 w-100">Send Link</button>
+                <button type="submit" class="btn btn-form-submit bg-light bg-opacity-75 border px-3 py-2 w-100">Send
+                    Link</button>
             </div>
             <div class="d-flex mt-4 text-light justify-content-center">
                 <div class=" spinner-border" role="status" id="spinner" style="display: none ;">
                 </div>
             </div>
-            <p class=" alert alert-info text-center mt-2 w-100 mx-auto" id="alert" style="display: none">
+            <p class=" alert alert-info text-center mt-2 mx-auto" id="alert" style="display: none">
             </p>
         </form>
-        <a href="login.php"
-            class="btn btn-form-submit bg-dark bg-opacity-50 text-light border px-3 py-2 mb-3 mx-2">Go
+        <a href="login.php" class="btn btn-form-submit bg-dark bg-opacity-50 text-light border px-3 py-2 mb-3 mx-2">Go
             back
             and log in</a>
     </div>
@@ -76,5 +77,12 @@ include("header.php");
                 $("#resetpass input, #resetpass button").prop('disabled', false);
                 $('#spinner').hide();
             })
+    });
+
+    $(document).ready(function () {
+        const param = new URLSearchParams(window.location.search);
+        if (param.get('invalidtoken') == 'true') {
+            $('#alert').html('Token Invalid. Please request for another link.').fadeIn(750);
+        }
     })
 </script>

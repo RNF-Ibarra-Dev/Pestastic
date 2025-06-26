@@ -98,7 +98,39 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
 
 
 if(isset($_POST['newpass']) && $_POST['newpass'] === 'true'){
+    $token = $_POST['token'];
+    $pwd = $_POST['pwd'];
+    $rpwd = $_POST['rpwd'];
+
+    if($pwd != $rpwd){
+        http_response_code(400);
+        echo "Passwords do not match.";
+        exit();
+    }
+
+    $email = email_token($conn, $token);
+
+    if(!$email){
+        http_response_code(400);
+        echo "Email not found. Make sure to double check the email you submitted.";
+        exit();
+    }
+
+    if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+        http_response_code(400);
+        echo "Invalid Email.";
+        exit();
+    }
+
     
+
+    $reset = reset_password($conn, $pwd, $email, $token);
+
+    if(isset($reset['error'])){
+        http_response_code(400);
+        echo $reset['error'];
+        exit();
+    }
 }
 
 if(isset($_POST['chktoken']) && $_POST['chktoken'] === 'true'){
@@ -112,5 +144,4 @@ if(isset($_POST['chktoken']) && $_POST['chktoken'] === 'true'){
     }
     http_response_code(400);
     return false;
-    exit(); 
 }
