@@ -22,6 +22,15 @@ body {
   /*     overflow: visible;*/
 }
 
+.eye-slash-pwd{
+  float: right;
+  right: 1rem;
+  position: relative;
+  top: -2.5rem;
+  z-index: 2;
+  cursor: pointer;
+}
+
 .account-settings-icon {
   position: absolute !important;
   right: 1rem !important;

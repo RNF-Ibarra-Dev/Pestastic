@@ -29,25 +29,24 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
     $token_hash = hash('sha256', $token);
 
     $now = time();
-    // http_response_code(400);
-    // echo time();
-    // exit();
-
+    
     // check for existing reset pass expiry
     $expiry = check_expiry($conn, $email);
-    $e = strtotime($expiry);
+    $e = $expiry ? strtotime($expiry) : false;
+
     // if none, set new expiry
-    if (!$expiry || ($now < $e)) {
-        $expiry = date("Y-m-d H:i:s", time() + 60 * 5);
+    if (!$expiry || ($now >= $e)) {
+        $expiry = date("Y-m-d H:i:s", time() + 60);
     } else {
         http_response_code(400);
-        echo "Your link is still valid. Please check your inbox. now: $now | exp: $e $expiry";
+        echo "Your link is still valid. Please check your inbox.";
         exit();
     } 
 
-    http_response_code(400);
-    echo strtotime($expiry) . ' ' . strtotime($now);
-    exit;
+    // http_response_code(400);
+    // echo "now: $now exp $e exp $expiry";
+    // exit;
+
     $sql = "INSERT INTO reset_password
                 (email, reset_token_hash,
                 reset_token_expires_at) 
@@ -95,4 +94,9 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
         echo "Unknown Error.";
         exit();
     }
+}
+
+
+if(isset($_POST['newpass']) && $_POST['newpass'] === 'true'){
+    
 }
