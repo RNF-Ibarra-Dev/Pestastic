@@ -564,10 +564,10 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
                         <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
                             id="edit-amountUsed-label">Amount:</label>
                         <input type="number" <?= $status != 'Accepted' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
-                            id="edit-amountUsed-<?=$id?>" class="form-control form-add me-3" autocomplete="one-time-code"
+                            id="edit-amountUsed-<?= $id ?>" class="form-control form-add me-3" autocomplete="one-time-code"
                             value="<?= $amtUsed ?>" <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
                     </div>
-                    <span id="passwordHelpInline-<?=$id?>" class="form-text mt-auto mb-2">
+                    <span id="passwordHelpInline-<?= $id ?>" class="form-text mt-auto mb-2">
                         /ml
                     </span>
                     <button type="button" data-row-id="<?= $id ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
@@ -582,25 +582,27 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
     } else {
         $idd = uniqid();
         ?>
-        <div class="row" id="row-<?=$idd?>">
+        <div class="row" id="row-<?= $idd ?>">
             <div class="col-lg-4 mb-2">
-                <label for="edit-chemBrandUsed-<?=$idd?>" class="form-label fw-light">Chemical
+                <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
                     Used:</label>
-                <select id="edit-chemBrandUsed-<?=$idd?>" name="edit_chemBrandUsed[]" class="form-select">
+                <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select">
                     <?php get_chem($conn); ?>
                 </select>
             </div>
 
             <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
                 <div class="d-flex flex-column">
-                    <label for="edit-amountUsed-<?=$idd?>" class="form-label fw-light" id="edit-amountUsed-label">Amount:</label>
+                    <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light"
+                        id="edit-amountUsed-label">Amount:</label>
                     <input type="number" <?= $status != 'Accepted' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
-                        id="edit-amountUsed-<?=$idd?>" class="form-control form-add me-3" autocomplete="one-time-code" <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
+                        id="edit-amountUsed-<?= $idd ?>" class="form-control form-add me-3" autocomplete="one-time-code"
+                        <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
                 </div>
                 <span id="passwordHelpInline" class="form-text mt-auto mb-2">
                     /ml
                 </span>
-                <button type="button" data-row-id="<?$idd?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
+                <button type="button" data-row-id="<? $idd ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
                         class="bi bi-dash-circle text-light"></i></button>
             </div>
         </div>
@@ -616,25 +618,26 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
 
     $idd = uniqid();
     ?>
-    <div class="row" id="row-<?=$idd?>">
+    <div class="row" id="row-<?= $idd ?>">
         <div class="col-lg-4 mb-2">
-            <label for="edit-chemBrandUsed-<?=$idd?>" class="form-label fw-light">Chemical
+            <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
                 Used:</label>
-            <select id="edit-chemBrandUsed-<?=$idd?>" name="edit_chemBrandUsed[]" class="form-select">
+            <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select">
                 <?php get_chem($conn); ?>
             </select>
         </div>
 
         <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
-                <label for="edit-amountUsed-<?=$idd?>" class="form-label fw-light">Amount:</label>
+                <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light">Amount:</label>
                 <input type="number" <?= $status != 'Accepted' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
-                    id="edit-amountUsed-<?=$idd?>" class="form-control form-add me-3" autocomplete="one-time-code" <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
+                    id="edit-amountUsed-<?= $idd ?>" class="form-control form-add me-3" autocomplete="one-time-code"
+                    <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
             </div>
             <span id="passwordHelpInline" class="form-text mt-auto mb-2">
                 /ml
             </span>
-            <button type="button" data-row-id="<?=$idd?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
+            <button type="button" data-row-id="<?= $idd ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
                     class="bi bi-dash-circle text-light"></i></button>
         </div>
     </div>
@@ -816,4 +819,32 @@ if (isset($_POST['pack_exp']) && $_POST['pack_exp'] === 'true') {
 
     echo $fdate;
     exit();
+}
+
+if (isset($_GET['branchoptions']) && $_GET['branchoptions'] === 'true') {
+    $sql = "SELECT * FROM branches;";
+    $query = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($query) > 0) {
+        echo "<option value='' selected>Filter Branch</option>";
+        while ($row = mysqli_fetch_assoc($query)) {
+            // $id = $row['id'];
+            $name = $row['name'];
+            $loc = $row['location'];
+            ?>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars("$name ($loc)") ?></option>
+            <?php
+        }
+    }
+}
+
+if (isset($_GET['voidreqbadge']) && $_GET['voidreqbadge'] === 'true') {
+    $sql = "SELECT * FROM transactions WHERE void_request = 1;";
+    $query = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($query) > 0) {
+        echo true;
+        exit();
+    }
+    return false;
 }

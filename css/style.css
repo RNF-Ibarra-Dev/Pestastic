@@ -73,8 +73,13 @@ body {
   background-color: #146778;
 }
 
+.form-select option{
+  color: black !important;
+}
+
 select:focus {
   border-color: #bababa !important;
+  /* color: #000; */
 }
 
 .form-control-plaintext {

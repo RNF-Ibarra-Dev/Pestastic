@@ -26,15 +26,41 @@ function treatment_name($conn, $id)
     }
 }
 
-function row_status($conn, $status = '')
+function row_status($conn, $status = false, $branch = false)
 {
-    if ($status != '') {
-        $rowCount = "SELECT * FROM transactions WHERE transaction_status = '$status'";
+    $rowCount = "SELECT COUNT(*) FROM transactions";
+
+    if (isset($status) || isset($branch)) {
+        $stmt = mysqli_stmt_init($conn);
+
+        $rowCount .= " WHERE ";
+
+        $statusq = isset($status) ? " transaction_status = ?" : "";
+        $branchq = isset($branch) ? " branch = ?" : "";
+
+        $data = [];
+        if ($branch && $status) {
+            $rowCount .= "$statusq AND $branchq";
+            $types = $branch && $status ? "ss" : "s";
+            $data[] = $status;
+            $data[] = $branch;
+        } else {
+            $rowCount .= $branch ? $branchq : $statusq;
+            $types = $branch ? 'i' : 's';
+            $data[] = $branch ?? $status;
+        }
+        $rowCount .= ";";
+        mysqli_stmt_prepare($stmt, $rowCount);
+        mysqli_stmt_bind_param($stmt, $types, ...$data);
+        mysqli_stmt_execute($stmt);
+        $res = mysqli_stmt_get_result($stmt);
+        $totalRows = mysqli_num_rows($res);
     } else {
-        $rowCount = 'SELECT * FROM transactions';
+        $rowCount .= ';';
+        $countResult = mysqli_query($conn, $rowCount);
+        $totalRows = mysqli_num_rows($countResult);
     }
-    $countResult = mysqli_query($conn, $rowCount);
-    $totalRows = mysqli_num_rows($countResult);
+
     $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
 
     return ['pages' => $totalPages, 'rows' => $totalRows];
@@ -43,20 +69,35 @@ function row_status($conn, $status = '')
 
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
-    $status = $_GET['status'];
+    $status = $_GET['status'] ?? false;
+    $branch = $_GET['branch'] ?? false;
 
-    if ($status != '') {
-        $sql = "SELECT * FROM transactions 
-                WHERE (id LIKE ? OR treatment_date LIKE ? OR customer_name LIKE ?
-                    OR treatment LIKE ?) 
-                AND transaction_status = ? 
-                ORDER BY id DESC;";
-    } else {
-        $sql = "SELECT * FROM transactions 
-                WHERE id LIKE ? OR treatment_date LIKE ? OR customer_name LIKE ?
-                    OR treatment LIKE ? OR transaction_status LIKE ? 
-                ORDER BY id DESC;";
+    $sql = "SELECT * FROM transactions WHERE (id LIKE ? OR treatment_date LIKE ? OR customer_name LIKE ?
+                    OR treatment LIKE ?)";
+    if ($status) {
+        $sql .= " AND transaction_status = ?";
     }
+
+    if ($branch) {
+        $sql .= " AND branch = ?";
+    }
+
+    $sql .= " ORDER BY id DESC;";
+
+    // if ($status != '') {
+    //     $sql = "SELECT * FROM transactions 
+    //             WHERE (id LIKE ? OR treatment_date LIKE ? OR customer_name LIKE ?
+    //                 OR treatment LIKE ?) 
+    //             AND transaction_status = ? 
+    //             ORDER BY id DESC;";
+    // } else {
+    //     $sql = "SELECT * FROM transactions 
+    //             WHERE id LIKE ? OR treatment_date LIKE ? OR customer_name LIKE ?
+    //                 OR treatment LIKE ? OR transaction_status LIKE ? 
+    //             ORDER BY id DESC;";
+    // }
+
+
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         echo 'ERROR STMT';
@@ -118,16 +159,17 @@ if (isset($_GET['search'])) {
 
 if (isset($_GET['paginate']) && $_GET['paginate'] == 'true') {
     $status = $_GET['status'];
-    load_pagination($conn, $status);
+    $branch = $_GET['branch'];
+    load_pagination($conn, $status, $branch);
 }
 
 
-function load_pagination($conn, $status)
+function load_pagination($conn, $status = '', $branch = '')
 {
 
     // list($countResult, $totalRows, $totalPages) = row_status($conn, $pageRows, $status);
-    if ($status != '') {
-        $rowstatus = row_status($conn, $status);
+    if ($status != '' || $branch != '') {
+        $rowstatus = row_status($conn, $status, $branch);
         $totalRows = $rowstatus['rows'];
         $totalPages = $rowstatus['pages'];
     } else {
@@ -238,13 +280,14 @@ function load_pagination($conn, $status)
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
-    $status = $_GET['status'] == '' ? '' : $_GET['status'];
+    $status = $_GET['status'] ?? false;
+    $branch = $_GET['branch'] ?? false;
 
     $limitstart = ($current - 1) * $pageRows;
 
     $sql = "SELECT * FROM transactions ";
 
-    if ($status != '') {
+    if ($status) {
         $sql .= "WHERE transaction_status = '$status' ";
         $sql .= "ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 
