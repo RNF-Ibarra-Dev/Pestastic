@@ -847,12 +847,12 @@ if (!isset($_SESSION["techId"]) && !isset($_SESSION['baID']) && !isset($_SESSION
                         <p class="fs-2 fw-medium text-light text-center">Login</p>
                         <div class="form-floating form-custom mb-2">
                             <input type="text" name="userEmail" class="form-control" id="floatingInput"
-                                placeholder="Username/Email">
+                                placeholder="Username/Email" autocapitalize="new-password">
                             <label for="floatingInput">Username/Email</label>
                         </div>
                         <div class="form-floating form-custom mb-2">
                             <input type="password" name="pwd" class="form-control" id="floatingPassword"
-                                placeholder="Password">
+                                placeholder="Password" autocapitalize="new-password">
                             <label for="floatingPassword">Password</label>
                         </div>
 

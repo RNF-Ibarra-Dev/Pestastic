@@ -47,7 +47,7 @@ include("header.php");
                 <button type="submit"
                     class="btn btn-form-submit bg-light bg-opacity-75 border px-3 py-2 w-100">Submit</button>
             </div>
-            <p class="alert alert-info text-center mt-2" id="alert" style="display: none"></p>
+            <p class="alert alert-info text-center mt-2 text-wrap" id="alert" style="display: none"></p>
         </form>
     </div>
 
@@ -59,36 +59,38 @@ include("header.php");
     // console.log(params.has('token'));
     // console.log(params.get('token'));
 
-    $(document).ready(function () {
+    // check url params for token. Block inputs and submit button if tokenn is invalid or missing and redirect 
+    $(document).ready(function() {
         var params = new URLSearchParams(window.location.search);
         $('#resetpass input, #resetpass button').prop('disabled', true);
         if (!params.has('token')) {
-            $("#alert").html("Unrestricted Access. Redirecting . . .").show();
+            $("#alert").html("Unrestricted Access. Redirecting . . .").fadeIn(500);
             setTimeout(() => {
-                $(location).attr('href', "index.php");
+                $(location).attr('href', "index.php?unrestrictedaccess");
             }, 3000);
         } else {
             const token = params.get('token');
             console.log(token);
             $.post('includes/resetpass.inc.php', {
-                token: token,
-                chktoken: true
-            })
-                .done(function (d) {
-                    console.log(d);
+                    token: token,
+                    chktoken: true
+                })
+                .done(function(d) {
+                    // console.log(d);
                     $('#resetpass input, #resetpass button').prop('disabled', false);
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                     setTimeout(() => {
                         $(location).attr('href', 'forgotpass.php?invalidtoken=true');
                     }, 3000);
-                    $("#alert").html("Invalid Token. Request for another token. Redirecting . . .").show();
+                    $("#alert").html(e.responseText + " Redirecting . . .").fadeIn(500);
                 })
         }
     });
 
-    $(document).on('change', '#showpwd', function () {
+
+    $(document).on('change', '#showpwd', function() {
         let checked = $(this).prop('checked');
         if (!checked) {
             $('.form-floating input').prop('type', 'password');
@@ -96,37 +98,49 @@ include("header.php");
             $('.form-floating input').prop('type', 'text');
         }
     })
-
-    $('.form-floating input').keyup(function () {
-        setTimeout(() => {
-            if ($("#pwd").val() != $("#rpwd").val()) {
-                $(".form-floating input").addClass('border-danger');
-                $("button").prop('disabled', true);
-                $("#alert").html('Password do not match.').fadeIn(500);
-            } else {
-                $("button").prop('disabled', false);
-                $("#alert").html('Password do not match.').fadeOut(1000);
+    let timeout;
+    // $(".form-floating input").unbind('keyup');
+    $('.form-floating input').on('keyup', function() {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            if ($('#pwd').val() != '' && $('#rpwd').val() != '') {
+                if ($("#pwd").val() != $("#rpwd").val()) {
+                    $(".form-floating input").addClass('border-danger');
+                    $("button").prop('disabled', true);
+                    $("#alert").fadeOut(1000).html('Passwords does not match.').fadeIn(500);
+                } else {
+                    $("button").prop('disabled', false);
+                    $("#alert").html('Passwords does not match.').fadeOut(1000);
+                }
             }
         }, 1000);
     })
 
-    $(document).on('submit', '#resetpass', async function (e) {
+    $(document).on('submit', '#resetpass', async function(e) {
         var params = new URLSearchParams(window.location.search);
         e.preventDefault();
         // console.log($(this).serialize());
         await $.ajax({
-            method: "POST",
-            url: "includes/resetpass.inc.php",
-            dataType: "json",
-            data: $(this).serialize() + "&newpass=true&token=" + params.get('token')
-        })
-            .done(function (d) {
-                console.log(d);
-                $('#alert').html(d.success).fadeIn(500).delay(2000).fadeOut(1000);
+                method: "POST",
+                url: "includes/resetpass.inc.php",
+                dataType: "json",
+                data: $(this).serialize() + "&newpass=true&token=" + params.get('token')
             })
-            .fail(function (e) {
+            .done(function(d) {
+                console.log(d);
+                $('#alert').fadeOut(1000, function() {
+                    $(this).html(d.success).fadeIn(500);
+                });
+                $("#resetpass")[0].reset();
+                setTimeout(() => {
+                    $(location).attr('href', 'login.php');
+                }, 3000);
+            })
+            .fail(function(e) {
                 console.log(e);
-                $('#alert').html(e.responseText).fadeIn(500).delay(2000).fadeOut(1000);
+                $('#alert').fadeOut(1000, function() {
+                    $(this).html(e.responseText).fadeIn(500);
+                })
             })
     });
 </script>

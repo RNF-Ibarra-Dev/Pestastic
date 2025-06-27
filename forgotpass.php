@@ -67,13 +67,14 @@ include("header.php");
         })
             .done(function (d) {
                 console.log(d);
-                $("#alert").html(d.success).fadeIn(750).delay(2000).fadeOut(1000);
+                $("#alert").fadeOut(500).html(d.success).fadeIn(750);
             })
             .fail(function (e) {
                 console.log(e);
-                $("#alert").html(e.responseText).fadeIn(750).delay(1500).fadeOut(750);
+                $("#alert").fadeOut(500).html(e.responseText).fadeIn(750);
             })
             .always(function () {
+                $("#resetpass")[0].reset();
                 $("#resetpass input, #resetpass button").prop('disabled', false);
                 $('#spinner').hide();
             })
@@ -82,7 +83,7 @@ include("header.php");
     $(document).ready(function () {
         const param = new URLSearchParams(window.location.search);
         if (param.get('invalidtoken') == 'true') {
-            $('#alert').html('Token Invalid. Please request for another link.').fadeIn(750);
+            $('#alert').html('Token Invalid/Expired. Please request for another link.').fadeIn(750);
         }
     })
 </script>

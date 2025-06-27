@@ -2,8 +2,8 @@
 
 if (isset($_POST["loginSubmit"])) {
 
-    $uidEmail = htmlspecialchars($_POST["userEmail"]);
-    $pwd = htmlspecialchars($_POST["pwd"]);
+    $uidEmail = $_POST["userEmail"];
+    $pwd = $_POST["pwd"];
     
     require_once "dbh.inc.php";
     require_once "functions.inc.php";

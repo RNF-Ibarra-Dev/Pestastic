@@ -214,7 +214,7 @@ function reset_password($conn, $pwd, $email, $token)
     mysqli_begin_transaction($conn);
     try {
         // throw new Exception("tablename: $table, pwdcol: $pwdcol, emailcol: $emailcol");
-        $sql = "UPDATE FROM $table SET $pwdcol = ? WHERE $emailcol = ?;";
+        $sql = "UPDATE $table SET $pwdcol = ? WHERE $emailcol = ?;";
         $stmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -225,12 +225,11 @@ function reset_password($conn, $pwd, $email, $token)
         mysqli_stmt_execute($stmt);
 
         if (mysqli_stmt_affected_rows($stmt) > 0) {
-            // mysqli_commit($conn);
-            throw new Exception("new pwd: $pwd, email: $email");
-            // return true;
+            mysqli_commit($conn);
+            // throw new Exception("new pwd: $pwd, email: $email");
+            return true;
         }
         throw new Exception("Failed to set new password.");
-
     } catch (Exception $e) {
         mysqli_rollback($conn);
         $error = "Error at line " . $e->getLine() . ". " . $e->getMessage() . " File: " . $e->getFile();
@@ -285,7 +284,6 @@ function check_expiry($conn, $email)
         return $row['reset_token_expires_at'];
     }
     return false;
-
 }
 
 function multiUserExists($conn, $username, $email)
@@ -1440,10 +1438,42 @@ function loginUser($conn, $uidEmail, $pwd)
 }
 
 
+function update_pwd_hash($conn, $table, $newhashedpwd, $pwdcol, $id, $idcol)
+{
+    mysqli_begin_transaction($conn);
+
+    try {
+        $sql = "UPDATE $table SET $pwdcol = ? WHERE $idcol = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("rehash stmt failed.");
+        }
+
+        mysqli_stmt_bind_param($stmt, 'ss', $newhashedpwd, $id);
+        mysqli_stmt_execute($stmt);
+
+        if (mysqli_stmt_affected_rows($stmt) > 0) {
+            mysqli_commit($conn);
+            // throw new Exception("new hash $newhashedpwd at table $table.");
+            return true;
+        }
+        throw new Exception("Password rehash failed.");
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . " at line " . $e->getLine() . " at file " . $e->getFile(),
+            'line' => $e->getLine(),
+        ];
+    }
+}
+
 function loginMultiUser($conn, $uidEmail, $pwd)
 {
     // sets the row from the user exists check
     $userExists = multiUserExists($conn, $uidEmail, $uidEmail);
+    $alg = PASSWORD_DEFAULT;
+    $opt = ['cost' => 13];
 
     if ($userExists === false) {
         header("location: ../login.php?error=wronglogin");
@@ -1455,11 +1485,16 @@ function loginMultiUser($conn, $uidEmail, $pwd)
 
         $pwdHashed = $userExists['techPwd'];
         $checkPwd = password_verify($pwd, $pwdHashed);
+        if ($checkPwd) {
 
-        if ($checkPwd === false) {
-            header("location: ../login.php?error=wrongpassword");
-            exit();
-        } elseif ($checkPwd === true) {
+            if (password_needs_rehash($pwdHashed, $alg, $opt)) {
+                $newhash = password_hash($pwd, $alg, $opt);
+                if (!$updatehash = update_pwd_hash($conn, 'technician', $newhash, 'techPwd', $userExists['technicianId'], 'technicianId')) {
+                    echo $updatehash['error'];
+                    exit();
+                }
+            }
+
             session_start();
             $_SESSION["techId"] = $userExists['technicianId'];
             $_SESSION["techUsn"] = $userExists['username'];
@@ -1469,16 +1504,27 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             $_SESSION['branch'] = $userExists['user_branch'];
             header("location: ../technician/index.php?tech_login=success");
             exit();
+        } else {
+            header("location: ../login.php?error=wrongpassword");
+            exit();
         }
 
         // branch admin - operations supervisor
     } elseif (isset($userExists['baID'])) {
 
-        // $pwdHashed = $userExists['techPwd'];
-        // $checkPwd = password_verify($pwd, $pwdHashed);
-        $passwood = $userExists['baPwd'];
+        $pwdHashed = $userExists['baPwd'];
+        $checkPwd = password_verify($pwd, $pwdHashed);
 
-        if ($pwd === $passwood) {
+        if ($checkPwd) {
+
+            if (password_needs_rehash($pwdHashed, $alg, $opt)) {
+                $newhash = password_hash($pwd, $alg, $opt);
+                if (!$updatehash = update_pwd_hash($conn, 'branchadmin', $newhash, 'baPwd', $userExists['baID'], 'baID')) {
+                    echo $updatehash['error'];
+                    exit();
+                }
+            }
+
             session_start();
             $_SESSION["baID"] = $userExists['baID'];
             $_SESSION["fname"] = $userExists['baFName'];
@@ -1490,7 +1536,7 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             header("location: ../os/index.php?os_login=success");
             exit();
         } else {
-            header("location: ../login.php?error=wrongpassword");
+            header("location: ../login.php?error=wrongpassword&" . json_encode($userExists));
             exit();
         }
 

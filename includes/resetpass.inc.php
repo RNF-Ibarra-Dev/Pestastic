@@ -29,7 +29,7 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
     $token_hash = hash('sha256', $token);
 
     $now = time();
-    
+
     // check for existing reset pass expiry
     $expiry = check_expiry($conn, $email);
     $e = $expiry ? strtotime($expiry) : false;
@@ -41,7 +41,7 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
         http_response_code(400);
         echo "Your link is still valid. Please check your inbox.";
         exit();
-    } 
+    }
 
     // http_response_code(400);
     // echo "now: $now exp $e exp $expiry";
@@ -97,51 +97,92 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
 }
 
 
-if(isset($_POST['newpass']) && $_POST['newpass'] === 'true'){
+if (isset($_POST['newpass']) && $_POST['newpass'] === 'true') {
     $token = $_POST['token'];
     $pwd = $_POST['pwd'];
     $rpwd = $_POST['rpwd'];
 
-    if($pwd != $rpwd){
+    if ($pwd != $rpwd) {
         http_response_code(400);
         echo "Passwords do not match.";
         exit();
     }
 
+    if (strlen($pwd) < 8) {
+        http_response_code(400);
+        echo "Password should be at least 8 characters.";
+        exit();
+    }
+
+    if (!preg_match("/[a-zA-Z]/i", $pwd)) {
+        http_response_code(400);
+        echo "Password should contain at least one each of uppercase and lowercase letter.";
+        exit();
+    }
+
+    if (!preg_match("/[0-9]/", $pwd)) {
+        http_response_code(400);
+        echo "Password should contain numbers";
+        exit();
+    }
+
     $email = email_token($conn, $token);
 
-    if(!$email){
+    if (!$email) {
         http_response_code(400);
         echo "Email not found. Make sure to double check the email you submitted.";
         exit();
     }
 
-    if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         http_response_code(400);
         echo "Invalid Email.";
         exit();
     }
 
-    
+    $hpwd = password_hash($pwd, PASSWORD_DEFAULT);
 
-    $reset = reset_password($conn, $pwd, $email, $token);
+    // if(password_verify($pwd, $hpwd)){
+    //     http_response_code(400);
+    //     echo 'verified';
+    //     exit();
+    // }
 
-    if(isset($reset['error'])){
+    $reset = reset_password($conn, $hpwd, $email, $token);
+
+    if (isset($reset['error'])) {
         http_response_code(400);
         echo $reset['error'];
+        exit();
+    } elseif ($reset) {
+        http_response_code(200);
+        echo json_encode(['success' => 'New password set! Redirecting you to login page.']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo "unknown error. $reset";
         exit();
     }
 }
 
-if(isset($_POST['chktoken']) && $_POST['chktoken'] === 'true'){
+if (isset($_POST['chktoken']) && $_POST['chktoken'] === 'true') {
     $token = $_POST['token'];
 
     $email = email_token($conn, $token);
-    if($email){
+    if ($email) {
         http_response_code(200);
-        echo $email;
-        exit();
+        $checkexpiry = check_expiry($conn, $email);
+        $now = time();
+        $expiry = $checkexpiry ? strtotime($checkexpiry) : false;
+        if (!$expiry || ($now >= $expiry)) {
+            http_response_code(400);
+            echo "Token Expired.";
+            exit();
+        }
+        http_response_code(200);
+        return true;
     }
+
     http_response_code(400);
-    return false;
+    echo "Token Expired.";
 }
