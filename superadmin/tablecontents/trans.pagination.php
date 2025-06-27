@@ -94,10 +94,10 @@ if (isset($_GET['search'])) {
                 <td>
                     <?=
                         $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
-                             class='btn btn-sidebar rounded-pill border-0 p-0 me-2'><span class = 'text-light badge rounded-pill text-bg-warning bg-opacity-25'>Pending</span></a>" :
-                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50'>$status</span>" :
-                            ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50'>$status</span>" :
-                                ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light'>$status</span>" : $status)))
+                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'text-light badge rounded-pill w-100 text-bg-warning bg-opacity-25'>Pending</span></a>" :
+                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" :
+                            ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" :
+                                ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
                         ?>
                 </td>
                 <td>
@@ -263,6 +263,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $id = $row['id'];
             $customerName = $row['customer_name'];
             $treatmentDate = $row['treatment_date'];
+            $td = date("F j, Y", strtotime($treatmentDate));
             $treatment = $row['treatment'];
             $t_name = treatment_name($conn, $treatment);
             $createdAt = $row['created_at'];
@@ -272,15 +273,15 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <tr class="text-center">
                 <td scope="row"><?= $id ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= htmlspecialchars($treatmentDate) ?></td>
+                <td><?= htmlspecialchars($td) ?></td>
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
                         $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
-                             class='btn btn-sidebar rounded-pill border-0 p-0 me-2'><span class = 'text-light badge rounded-pill text-bg-warning bg-opacity-25'>Pending</span></a>" :
-                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50'>$status</span>" :
-                            ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50'>$status</span>" :
-                                ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light'>$status</span>" : $status)))
+                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'w-100 text-light badge rounded-pill text-bg-warning bg-opacity-25'>Pending</span></a>" :
+                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" :
+                            ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" :
+                                ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
                         ?>
                 </td>
                 <td>
