@@ -848,3 +848,26 @@ if (isset($_GET['voidreqbadge']) && $_GET['voidreqbadge'] === 'true') {
     }
     return false;
 }
+
+if (isset($_GET['count']) && $_GET['count'] === 'true') {
+    $status = $_GET['status'];
+
+    $sql = "SELECT COUNT(*) FROM transactions WHERE transaction_status = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "stmt error";
+        exit();
+    }
+    $statuss = ucfirst($status);
+
+    mysqli_stmt_bind_param($stmt, 's', $statuss);
+    mysqli_stmt_execute($stmt);
+
+    $res = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_row($res);
+
+    echo $row[0];
+    exit();
+}

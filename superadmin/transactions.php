@@ -41,19 +41,41 @@
             <?php include('navbar.php'); ?>
 
             <!-- content start -->
-            <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3">
-                <h1 class="display-6 text-light mb-0">Manage Transactions</h1>
+            <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2">
+                <h1 class="display-6 text-light mb-0 fw-medium text-center">Manage Transactions</h1>
+            </div>
+            <div class="d-flex gap-3 mb-2 mx-3">
+                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-grow-1">
+                    <p class="fs-5 fw-bold align-middle"><i class="bi bi-alarm me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Pending</p>
+                    <p class="fw-light mb-0 mt-4">description</p>
+                    <p class="fs-4 fw-bold mb-0 mt-3" id="count_pending"></p>
+                </div>
+                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-grow-1">
+                    <p class="fs-5 fw-bold"><i class="bi bi-clipboard-check me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Accepted</p>
+                    <p class="fw-light mb-0 mt-4">description</p>
+                    <p class="fs-4 fw-bold mb-0 mt-3" id="count_accepted"></p>
+                </div>
+                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-grow-1">
+                    <p class="fs-5 fw-bold"><i class="bi bi-calendar2-check me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Completed</p>
+                    <p class="fw-light mb-0 mt-4">description</p>
+                    <p class="fs-4 fw-bold mb-0 mt-3" id="count_completed"></p>
+                </div>
+                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-grow-1">
+                    <p class="fs-5 fw-bold"><i class="bi bi-clipboard-x me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Voided</p>
+                    <p class="fw-light mb-0 mt-4">description</p>
+                    <p class="fs-4 fw-bold mb-0 mt-3" id="count_voided"></p>
+                </div>
             </div>
 
-            <div class="hstack gap-2 mt-2 mx-4">
-                <input class="form-control form-custom me-auto p-2 text-light" type="search"
-                    placeholder="Search transactions . . ." id="searchbar" name="searchTrans"
-                    autocomplete="one-time-code">
+
+            <div class="hstack gap-2 mt-2 mx-3">
                 <!-- <div class="vr"></div> -->
-                <select class="form-select select-transparent bg-light bg-opacity-25 border-0 h-100 text-light w-25"
+                <select
+                    class="form-select select-transparent bg-light bg-opacity-25 py-2 border-0 h-100 text-light w-25"
                     id="sortbranches" aria-label="Default select example">
                 </select>
-                <select class="form-select select-transparent bg-light bg-opacity-25 border-0 h-100 text-light w-25"
+                <select
+                    class="form-select select-transparent bg-light bg-opacity-25 py-2 border-0 h-100 text-light w-25"
                     id="sortstatus" aria-label="Default select example">
                     <option value='' selected>Show All Status</option>
                     <option value="Pending">Pending</option>
@@ -61,18 +83,19 @@
                     <option value="Completed">Completed</option>
                     <option value="Voided">Voided</option>
                 </select>
-                <!-- <button type="button" id="voidreqbtn" class="btn btn-sidebar text-light py-3 px-4"
-                    data-bs-toggle="modal" data-bs-target="#voidrequestmodal"><i
-                        class="bi bi-list-check"></i></button> -->
+                <input class="form-control form-custom me-auto py-2 align-middle px-3 rounded-pill text-light"
+                    type="search" placeholder="Search transactions . . ." id="searchbar" name="searchTrans"
+                    autocomplete="one-time-code">
                 <button id="voidreqbtn"
-                    class="btn btn-sidebar position-relative text-light py-1 px-4 bg-light bg-opacity-25">Void
+                    class="btn btn-sidebar position-relative text-light py-2 w-25 px-2 bg-light bg-opacity-25"><i
+                        class="bi bi-x-circle me-2"></i> Void
                     Requests
                     <span
                         class="position-absolute top-0 start-100 translate-middle p-2 bg-warning btn btn-sidebar rounded-circle visually-hidden">
                     </span>
                 </button>
                 <div class="vr"></div>
-                <button type="button" id="addbtn" class="btn btn-sidebar bg-light bg-opacity-25 text-light py-3 px-4"
+                <button type="button" id="addbtn" class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3"
                     disabled-data-bs-toggle="modal" disabled-data-bs-target="#addModal"><i
                         class="bi bi-file-earmark-plus"></i></button>
             </div>
@@ -604,7 +627,7 @@
                                                 <option value="Completed">Completed </option>
                                             </select>
                                         </div>
-
+                                        <p id="statusNote" class="text-muted fw-light d-none ms-2"></p>
                                     </div>
 
                                     <!-- toggle visually hidden when edit -->
@@ -919,6 +942,8 @@
         $(document).on('submit', '#voidrequestform', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
+            let status = $("#sortstatus").val();
+            let branch = $("#sortbranches").val();
             try {
                 const voidreq = await $.ajax({
                     method: 'POST',
@@ -930,12 +955,21 @@
                 if (voidreq) {
                     console.log(voidreq.success);
                     await void_req_table();
-                    loadpage(1, status);
+                    loadpage(1, status, branch);
                     $("#tableAlert").removeClass('visually-hidden').html(voidreq.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
                     $('#confirmvoidrequest').modal('hide');
                 }
             } catch (error) {
                 console.log(error);
+            }
+        })
+
+        $('#viewEditForm').on('change', 'select#edit-status', function () {
+            if ($(this).val() === 'Completed') {
+                // console.log('tte');
+                $('#statusNote').html('Note: Once a transaction is marked as completed, it is no longer editable.').removeClass('d-none');
+            } else {
+                $("#statusNote").addClass('d-none');
             }
         })
 
@@ -951,7 +985,8 @@
         $('#approvependingtransactions').on('submit', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
-            let status = $('#sortstatus option:selected').val();
+            let branch = $('#sortbranches').val();
+            let status = $('#sortstatus').val();
             try {
                 const approve = await $.ajax({
                     method: 'POST',
@@ -963,7 +998,7 @@
                 if (approve) {
                     console.log(approve);
                     $('#approvemodal').modal('hide');
-                    loadpage(1, status);
+                    loadpage(1, status, branch);
                     $("#tableAlert").removeClass('visually-hidden').html(approve.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
 
                 }
@@ -1055,6 +1090,27 @@
             });
 
         }
+
+        function get_overview_count(container){
+            $.get(transUrl, {
+                count: true,
+                status: container
+            })
+            .done(function(d){
+                console.log(d);
+                $(`#count_${container}`).append(d);
+            })
+            .fail(function(e){
+                console.log(e);
+            })
+        }
+
+        $(document).ready(function(){
+            get_overview_count('pending');
+            get_overview_count('accepted');
+            get_overview_count('completed');
+            get_overview_count('voided');
+        });
 
         // add / delete chem main function
         async function add_more_chem() {
@@ -1724,6 +1780,8 @@
         $(function () {
             $('#addTransaction').on('submit', async function (e) {
                 e.preventDefault();
+                let status = $("#sortstatus").val();
+                let branch = $("#sortbranches").val();
                 console.log($(this).serialize());
                 try {
                     const trans = await $.ajax({
@@ -1736,7 +1794,7 @@
                     if (trans.success) {
                         console.log(trans.success);
                         console.log(trans.iterate);
-                        await loadpage(1);
+                        await loadpage(1, status, branch);
                         $('#confirmAdd').modal('hide');
                         $('#addTransaction')[0].reset();
                         $('#tableAlert').removeClass('visually-hidden').html(trans.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
@@ -1791,6 +1849,8 @@
         })
 
         async function update_transaction() {
+            let status = $("#sortstatus").val();
+            let branch = $("#sortbranches").val();
             try {
                 const update = await $.ajax({
                     type: 'POST',
@@ -1807,7 +1867,7 @@
                     // console.log('final problems: ' + update.fprob);
                     // console.log(update.techs);
                     // console.log(update.diffs);
-                    await loadpage();
+                    await loadpage(1, status, branch);
                     $('#confirmation').modal('hide');
                     $('#viewEditForm')[0].reset();
                     $('#tableAlert').removeClass('visually-hidden').html(update.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
@@ -1822,7 +1882,8 @@
         }
 
         async function delete_transaction() {
-
+            let status = $("#sortstatus").val();
+            let branch = $("#sortbranches").val();
             let row = $('#view-transId').val();
             let pwd = $('#editPwd').val();
             // console.log(saId);
@@ -1846,7 +1907,7 @@
                 if (del) {
                     // let res = JSON.parse(res.responseText);
                     // console.log(del.success + ' SUCCESS' + JSON.stringify(del));
-                    await loadpage();
+                    await loadpage(1, status, branch);
                     $('#confirmation').modal('hide');
                     $('#viewEditForm')[0].reset();
                     $('#tableAlert').removeClass('visually-hidden').html(del.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
