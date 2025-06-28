@@ -26,45 +26,7 @@ function treatment_name($conn, $id)
     }
 }
 
-function row_status($conn, $status = false, $branch = false)
-{
-    $rowCount = "SELECT COUNT(*) FROM transactions";
 
-    if (isset($status) || isset($branch)) {
-        $stmt = mysqli_stmt_init($conn);
-
-        $rowCount .= " WHERE ";
-
-        $statusq = isset($status) ? " transaction_status = ?" : "";
-        $branchq = isset($branch) ? " branch = ?" : "";
-
-        $data = [];
-        if ($branch && $status) {
-            $rowCount .= "$statusq AND $branchq";
-            $types = $branch && $status ? "ss" : "s";
-            $data[] = $status;
-            $data[] = $branch;
-        } else {
-            $rowCount .= $branch ? $branchq : $statusq;
-            $types = $branch ? 'i' : 's';
-            $data[] = $branch ?? $status;
-        }
-        $rowCount .= ";";
-        mysqli_stmt_prepare($stmt, $rowCount);
-        mysqli_stmt_bind_param($stmt, $types, ...$data);
-        mysqli_stmt_execute($stmt);
-        $res = mysqli_stmt_get_result($stmt);
-        $totalRows = mysqli_num_rows($res);
-    } else {
-        $rowCount .= ';';
-        $countResult = mysqli_query($conn, $rowCount);
-        $totalRows = mysqli_num_rows($countResult);
-    }
-
-    $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
-
-    return ['pages' => $totalPages, 'rows' => $totalRows];
-}
 
 
 if (isset($_GET['search'])) {
@@ -157,14 +119,142 @@ if (isset($_GET['search'])) {
     }
 }
 
+// function row_status($conn, $status = '', $branch = '')
+// {
+//     $rowCount = "SELECT COUNT(*) FROM transactions";
+
+//     if ($status != '' || ($branch !== '' && $branch !== NULL)) {
+//         $stmt = mysqli_stmt_init($conn);
+
+//         $rowCount .= " WHERE ";
+
+//         $statusq = "transaction_status = ?";
+//         $branchq = "branch = ?";
+
+//         $data = [];
+//         if ($branch != '' && $status != '') {
+//             $rowCount .= "$statusq AND $branchq";
+//             $types = $branch && $status ? "si" : "s";
+//             $data[] = $status;
+//             $data[] = (int) $branch;
+//         } else {
+//             $rowCount .= $branch ? $branchq : $statusq;
+//             $types = $branch ? 'i' : 's';
+//             $data[] = (int) $branch ?? $status;
+//         }
+//         $rowCount .= ";";
+//         mysqli_stmt_prepare($stmt, $rowCount);
+//         mysqli_stmt_bind_param($stmt, $types, ...$data);
+//         mysqli_stmt_execute($stmt);
+//         $res = mysqli_stmt_get_result($stmt);
+//         $totalRows = mysqli_num_rows($res);
+//     } else {
+//         $rowCount .= ';';
+//         $countResult = mysqli_query($conn, $rowCount);
+//         $totalRows = mysqli_num_rows($countResult);
+//     }
+
+//     $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
+
+//     return ['pages' => $totalPages, 'rows' => $totalRows];
+// }
+
+function row_status($conn, $status_input = '', $branch_input = '')
+{
+    // --- 1. Input Processing & Type Casting (Crucial First Step) ---
+    // This is where you prepare your function arguments into unambiguous filter values.
+
+    // For 'status' (string filter):
+    // If $status_input is '', it means no status filter.
+    $status_filter = (string) $status_input;
+
+    // For 'branch' (integer filter):
+    // Default to null, so if no valid branch is provided, no filter applies.
+    $branch_filter = null;
+    // Check if branch_input is provided AND is not an empty string
+    if ($branch_input !== '' && $branch_input !== null) {
+        $branch_filter = (int) $branch_input; // Cast to integer if it's a meaningful value
+    }
+    // Now:
+    //   - $status_filter will be '' or a string (e.g., 'pending').
+    //   - $branch_filter will be null (no filter), or an integer (e.g., 0, 101).
+
+
+    // --- 2. Dynamic Query Construction ---
+    // Always start with the base query for counting rows. Use COUNT(*).
+    $sql = "SELECT COUNT(*) FROM transactions";
+
+    // Arrays to dynamically build the WHERE clause, parameters, and types string
+    $conditions = [];   // Stores individual SQL WHERE conditions (e.g., "transaction_status = ?")
+    $params = [];       // Stores the actual values to bind for the prepared statement
+    $typesString = "";  // Stores the type string for mysqli_stmt_bind_param (e.g., "s", "i", "si")
+
+    // Add Status filter condition if $status_filter has a meaningful value (is not empty)
+    if (!empty($status_filter)) {
+        $conditions[] = "transaction_status = ?";
+        $params[] = $status_filter;
+        $typesString .= "s"; // 's' for string
+    }
+
+    // Add Branch filter condition if $branch_filter has a meaningful value (i.e., not null)
+    // This correctly includes 0 as a filterable branch ID.
+    if ($branch_filter !== null) {
+        $conditions[] = "branch = ?";
+        $params[] = $branch_filter;
+        $typesString .= "i"; // 'i' for integer
+    }
+
+    // Build the final SQL query string by adding the WHERE clause if any conditions exist
+    if (!empty($conditions)) {
+        $sql .= " WHERE " . implode(" AND ", $conditions); // Combines conditions with " AND "
+    }
+    $sql .= ";"; // Add semicolon at the very end of the complete query
+
+
+    // --- 3. Prepare and Execute the Statement ---
+    $stmt = mysqli_stmt_init($conn);
+    $totalRows = 0; // Default totalRows to 0 in case of error
+
+    // Always use prepared statements for consistency and security.
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        error_log("SQL Prepare Failed: " . mysqli_error($conn) . " Query: " . $sql);
+        // Implement robust error handling here (e.g., throw an exception, return an error array)
+    } else {
+        // Bind parameters if there are any
+        if (!empty($params)) {
+            // The "..." splat operator unpacks the $params array into individual arguments
+            mysqli_stmt_bind_param($stmt, $typesString, ...$params);
+        }
+
+        // Execute the statement
+        mysqli_stmt_execute($stmt);
+
+        // Get the result set
+        $result = mysqli_stmt_get_result($stmt);
+
+        // Fetch the count (COUNT(*) query returns a single row with one column)
+        $row = mysqli_fetch_row($result);
+        $totalRows = $row[0];
+
+        // Close the statement
+        mysqli_stmt_close($stmt);
+    }
+
+    // --- 4. Calculate Total Pages and Return ---
+    $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
+
+    return ['pages' => $totalPages, 'rows' => $totalRows];
+}
+
 if (isset($_GET['paginate']) && $_GET['paginate'] == 'true') {
     $status = $_GET['status'];
     $branch = $_GET['branch'];
-    load_pagination($conn, $status, $branch);
+    $active = $_GET['active'];
+    load_pagination($conn, (int) $active, $status, $branch);
 }
 
 
-function load_pagination($conn, $status = '', $branch = '')
+function load_pagination($conn, $activepage = 1, $status = '', $branch = '')
 {
 
     // list($countResult, $totalRows, $totalPages) = row_status($conn, $pageRows, $status);
@@ -181,8 +271,8 @@ function load_pagination($conn, $status = '', $branch = '')
         <ul class="pagination justify-content-center">
             <?php
             // set active page ex. 1 = first page. Checks if numeric as well.
-            $activepage = isset($_GET['active']) && is_numeric($_GET['active']) ? $_GET['active'] : 1;
-
+            // $activepage = isset($_GET['active']) && is_numeric($_GET['active']) ? $_GET['active'] : 1;
+        
             // set next and previous pagination button data
             $prev = $activepage - 1;
             $next = $activepage + 1;
@@ -279,25 +369,47 @@ function load_pagination($conn, $status = '', $branch = '')
 
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
+    // $current = $_GET['currentpage'] ? $_GET['currentpage'] : 1;
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
     $status = $_GET['status'] ?? false;
     $branch = $_GET['branch'] ?? false;
+
+    $status = $_GET['status'];
+    $branch = $_GET['branch'];
 
     $limitstart = ($current - 1) * $pageRows;
 
     $sql = "SELECT * FROM transactions ";
 
-    if ($status) {
-        $sql .= "WHERE transaction_status = '$status' ";
-        $sql .= "ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
+    if (!empty($status) || !empty($branch)) {
+        $stmt = mysqli_stmt_init($conn);
+        $sq = "transaction_status = ?";
+        $bq = "branch = ?";
+        $data = [];
+        $sql .= "WHERE ";
+
+        if ($status && $branch) {
+            $sql .= "$sq AND $bq";
+            $types = "si";
+            $data[] = $status;
+            $data[] = (int) $branch;
+        } else {
+            $sql .= $status ? $sq : $bq;
+            $data[] = $status ? $status : (int) $branch;
+            $types = $status ? "s" : "i";
+        }
+        $sql .= " ORDER BY id DESC LIMIT $limitstart, $pageRows;";
+        mysqli_stmt_prepare($stmt, $sql);
+        mysqli_stmt_bind_param($stmt, $types, ...$data);
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
 
     } else {
-        $sql .= "ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
-
+        $sql .= " ORDER BY id DESC LIMIT $limitstart, $pageRows;";
+        $result = mysqli_query($conn, $sql);
     }
 
-
-    $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
 
 
@@ -339,6 +451,6 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='5' class='text-center'>No data found.</td></tr>";
+        echo "<tr><td scope='row' colspan='6' class='text-center'>No data found.</td></tr>";
     }
 }

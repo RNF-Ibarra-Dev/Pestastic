@@ -828,7 +828,7 @@ if (isset($_GET['branchoptions']) && $_GET['branchoptions'] === 'true') {
     if (mysqli_num_rows($query) > 0) {
         echo "<option value='' selected>Filter Branch</option>";
         while ($row = mysqli_fetch_assoc($query)) {
-            // $id = $row['id'];
+            $id = $row['id'];
             $name = $row['name'];
             $loc = $row['location'];
             ?>

@@ -72,7 +72,7 @@
                     </span>
                 </button>
                 <div class="vr"></div>
-                <button type="button" id="addbtn" class="btn btn-sidebar text-light py-3 px-4"
+                <button type="button" id="addbtn" class="btn btn-sidebar bg-light bg-opacity-25 text-light py-3 px-4"
                     disabled-data-bs-toggle="modal" disabled-data-bs-target="#addModal"><i
                         class="bi bi-file-earmark-plus"></i></button>
             </div>
@@ -1975,7 +1975,7 @@
         async function void_badge() {
             $.get(transUrl, { voidreqbadge: true })
                 .done(function (d) {
-                    console.log(d);
+                    // console.log(d);
                     if (d) {
                         $('#voidreqbtn span').removeClass('visually-hidden');
                     } else {
@@ -1987,33 +1987,35 @@
                 })
         }
 
-        
-        $("main").on('change', '#sortbranches', async function(){
+
+        $("main").on('change', '#sortbranches', async function () {
+            $("#searchbar").val('');
             let branch = $(this).val();
-            let status = $('#sortstatus option:selected').val();
-            console.log(branch);
+            let status = $('#sortstatus').val();
+            // console.log(branch);
+
             loadpage(1, status, branch);
+
         })
 
         $("#sortstatus").on('change', async function () {
             let status = $("#sortstatus option:selected").val();
             let branch = $('#sortbranches option:selected').val();
             $("#searchbar").val('');
-            if (status != '') {
-                await loadpage(1, status, branch);
-            } else {
-                await loadpage();
-            }
+
+            await loadpage(1, status, branch);
+
         })
 
         async function loadpage(page = 1, status = '', branch = '') {
-            await load_pagination_buttons(page, status);
-            await load_paginated_table(page, status);
+            await load_pagination_buttons(page, status, branch);
+            await load_paginated_table(page, status, branch);
             await void_badge();
         }
 
         $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
+            let branch = $("sortbranches").val();
             let status = $("#sortstatus option:selected").val();
 
             let currentpage = $(this).data('page');
@@ -2025,7 +2027,7 @@
 
             // $('#pagination').empty();
             // await loadpagination(currentpage);
-            await loadpage(currentpage, status);
+            await loadpage(currentpage, status, branch);
         })
 
 
