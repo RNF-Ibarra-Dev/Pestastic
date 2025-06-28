@@ -55,7 +55,7 @@
                 </select>
                 <select class="form-select select-transparent bg-light bg-opacity-25 border-0 h-100 text-light w-25"
                     id="sortstatus" aria-label="Default select example">
-                    <option value='' selected>Filter Status</option>
+                    <option value='' selected>Show All Status</option>
                     <option value="Pending">Pending</option>
                     <option value="Accepted">Accepted</option>
                     <option value="Completed">Completed</option>

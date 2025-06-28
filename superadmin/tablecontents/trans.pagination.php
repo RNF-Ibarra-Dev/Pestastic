@@ -88,7 +88,7 @@ if (isset($_GET['search'])) {
             $createdAt = $row['created_at'];
             $updatedAt = $row['updated_at'];
             $status = $row['transaction_status'];
-            ?>
+?>
             <tr class="text-center">
                 <td scope="row"><?= $id ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
@@ -96,12 +96,9 @@ if (isset($_GET['search'])) {
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
-                        $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
-                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'text-light badge rounded-pill w-100 text-bg-warning bg-opacity-25'>Pending</span></a>" :
-                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" :
-                            ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" :
-                                ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
-                        ?>
+                    $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
+                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'text-light badge rounded-pill w-100 text-bg-warning bg-opacity-25'>Pending</span></a>" : ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" : ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" : ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
+                    ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
@@ -112,139 +109,150 @@ if (isset($_GET['search'])) {
             </tr>
 
 
-            <?php
+    <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='6' class='text-center'>Search not found.</td></tr>";
     }
 }
 
-// function row_status($conn, $status = '', $branch = '')
-// {
-//     $rowCount = "SELECT COUNT(*) FROM transactions";
-
-//     if ($status != '' || ($branch !== '' && $branch !== NULL)) {
-//         $stmt = mysqli_stmt_init($conn);
-
-//         $rowCount .= " WHERE ";
-
-//         $statusq = "transaction_status = ?";
-//         $branchq = "branch = ?";
-
-//         $data = [];
-//         if ($branch != '' && $status != '') {
-//             $rowCount .= "$statusq AND $branchq";
-//             $types = $branch && $status ? "si" : "s";
-//             $data[] = $status;
-//             $data[] = (int) $branch;
-//         } else {
-//             $rowCount .= $branch ? $branchq : $statusq;
-//             $types = $branch ? 'i' : 's';
-//             $data[] = (int) $branch ?? $status;
-//         }
-//         $rowCount .= ";";
-//         mysqli_stmt_prepare($stmt, $rowCount);
-//         mysqli_stmt_bind_param($stmt, $types, ...$data);
-//         mysqli_stmt_execute($stmt);
-//         $res = mysqli_stmt_get_result($stmt);
-//         $totalRows = mysqli_num_rows($res);
-//     } else {
-//         $rowCount .= ';';
-//         $countResult = mysqli_query($conn, $rowCount);
-//         $totalRows = mysqli_num_rows($countResult);
-//     }
-
-//     $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
-
-//     return ['pages' => $totalPages, 'rows' => $totalRows];
-// }
-
-function row_status($conn, $status_input = '', $branch_input = '')
+function row_status($conn, $istatus = '', $ibranch = '')
 {
-    // --- 1. Input Processing & Type Casting (Crucial First Step) ---
-    // This is where you prepare your function arguments into unambiguous filter values.
 
-    // For 'status' (string filter):
-    // If $status_input is '', it means no status filter.
-    $status_filter = (string) $status_input;
+    $rowCount = "SELECT COUNT(*) FROM transactions";
 
-    // For 'branch' (integer filter):
-    // Default to null, so if no valid branch is provided, no filter applies.
-    $branch_filter = null;
-    // Check if branch_input is provided AND is not an empty string
-    if ($branch_input !== '' && $branch_input !== null) {
-        $branch_filter = (int) $branch_input; // Cast to integer if it's a meaningful value
-    }
-    // Now:
-    //   - $status_filter will be '' or a string (e.g., 'pending').
-    //   - $branch_filter will be null (no filter), or an integer (e.g., 0, 101).
+    $queries = [];
+    $data = [];
+    $types = '';
 
-
-    // --- 2. Dynamic Query Construction ---
-    // Always start with the base query for counting rows. Use COUNT(*).
-    $sql = "SELECT COUNT(*) FROM transactions";
-
-    // Arrays to dynamically build the WHERE clause, parameters, and types string
-    $conditions = [];   // Stores individual SQL WHERE conditions (e.g., "transaction_status = ?")
-    $params = [];       // Stores the actual values to bind for the prepared statement
-    $typesString = "";  // Stores the type string for mysqli_stmt_bind_param (e.g., "s", "i", "si")
-
-    // Add Status filter condition if $status_filter has a meaningful value (is not empty)
-    if (!empty($status_filter)) {
-        $conditions[] = "transaction_status = ?";
-        $params[] = $status_filter;
-        $typesString .= "s"; // 's' for string
+    if ($istatus != NULL && $istatus != '') {
+        $status = (string) $istatus;
+        $queries[] = "transaction_status = ?";
+        $data[] = $status;
+        $types .= "s";
     }
 
-    // Add Branch filter condition if $branch_filter has a meaningful value (i.e., not null)
-    // This correctly includes 0 as a filterable branch ID.
-    if ($branch_filter !== null) {
-        $conditions[] = "branch = ?";
-        $params[] = $branch_filter;
-        $typesString .= "i"; // 'i' for integer
+    if ($ibranch != '' && $ibranch != NULL) {
+        $branch = (int) $ibranch;
+        $queries[] = "branch = ?";
+        $data[] = $branch;
+        $types .= 'i';
     }
 
-    // Build the final SQL query string by adding the WHERE clause if any conditions exist
-    if (!empty($conditions)) {
-        $sql .= " WHERE " . implode(" AND ", $conditions); // Combines conditions with " AND "
+    if(!empty($queries)){
+        $rowCount .= " WHERE " . implode(" AND ", $queries);
     }
-    $sql .= ";"; // Add semicolon at the very end of the complete query
+    $rowCount .= ";";
 
-
-    // --- 3. Prepare and Execute the Statement ---
     $stmt = mysqli_stmt_init($conn);
-    $totalRows = 0; // Default totalRows to 0 in case of error
+    $totalRows = 0;
 
-    // Always use prepared statements for consistency and security.
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        error_log("SQL Prepare Failed: " . mysqli_error($conn) . " Query: " . $sql);
-        // Implement robust error handling here (e.g., throw an exception, return an error array)
-    } else {
-        // Bind parameters if there are any
-        if (!empty($params)) {
-            // The "..." splat operator unpacks the $params array into individual arguments
-            mysqli_stmt_bind_param($stmt, $typesString, ...$params);
-        }
-
-        // Execute the statement
-        mysqli_stmt_execute($stmt);
-
-        // Get the result set
-        $result = mysqli_stmt_get_result($stmt);
-
-        // Fetch the count (COUNT(*) query returns a single row with one column)
-        $row = mysqli_fetch_row($result);
-        $totalRows = $row[0];
-
-        // Close the statement
-        mysqli_stmt_close($stmt);
+    if(!mysqli_stmt_prepare($stmt, $rowCount)){
+        echo "row status stmt failed.";
+        exit();
     }
 
-    // --- 4. Calculate Total Pages and Return ---
+    if(!empty($queries)){
+        mysqli_stmt_bind_param($stmt, $types, ...$data);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_row($res);
+    $totalRows = $row[0];
+    
+
     $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
 
     return ['pages' => $totalPages, 'rows' => $totalRows];
 }
+
+// function row_status($conn, $status_input = '', $branch_input = '')
+// {
+//     // --- 1. Input Processing & Type Casting (Crucial First Step) ---
+//     // This is where you prepare your function arguments into unambiguous filter values.
+
+//     // For 'status' (string filter):
+//     // If $status_input is '', it means no status filter.
+//     $status_filter = (string) $status_input;
+
+//     // For 'branch' (integer filter):
+//     // Default to null, so if no valid branch is provided, no filter applies.
+//     $branch_filter = null;
+//     // Check if branch_input is provided AND is not an empty string
+//     if ($branch_input !== '' && $branch_input !== null) {
+//         $branch_filter = (int) $branch_input; // Cast to integer if it's a meaningful value
+//     }
+//     // Now:
+//     //   - $status_filter will be '' or a string (e.g., 'pending').
+//     //   - $branch_filter will be null (no filter), or an integer (e.g., 0, 101).
+
+
+//     // --- 2. Dynamic Query Construction ---
+//     // Always start with the base query for counting rows. Use COUNT(*).
+//     $sql = "SELECT COUNT(*) FROM transactions";
+
+//     // Arrays to dynamically build the WHERE clause, parameters, and types string
+//     $conditions = [];   // Stores individual SQL WHERE conditions (e.g., "transaction_status = ?")
+//     $params = [];       // Stores the actual values to bind for the prepared statement
+//     $typesString = "";  // Stores the type string for mysqli_stmt_bind_param (e.g., "s", "i", "si")
+
+//     // Add Status filter condition if $status_filter has a meaningful value (is not empty)
+//     if (!empty($status_filter)) {
+//         $conditions[] = "transaction_status = ?";
+//         $params[] = $status_filter;
+//         $typesString .= "s"; // 's' for string
+//     }
+
+//     // Add Branch filter condition if $branch_filter has a meaningful value (i.e., not null)
+//     // This correctly includes 0 as a filterable branch ID.
+//     if ($branch_filter !== null) {
+//         $conditions[] = "branch = ?";
+//         $params[] = $branch_filter;
+//         $typesString .= "i"; // 'i' for integer
+//     }
+
+//     // Build the final SQL query string by adding the WHERE clause if any conditions exist
+//     if (!empty($conditions)) {
+//         $sql .= " WHERE " . implode(" AND ", $conditions); // Combines conditions with " AND "
+//     }
+//     $sql .= ";"; // Add semicolon at the very end of the complete query
+
+
+//     // --- 3. Prepare and Execute the Statement ---
+//     $stmt = mysqli_stmt_init($conn);
+//     $totalRows = 0; // Default totalRows to 0 in case of error
+
+//     // Always use prepared statements for consistency and security.
+//     if (!mysqli_stmt_prepare($stmt, $sql)) {
+//         error_log("SQL Prepare Failed: " . mysqli_error($conn) . " Query: " . $sql);
+//         // Implement robust error handling here (e.g., throw an exception, return an error array)
+//     } else {
+//         // Bind parameters if there are any
+//         if (!empty($params)) {
+//             // The "..." splat operator unpacks the $params array into individual arguments
+//             mysqli_stmt_bind_param($stmt, $typesString, ...$params);
+//         }
+
+//         // Execute the statement
+//         mysqli_stmt_execute($stmt);
+
+//         // Get the result set
+//         $result = mysqli_stmt_get_result($stmt);
+
+//         // Fetch the count (COUNT(*) query returns a single row with one column)
+//         $row = mysqli_fetch_row($result);
+//         $totalRows = $row[0];
+
+//         // Close the statement
+//         mysqli_stmt_close($stmt);
+//     }
+
+//     // --- 4. Calculate Total Pages and Return ---
+//     $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
+
+//     return ['pages' => $totalPages, 'rows' => $totalRows];
+// }
 
 if (isset($_GET['paginate']) && $_GET['paginate'] == 'true') {
     $status = $_GET['status'];
@@ -272,7 +280,7 @@ function load_pagination($conn, $activepage = 1, $status = '', $branch = '')
             <?php
             // set active page ex. 1 = first page. Checks if numeric as well.
             // $activepage = isset($_GET['active']) && is_numeric($_GET['active']) ? $_GET['active'] : 1;
-        
+
             // set next and previous pagination button data
             $prev = $activepage - 1;
             $next = $activepage + 1;
@@ -296,7 +304,7 @@ function load_pagination($conn, $activepage = 1, $status = '', $branch = '')
 
             $lastpages = $totalPages;
             // var_dump($lastpages);
-        
+
             ?>
             <li class="page-item">
                 <a class="page-link" data-page="1" href=""><i class="bi bi-caret-left-fill"></i></a>
@@ -305,12 +313,12 @@ function load_pagination($conn, $activepage = 1, $status = '', $branch = '')
             <li class="page-item">
                 <?php
                 if ($prev > 0) {
-                    ?>
+                ?>
                     <a class="page-link" data-page="<?= $prev ?>"><i class="bi bi-caret-left"></i></a>
-                    <?php
+                <?php
                 } else { ?>
                     <a class="page-link" data-page="1"><i class="bi bi-caret-left"></i></a>
-                    <?php
+                <?php
                 }
                 ?>
             </li>
@@ -330,7 +338,7 @@ function load_pagination($conn, $activepage = 1, $status = '', $branch = '')
                     $limitreached = true;
 
                     if ($currentPage != $lastpages && $currentPage <= $lastpages) {
-                        ?>
+                ?>
                         <li class="page-item disabled">
                             <a class="page-link">...</a>
                         </li>
@@ -338,7 +346,7 @@ function load_pagination($conn, $activepage = 1, $status = '', $branch = '')
                         <li class="page-item">
                             <a class="page-link" data-page="<?= $totalPages ?>"><?= $totalPages ?></a>
                         </li>
-                        <?php
+            <?php
                     }
                     break;
                 }
@@ -348,12 +356,12 @@ function load_pagination($conn, $activepage = 1, $status = '', $branch = '')
             <li class="page-item">
                 <?php
                 if ($next <= $totalPages) {
-                    ?>
+                ?>
                     <a class="page-link" data-page="<?= $next ?>" href=""><i class="bi bi-caret-right"></i></a>
-                    <?php
+                <?php
                 } else { ?>
                     <a class="page-link" data-page="<?= $totalPages ?>"><i class="bi bi-caret-right"></i></a>
-                    <?php
+                <?php
                 }
                 ?>
             </li>
@@ -404,7 +412,6 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
         mysqli_stmt_execute($stmt);
 
         $result = mysqli_stmt_get_result($stmt);
-
     } else {
         $sql .= " ORDER BY id DESC LIMIT $limitstart, $pageRows;";
         $result = mysqli_query($conn, $sql);
@@ -424,7 +431,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $createdAt = $row['created_at'];
             $updatedAt = $row['updated_at'];
             $status = $row['transaction_status'];
-            ?>
+    ?>
             <tr class="text-center">
                 <td scope="row"><?= $id ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
@@ -432,12 +439,9 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
-                        $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
-                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'w-100 text-light badge rounded-pill text-bg-warning bg-opacity-25'>Pending</span></a>" :
-                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" :
-                            ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" :
-                                ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
-                        ?>
+                    $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
+                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'w-100 text-light badge rounded-pill text-bg-warning bg-opacity-25'>Pending</span></a>" : ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" : ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" : ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
+                    ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
@@ -448,7 +452,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             </tr>
 
 
-            <?php
+<?php
         }
     } else {
         echo "<tr><td scope='row' colspan='6' class='text-center'>No data found.</td></tr>";
