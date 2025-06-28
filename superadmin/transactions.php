@@ -2015,7 +2015,7 @@
 
         $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
-            let branch = $("sortbranches").val();
+            let branch = $("#sortbranches").val();
             let status = $("#sortstatus option:selected").val();
 
             let currentpage = $(this).data('page');
