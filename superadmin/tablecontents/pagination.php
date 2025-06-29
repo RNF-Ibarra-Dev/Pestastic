@@ -9,23 +9,53 @@ $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
 
-function row_status($conn, $entries = false)
+function row_status($conn, $entries = false, $ibranch = '')
 {
-    $rowCount = "SELECT * FROM chemicals";
-    $rowCount .= $entries === 'true' ? ' WHERE request = 0;' : ';';
-    $countResult = mysqli_query($conn, $rowCount);
-    $totalRows = mysqli_num_rows($countResult);
+    $rowCount = "SELECT COUNT(*) FROM chemicals";
+    $queries = [];
+
+    if ($entries === 'true') {
+        $queries[] = 'request = 0';
+    }
+
+    if ($ibranch !== '' && $ibranch !== NULL) {
+        $queries[] = "branch = ?";
+        $branch = (int) $ibranch;
+    }
+
+    if (!empty($queries)) {
+        $rowCount .= " WHERE " . implode(" AND ", $queries);
+    }
+    $rowCount .= ';';
+    $stmt = mysqli_stmt_init($conn);
+    $totalRows = 0;
+
+    if (!mysqli_stmt_prepare($stmt, $rowCount)) {
+        http_response_code(400);
+        echo "row status stmt failed.";
+        exit;
+    }
+
+    if ($ibranch !== '') {
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_row($res);
+    $totalRows = $row[0];
+
     $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
 
     return ['pages' => $totalPages, 'rows' => $totalRows];
 }
 
-if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
+if (isset($_GET['pagenav']) && $_GET['pagenav'] === 'true') {
     $entries = $_GET['entries'];
+    $branch = $_GET['branch'];
 
-
-    if ($entries === 'true') {
-        $rowstatus = row_status($conn, $entries);
+    if ($entries === 'true' || ($branch !== '' && $branch !== NULL)) {
+        $rowstatus = row_status($conn, $entries, $branch);
         $totalRows = $rowstatus['rows'];
         $totalPages = $rowstatus['pages'];
     } else {
@@ -135,26 +165,52 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
-    $hideentries = $_GET['hideentries'];
+    $entries = $_GET['hideentries'];
+    $ibranch = $_GET['branch'];
 
     // echo var_dump($hideentries);
     // exit();
 
     $limitstart = ($current - 1) * $pageRows;
+    $sql = "SELECT * FROM chemicals";
+    $queries = [];
 
-    $sql = "SELECT * FROM chemicals ";
+    if ($entries === 'true') {
+        $queries[] = 'request = 0';
+    }
 
-    $sql .= $hideentries === 'true' ? "WHERE request = 0 " : '';
+    if ($ibranch !== '' && $ibranch !== NULL) {
+        $queries[] = "branch = ?";
+        $branch = (int) $ibranch;
+    }
 
-    $sql .= "ORDER BY request DESC, id DESC LIMIT " . $limitstart
+    if (!empty($queries)) {
+        $sql .= " WHERE " . implode(" AND ", $queries);
+    }
+
+    $sql .= " ORDER BY request DESC, id DESC LIMIT " . $limitstart
         . ", " . $pageRows . ";";
+    $stmt = mysqli_stmt_init($conn);
+    $totalRows = 0;
 
-    $result = mysqli_query($conn, $sql);
-    $rows = mysqli_num_rows($result);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "table stmt failed.";
+        exit;
+    }
 
+    if ($ibranch !== '') {
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
 
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $rows = mysqli_num_rows($res);
+
+    // echo var_dump(json_encode(mysqli_fetch_assoc($res)));
+    // exit;
     if ($rows > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
+        while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             $name = $row["name"];
             $brand = $row["brand"];
@@ -168,7 +224,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <tr class="text-center">
                 <td scope="row">
                     <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                        $request === 1 ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
@@ -181,7 +237,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
-                        if ($request === "1") {
+                        if ($request === 1) {
                             ?>
                             <button type="button" id="approvebtn" class="btn btn-sidebar" data-bs-toggle="modal"
                                 data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?= $name ?>"><i

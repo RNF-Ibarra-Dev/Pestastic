@@ -386,4 +386,19 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
 
 }
 
-?>
+if (isset($_GET['branchoptions']) && $_GET['branchoptions'] === 'true') {
+    $sql = "SELECT * FROM branches;";
+    $query = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($query) > 0) {
+        echo "<option value='' selected>Show All Branch</option>";
+        while ($row = mysqli_fetch_assoc($query)) {
+            $id = $row['id'];
+            $name = $row['name'];
+            $loc = $row['location'];
+            ?>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars("$name ($loc)") ?></option>
+            <?php
+        }
+    }
+}
