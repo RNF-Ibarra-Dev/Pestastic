@@ -9,6 +9,7 @@
     <title>Manager | Transactions</title>
     <?php include('header.links.php'); ?>
     <style>
+
         #sortstatus option {
             color: black;
         }
@@ -32,7 +33,7 @@
 
 <body class="bg-official text-light">
 
-    <div class="sa-bg container-fluid p-0 h-100 d-flex">
+    <div class="sa-bg container-fluid p-0 mvh-100 d-flex">
         <!-- sidebar -->
         <?php include('sidenav.php'); ?>
         <!-- main content -->
@@ -46,22 +47,30 @@
             </div>
             <div class="d-flex gap-3 mb-2 mx-3">
                 <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-grow-1">
-                    <p class="fs-5 fw-bold align-middle"><i class="bi bi-alarm me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Pending</p>
+                    <p class="fs-5 fw-bold align-middle"><i
+                            class="bi bi-alarm me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Pending
+                    </p>
                     <p class="fw-light mb-0 mt-4">description</p>
                     <p class="fs-4 fw-bold mb-0 mt-3" id="count_pending"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-grow-1">
-                    <p class="fs-5 fw-bold"><i class="bi bi-clipboard-check me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Accepted</p>
+                    <p class="fs-5 fw-bold"><i
+                            class="bi bi-clipboard-check me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Accepted
+                    </p>
                     <p class="fw-light mb-0 mt-4">description</p>
                     <p class="fs-4 fw-bold mb-0 mt-3" id="count_accepted"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-grow-1">
-                    <p class="fs-5 fw-bold"><i class="bi bi-calendar2-check me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Completed</p>
+                    <p class="fs-5 fw-bold"><i
+                            class="bi bi-calendar2-check me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Completed
+                    </p>
                     <p class="fw-light mb-0 mt-4">description</p>
                     <p class="fs-4 fw-bold mb-0 mt-3" id="count_completed"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-grow-1">
-                    <p class="fs-5 fw-bold"><i class="bi bi-clipboard-x me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Voided</p>
+                    <p class="fs-5 fw-bold"><i
+                            class="bi bi-clipboard-x me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Voided
+                    </p>
                     <p class="fw-light mb-0 mt-4">description</p>
                     <p class="fs-4 fw-bold mb-0 mt-3" id="count_voided"></p>
                 </div>
@@ -1091,21 +1100,23 @@
 
         }
 
-        function get_overview_count(container){
+        function get_overview_count(container, branch = null) {
             $.get(transUrl, {
                 count: true,
-                status: container
+                status: container,
+                branch: branch
             })
-            .done(function(d){
-                console.log(d);
-                $(`#count_${container}`).append(d);
-            })
-            .fail(function(e){
-                console.log(e);
-            })
+                .done(function (d) {
+                    console.log(d);
+                    $(`#count_${container}`).empty();
+                    $(`#count_${container}`).append(d);
+                })
+                .fail(function (e) {
+                    console.log(e);
+                })
         }
 
-        $(document).ready(function(){
+        $(document).ready(function () {
             get_overview_count('pending');
             get_overview_count('accepted');
             get_overview_count('completed');
@@ -2053,6 +2064,11 @@
             $("#searchbar").val('');
             let branch = $(this).val();
             let status = $('#sortstatus').val();
+
+            get_overview_count('pending', branch);
+            get_overview_count('accepted', branch);
+            get_overview_count('completed', branch);
+            get_overview_count('voided', branch);
             // console.log(branch);
 
             loadpage(1, status, branch);

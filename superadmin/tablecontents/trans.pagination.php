@@ -2,7 +2,7 @@
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
-$pageRows = 5;
+$pageRows = 8;
 $rowCount = 'SELECT * FROM transactions';
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
