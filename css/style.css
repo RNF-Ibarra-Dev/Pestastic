@@ -14,6 +14,10 @@
   --night-bg-color: #16404d;
 }
 
+*{
+  box-sizing: border-box !important;
+}
+
 /* html,
 body {
   min-height: 100vh;
@@ -84,9 +88,9 @@ body {
   right: 1rem !important;
 }
 
-.sa-content {
+/* .sa-content {
   overflow: auto !important;
-}
+} */
 
 .navbar-sticky {
   position: sticky !important;
