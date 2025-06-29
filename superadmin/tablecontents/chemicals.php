@@ -402,3 +402,29 @@ if (isset($_GET['branchoptions']) && $_GET['branchoptions'] === 'true') {
         }
     }
 }
+
+if (isset($_GET['count']) && $_GET['count'] === 'true') {
+    switch ($_GET['status']) {
+        case "total":
+            $sql = "SELECT COUNT(*) FROM chemicals;";
+            $res = mysqli_query($conn, $sql);
+            echo mysqli_fetch_row($res)[0];
+            break;
+        case "low":
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel <= 50;";
+            $res = mysqli_query($conn, $sql);
+            echo mysqli_fetch_row($res)[0];
+            break;
+        case "expired":
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE expiryDate < CURDATE();";
+            $res = mysqli_query($conn, $sql);
+            echo mysqli_fetch_row($res)[0];
+            break;
+        case "entries":
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE request = 1;";
+            $res = mysqli_query($conn, $sql);
+            echo mysqli_fetch_row($res)[0];
+            break;
+    }
+    exit();
+}

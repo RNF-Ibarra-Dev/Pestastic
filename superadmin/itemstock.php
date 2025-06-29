@@ -32,7 +32,7 @@ include('tablecontents/tables.php');
 
 <body class="bg-official text-light">
 
-    <div class="sa-bg container-fluid p-0 h-100 d-flex">
+    <div class="sa-bg container-fluid p-0 min-vh-100 d-flex">
         <!-- sidebar -->
         <?php include('sidenav.php'); ?>
         <!-- main content -->
@@ -46,28 +46,32 @@ include('tablecontents/tables.php');
             <div class="d-flex gap-3 mb-2 mx-3">
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-grow-1">
                     <p class="fs-5 fw-bold align-middle"><i
-                            class="bi bi-archive-fill me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Total Chemicals
+                            class="bi bi-archive-fill me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Total
+                        Chemicals
                     </p>
                     <p class="fw-light mb-0 mt-4">Total chemicals in stock.</p>
                     <p class="fs-4 fw-bold mb-0 mt-1" id="count_total"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-grow-1">
                     <p class="fs-5 fw-bold"><i
-                            class="bi bi-exclamation-triangle-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Low Level Chemicals
+                            class="bi bi-exclamation-triangle-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Low
+                        Level Chemicals
                     </p>
                     <p class="fw-light mb-0 mt-4">Number of chemicals running low.</p>
                     <p class="fs-4 fw-bold mb-0 mt-1" id="count_low"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-grow-1">
                     <p class="fs-5 fw-bold"><i
-                            class="bi bi-calendar-x-fill me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Expired Chemicals
+                            class="bi bi-calendar-x-fill me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Expired
+                        Chemicals
                     </p>
                     <p class="fw-light mb-0 mt-4">Number of chemicals past their expiration date.</p>
                     <p class="fs-4 fw-bold mb-0 mt-1" id="count_expired"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-grow-1">
                     <p class="fs-5 fw-bold"><i
-                            class="bi bi-clock-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Pending Entries
+                            class="bi bi-clock-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Pending
+                        Entries
                     </p>
                     <p class="fw-light mb-0 mt-4">Number of pending chemical entries.</p>
                     <p class="fs-4 fw-bold mb-0 mt-1" id="count_entries"></p>
@@ -513,7 +517,9 @@ include('tablecontents/tables.php');
                             <th scope="col">Name</th>
                             <th>Brand</th>
                             <th>Current Level</th>
+                            <th>Remaining Containers</th>
                             <th>Expiry Date</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -557,19 +563,19 @@ include('tablecontents/tables.php');
         }
 
 
-        $(document).on('shown.bs.modal', "#addModal", function() {
+        $(document).on('shown.bs.modal', "#addModal", function () {
             flatpickrdate(d);
             $("#addMoreChem").empty();
             $("#addForm")[0].reset();
         });
 
-        $(document).on('click', '.remove-btn', function() {
+        $(document).on('click', '.remove-btn', function () {
             $(this).parent().parent().remove();
         })
 
-        $(document).on('click', '#addMoreChemBtn', async function() {
+        $(document).on('click', '#addMoreChemBtn', async function () {
             $.get(dataurl, "addrow=true")
-                .done(function(data) {
+                .done(function (data) {
                     $('#addMoreChem').append(data);
                     flatpickr("#addMoreChem input.form-date", {
                         dateFormat: "Y-m-d",
@@ -577,13 +583,13 @@ include('tablecontents/tables.php');
                         altFormat: "F j, Y",
                     });
                 })
-                .fail(function(e, s, em) {
+                .fail(function (e, s, em) {
                     console.log(e);
                 });
         });
 
 
-        $(document).on('change', '#add-approved', function() {
+        $(document).on('change', '#add-approved', function () {
             // let flask = $('#flaskApproveAll');
             if ($(this).is(':checked')) {
                 $("#flaskApproveAll").removeClass('bi-flask');
@@ -596,7 +602,7 @@ include('tablecontents/tables.php');
 
         // const addexpdatee = document.getElementBy
 
-        $(document).on('click', '#approvemulti', async function() {
+        $(document).on('click', '#approvemulti', async function () {
             $('#multiapprove')[0].reset();
             const reqlist = await stock_requests();
             if (reqlist) {
@@ -604,7 +610,7 @@ include('tablecontents/tables.php');
             }
         });
 
-        $(document).on('change', '#checkall', function() {
+        $(document).on('change', '#checkall', function () {
             $('#checkicon').toggleClass('bi-square bi-check-square');
             var checked = $(this).prop('checked');
             $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
@@ -630,7 +636,7 @@ include('tablecontents/tables.php');
             }
         }
 
-        $(document).on('submit', '#multiapprove', async function(e) {
+        $(document).on('submit', '#multiapprove', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -673,7 +679,7 @@ include('tablecontents/tables.php');
         });
 
 
-        $(document).on('click', '#approvebtn', async function() {
+        $(document).on('click', '#approvebtn', async function () {
             $('#confirmapprove')[0].reset();
             let chemId = $(this).data('id');
             let name = $(this).data('name');
@@ -681,7 +687,7 @@ include('tablecontents/tables.php');
             $('#chemname').html(name);
         });
 
-        $(document).on('submit', '#confirmapprove', async function(e) {
+        $(document).on('submit', '#confirmapprove', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -729,22 +735,22 @@ include('tablecontents/tables.php');
         }
 
 
-        $(document).ready(async function() {
+        $(document).ready(async function () {
             get_sa_id();
             await loadpage(1);
 
             $.get(dataurl, {
-                    branchoptions: true
-                })
-                .done(function(d) {
+                branchoptions: true
+            })
+                .done(function (d) {
                     $("#sortbranches").append(d);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log('error appending branches option');
                 })
         });
 
-        
+
         function get_overview_count(container, branch = null) {
             $.get(dataurl, {
                 count: true,
@@ -779,7 +785,7 @@ include('tablecontents/tables.php');
                         entries: entries,
                         branch: branch
                     },
-                    success: async function(res) {
+                    success: async function (res) {
                         $('#pagination').empty();
                         $('#pagination').append(res);
                         window.history.pushState(null, "", "?page=" + pageno);
@@ -801,11 +807,11 @@ include('tablecontents/tables.php');
                     hideentries: hide_entries,
                     branch: branch
                 },
-                success: function(data) {
+                success: function (data) {
                     $('#chemicalTable').empty();
                     $('#chemicalTable').append(data);
                 },
-                error: function(err) {
+                error: function (err) {
                     alert('loadtable func error:' + err);
                 }
             });
@@ -832,7 +838,7 @@ include('tablecontents/tables.php');
             return entryHidden;
         }
 
-        $(document).on('change', '#sortbranches', async function() {
+        $(document).on('change', '#sortbranches', async function () {
             let branch = $(this).val();
             // console.log(branch);
             await loadpage(1, entryHidden, branch);
@@ -846,11 +852,11 @@ include('tablecontents/tables.php');
 
 
 
-        $(document).on('click', '#hideentries', async function() {
+        $(document).on('click', '#hideentries', async function () {
             await hide_entries();
         });
 
-        $('#pagination').on('click', '.page-link', async function(e) {
+        $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
 
             let branch = $("#sortbranches").val();
@@ -869,10 +875,10 @@ include('tablecontents/tables.php');
 
 
         // search
-        $(function() {
+        $(function () {
             let timeout = null;
 
-            $('#searchbar').keyup(function() {
+            $('#searchbar').keyup(function () {
                 let branch = $("#sortbranches").val();
                 clearTimeout(timeout);
                 $('#chemicalTable').empty();
@@ -880,7 +886,7 @@ include('tablecontents/tables.php');
                 // $('#loader').removeClass('visually-hidden');
                 $('#loader').css('display', 'block');
 
-                timeout = setTimeout(async function() {
+                timeout = setTimeout(async function () {
                     var search = $('#searchbar').val();
                     try {
                         const searchChem = await $.ajax({
@@ -892,7 +898,7 @@ include('tablecontents/tables.php');
                                 entries: entryHidden,
                                 branch: branch
                             },
-                            success: async function(searchChem, status) {
+                            success: async function (searchChem, status) {
                                 if (!search == '') {
                                     $('#pagination').addClass('d-none');
                                     $('#chemicalTable').empty();
@@ -920,7 +926,7 @@ include('tablecontents/tables.php');
         function get_sa_id() {
             $.post(dataurl, {
                 managerId: true
-            }, function(data, status) {
+            }, function (data, status) {
                 // console.log(data + ' status ' + status);
                 $('#idForDeletion').val(data);
                 // var saID = data;
@@ -931,7 +937,7 @@ include('tablecontents/tables.php');
         }
 
         // edit chemical
-        $(document).on('submit', '#editChemForm', async function(e) {
+        $(document).on('submit', '#editChemForm', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -1014,7 +1020,7 @@ include('tablecontents/tables.php');
         }
 
         // delete item
-        $(document).on('click', '#delbtn', async function() {
+        $(document).on('click', '#delbtn', async function () {
             $('#deleteForm')[0].reset();
             get_sa_id();
             var chemID = $(this).data('id');
@@ -1022,7 +1028,7 @@ include('tablecontents/tables.php');
             // $('#manPass').disableAutoFill();
             // $('#delChemId').val(chemID);
             var saID = $('#idForDeletion').val();
-            $('#delsub').off('click').on('click', async function() {
+            $('#delsub').off('click').on('click', async function () {
                 try {
                     var saPass = $('#manPass').val();
                     console.log(chemID + saID + saPass);
@@ -1035,7 +1041,7 @@ include('tablecontents/tables.php');
 
         })
 
-        $(document).on('submit', '#addForm', async function(e) {
+        $(document).on('submit', '#addForm', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -1067,13 +1073,13 @@ include('tablecontents/tables.php');
 
         async function get_chem_details(id) {
             return $.get(dataurl, {
-                    id: id,
-                    chemDetails: 'true'
-                })
-                .done(function(d, s) {
+                id: id,
+                chemDetails: 'true'
+            })
+                .done(function (d, s) {
                     return d;
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                 })
         }
@@ -1087,14 +1093,14 @@ include('tablecontents/tables.php');
 
         function toggle() {
             $('#submitEdit').toggleClass('d-none');
-            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel').attr('readonly', function(i, a) {
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel').attr('readonly', function (i, a) {
                 return a ? false : true;
             });
-            $("#edit-expDate, #edit-dateReceived").attr('disabled', function(i, a) {
+            $("#edit-expDate, #edit-dateReceived").attr('disabled', function (i, a) {
                 return a ? false : true;
             });
 
-            $("#toggleEditBtn").html(function(i, a) {
+            $("#toggleEditBtn").html(function (i, a) {
                 return a.includes('Close Edit') ? 'Edit' : 'Close Edit';
             });
             $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived').toggleClass('form-control-plaintext form-control');
@@ -1103,14 +1109,14 @@ include('tablecontents/tables.php');
         }
 
         // get specific chemical information when edit btn is clicked
-        $(document).on('click', '.editbtn', async function() {
+        $(document).on('click', '.editbtn', async function () {
             $('#editChemForm')[0].reset();
             let id = $(this).data('chem');
             let deets = await get_chem_details(id);
             var details = JSON.parse(deets);
             console.log(details);
 
-            $('#submitEdit, #toggleEditBtn').attr('disabled', function() {
+            $('#submitEdit, #toggleEditBtn').attr('disabled', function () {
                 return details.req == 1 ? true : false;
             });
 
@@ -1129,10 +1135,10 @@ include('tablecontents/tables.php');
             $('#edit-dateReceived').val(details.daterec);
             $('#edit-expDate').val(details.expDate);
             $('#edit-notes').val(details.notes);
-            $('#addinfo').html(function() {
+            $('#addinfo').html(function () {
                 return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
             });
-            $('#updateinfo').html(function() {
+            $('#updateinfo').html(function () {
                 return details.upby === 'No Update Record' ? 'Updated at: ' + details.upat : 'Updated at: ' + details.upat + ' by ' + details.upby;
             });
 
