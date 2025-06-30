@@ -1077,6 +1077,7 @@ include('tablecontents/tables.php');
                 chemDetails: 'true'
             })
                 .done(function (d, s) {
+                    console.log(d);
                     return d;
                 })
                 .fail(function (e) {

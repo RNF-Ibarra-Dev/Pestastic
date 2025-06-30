@@ -64,10 +64,13 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     $name = $_POST['edit-name'];
     $brand = $_POST['edit-chemBrand'];
     $level = $_POST['edit-chemLevel'];
-    $expDate = $_POST['edit-expDate'] ?? null;
-    $dateRec = $_POST['edit-receivedDate'] ?? null;
+    $ed = $_POST['edit-expDate'] ?? null;
+    $dr = $_POST['edit-receivedDate'] ?? null;
     $notes = $_POST['edit-notes'];
     $pwd = $_POST['saPwd'];
+
+    $expDate = date("Y-m-d", strtotime($ed));
+    $dateRec = date("Y-m-d", strtotime($dr));
 
     if (empty($name || $brand || $level)) {
         http_response_code(400);
@@ -364,14 +367,18 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
             $data['name'] = $row['name'];
             $data['brand'] = $row['brand'];
             $data['level'] = $row['chemLevel'];
-            $data['expDate'] = $row['expiryDate'];
-            $data['addat'] = $row['added_at'];
-            $data['upat'] = $row['updated_at'];
+            $expdate = $row['expiryDate'];
+            $data['expDate'] = date("F j, Y", strtotime($expdate));
+            $addat = $row['added_at'];
+            $data['addat'] = date("F j, Y h:m A", strtotime($addat));
+            $upat = $row['updated_at'];
+            $data['upat'] = date("F j, Y h:m A", strtotime($upat));
             $data['notes'] = $row['notes'];
             $data['branch'] = $row['branch'];
             $data['addby'] = $row['added_by'];
             $data['upby'] = $row['updated_by'];
-            $data['daterec'] = $row['date_received'];
+            $daterec = $row['date_received'];
+            $data['daterec'] = date("F j, Y", strtotime($daterec));
             $data['req'] = $row['request'];
             $data['id'] = $row['id'];
         }
