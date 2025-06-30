@@ -16,7 +16,7 @@ require("startsession.php");
 
 <body class="bg-official text-light">
 
-    <div class="sa-bg container-fluid p-0 h-100 d-flex">
+    <div class="sa-bg container-fluid p-0 min-vh-100 d-flex">
         <!-- sidebar -->
         <?php include('settings.sidenav.php'); ?>
         <!-- main content -->
@@ -24,7 +24,7 @@ require("startsession.php");
             <!-- navbar -->
             <?php include('navbar.php'); ?>
             <!-- content -->
-            <div class="container-fluid p-0 d-flex h-100 justify-content-center flex-column">
+            <div class="container-fluid p-0 d-flex justify-content-center flex-column">
                 <form id="accountsettings" class="my-5">
                     <input type="hidden" name="id" id="id">
                     <h2 class="fw-light text-center fw-semibold mb-3">User Information</h2>

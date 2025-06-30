@@ -19,7 +19,7 @@ require("startsession.php");
         <!-- sidebar -->
         <?php include('settings.sidenav.php'); ?>
         <!-- main content -->
-        <main class="sa-content col-sm-10 p-0 container-fluid">
+        <main class="sa-content col-sm-10 p-0 pb-4 container-fluid">
             <!-- navbar -->
             <?php include('navbar.php'); ?>
             <!-- content -->
@@ -121,7 +121,6 @@ require("startsession.php");
 
                 </div>
             </div>
-            <div class="container h-75"></div>
         </main>
 
         <!-- modals -->

@@ -15,7 +15,7 @@ require("startsession.php");
 
 <body class="bg-official text-light">
 
-    <div class="sa-bg container-fluid p-0 h-100 d-flex">
+    <div class="sa-bg container-fluid p-0 min-vh-100 d-flex">
         <!-- sidebar -->
         <?php
         include("sidenav.php");
