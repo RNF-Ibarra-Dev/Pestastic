@@ -411,7 +411,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
             echo mysqli_fetch_row($res)[0];
             break;
         case "low":
-            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel <= 50;";
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel <= unop_cont * .20 ;";
             $res = mysqli_query($conn, $sql);
             echo mysqli_fetch_row($res)[0];
             break;
