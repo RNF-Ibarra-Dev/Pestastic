@@ -230,7 +230,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
                 <td class="<?= $level <= 10 ? 'text-danger' : ($level <= 50 ? 'text-warning' : '') ?>">
-                    <?= htmlspecialchars($level) . ' ml' ?>
+                    <?= htmlspecialchars("$level ml  / $contsize ml") ?>
                 </td>
                 <td><?= htmlspecialchars($remcom) ?></td>
                 <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
