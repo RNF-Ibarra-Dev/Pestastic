@@ -1536,7 +1536,7 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             header("location: ../os/index.php?os_login=success");
             exit();
         } else {
-            header("location: ../login.php?error=wrongpassword&" . json_encode($userExists));
+            header("location: ../login.php?error=wrongpassword");
             exit();
         }
 
