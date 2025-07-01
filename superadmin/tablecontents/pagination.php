@@ -145,22 +145,26 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] === 'true') {
                 <?php
                 if ($next <= $totalPages) {
                     ?>
-                    <a class="page-link" data-page="<?= $next ?>" href=""><i class="bi bi-caret-right"></i></a>
+                    <a class="page-link" data-page="<?= $totalPages != 0 ? $next : 1 ?>" href=""><i
+                            class="bi bi-caret-right"></i></a>
                     <?php
                 } else { ?>
-                    <a class="page-link" data-page="<?= $totalPages ?>"><i class="bi bi-caret-right"></i></a>
+                    <a class="page-link" data-page="<?= $totalPages != 0 ? $totalPages : 1 ?>"><i
+                            class="bi bi-caret-right"></i></a>
                     <?php
                 }
                 ?>
             </li>
             <li class="page-item">
-                <a class="page-link" data-page="<?= $totalPages ?>" href=""><i class="bi bi-caret-right-fill"></i></a>
+                <a class="page-link" data-page="<?= $totalPages != 0 ? $totalPages : 1 ?>" href=""><i
+                        class="bi bi-caret-right-fill"></i></a>
             </li>
         </ul>
     </nav>
 
     <?php
 
+    // echo $totalPages . $next;
 }
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
@@ -236,7 +240,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
                     <?= htmlspecialchars(date_format($exp, "F j, Y")) ?>
                 </td>
-                <td><?= $level === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : ($level <= $contsize * 0.2 ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Low Stock</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?></td>
+                <td><?= $level === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : ($level <= $contsize * 0.2 ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Low Stock</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
+                </td>
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
@@ -265,7 +270,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='5' class='text-center'>Your search does not exist.</td></tr>";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>No chemicals found.</td></tr>";
+        return false;
     }
 }
 
@@ -363,7 +369,7 @@ if (isset($_GET['search'])) {
         }
     } else {
         // echo json_encode(['']);
-        echo "<tr><td scope='row' colspan='5' class='text-center'>Your search does not exist.</td></tr>";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>Your search does not exist.</td></tr>";
     }
 }
 ?>

@@ -786,6 +786,8 @@ include('tablecontents/tables.php');
                         branch: branch
                     },
                     success: async function (res) {
+                        console.log(res);
+
                         $('#pagination').empty();
                         $('#pagination').append(res);
                         window.history.pushState(null, "", "?page=" + pageno);

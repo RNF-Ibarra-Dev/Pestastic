@@ -1999,6 +1999,8 @@
                 });
 
                 if (pagination) {
+                    // if(!pagination)
+                    // console.log(pagination);
                     $('#pagination').empty();
                     $('#pagination').append(pagination);
                 }
