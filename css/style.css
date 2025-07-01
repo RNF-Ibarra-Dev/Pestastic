@@ -14,7 +14,7 @@
   --night-bg-color: #16404d;
 }
 
-*{
+* {
   box-sizing: border-box !important;
 }
 
@@ -24,6 +24,28 @@ body {
   width: 100vw;
   height: 100%;
 } */
+
+.page-link {
+   border: none !important;
+}
+
+#pagination nav ul li a {
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff !important;
+  transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out,
+    color 0.3s ease-in-out;
+}
+
+#pagination nav ul li a:hover {
+  background-color: rgba(113, 187, 178, 0.3) !important;
+  color: #fff !important;
+}
+
+.active > .page-link,
+.page-link.active {
+  border: none !important;
+  background: rgba(113, 187, 178, 0.3) !important;
+}
 
 html,
 body {
