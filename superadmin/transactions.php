@@ -46,33 +46,33 @@
                 <h1 class="display-6 text-light mb-0 fw-medium text-center">Manage Transactions</h1>
             </div>
             <div class="d-flex gap-3 mb-2 mx-3">
-                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-grow-1">
+                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <p class="fs-5 fw-bold align-middle"><i
                             class="bi bi-alarm-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Pending
                     </p>
                     <p class="fw-light mb-0 mt-4">Pending transactions that needs to be approved by either Operations Supervisor or Manager.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-1" id="count_pending"></p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_pending"></p>
                 </div>
-                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-grow-1">
+                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-clipboard-check-fill me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Accepted
                     </p>
                     <p class="fw-light mb-0 mt-4">Accepted transactions that is at standby until dispatched at a specific date.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-1" id="count_accepted"></p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_accepted"></p>
                 </div>
-                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-grow-1">
+                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-calendar2-check-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Completed
                     </p>
                     <p class="fw-light mb-0 mt-4">Completed transactions marked done by Technicians and approved by Operations Supervisors.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-1" id="count_completed"></p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_completed"></p>
                 </div>
-                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-grow-1">
+                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-clipboard-x-fill me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Voided
                     </p>
                     <p class="fw-light mb-0 mt-4">Voided transactions cancelled due to a specific cause.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-1" id="count_voided"></p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_voided"></p>
                 </div>
             </div>
 

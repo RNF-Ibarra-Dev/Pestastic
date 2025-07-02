@@ -41,7 +41,6 @@ function check_request($conn, $id)
         echo "ID missing at database.";
         exit();
     }
-
 }
 // edit
 if (isset($_POST['action']) && $_POST['action'] == 'edit') {
@@ -93,7 +92,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     http_response_code(200);
     echo json_encode(['success' => "Chemical Updated!"]);
     exit();
-
 }
 
 // add
@@ -153,7 +151,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         echo json_encode(['success' => 'Chemical Entry Added!']);
         exit();
     }
-
 }
 
 // delete
@@ -264,11 +261,11 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
             $level = $row["chemLevel"];
             $expDate = $row["expiryDate"];
             $request = $row['request'];
-            ?>
+?>
             <tr class="text-center">
                 <td scope="row">
                     <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
+                    $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
@@ -278,20 +275,20 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
                     <div class="d-flex justify-content-center">
                         <?php
                         if ($request === "1") {
-                            ?>
+                        ?>
                             <input type="checkbox" class="btn-check" value="<?= $id ?>" name="stocks[]" id="c-<?= $id ?>"
                                 autocomplete="off">
                             <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i
                                     class="bi bi-check-circle me-2"></i>Approve</label>
-                            <?php
+                        <?php
                         } else {
-                            ?>
+                        ?>
                             <p class="text-muted">Approved.</p>
                         <?php } ?>
                     </div>
                 </td>
             </tr>
-            <?php
+    <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='5' class='text-center'>No Stock Requests.</td></tr>";
@@ -390,7 +387,6 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
     echo json_encode($data);
     mysqli_stmt_close($stmt);
     exit();
-
 }
 
 if (isset($_GET['branchoptions']) && $_GET['branchoptions'] === 'true') {
@@ -403,35 +399,54 @@ if (isset($_GET['branchoptions']) && $_GET['branchoptions'] === 'true') {
             $id = $row['id'];
             $name = $row['name'];
             $loc = $row['location'];
-            ?>
+    ?>
             <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars("$name ($loc)") ?></option>
-            <?php
+<?php
         }
     }
 }
 
 if (isset($_GET['count']) && $_GET['count'] === 'true') {
+    $ibranch = $_GET['branch'];
+    $branchquery = '';
+    if ($ibranch !== '' && $ibranch !== NULL) {
+        $branch = (int) $ibranch;
+        $branchquery = "branch = ?;";
+    }
+    $stmt = mysqli_stmt_init($conn);
     switch ($_GET['status']) {
         case "total":
-            $sql = "SELECT COUNT(*) FROM chemicals;";
-            $res = mysqli_query($conn, $sql);
-            echo mysqli_fetch_row($res)[0];
+            $sql = "SELECT COUNT(*) FROM chemicals";
             break;
         case "low":
-            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel <= unop_cont * .20 ;";
-            $res = mysqli_query($conn, $sql);
-            echo mysqli_fetch_row($res)[0];
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel <= unop_cont * .20";
             break;
         case "expired":
-            $sql = "SELECT COUNT(*) FROM chemicals WHERE expiryDate < CURDATE();";
-            $res = mysqli_query($conn, $sql);
-            echo mysqli_fetch_row($res)[0];
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE expiryDate < CURDATE()";
             break;
         case "entries":
-            $sql = "SELECT COUNT(*) FROM chemicals WHERE request = 1;";
-            $res = mysqli_query($conn, $sql);
-            echo mysqli_fetch_row($res)[0];
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE request = 1";
             break;
     }
+
+    if ($branchquery !== '') {
+        if (str_contains($sql, "WHERE")) {
+            $sql .= " AND $branchquery";
+        } else {
+            $sql .= " WHERE $branchquery";
+        }
+    }
+    $sql .= ';';
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo 'stmt failed';
+        exit;
+    }
+    if ($branchquery !== '') {
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    echo mysqli_fetch_row($res)[0];
     exit();
 }
