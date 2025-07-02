@@ -15,6 +15,8 @@ ini_set("session.use_strict_mode", "1");
 session_start();
 
 session_regenerate_id(true);
+date_default_timezone_set('Asia/Manila');
+
 
 if (!isset($_SESSION["baID"])) {
     require_once('header.links.php');

@@ -3,53 +3,56 @@ session_start();
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
-if (isset($_GET['search'])) {
-    $search = $_GET['search'];
-    $sql = "SELECT * FROM chemicals WHERE name LIKE '%" . $search . "%' OR brand LIKE '%" . $search . "%' OR chemLevel LIKE '%" . $search . "%' OR expiryDate LIKE '%" . $search . "%'";
 
-    $result = mysqli_query($conn, $sql);
-    $numrows = mysqli_num_rows($result);
-    // echo $numrows;   
-    if ($numrows > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $name = $row["name"];
-            $brand = $row["brand"];
-            $level = $row["chemLevel"];
-            $expDate = $row["expiryDate"];
-            $request = $row['request'];
-            ?>
-            <tr>
-                <td scope="row">
-                    <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval! Contact manager for more information.'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
-                    ?>
-                </td>
-                <td><?= htmlspecialchars($brand) ?></td>
-                <td><?= htmlspecialchars($level) ?></td>
-                <td><?= htmlspecialchars($expDate) ?></td>
-                <td>
-                    <div class="d-flex justify-content-center">
-                        <button type="button" id="editbtn" class="btn btn-sidebar me-2" data-bs-toggle="modal"
-                            data-bs-target="#editModal" data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>"
-                            data-brand="<?= htmlspecialchars($brand) ?>" data-level="<?= htmlspecialchars($level) ?>"
-                            data-expdate="<?= htmlspecialchars($expDate) ?>"><i class="bi bi-person-gear me-1"></i>Edit</button>
-                        <button type="button" id="delbtn" class="btn btn-sidebar me-2" data-bs-toggle="modal"
-                            data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-person-gear me-1"></i>Delete</button>
-                    </div>
-                </td>
-            </tr>
+if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
+    $chemId = $_GET['id'];
+    if (!is_numeric($chemId)) {
+        echo 'Invalid ID';
+        exit();
+    }
 
-            <?php
+    $sql = "SELECT * FROM chemicals WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo 'stmt failed.';
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $chemId);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    $data = [];
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
+            $data['name'] = $row['name'];
+            $data['brand'] = $row['brand'];
+            $data['level'] = $row['chemLevel'];
+            $expdate = $row['expiryDate'];
+            $data['expDate'] = date("F j, Y", strtotime($expdate));
+            $addat = $row['added_at'];
+            $data['addat'] = date("F j, Y h:m A", strtotime($addat));
+            $upat = $row['updated_at'];
+            $data['upat'] = date("F j, Y h:m A", strtotime($upat));
+            $data['notes'] = $row['notes'];
+            $data['branch'] = $row['branch'];
+            $data['addby'] = $row['added_by'];
+            $data['upby'] = $row['updated_by'];
+            $daterec = $row['date_received'];
+            $data['daterec'] = date("F j, Y", strtotime($daterec));
+            $data['req'] = $row['request'];
+            $data['id'] = $row['id'];
         }
     } else {
-        // echo json_encode(['']);
-        echo "<tr><td scope='row' colspan='5' class='text-center'>Your search does not exist.</td></tr>";
+        echo "Invalid ID. Make sure the chemical exist.";
+        exit();
     }
+
+    echo json_encode($data);
+    mysqli_stmt_close($stmt);
+    exit();
 }
-
-
-
 
 // edit
 if (isset($_POST['action']) && $_POST['action'] == 'edit') {

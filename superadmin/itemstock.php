@@ -10,7 +10,7 @@ include('tablecontents/tables.php');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager - Inventory</title>
+    <title>Manager | Inventory</title>
     <?php include('header.links.php'); ?>
     <style>
         table#approvechemtable tr td,
@@ -517,7 +517,7 @@ include('tablecontents/tables.php');
                             <th scope="col">Name</th>
                             <th>Brand</th>
                             <th>Current Level</th>
-                            <th>Remaining Containers</th>
+                            <th>Containers</th>
                             <th>Expiry Date</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -826,13 +826,12 @@ include('tablecontents/tables.php');
 
         let entryHidden = false;
         async function hide_entries() {
-            let branch = $("#sortbranches").val();
             if ($('#searchbar').length > 0) {
                 $('#pagination').removeClass('d-none');
                 $('#searchbar').val('');
             }
             entryHidden = !entryHidden ? true : false;
-            await loadpage(1, entryHidden, branch)
+            await loadpage(1, entryHidden)
 
             if (entryHidden) {
                 $('#hideentries > i').removeClass('bi-eye-slash').addClass('bi-eye');

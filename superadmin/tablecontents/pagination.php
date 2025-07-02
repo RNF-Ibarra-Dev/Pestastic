@@ -305,7 +305,7 @@ if (isset($_GET['search'])) {
 
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-        echo "<tr><td scope='row' colspan='5' class='text-center'>Error. Search stmt failed.</td></tr>";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>Error. Search stmt failed.</td></tr>";
         exit();
     }
 
@@ -316,7 +316,7 @@ if (isset($_GET['search'])) {
     $numrows = mysqli_num_rows($result);
     // echo $numrows;   
     if ($numrows > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
+         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
             $name = $row["name"];
             $brand = $row["brand"];
@@ -325,25 +325,29 @@ if (isset($_GET['search'])) {
             $request = $row['request'];
             $now = date("Y-m-d");
             $exp = date_create($expDate);
-
+            $remcom = $row['unop_cont'];
+            $contsize = $row['container_size'];
             ?>
             <tr class="text-center">
                 <td scope="row">
                     <?=
-                        $request == '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                        $request === 1 ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
                 <td class="<?= $level <= 10 ? 'text-danger' : ($level <= 50 ? 'text-warning' : '') ?>">
-                    <?= htmlspecialchars($level) . ' ml' ?>
+                    <?= htmlspecialchars("$level ml  / $contsize ml") ?>
                 </td>
+                <td><?= htmlspecialchars($remcom) ?></td>
                 <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
                     <?= htmlspecialchars(date_format($exp, "F j, Y")) ?>
+                </td>
+                <td><?= $level === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : ($level <= $contsize * 0.2 ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Low Stock</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
-                        if ($request === "1") {
+                        if ($request === 1) {
                             ?>
                             <button type="button" id="approvebtn" class="btn btn-sidebar" data-bs-toggle="modal"
                                 data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?= $name ?>"><i
