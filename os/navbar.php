@@ -1,7 +1,7 @@
 <nav
     class="navbar navbar-expand-sm my-2 mx-2 rounded-4 border border-dark navbar-dark bg-light bg-opacity-25 shadow-sm navbar-sticky overflow-auto">
     <div class="container-fluid">
-        <div>
+        <div class="user-select-none">
             <p class="text-wrap fs-2 m-0 ms-2 text-align-center fw-bold">Pestastic Inventory Management</p>
             <?php
             echo "<p class='ms-3 mb-0 fw-light text-light'>" . date('l, F jS, Y \| h:i A') . "</p>";
@@ -18,7 +18,7 @@
             <button type="button" data-bs-target="#settings" data-bs-toggle="modal"
                 class="navbar-brand btn user-icon rounded-circle m-0 shadow-lg p-0"><i alt="user"
                     class="rounded-circle bi bi-person ms-auto"></i></button>
-            <p class="text-light my-auto me-2 text-wrap text-capitalize"><?=$_SESSION['fname'] . ' ' . $_SESSION['lname']?></p>
+            <p class="text-light my-auto me-2 text-wrap text-capitalize user-select-none"><?=$_SESSION['fname'] . ' ' . $_SESSION['lname']?></p>
         </div>
     </div>
 </nav>

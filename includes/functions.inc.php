@@ -492,7 +492,7 @@ function addChemv2($conn, $dataArr, $branch, $addby, $request)
 {
     mysqli_begin_transaction($conn);
     try {
-        $sql = "INSERT INTO chemicals (name, brand, chemLevel, expiryDate, date_received, notes, branch, request, added_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        $sql = "INSERT INTO chemicals (name, brand, chemLevel, expiryDate, date_received, notes, branch, request, added_by, container_size, unop_cont) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         $stmt = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             echo "stmt failed";
@@ -502,7 +502,7 @@ function addChemv2($conn, $dataArr, $branch, $addby, $request)
         for ($i = 0; $i < count($dataArr['name']); $i++) {
             $cnote = $dataArr['notes'][$i] ?? '';
             $notes = $cnote === '' ? null : $cnote;
-            mysqli_stmt_bind_param($stmt, 'ssissssis', $dataArr['name'][$i], $dataArr['brand'][$i], $dataArr['level'][$i], $dataArr['eDate'][$i], $dataArr['rDate'][$i], $notes, $branch, $request, $addby);
+            mysqli_stmt_bind_param($stmt, 'ssissssisii', $dataArr['name'][$i], $dataArr['brand'][$i], $dataArr['level'][$i], $dataArr['eDate'][$i], $dataArr['rDate'][$i], $notes, $branch, $request, $addby, $dataArr['csize'][$i], $dataArr['ccount'][$i]);
             if (!mysqli_stmt_execute($stmt)) {
                 throw new Exception("Error at " . $dataArr['name'] . ' ' . $dataArr['brand']);
             }
@@ -1563,11 +1563,43 @@ function loginMultiUser($conn, $uidEmail, $pwd)
     }
 }
 
-function editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes, $branch, $upBy, $request = 0)
+function check_request($conn, $id)
+{
+    if (!is_numeric($id)) {
+        echo "Invalid ID." . $id;
+        exit();
+    }
+    $sql = "SELECT request FROM chemicals WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo "check_request stmt failed.";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
+            if ($row['request'] === 1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    } else {
+        echo "ID missing at database.";
+        exit();
+    }
+}
+
+function editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes, $branch, $upBy, $contsize, $contcount, $request = 0)
 {
     mysqli_begin_transaction($conn);
     try {
-        $sql = "UPDATE chemicals SET name = ?, brand = ?, chemLevel = ?, expiryDate = ?, notes = ?, branch = ?, updated_by = ?, date_received = ?";
+        $sql = "UPDATE chemicals SET name = ?, brand = ?, chemLevel = ?, expiryDate = ?, notes = ?, branch = ?, updated_by = ?, date_received = ?, container_size = ?, unop_cont = ?";
         $request == 0 ? $sql .= " WHERE id = ?;" : $sql .= ", request = ? WHERE id = ?";
 
         $stmt = mysqli_stmt_init($conn);
@@ -1576,9 +1608,9 @@ function editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes,
         }
 
         if ($request != 0) {
-            mysqli_stmt_bind_param($stmt, "sssssissii", $name, $brand, $level, $expDate, $notes, $branch, $upBy, $dateRec, $request, $id);
+            mysqli_stmt_bind_param($stmt, "sssssissiiii", $name, $brand, $level, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $contcount, $request, $id);
         } else {
-            mysqli_stmt_bind_param($stmt, "sssssissi", $name, $brand, $level, $expDate, $notes, $branch, $upBy, $dateRec, $id);
+            mysqli_stmt_bind_param($stmt, "sssssissiii", $name, $brand, $level, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $contcount, $id);
         }
 
         mysqli_stmt_execute($stmt);
@@ -1679,9 +1711,9 @@ function validateOS($conn, $password)
     $row = mysqli_fetch_assoc($result);
 
     $baPwd = $row['baPwd'];
-    // $verifiedPwd = password_verify($password, $baPwd);
-    // if ($verifiedPwd) {
-    if ($password === $baPwd) {
+    $verifiedPwd = password_verify($password, $baPwd);
+    if ($verifiedPwd) {
+        // if ($password === $baPwd) {
         return true;
         // header("location: ../superadmin/tech.acc.php?error=passwordcorrect");
     } else {

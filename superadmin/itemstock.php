@@ -57,7 +57,7 @@ include('tablecontents/tables.php');
                             class="bi bi-exclamation-triangle-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Low
                         Level Chemicals
                     </p>
-                    <p class="fw-light mb-0 mt-4">Number of chemicals running low.</p>
+                    <p class="fw-light mb-0 mt-4">Number of chemicals 20% below full capacity.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_low"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -120,22 +120,34 @@ include('tablecontents/tables.php');
                                     <input type="hidden" name="edit-id" id="edit-id" class="form-control">
                                     <div class="row mb-2">
 
-                                        <div class="col-lg-4 mb-2">
+                                        <div class="col-lg-3 mb-2">
                                             <label for="edit-name" class="form-label fw-light">Chemical Name:</label>
                                             <input type="text" name="edit-name" id="edit-name"
                                                 class="ps-2 form-control-plaintext" readonly autocomplete="off">
                                         </div>
-                                        <div class="col-lg-4 mb-2">
+                                        <div class="col-lg-3 mb-2">
                                             <label for="edit-chemBrand" class="form-label fw-light">Chemical
                                                 Brand:</label>
                                             <input type="text" name="edit-chemBrand" id="edit-chemBrand"
                                                 class="ps-2 form-control-plaintext" readonly autocomplete="off">
                                         </div>
-                                        <div class="col-lg-4 mb-2">
+                                        <div class="col-lg-2 mb-2">
                                             <label for="edit-chemLevel" class="form-label fw-light">Chemical Level:
                                             </label>
                                             <input type="number" name="edit-chemLevel" id="edit-chemLevel"
                                                 class="ps-2 form-control-plaintext" readonly>
+                                        </div>
+                                        <div class="col-lg-2 mb-2">
+                                            <label for="edit-contSize" class="form-label fw-light">Container
+                                                Size</label>
+                                            <input type="number" name="edit-containerSize" id="edit-contSize"
+                                                class="form-control-plaintext" readonly autocomplete="one-time-code">
+                                        </div>
+                                        <div class="col-lg-2 mb-2">
+                                            <label for="edit-containerCount"
+                                                class="form-label fw-light">Containers</label>
+                                            <input type="number" name="edit-containerCount" id="edit-containerCount"
+                                                class="form-control-plaintext" readonly autocomplete="one-time-code">
                                         </div>
                                     </div>
 
@@ -224,21 +236,33 @@ include('tablecontents/tables.php');
                                             class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
-                                    <!-- <input type="hidden" name="id" id="id" class="form-control"> -->
                                     <div class="row mb-2">
-                                        <div class="col-lg-4 mb-2">
-                                            <label for="name" class="form-label fw-light">Chemical Name</label>
+                                        <div class="col-lg-3 mb-2">
+                                            <label for="add-name" class="form-label fw-light">Chemical Name</label>
                                             <input type="text" name="name[]" id="add-name" class="form-control form-add"
                                                 autocomplete="one-time-code">
                                         </div>
-                                        <div class="col-lg-4 mb-2">
+                                        <div class="col-lg-3 mb-2">
                                             <label for="chemBrand" class="form-label fw-light">Chemical Brand</label>
                                             <input type="text" name="chemBrand[]" id="add-chemBrand"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
-                                        <div class="col-lg-4 mb-2">
-                                            <label for="chemLevel" class="form-label fw-light">Chemical Level </label>
+                                        <div class="col-lg-2 mb-2">
+                                            <label for="add-chemLevel" class="form-label fw-light text-nowrap">Current
+                                                Chemical Level</label>
                                             <input type="text" name="chemLevel[]" id="add-chemLevel"
+                                                class="form-control form-add" autocomplete="one-time-code">
+                                        </div>
+                                        <div class="col-lg-2 mb-2">
+                                            <label for="add-containerSize" class="form-label fw-light">Container
+                                                Size</label>
+                                            <input type="text" name="containerSize[]" id="add-containerSize"
+                                                class="form-control form-add" autocomplete="one-time-code">
+                                        </div>
+                                        <div class="col-lg-2 mb-2">
+                                            <label for="add-containerCont"
+                                                class="form-label fw-light">Containers</label>
+                                            <input type="text" name="containerCount[]" id="add-containerCont"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
                                     </div>
@@ -328,7 +352,8 @@ include('tablecontents/tables.php');
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
                                 </div>
-                                <p class="text-center alert alert-info w-75 mx-auto d-none" id="aea">
+                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none !important;"
+                                    id="aea">
                                 </p>
                             </div>
                             <div class="modal-footer">
@@ -347,7 +372,6 @@ include('tablecontents/tables.php');
             <form id="deleteForm">
                 <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="deleteModal" tabindex="0"
                     aria-labelledby="verifyChanges" aria-hidden="true">
-                    <input type="hidden" id="idForDeletion" name="id">
                     <input type="hidden" id="delChemId" name="chemid">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -374,7 +398,7 @@ include('tablecontents/tables.php');
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-grad" id="delsub" name="delete">Delete
+                                <button type="submit" class="btn btn-grad" id="delsub" name="delete">Delete
                                     Chemical</button>
                             </div>
                         </div>
@@ -517,7 +541,7 @@ include('tablecontents/tables.php');
                             <th scope="col">Name</th>
                             <th>Brand</th>
                             <th>Current Level</th>
-                            <th>Containers</th>
+                            <th class="text-nowrap">Remaining Container/s</th>
                             <th>Expiry Date</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -552,44 +576,53 @@ include('tablecontents/tables.php');
         const dataurl = 'tablecontents/chemicals.php';
 
 
-        let d = $("input.form-date");
+        flatpickr("#addMoreChem input.form-date-exp", {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y",
+            minDate: 'today'
+        });
+        flatpickr("#addMoreChem input.form-date-rec", {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y",
+            maxDate: 'today'
+        });
 
-        function flatpickrdate(d) {
-            flatpickr(d, {
-                dateFormat: "Y-m-d",
-                altInput: true,
-                altFormat: "F j, Y",
-            });
-        }
-
-
-        $(document).on('shown.bs.modal', "#addModal", function() {
-            flatpickrdate(d);
+        $(document).on('click', "#loadChem", function () {
+            // flatpickrdate(d);
             $("#addMoreChem").empty();
             $("#addForm")[0].reset();
         });
 
-        $(document).on('click', '.remove-btn', function() {
+        $(document).on('click', '.remove-btn', function () {
             $(this).parent().parent().remove();
         })
 
-        $(document).on('click', '#addMoreChemBtn', async function() {
+        $(document).on('click', '#addMoreChemBtn', async function () {
             $.get(dataurl, "addrow=true")
-                .done(function(data) {
+                .done(function (data) {
                     $('#addMoreChem').append(data);
-                    flatpickr("#addMoreChem input.form-date", {
+                    flatpickr("#addMoreChem input.form-date-exp", {
                         dateFormat: "Y-m-d",
                         altInput: true,
                         altFormat: "F j, Y",
+                        minDate: 'today'
+                    });
+                    flatpickr("#addMoreChem input.form-date-rec", {
+                        dateFormat: "Y-m-d",
+                        altInput: true,
+                        altFormat: "F j, Y",
+                        maxDate: 'today'
                     });
                 })
-                .fail(function(e, s, em) {
+                .fail(function (e, s, em) {
                     console.log(e);
                 });
         });
 
 
-        $(document).on('change', '#add-approved', function() {
+        $(document).on('change', '#add-approved', function () {
             // let flask = $('#flaskApproveAll');
             if ($(this).is(':checked')) {
                 $("#flaskApproveAll").removeClass('bi-flask');
@@ -602,7 +635,7 @@ include('tablecontents/tables.php');
 
         // const addexpdatee = document.getElementBy
 
-        $(document).on('click', '#approvemulti', async function() {
+        $(document).on('click', '#approvemulti', async function () {
             $('#multiapprove')[0].reset();
             const reqlist = await stock_requests();
             if (reqlist) {
@@ -610,7 +643,7 @@ include('tablecontents/tables.php');
             }
         });
 
-        $(document).on('change', '#checkall', function() {
+        $(document).on('change', '#checkall', function () {
             $('#checkicon').toggleClass('bi-square bi-check-square');
             var checked = $(this).prop('checked');
             $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
@@ -636,7 +669,7 @@ include('tablecontents/tables.php');
             }
         }
 
-        $(document).on('submit', '#multiapprove', async function(e) {
+        $(document).on('submit', '#multiapprove', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -679,7 +712,7 @@ include('tablecontents/tables.php');
         });
 
 
-        $(document).on('click', '#approvebtn', async function() {
+        $(document).on('click', '#approvebtn', async function () {
             $('#confirmapprove')[0].reset();
             let chemId = $(this).data('id');
             let name = $(this).data('name');
@@ -687,7 +720,7 @@ include('tablecontents/tables.php');
             $('#chemname').html(name);
         });
 
-        $(document).on('submit', '#confirmapprove', async function(e) {
+        $(document).on('submit', '#confirmapprove', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -735,17 +768,17 @@ include('tablecontents/tables.php');
         }
 
 
-        $(document).ready(async function() {
+        $(document).ready(async function () {
             get_sa_id();
             await loadpage(1);
 
             $.get(dataurl, {
-                    branchoptions: true
-                })
-                .done(function(d) {
+                branchoptions: true
+            })
+                .done(function (d) {
                     $("#sortbranches").append(d);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log('error appending branches option');
                 })
         });
@@ -753,16 +786,16 @@ include('tablecontents/tables.php');
 
         function get_overview_count(container, branch) {
             $.get(dataurl, {
-                    count: true,
-                    status: container,
-                    branch: branch
-                })
-                .done(function(d) {
+                count: true,
+                status: container,
+                branch: branch
+            })
+                .done(function (d) {
                     console.log(d);
                     $(`#count_${container}`).empty();
                     $(`#count_${container}`).append(d);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                 })
         }
@@ -774,7 +807,7 @@ include('tablecontents/tables.php');
             get_overview_count('entries', branch);
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             overview_display();
         });
 
@@ -789,8 +822,8 @@ include('tablecontents/tables.php');
                         entries: entries,
                         branch: branch
                     },
-                    success: async function(res) {
-                        console.log(res);
+                    success: async function (res) {
+                        // console.log(res);
 
                         $('#pagination').empty();
                         $('#pagination').append(res);
@@ -813,11 +846,11 @@ include('tablecontents/tables.php');
                     hideentries: hide_entries,
                     branch: branch
                 },
-                success: function(data) {
+                success: function (data) {
                     $('#chemicalTable').empty();
                     $('#chemicalTable').append(data);
                 },
-                error: function(err) {
+                error: function (err) {
                     alert('loadtable func error:' + err);
                 }
             });
@@ -843,7 +876,7 @@ include('tablecontents/tables.php');
             return entryHidden;
         }
 
-        $(document).on('change', '#sortbranches', async function() {
+        $(document).on('change', '#sortbranches', async function () {
             let branch = $(this).val();
             // console.log(branch);
             await loadpage(1, entryHidden, branch);
@@ -858,11 +891,11 @@ include('tablecontents/tables.php');
 
 
 
-        $(document).on('click', '#hideentries', async function() {
+        $(document).on('click', '#hideentries', async function () {
             await hide_entries();
         });
 
-        $('#pagination').on('click', '.page-link', async function(e) {
+        $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
 
             let branch = $("#sortbranches").val();
@@ -881,10 +914,10 @@ include('tablecontents/tables.php');
 
 
         // search
-        $(function() {
+        $(function () {
             let timeout = null;
 
-            $('#searchbar').keyup(function() {
+            $('#searchbar').keyup(function () {
                 let branch = $("#sortbranches").val();
                 clearTimeout(timeout);
                 $('#chemicalTable').empty();
@@ -892,7 +925,7 @@ include('tablecontents/tables.php');
                 // $('#loader').removeClass('visually-hidden');
                 $('#loader').css('display', 'block');
 
-                timeout = setTimeout(async function() {
+                timeout = setTimeout(async function () {
                     var search = $('#searchbar').val();
                     try {
                         const searchChem = await $.ajax({
@@ -904,7 +937,7 @@ include('tablecontents/tables.php');
                                 entries: entryHidden,
                                 branch: branch
                             },
-                            success: async function(searchChem, status) {
+                            success: async function (searchChem, status) {
                                 if (!search == '') {
                                     $('#pagination').addClass('d-none');
                                     $('#chemicalTable').empty();
@@ -932,7 +965,7 @@ include('tablecontents/tables.php');
         function get_sa_id() {
             $.post(dataurl, {
                 managerId: true
-            }, function(data, status) {
+            }, function (data, status) {
                 // console.log(data + ' status ' + status);
                 $('#idForDeletion').val(data);
                 // var saID = data;
@@ -943,7 +976,7 @@ include('tablecontents/tables.php');
         }
 
         // edit chemical
-        $(document).on('submit', '#editChemForm', async function(e) {
+        $(document).on('submit', '#editChemForm', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -969,85 +1002,39 @@ include('tablecontents/tables.php');
             }
         });
 
+        $(document).on('click', '.delbtn', function () {
+            $('#deleteForm')[0].reset();
+            $('#delChemId').val($(this).data('id'));
+            $('#deleteModal').modal('show');
+        });
 
-        async function delete_chem(id, pwd, chemId) {
-            // var saID = $('#idForDeletion').val();
-            // var saPass = $('#manPass').val();
-            // var chemID = $('#delChemId').val();
-            // console.log(chemID);
-            try {
-                const del = await $.ajax({
-                    type: 'POST',
-                    url: dataurl,
-                    data: {
-                        action: 'delete',
-                        saID: id,
-                        pass: pwd,
-                        chemID: chemId,
-                        // $('#addForm').serialize();
-                    },
-                    dataType: 'json'
-                    // ,success: function (response) {
-                    //     console.log(response);
-                    //     $('#chemicalTable').empty();
-                    //     get_data();
-                    //     $('#deleteModal').modal('hide');
-                    // }
-                });
 
-                if (del && del.success) {
+        $(document).on('submit', '#deleteForm', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            $.ajax({
+                type: 'POST',
+                url: dataurl,
+                data: $(this).serialize() + '&action=delete',
+                dataType: 'json'
+            }).done(function (d) {
+                // console.log(d);
+                if (d.success) {
                     $('#chemicalTable').empty();
-                    await loadpage(1);
+                    loadpage(1, entryHidden);
                     $('#deleteModal').modal('hide');
+                    $('#tableAlert').html(d.success).fadeIn(400).delay(2000).fadeOut(1000);
                     $('#deleteForm')[0].reset();
                 }
-            } catch (error) {
-                switch (error.responseJSON.type) {
-                    case 'delete':
-                        console.log(error.responseJSON.error);
-                        $('input#manPass').addClass('border border-warning').fadeIn(400);
-                        $('#del-emptyInput').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        break;
-                    case 'pwd':
-                        console.log(error.responseJSON.error);
-                        $('input#manPass').addClass('border border-warning').fadeIn(400);
-                        $('#del-emptyInput').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        break;
-                    case 'empty':
-                        console.log(error.responseJSON.error);
-                        $('input#manPass').addClass('border border-warning').fadeIn(400);
-                        $('#del-emptyInput').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        break;
-                    default:
-                        alert('unknown error.');
-                        break;
-                }
-            }
-        }
-
-        // delete item
-        $(document).on('click', '#delbtn', async function() {
-            $('#deleteForm')[0].reset();
-            get_sa_id();
-            var chemID = $(this).data('id');
-            // $('#manPass').prop('autocomplete', 'new-password');
-            // $('#manPass').disableAutoFill();
-            // $('#delChemId').val(chemID);
-            var saID = $('#idForDeletion').val();
-            $('#delsub').off('click').on('click', async function() {
-                try {
-                    var saPass = $('#manPass').val();
-                    console.log(chemID + saID + saPass);
-                    await delete_chem(saID, saPass, chemID);
-                } catch (error) {
-                    alert('Submit error. Try again.');
-                    // alert(error);
-                }
+            }).fail(function (e) {
+                // console.log(e);
+                $('#manPass').addClass('border border-warning').fadeIn(400);
+                $('#del-emptyInput').removeClass('visually-hidden').html(e.responseText).hide().fadeIn(400).delay(2000).fadeOut(1000);
             })
+        });
 
-        })
 
-        $(document).on('submit', '#addForm', async function(e) {
+        $(document).on('submit', '#addForm', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -1057,18 +1044,13 @@ include('tablecontents/tables.php');
                     data: $(this).serialize() + '&action=add',
                     dataType: 'json'
                 });
-                // console.log('heelk');
                 if (add.success) {
                     $('#chemicalTable').empty();
                     await loadpage(1);
                     $('#confirmAdd').modal('hide');
-                    // $('#tableAlert').removeClass('visually-hidden').html(add.success).hide().fadeIn(400).delay(2000).fadeOut(1000).addClass('visually-hidden');
-                    $('#tableAlert').css('display', 'block').html(add.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
-
+                    $('#tableAlert').html(add.success).fadeIn(400).delay(2000).fadeOut(1000);
                     $('#addForm')[0].reset();
-                    // success yah
                 }
-                // console.log('rire');
 
             } catch (error) {
                 console.log(error);
@@ -1079,51 +1061,56 @@ include('tablecontents/tables.php');
 
         async function get_chem_details(id) {
             return $.get(dataurl, {
-                    id: id,
-                    chemDetails: 'true'
-                })
-                .done(function(d, s) {
+                id: id,
+                chemDetails: 'true'
+            })
+                .done(function (d, s) {
                     console.log(d);
                     return d;
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                 })
         }
 
-        let editdates = ('#editChemForm input.form-date');
-        flatpickr(editdates, {
-            dateFormat: "Y-m-d"
+        flatpickr("#edit-dateReceived, #add-dateReceived", {
+            dateFormat: "Y-m-d",
+            maxDate: 'today'
         });
+
+        flatpickr("#edit-expDate, #add-expDate", {
+            dateFormat: "Y-m-d",
+            minDate: 'today'
+        })
 
         let toggled = false;
 
         function toggle() {
             $('#submitEdit').toggleClass('d-none');
-            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel').attr('readonly', function(i, a) {
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount').attr('readonly', function (i, a) {
                 return a ? false : true;
             });
-            $("#edit-expDate, #edit-dateReceived").attr('disabled', function(i, a) {
+            $("#edit-expDate, #edit-dateReceived").attr('disabled', function (i, a) {
                 return a ? false : true;
             });
 
-            $("#toggleEditBtn").html(function(i, a) {
+            $("#toggleEditBtn").html(function (i, a) {
                 return a.includes('Close Edit') ? 'Edit' : 'Close Edit';
             });
-            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived').toggleClass('form-control-plaintext form-control');
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived, #edit-contSize, #edit-containerCount').toggleClass('form-control-plaintext form-control');
 
             return toggled = toggled ? false : true;
         }
 
         // get specific chemical information when edit btn is clicked
-        $(document).on('click', '.editbtn', async function() {
+        $(document).on('click', '.editbtn', async function () {
             $('#editChemForm')[0].reset();
             let id = $(this).data('chem');
             let deets = await get_chem_details(id);
             var details = JSON.parse(deets);
             console.log(details);
 
-            $('#submitEdit, #toggleEditBtn').attr('disabled', function() {
+            $('#submitEdit, #toggleEditBtn').attr('disabled', function () {
                 return details.req == 1 ? true : false;
             });
 
@@ -1139,15 +1126,27 @@ include('tablecontents/tables.php');
             $('#edit-name').val(details.name);
             $('#edit-chemBrand').val(details.brand);
             $('#edit-chemLevel').val(details.level);
+            $('#edit-contSize').val(details.container_size);
+            $('#edit-containerCount').val(details.unop_cont);
             $('#edit-dateReceived').val(details.daterec);
             $('#edit-expDate').val(details.expDate);
             $('#edit-notes').val(details.notes);
-            $('#addinfo').html(function() {
+            $('#addinfo').html(function () {
                 return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
             });
-            $('#updateinfo').html(function() {
+            $('#updateinfo').html(function () {
                 return details.upby === 'No Update Record' ? 'Updated at: ' + details.upat : 'Updated at: ' + details.upat + ' by ' + details.upby;
             });
+
+            let reqAlertStatus = $('#reqalert').hasClass('d-none');
+            if (details.req == 1) {
+                $('#reqalert').removeClass('d-none').html('This chemical is pending for approval by the Manager. You can only view the details of this chemical.').fadeIn(750);
+            } else {
+                if (!reqAlertStatus) {
+                    $('#reqalert').addClass('d-none');
+                }
+                $('#reqalert').html('');
+            }
 
             if (toggled) {
                 toggle();

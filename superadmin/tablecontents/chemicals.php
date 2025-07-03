@@ -11,37 +11,7 @@ if (isset($_POST["managerId"])) {
     echo $_SESSION['saID'];
 }
 
-function check_request($conn, $id)
-{
-    if (!is_numeric($id)) {
-        echo "Invalid ID." . $id;
-        exit();
-    }
-    $sql = "SELECT request FROM chemicals WHERE id = ?;";
-    $stmt = mysqli_stmt_init($conn);
 
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        echo "check_request stmt failed.";
-        exit();
-    }
-
-    mysqli_stmt_bind_param($stmt, 'i', $id);
-    mysqli_stmt_execute($stmt);
-    $res = mysqli_stmt_get_result($stmt);
-
-    if (mysqli_num_rows($res) > 0) {
-        if ($row = mysqli_fetch_assoc($res)) {
-            if ($row['request'] === 1) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    } else {
-        echo "ID missing at database.";
-        exit();
-    }
-}
 // edit
 if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 
@@ -54,7 +24,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 
     $usn = $_SESSION['saUsn'];
     $saID = $_SESSION['saID'];
-    $usn = $_SESSION['saUsn'];
+    // $usn = $_SESSION['saUsn'];
     $branch = $_SESSION['branch'];
     $empId = $_SESSION['empId'];
 
@@ -66,14 +36,39 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     $ed = $_POST['edit-expDate'] ?? null;
     $dr = $_POST['edit-receivedDate'] ?? null;
     $notes = $_POST['edit-notes'];
+    $containerCount = $_POST['edit-containerCount'];
+    $contSize = $_POST['edit-containerSize'];
     $pwd = $_POST['saPwd'];
 
     $expDate = date("Y-m-d", strtotime($ed));
     $dateRec = date("Y-m-d", strtotime($dr));
 
-    if (empty($name || $brand || $level)) {
+    if (empty($name) || empty($brand) || empty($level)) {
         http_response_code(400);
         echo 'Make sure to fill up required forms.';
+        exit();
+    }
+
+    if (empty($expDate)) {
+        $expDate = '2025-01-01';
+    }
+
+    if (strtotime($expDate) < strtotime($dateRec)) {
+        http_response_code(400);
+        echo 'Expiry date cannot be before the received date.';
+        exit();
+    }
+
+    if (strtotime($dateRec) > strtotime(date('Y-m-d'))) {
+        http_response_code(400);
+        echo 'Invalid received date.';
+        exit();
+    }
+
+    if (strtotime($expDate) < strtotime(date('Y-m-d'))) {
+        http_response_code(400);
+        echo 'You are setting an expired chemical.';
+        exit();
     }
 
     if (!validate($conn, $pwd)) {
@@ -81,7 +76,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         exit();
     }
 
-    $edit = editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes, $branch, $upBy);
+    $edit = editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $containerCount);
 
     if (isset($edit['error'])) {
         http_response_code(400);
@@ -107,14 +102,24 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
     $brand = $_POST['chemBrand'] ?? [];
     $level = $_POST['chemLevel'] ?? [];
     $expDate = $_POST['expDate'] ?? [];
+    $containerSize = $_POST['containerSize'] ?? [];
+    $containerCount = $_POST['containerCount'] ?? [];
     $saPwd = $_POST['saPwd'];
 
     $addedBy = "[$loggedId] - $loggedUsn";
 
-    if (empty($name) && empty($brand) && empty($level)) {
+    if (empty($name) || empty($brand) || empty($level)) {
         http_response_code(400);
         echo 'Fields cannot be empty.';
         exit;
+    }
+
+    for ($i = 0; $i < count($level); $i++) {
+        if ($level[$i] > $containerSize[$i]) {
+            http_response_code(400);
+            echo 'Chemical Level cannot be greater than Container Size.';
+            exit;
+        }
     }
 
     if (empty($saPwd)) {
@@ -137,6 +142,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         'name' => $name,
         'rDate' => $receivedDate,
         'eDate' => $expDate,
+        'csize' => $containerSize,
+        'ccount' => $containerCount,
     ];
     // echo var_dump($data);
     // exit();
@@ -155,33 +162,39 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
 
 // delete
 if (isset($_POST['action']) && $_POST['action'] == 'delete') {
-    $id = $_POST['saID'];
-    $pwd = $_POST['pass'];
-    $chemId = $_POST['chemID'];
+    $id = $_SESSION['saID'];
+    $pwd = $_POST['saPwd'];
+    $chemId = $_POST['chemid'];
     // convert ids to integer
 
-    if (!empty($pwd) && !empty($id)) {
-        if (validate($conn, $pwd) == true) {
-            if (deleteChem($conn, $chemId) == true) {
-                http_response_code(200);
-                echo json_encode(['success' => 'Chemical Deleted.']);
-                exit;
-            } else {
-                http_response_code(400);
-                echo json_encode(['type' => 'delete', 'error' => 'Error. Deletion Failed.']);
-                exit;
-            }
-        } else {
-            http_response_code(400);
-            echo json_encode(['type' => 'pwd', 'error' => 'Incorrect Password.']);
-            exit;
-        }
-        // echo $id . ' ' . $pwd . ' ' . $chemId;
-    } else {
+   if (empty($id) || !is_numeric($id) || !is_numeric($chemId) || empty($chemId)) {
         http_response_code(400);
-        echo json_encode(['type' => 'empty', 'error' => 'Password verification cannot be empty.']);
-        exit;
+        echo 'Invalid ID.';
+        exit();
     }
+
+    if(empty($pwd)){
+        http_response_code(400);
+        echo 'Password verification cannot be empty.';
+        exit();
+    }
+
+    if(!validate($conn, $pwd)){
+        http_response_code(400);
+        echo 'Incorrect Password.';
+        exit();
+    }
+
+    $delete = deleteChem($conn, $chemId);
+    if(!$delete){
+        http_response_code(400);
+        echo 'Error. Deletion Failed.';
+        exit();
+    }
+    http_response_code(200);
+    echo json_encode(['success' => 'Chemical Deleted.']);
+    exit();
+
 }
 
 
@@ -261,11 +274,11 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
             $level = $row["chemLevel"];
             $expDate = $row["expiryDate"];
             $request = $row['request'];
-?>
+            ?>
             <tr class="text-center">
                 <td scope="row">
                     <?=
-                    $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
@@ -275,20 +288,20 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
                     <div class="d-flex justify-content-center">
                         <?php
                         if ($request === "1") {
-                        ?>
+                            ?>
                             <input type="checkbox" class="btn-check" value="<?= $id ?>" name="stocks[]" id="c-<?= $id ?>"
                                 autocomplete="off">
                             <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i
                                     class="bi bi-check-circle me-2"></i>Approve</label>
-                        <?php
+                            <?php
                         } else {
-                        ?>
+                            ?>
                             <p class="text-muted">Approved.</p>
                         <?php } ?>
                     </div>
                 </td>
             </tr>
-    <?php
+            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='5' class='text-center'>No Stock Requests.</td></tr>";
@@ -300,39 +313,50 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
     <div class="add-row-container">
         <hr class="my-2">
         <div class="row mb-2 pe-2">
-            <div class="col-lg-4 mb-2">
+            <div class="col-lg-3 mb-2">
                 <label for="name" class="form-label fw-light">Chemical Name</label>
                 <input type="text" name="name[]" id="add-name" class="form-control form-add" autocomplete="one-time-code">
             </div>
-            <div class="col-lg-4 mb-2">
+            <div class="col-lg-3 mb-2">
                 <label for="chemBrand" class="form-label fw-light">Chemical Brand</label>
                 <input type="text" name="chemBrand[]" id="add-chemBrand" class="form-control form-add"
                     autocomplete="one-time-code">
             </div>
-            <div class="col-lg-3 mb-2">
-                <label for="chemLevel" class="form-label fw-light">Chemical Level </label>
+            <div class="col-lg-2 mb-2">
+                <label for="chemLevel" class="form-label fw-light text-nowrap">Current Chemical Level</label>
                 <input type="text" name="chemLevel[]" id="add-chemLevel" class="form-control form-add"
                     autocomplete="one-time-code">
             </div>
-            <button type="button" class="btn btn-grad remove-btn col-1 mt-auto mb-2"><i
-                    class="bi bi-dash-circle"></i></button>
+            <div class="col-lg-2 mb-2">
+                <label for="chemLevel" class="form-label fw-light">Container Size</label>
+                <input type="text" name="containerSize[]" id="add-chemLevel" class="form-control form-add"
+                    autocomplete="one-time-code">
+            </div>
+            <div class="col-lg-2 mb-2">
+                <label for="chemLevel" class="form-label fw-light">Container Count</label>
+                <input type="text" name="containerCount[]" id="add-chemLevel" class="form-control form-add"
+                    autocomplete="one-time-code">
+            </div>
+
         </div>
         <div class="row mb-2">
             <div class="col-lg-4 mb-2">
                 <label for="expDate" class="form-label fw-light">Date Received</label>
-                <input type="date" name="receivedDate[]" id="add-dateReceived" class="form-control form-add form-date">
+                <input type="date" name="receivedDate[]" id="add-dateReceived" class="form-control form-add form-date-rec">
             </div>
             <div class="col-lg-4 mb-2">
                 <label for="expDate" class="form-label fw-light">Expiry Date</label>
-                <input type="date" name="expDate[]" id="add-expDate" class="form-control form-add form-date">
+                <input type="date" name="expDate[]" id="add-expDate" class="form-control form-add form-date-exp">
             </div>
-
             <div class="col-4 mb-2">
                 <label for="notes" class="form-label fw-light">Short Note</label>
                 <textarea name="notes[]" id="notes" class="form-control"
                     placeholder="Optional short note . . . "></textarea>
             </div>
-
+        </div>
+        <div class="mb-2 d-flex">
+            <button type="button" class="btn btn-grad remove-btn mx-auto w-50">Remove Row<i
+                    class="bi bi-dash-circle ms-3"></i></button>
         </div>
     </div>
 
@@ -378,6 +402,8 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
             $data['daterec'] = date("F j, Y", strtotime($daterec));
             $data['req'] = $row['request'];
             $data['id'] = $row['id'];
+            $data['unop_cont'] = $row['unop_cont'];
+            $data['container_size'] = $row['container_size'];
         }
     } else {
         echo "Invalid ID. Make sure the chemical exist.";
@@ -399,9 +425,9 @@ if (isset($_GET['branchoptions']) && $_GET['branchoptions'] === 'true') {
             $id = $row['id'];
             $name = $row['name'];
             $loc = $row['location'];
-    ?>
+            ?>
             <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars("$name ($loc)") ?></option>
-<?php
+            <?php
         }
     }
 }

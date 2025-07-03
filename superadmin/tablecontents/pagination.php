@@ -233,7 +233,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
-                <td class="<?= $level <= 10 ? 'text-danger' : ($level <= 50 ? 'text-warning' : '') ?>">
+                <td>
                     <?= htmlspecialchars("$level ml  / $contsize ml") ?>
                 </td>
                 <td><?= htmlspecialchars($remcom) ?></td>
@@ -252,7 +252,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                                     class="bi bi-check-circle"></i></button>
                             <button type="button" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                     class="bi bi-info-circle"></i></button>
-                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-sidebar delbtn" data-bs-toggle="modal"
                                 data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-x-octagon"></i></button>
                             <?php
                         } else {
@@ -260,7 +260,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                             ?>
                             <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                     class="bi bi-info-circle"></i></button>
-                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-sidebar delbtn" data-bs-toggle="modal"
                                 data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
                         <?php } ?>
                     </div>
