@@ -131,7 +131,7 @@
 
             <!-- modals -->
             <form id="addTransaction">
-                <div class="row g-2 text-dark">
+                <div class="row g-2 text-dark m-0">
                     <div class="modal modal-lg fade text-dark modal-edit" id="addModal" tabindex="-1"
                         aria-labelledby="create" aria-hidden="true">
                         <div class="modal-dialog">
@@ -366,7 +366,7 @@
 
             <!-- view/edit -->
             <form id="viewEditForm">
-                <div class="row g-2 text-dark">
+                <div class="row g-2 text-dark m-0">
                     <div class="modal modal-lg fade text-dark modal-edit" id="details-modal" tabindex="-1">
                         <div class="modal-dialog">
                             <div class="modal-content">

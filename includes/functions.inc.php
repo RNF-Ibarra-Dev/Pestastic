@@ -1027,7 +1027,10 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                         $chemname = get_chemical_name($conn, $chemUsed[$i]);
                         throw new Exception("Insufficient Chemical: " . $chemname);
                     } else {
-                        $amount = "-" . $amtUsed[$i];
+                        $amount = (int) $amtUsed[$i];
+                        $amount = !in_array($amtUsed[$i], $existingChems) ? $amount * -1 : $amount;
+                        throw new Exception($amount);
+
                         $reflect = reflect_trans_chem($conn, $amount, $chemUsed[$i]);
                         if (isset($reflect['error'])) {
                             throw new Exception("New chemical error: " . $reflect['error']);
@@ -1551,6 +1554,8 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             session_start();
             $_SESSION["saID"] = $userExists['saID'];
             $_SESSION["saUsn"] = $userExists['saUsn'];
+            $_SESSION["fname"] = $userExists['saName'];
+            $_SESSION["lname"] = $userExists['saLName'];
             $_SESSION['empId'] = $userExists['saEmpId'];
             $_SESSION['saEmail'] = $userExists['saEmail'];
             $_SESSION['branch'] = $userExists['user_branch'];

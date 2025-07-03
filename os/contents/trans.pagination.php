@@ -2,36 +2,156 @@
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
-$pageRows = 5;
+$pageRows = 8;
 $rowCount = 'SELECT * FROM transactions';
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
-function row_status($conn, $status = '')
+function treatment_name($conn, $id)
 {
-    if ($status != '') {
-        $rowCount = "SELECT * FROM transactions WHERE transaction_status = '$status'";
-    } else {
-        $rowCount = 'SELECT * FROM transactions';
+    if (!is_numeric($id)) {
+        return "Invalid ID. ID passed: " . $id;
     }
-    $countResult = mysqli_query($conn, $rowCount);
-    $totalRows = mysqli_num_rows($countResult);
+
+    $sql = "SELECT t_name FROM treatments WHERE id = $id;";
+    $res = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
+            return $row['t_name'];
+        }
+    } else {
+        return "No treatment found.";
+    }
+}
+
+
+
+
+if (isset($_GET['search'])) {
+    $search = $_GET['search'];
+    $istatus = $_GET['status'] ?? '';
+
+    $sql = "SELECT * FROM transactions WHERE (id LIKE ? OR treatment_date LIKE ? OR customer_name LIKE ?
+                    OR treatment LIKE ?)";
+
+    $data = [];
+    $types = '';
+    if ($istatus !== '' && $istatus !== NULL) {
+        $sql .= " AND transaction_status = ?";
+        $data[] = (string) $istatus;
+        $types = 's';
+    }
+
+    $sql .= " ORDER BY id DESC;";
+
+
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo 'ERROR STMT';
+        exit();
+    }
+
+    $ssearch = "%" . $search . "%";
+
+
+    mysqli_stmt_bind_param($stmt, "ssss$types", $ssearch, $ssearch, $ssearch, $ssearch, ...$data);
+
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $rows = mysqli_num_rows($result);
+    if ($rows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $customerName = $row['customer_name'];
+            $treatmentDate = $row['treatment_date'];
+            $treatment = $row['treatment'];
+            $t_name = treatment_name($conn, intval($treatment));
+            $createdAt = $row['created_at'];
+            $updatedAt = $row['updated_at'];
+            $status = $row['transaction_status'];
+            ?>
+            <tr class="text-center">
+                <td scope="row"><?= $id ?></td>
+                <td><?= htmlspecialchars($customerName) ?></td>
+                <td><?= htmlspecialchars($treatmentDate) ?></td>
+                <td><?= htmlspecialchars($t_name) ?></td>
+                <td>
+                    <?=
+                        $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
+                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'text-light badge rounded-pill w-100 text-bg-warning bg-opacity-25'>Pending</span></a>" : ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" : ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" : ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
+                        ?>
+                </td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <button id="tableDetails" disable-data-bs-toggle="modal" disabled-data-bs-target="#details-modal"
+                            data-trans-id="<?= $id ?>" class="btn btn-sidebar me-2">Details</button>
+                    </div>
+                </td>
+            </tr>
+
+
+            <?php
+        }
+    } else {
+        echo "<tr><td scope='row' colspan='6' class='text-center'>Search not found.</td></tr>";
+    }
+}
+
+function row_status($conn, $istatus = '')
+{
+
+    $rowCount = "SELECT COUNT(*) FROM transactions";
+
+    $queries = [];
+    $data = [];
+    $types = '';
+
+    if ($istatus != NULL && $istatus != '') {
+        $status = (string) $istatus;
+        $queries[] = "transaction_status = ?";
+        $data[] = $status;
+        $types .= "s";
+    }
+
+    if (!empty($queries)) {
+        $rowCount .= " WHERE " . implode(" AND ", $queries);
+    }
+    $rowCount .= ";";
+
+    $stmt = mysqli_stmt_init($conn);
+    $totalRows = 0;
+
+    if (!mysqli_stmt_prepare($stmt, $rowCount)) {
+        echo "row status stmt failed.";
+        exit();
+    }
+
+    if (!empty($queries)) {
+        mysqli_stmt_bind_param($stmt, $types, ...$data);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_row($res);
+    $totalRows = $row[0];
+
+
     $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
 
     return ['pages' => $totalPages, 'rows' => $totalRows];
 }
 
-// $totalPages = row_status($conn, $pageRows);
-
-// list($countResult, $totalRows, $totalPages) = row_status($conn, $pageRows);
-
 if (isset($_GET['paginate']) && $_GET['paginate'] == 'true') {
     $status = $_GET['status'];
-    load_pagination($conn, $status);
+    $active = $_GET['active'];
+    load_pagination($conn, (int) $active, $status);
 }
 
-function load_pagination($conn, $status)
+
+function load_pagination($conn, $activepage = 1, $status = '')
 {
 
     // list($countResult, $totalRows, $totalPages) = row_status($conn, $pageRows, $status);
@@ -48,8 +168,8 @@ function load_pagination($conn, $status)
         <ul class="pagination justify-content-center">
             <?php
             // set active page ex. 1 = first page. Checks if numeric as well.
-            $activepage = isset($_GET['active']) && is_numeric($_GET['active']) ? $_GET['active'] : 1;
-
+            // $activepage = isset($_GET['active']) && is_numeric($_GET['active']) ? $_GET['active'] : 1;
+        
             // set next and previous pagination button data
             $prev = $activepage - 1;
             $next = $activepage + 1;
@@ -126,16 +246,19 @@ function load_pagination($conn, $status)
                 <?php
                 if ($next <= $totalPages) {
                     ?>
-                    <a class="page-link" data-page="<?= $next ?>" href=""><i class="bi bi-caret-right"></i></a>
+                    <a class="page-link" data-page="<?= $totalPages !== 0 ? $next : 1 ?>" href=""><i
+                            class="bi bi-caret-right"></i></a>
                     <?php
                 } else { ?>
-                    <a class="page-link" data-page="<?= $totalPages ?>"><i class="bi bi-caret-right"></i></a>
+                    <a class="page-link" data-page="<?= $totalPages !== 0 ? $totalPages : 1 ?>"><i
+                            class="bi bi-caret-right"></i></a>
                     <?php
                 }
                 ?>
             </li>
             <li class="page-item">
-                <a class="page-link" data-page="<?= $totalPages ?>" href=""><i class="bi bi-caret-right-fill"></i></a>
+                <a class="page-link" data-page="<?= $totalPages !== 0 ? $totalPages : 1 ?>" href=""><i
+                        class="bi bi-caret-right-fill"></i></a>
             </li>
         </ul>
     </nav>
@@ -143,79 +266,10 @@ function load_pagination($conn, $status)
     <?php
 }
 
-if (isset($_GET['search'])) {
-    $search = $_GET['search'];
-    $status = $_GET['status'];
 
-    if ($status != '') {
-        $sql = "SELECT * FROM transactions 
-                WHERE (id LIKE ? OR treatment_date LIKE ? OR customer_name LIKE ?
-                    OR treatment LIKE ?) 
-                AND transaction_status = ? 
-                ORDER BY id DESC;";
-    } else {
-        $sql = "SELECT * FROM transactions 
-                WHERE id LIKE ? OR treatment_date LIKE ? OR customer_name LIKE ?
-                    OR treatment LIKE ? OR transaction_status LIKE ? 
-                ORDER BY id DESC;";
-    }
-    $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        echo 'ERROR STMT';
-        exit();
-    }
-
-    $ssearch = "%" . $search . "%";
-    // $sstatus = "%" . $status . "%";
-
-    if ($status != '') {
-        mysqli_stmt_bind_param($stmt, 'sssss', $ssearch, $ssearch, $ssearch, $ssearch, $status);
-    } else {
-        mysqli_stmt_bind_param($stmt, 'sssss', $ssearch, $ssearch, $ssearch, $ssearch, $ssearch);
-    }
-
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $rows = mysqli_num_rows($result);
-
-    if ($rows > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $customerName = $row['customer_name'];
-            $treatmentDate = $row['treatment_date'];
-            $treatment = $row['treatment'];
-            $createdAt = $row['created_at'];
-            $updatedAt = $row['updated_at'];
-            $status = $row['transaction_status'];
-            ?>
-            <tr class="text-center">
-                <td scope="row"><?= $id ?></td>
-                <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= htmlspecialchars($treatmentDate) ?></td>
-                <td><?= htmlspecialchars($treatment) ?></td>
-                <td>
-                    <?=
-                        $status === 'Pending' ? "<button id='tableDetails' data-bs-toggle='modal' data-bs-target='#approve-modal'
-                             class='btn btn-sidebar me-2'>Pending</button>" : htmlspecialchars($status)
-                        ?>
-                </td>
-                <td>
-                    <div class="d-flex justify-content-center">
-                        <button id="tableDetails" disable-data-bs-toggle="modal" disabled-data-bs-target="#details-modal"
-                            data-trans-id="<?= $id ?>" class="btn btn-sidebar me-2">Details</button>
-                    </div>
-                </td>
-            </tr>
-
-
-            <?php
-        }
-    } else {
-        echo "<tr><td scope='row' colspan='6' class='text-center'>Search not found.</td></tr>";
-    }
-}
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
+    // $current = $_GET['currentpage'] ? $_GET['currentpage'] : 1;
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
     $status = $_GET['status'];
 
@@ -223,19 +277,31 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     $sql = "SELECT * FROM transactions ";
 
-    if ($status != '') {
-        $sql .= "WHERE transaction_status = '$status' ";
-        $sql .= "ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
+    if (!empty($status)) {
+        $stmt = mysqli_stmt_init($conn);
+        $sq = "transaction_status = ?";
+        $data = [];
+        $sql .= "WHERE ";
 
+        if ($status) {
+            $sql .= $sq;
+            $types = "s";
+            $data[] = (string) $status;
+        } 
+
+    
+        $sql .= " ORDER BY id DESC LIMIT $limitstart, $pageRows;";
+        mysqli_stmt_prepare($stmt, $sql);
+        mysqli_stmt_bind_param($stmt, $types, ...$data);
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
     } else {
-        $sql .= "ORDER BY id DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
-
+        $sql .= " ORDER BY id DESC LIMIT $limitstart, $pageRows;";
+        $result = mysqli_query($conn, $sql);
     }
 
-
-    $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
-
 
 
     if ($rows > 0) {
@@ -243,7 +309,9 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $id = $row['id'];
             $customerName = $row['customer_name'];
             $treatmentDate = $row['treatment_date'];
+            $td = date("F j, Y", strtotime($treatmentDate));
             $treatment = $row['treatment'];
+            $t_name = treatment_name($conn, $treatment);
             $createdAt = $row['created_at'];
             $updatedAt = $row['updated_at'];
             $status = $row['transaction_status'];
@@ -251,12 +319,12 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <tr class="text-center">
                 <td scope="row"><?= $id ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= htmlspecialchars($treatmentDate) ?></td>
-                <td><?= htmlspecialchars($treatment) ?></td>
+                <td><?= htmlspecialchars($td) ?></td>
+                <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
-                        $status === 'Pending' ? "<button type='button' id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-tarsget='#approvemodal'
-                             class='btn btn-sidebar me-2'>Pending</button>" : htmlspecialchars($status)
+                        $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
+                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'w-100 text-light badge rounded-pill text-bg-warning bg-opacity-25'>Pending</span></a>" : ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" : ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" : ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
                         ?>
                 </td>
                 <td>

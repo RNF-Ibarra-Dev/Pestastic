@@ -2,42 +2,72 @@
 session_start();
 require_once '../../includes/dbh.inc.php';
 require_once '../../includes/functions.inc.php';
+// var_dump($_POST);
+require_once 'arrays.php';
 
 if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     // echo 'success';
     $customerName = $_POST['add-customerName'];
     $techId = $_POST['add-technicianName'] ?? [];
     $treatmentDate = $_POST['add-treatmentDate'];
-    $treatment = $_POST['add-treatment'];
+    $address = $_POST['add-customerAddress'];
+    $treatmentTime = $_POST['add-treatmentTime'];
+    $treatment = $_POST['add-treatment'] ?? null;
+    $t_type = $_POST['add-treatmentType'];
+    $package = $_POST['add-package'] ?? null;
+    $pstart = $_POST['add-packageStart'] ?? null;
+    $pexp = $_POST['add-packageExpiry'] ?? null;
     $problems = $_POST['pest_problems'] ?? []; //array
     $chemUsed = $_POST['add_chemBrandUsed'] ?? []; //arrya
-    $amtUsed = $_POST['add_amountUsed'] ?? []; //array
+    $note = $_POST['add-notes'];
     $status = $_POST['add-status'];
+    $session = $_POST['add-session'] ?? null;
     $saPwd = $_POST['saPwd'];
 
-    if ($status === 'Voided') {
+
+    if ($package != 'none') {
+        if (!in_array($package, $packageIds)) {
+            http_response_code(400);
+            echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Package. Please Try Again.']);
+            exit();
+        }
+        $treatment = get_package_treatment($conn, $package);
+        if (isset($treatment['error'])) {
+            http_response_code(400);
+            echo json_encode(['type' => 'invalid_id', 'errorMessage' => $treatment['error']]);
+            exit();
+        }
+    }
+
+    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($problems) || empty($chemUsed) || empty($status) || empty($t_type) || empty($address)) {
         http_response_code(400);
-        echo json_encode(['type' => 'voided', 'errorMessage' => 'Status not valid. Voiding is restricted. Please refresh the page and try again.']);
+        echo json_encode(['type' => 'emptyinput', 'errorMessage' => "All input fields are required."]);
         exit();
+    }
+
+    if ($package !== 'none') {
+        if (empty($session)) {
+            http_response_code(400);
+            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Session count is required." . $package]);
+            exit();
+        }
+        if (empty($pstart) || empty($pexp)) {
+            http_response_code(400);
+            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Package Warranty Start."]);
+            exit();
+        }
+    } else {
+        if (empty($treatment)) {
+            http_response_code(400);
+            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Treatment Assigned."]);
+            exit();
+        }
+        $package = null;
     }
 
     if (!in_array($status, $allStatus)) {
         http_response_code(400);
-        echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Status not valid. Please refresh the page and try again.']);
-        exit();
-    }
-
-    if (!in_array($treatment, $allTreatments, true)) {
-        http_response_code(400);
-        echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Treatment not valid. Please refresh the page and try again.']);
-        exit();
-    }
-
-
-    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatment) || empty($problems) || empty($chemUsed) || empty($amtUsed) || empty($status)) {
-        // header('Content-Type: application/json');
-        http_response_code(400);
-        echo json_encode(['type' => 'emptyinput', 'errorMessage' => "All input fields are required."]);
+        echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Status. Please Try Again.']);
         exit();
     }
 
@@ -48,14 +78,14 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-    if (!validate($conn, $saPwd)) {
+    if (!validateOS($conn, $saPwd)) {
         // header('Content-Type: application/json');
         http_response_code(400);
         echo json_encode(['type' => 'wrongpassword', 'errorMessage' => 'Manager password is incorrect.']);
         exit();
     }
 
-    $transaction = newTransaction($conn, $customerName, $techId, $treatmentDate, $treatment, $chemUsed, $amtUsed, $status, $problems);
+    $transaction = newTransaction($conn, $customerName, $address, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp);
 
     if (!isset($transaction['success'])) {
         http_response_code(400);
@@ -63,7 +93,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     } else {
         http_response_code(200);
-        echo json_encode(['success' => 'Transaction added.', 'iterate' => $transaction['iterate']]);
+        echo json_encode(['success' => 'Transaction added.']);
         exit();
     }
 }
@@ -72,7 +102,7 @@ if (isset($_POST['delete']) && $_POST['delete'] === 'true') {
     $transid = $_POST['id'];
     $pwd = $_POST['saPwd'];
 
-    if (!validate($conn, $pwd)) {
+    if (!validateOS($conn, $pwd)) {
         http_response_code(400);
         echo json_encode(['error' => 'Incorrect admin password. Please try again.']);
         exit();
@@ -96,14 +126,72 @@ if (isset($_POST['delete']) && $_POST['delete'] === 'true') {
 if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $transId = $_POST['edit-transId'];
     $customerName = $_POST['edit-customerName'];
+    $address = $_POST['edit-address'];
     $techId = $_POST['edit-technicianName'] ?? [];
     $treatmentDate = $_POST['edit-treatmentDate'];
-    $treatment = $_POST['edit-treatment'];
+    $treatmentTime = $_POST['edit-treatmentTime'];
+    $treatment = $_POST['edit-treatment'] ?? null;
+    $ttype = $_POST['edit-treatmentType'];
+    $package = $_POST['edit-package'] ?? null;
+    $pstart = $_POST['edit-start'] ?? null;
+    $pexp = $_POST['edit-expiry'] ?? null;
+    $session = $_POST['edit-session'] ?? null;
     $problems = $_POST['pest_problems'] ?? []; //array
     $chemUsed = $_POST['edit_chemBrandUsed'] ?? []; //arrya
-    $amtUsed = $_POST['edit-amountUsed'] ?? []; //array
+    $amtUsed = $_POST['edit-amountUsed'] ?? null; //array
     $status = $_POST['edit-status'];
+    $note = $_POST['edit-note'] ?? null;
     $saPwd = $_POST['edit-saPwd'];
+
+    $allowedUpdateStatus = ['Pending', 'Accepted'];
+
+    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatmentTime) || empty($problems) || empty($chemUsed) || empty($status) || empty($ttype) || empty($address)) {
+        http_response_code(400);
+        echo "All input fields are required.";
+        exit();
+    }
+
+    for($i = 0; $i < count($amtUsed); $i++) {
+        if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
+            http_response_code(400);
+            echo "Error. Invalid Amount Used.";
+            exit();
+        }
+    }
+
+    $oStatus = check_status($conn, $transId);
+    // no transId
+    if (!$oStatus) {
+        http_response_code(400);
+        echo 'Unknown transaction ID.';
+        exit();
+    } elseif (isset($oStatus['error'])) {
+        // stmt error
+        http_response_code(400);
+        echo $oStatus['error'];
+        exit();
+    } elseif (!in_array($oStatus, $allowedUpdateStatus)) {
+        // if status is not pending or accepted
+        http_response_code(400);
+        echo 'Invalid Status. Make sure the status is Pending or Accepted.';
+        exit();
+    }
+
+    if ($package != 'none') {
+        if (!in_array($package, $packageIds)) {
+            http_response_code(400);
+            echo 'Invalid Package. Please Try Again.';
+            exit();
+        }
+        $treatment = get_package_treatment($conn, $package);
+        if (isset($treatment['error'])) {
+            http_response_code(400);
+            echo $treatment['error'];
+            exit();
+        }
+    }else{
+        $package = null;
+    }
 
     $data = [
         'transId' => $transId,
@@ -114,28 +202,30 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         'problems' => $problems,
         'chemUsed' => $chemUsed,
         'amtUsed' => $amtUsed,
-        'status' => $status
+        'status' => $status,
+        'address' => $address,
+        'treatmentTime' => $treatmentTime,
+        'ttype' => $ttype,
+        'package' => $package,
+        'session' => $session,
+        'pstart' => $pstart,
+        'pexp' => $pexp,
+        'note' => $note
     ];
 
-    if ($status === 'Voided') {
+    if (!validateOS($conn, $saPwd)) {
         http_response_code(400);
-        echo json_encode(['type' => 'voided', 'errorMessage' => 'Status not valid. Voiding is restricted. Please refresh the page and try again.']);
-        exit();
-    }
-
-    if (!validate($conn, $saPwd)) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid Password.']);
+        echo 'Invalid Password.';
         exit();
     }
 
     $update = update_transaction($conn, $data, $techId, $chemUsed, $amtUsed, $problems);
     if (!isset($update['success'])) {
         http_response_code(400);
-        echo json_encode(['error' => $update['errorMessage'] . $update['line'] . $update['file'] . $update['stringTrace']]);
+        echo $update['errorMessage'] . ' ' . $update['line'] . ' ' . $update['file'];
     } else {
         echo json_encode([
-            'success' => 'function success ' . $update['success'],
+            'success' => 'Transaction Updated.',
             'techs' => $update['ids'],
             'diffs' => $update['diffs'],
             'ftech' => $update['ftech'],
@@ -156,7 +246,7 @@ if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
     }
 
     $approve = approve_transaction($conn, $transId);
-    if ($approve) {
+    if ($approve === true) {
         http_response_code(200);
         echo json_encode(['success' => 'Transaction Accepted!']);
         exit();
@@ -165,5 +255,33 @@ if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
         echo json_encode(['type' => 'function', 'error' => $approve]);
         exit();
     }
+}
 
+if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
+    $trans = $_POST['trans'];
+    $pwd = $_POST['saPwd'];
+
+    if (empty($trans) || empty($pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Empty Inputs.']);
+        exit();
+    }
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Wrong Password.']);
+        exit();
+    }
+
+    $voidreq = void_transaction($conn, $trans);
+
+    if (isset($voidreq['msg'])) {
+        http_response_code(400);
+        echo json_encode(['error' => $voidreq['msg'] . $voidreq['id']]);
+        exit();
+    }
+
+    http_response_code(200);
+    echo json_encode(['success' => $voidreq['success']]);
+    exit();
 }

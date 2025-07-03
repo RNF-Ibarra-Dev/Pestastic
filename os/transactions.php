@@ -6,19 +6,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operations Supervisor | Transactions</title>
+    <title>Operation Supervisor | Transactions</title>
     <?php include('header.links.php'); ?>
-    <style>
-        #sortstatus option {
-            /* background: rgb(17 71 84) !important; */
-            color: black;
-        }
-    </style>
+
 </head>
 
 <body class="bg-official text-light">
 
-    <div class="sa-bg container-fluid p-0 h-100 d-flex">
+    <div class="sa-bg container-fluid p-0 d-flex">
         <!-- sidebar -->
         <?php include('sidenav.php'); ?>
         <!-- main content -->
@@ -27,16 +22,46 @@
             <?php include('navbar.php'); ?>
 
             <!-- content start -->
-            <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3">
-                <h1 class="display-6 text-light mb-0">Manage Transactions</h1>
+            <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2">
+                <h1 class="display-6 text-light mb-0 fw-medium text-center">Manage Transactions</h1>
+            </div>
+            <div class="d-flex gap-3 mb-2 mx-3">
+                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
+                    <p class="fs-5 fw-bold align-middle"><i
+                            class="bi bi-alarm-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Pending
+                    </p>
+                    <p class="fw-light mb-0 mt-4">Pending transactions that needs to be approved by either Operations
+                        Supervisor or Manager.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_pending"></p>
+                </div>
+                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
+                    <p class="fs-5 fw-bold"><i
+                            class="bi bi-clipboard-check-fill me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Accepted
+                    </p>
+                    <p class="fw-light mb-0 mt-4">Accepted transactions that is at standby until dispatched at a
+                        specific date.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_accepted"></p>
+                </div>
+                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
+                    <p class="fs-5 fw-bold"><i
+                            class="bi bi-calendar2-check-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Completed
+                    </p>
+                    <p class="fw-light mb-0 mt-4">Completed transactions marked done by Technicians and approved by
+                        Operations Supervisors.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_completed"></p>
+                </div>
+                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
+                    <p class="fs-5 fw-bold"><i
+                            class="bi bi-clipboard-x-fill me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Voided
+                    </p>
+                    <p class="fw-light mb-0 mt-4">Voided transactions cancelled due to a specific cause.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_voided"></p>
+                </div>
             </div>
 
-            <div class="hstack gap-2 mt-2 mx-4">
-                <input class="form-control form-custom me-auto p-2 text-light" type="search"
-                    placeholder="Search transactions . . ." id="searchbar" name="searchTrans"
-                    autocomplete="one-time-code">
-                <div class="vr"></div>
-                <select class="form-select select-transparent bg-transparent border border-light text-light w-25"
+            <div class="hstack gap-2 mt-2 mx-3">
+                <select
+                    class="form-select select-transparent bg-light bg-opacity-25 py-2 border-0 h-100 text-light w-25"
                     id="sortstatus" aria-label="Default select example">
                     <option value='' selected>Show All Status</option>
                     <option value="Pending">Pending</option>
@@ -44,7 +69,11 @@
                     <option value="Completed">Completed</option>
                     <option value="Voided">Voided</option>
                 </select>
-                <button type="button" id="addbtn" class="btn btn-sidebar text-light py-3 px-4"
+                <input class="form-control form-custom me-auto py-2 align-middle px-3 rounded-pill text-light"
+                    type="search" placeholder="Search transactions . . ." id="searchbar" name="searchTrans"
+                    autocomplete="one-time-code">
+                <div class="vr"></div>
+                <button type="button" id="addbtn" class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3"
                     disabled-data-bs-toggle="modal" disabled-data-bs-target="#addModal"><i
                         class="bi bi-file-earmark-plus"></i></button>
             </div>
@@ -71,7 +100,7 @@
 
             <!-- modals -->
             <form id="addTransaction">
-                <div class="row g-2 text-dark">
+                <div class="row g-2 text-dark m-0">
                     <div class="modal modal-lg fade text-dark modal-edit" id="addModal" tabindex="-1"
                         aria-labelledby="create" aria-hidden="true">
                         <div class="modal-dialog">
@@ -82,65 +111,114 @@
                                             class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p class="fs-6 fw-light">Provide the details of the transaction below.</p>
-                                    <!-- <h5 class="fw-light">Primary Information</h5> -->
+                                    <p
+                                        class="fw-medium mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Customer Information</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
                                             <label for="add-customerName" class="form-label fw-light">Customer Name
                                             </label>
                                             <input type="text" name="add-customerName" id="add-customerName"
-                                                class="form-control form-add" autocomplete="one-time-code">
+                                                class="form-control form-add" placeholder="Enter name"
+                                                autocomplete="one-time-code">
+                                            <!-- <p class="text-body-secondary text-muted fw-light">Note: Include full customer name</p> -->
                                         </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="dropdown-center col-lg-6 mb-2">
-                                            <label for="add-technicianName" class="form-label fw-light">Technicians
+                                        <div class="col-lg-6 mb-2">
+                                            <label for="add-customerAddress" class="form-label fw-light">Customer Full
+                                                Address
                                             </label>
-                                            <select id="add-technicianName" name="add-technicianName[]" not-size="2"
-                                                class="form-select" aria-label="Default select example">
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-2 mb-2 d-flex gap-1 p-0 justify-content-start">
-                                            <button type="button" id="addMoreTech"
-                                                class="btn btn-grad mt-auto py-2 px-3"><i
-                                                    class="bi bi-plus-circle text-light"></i></button>
-                                            <button type="button" id="deleteTech"
-                                                class="btn btn-grad mt-auto py-2 px-3"><i
-                                                    class="bi bi-dash-circle text-light"></i></button>
+                                            <textarea name="add-customerAddress" id="add-customerAddress"
+                                                class="form-control form-add" rows="1"
+                                                placeholder="e.g B20 L64 Garnet Street Lee Grove 4 Mandaluyong, Metro Manila"></textarea>
                                         </div>
                                     </div>
 
-                                    <div id="addTechContainer" class="p-0 m-0 mb-2"></div>
 
                                     <hr class="my-2">
 
+                                    <p
+                                        class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Treatment Information
+                                    </p>
+
                                     <div class="row mb-2">
 
-                                        <div class="col-lg-6 mb-2">
+                                        <div class="col-lg-3 mb-2">
                                             <label for="add-treatmentDate" class="form-label fw-light">Treatment
                                                 Date</label>
-                                            <input type="date" name="add-treatmentDate" id="add-treatmentDate"
-                                                min="2025-01-01" class="form-control form-add">
+                                            <input name="add-treatmentDate" placeholder="--/--/--"
+                                                id="add-treatmentDate" class="form-control form-add">
+                                        </div>
+                                        <div class="col-lg-3 mb-2">
+                                            <label for="add-treatmentTime" class="form-label fw-light">Treatment
+                                                Time</label>
+                                            <input name="add-treatmentTime" id="add-treatmentTime" placeholder="--:--"
+                                                class="form-control form-add" autocomplete="address-line3">
                                         </div>
 
                                         <div class="col-lg-6 mb-2">
                                             <label for="add-treatment" class="form-label fw-light">Treatment</label>
-                                            <select name="add-treatment" id="add-treatment" class="form-select">
-                                                <option value="#" selected>Select Treatment</option>
-                                                <option value="Follow-up Crawling Insects Control">Follow-up Crawling
-                                                    Insects Control</option>
-                                                <option value="Crawling Insects Control">Crawling Insects Control
-                                                </option>
-                                                <option value="Termite Control">Termite Control</option>
-                                                <option value="Wooden Structures Treatment">Wooden Structures Treatment
-                                                </option>
-                                                <option value="Termite Powder Application">Termite Powder Application
-                                                </option>
-                                                <option value="Soil Injection">Soil Injection</option>
+                                            <select name="add-treatment" name="add-treatment" id="add-treatment" class="form-select">
+                                                <option value="" selected>Select Treatment</option>
+                                                <div id="add-treatmentContainer"></div>
                                             </select>
                                         </div>
 
                                     </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-lg-4">
+                                            <label for="add-treatmentType" class="form-label fw-light">Treatment
+                                                Type</label>
+                                            <select name="add-treatmentType" id="add-treatmentType" class="form-select">
+                                                <option value="" selected>Select Treatment Type</option>
+                                                <option value="General Treatment">General Treatment
+                                                </option>
+                                                <option value="Follow-up Treatment">Follow-up Treatment
+                                                </option>
+                                                <option value="Quarterly Treatment">Quarterly Treatment</option>
+                                                <option value="Monthly Treatment">Monthly Treatment
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <label for="add-package" class="form-label fw-light">Package</label>
+                                            <select name="add-package" id="add-package" class="form-select">
+                                                <div id="packageSelectContainer"></div>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-3 mb-2">
+                                            <label for="add-packageStart"
+                                                class="form-label fw-light text-nowrap">Package Warranty
+                                                Start</label>
+                                            <input placeholder="--/--/--" id="add-packageStart" name="add-packageStart "
+                                                class="form-control form-add" disabled>
+                                        </div>
+                                        <div class="col-lg-3 mb-2">
+                                            <label for="add-packageExpiry" class="form-label fw-light">Package
+                                                Expiry</label>
+                                            <input placeholder="--/--/--" class="fw-light form-control" name="add-packageExpiry" id="add-packageExpiry" readonly disabled>
+                                        </div>
+
+                                        <div class="col-lg-3">
+                                            <label for="add-session" class="form-label fw-light text-nowrap">Session
+                                                Number</label>
+                                            <input type="number" name="add-session" class="form-control form-add"
+                                                id="add-session" placeholder="e.g. 2" autocomplete="one-time-code"
+                                                disabled>
+                                        </div>
+                                    </div>
+
+                                    <hr class="mb-2 mt-0">
+
+                                    <p
+                                        class="fw-medium mt-3 mb-2 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Additional
+                                        Information
+                                    </p>
 
                                     <div class="row mb-2">
 
@@ -164,46 +242,51 @@
                                             </select>
 
                                         </div>
-                                        <div class="col-lg-4 mb-2 ps-0">
-                                            <label for="add-amountUsed" class="form-label fw-light">Amount
-                                                Used</label>
-                                            <div class="d-flex flex-row">
-                                                <input type="number" name="add_amountUsed[]" maxlength="4"
-                                                    id="add-amountUsed" class="form-control form-add me-3"
-                                                    autocomplete="off">
-                                                <span id="passwordHelpInline" class="form-text align-self-center">
-                                                    /ml
-                                                </span>
-                                            </div>
-                                        </div>
+
 
                                         <div class="col-lg-2 mb-2 d-flex gap-1 p-0 justify-content-start">
                                             <button type="button" id="addMoreChem"
                                                 class="btn btn-grad mt-auto py-2 px-3"><i
                                                     class="bi bi-plus-circle text-light"></i></button>
-                                            <button type="button" id="deleteChemRow"
-                                                class="btn btn-grad mt-auto py-2 px-3"><i
-                                                    class="bi bi-dash-circle text-light"></i></button>
                                         </div>
                                     </div>
 
-                                    <div class="p-0 m-0 mb-2" id="add-chemContainer">
+                                    <div class="row mb-2" id="add-chemContainer">
                                         <!-- template add chemical -->
                                     </div>
-
-                                    <div class="row mb-2 mx-auto">
-                                        <label for="add-status" class="form-label fw-light">Status</label>
-                                        <select name="add-status" id="add-status" class="form-select">
-                                            <option value="#" selected>Select Status</option>
-                                            <option value="Pending">Pending</option>
-                                            <option value="Accepted">Accepted</option>
-                                            <option value="Completed">Completed </option>
-                                            <option value="Voided">Voided</option>
-                                        </select>
-                                        <p class="text-muted ps-1 pt-2 fw-light visually-hidden" id="add-voidwarning">
-                                        </p>
-
+                                    <div class="row mb-2">
+                                        <div class="dropdown-center col-lg-6 mb-2">
+                                            <label for="add-technicianName" class="form-label fw-light">Technicians
+                                            </label>
+                                            <select id="add-technicianName" name="add-technicianName[]" not-size="2"
+                                                class="form-select" aria-label="Default select example">
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 mb-2 d-flex gap-1 p-0 justify-content-start">
+                                            <button type="button" id="addMoreTech"
+                                                class="btn btn-grad mt-auto py-1 px-3"><i
+                                                    class="bi bi-plus-circle text-light"></i></button>
+                                        </div>
                                     </div>
+
+                                    <div id="addTechContainer" class="row mb-2"></div>
+                                    <div class="row mb-2 ">
+                                        <div class="col-lg-6">
+                                            <label for="add-status" class="form-label fw-light">Status</label>
+                                            <select name="add-status" id="add-status" class="form-select">
+                                                <option value="" selected>Select Status</option>
+                                                <option value="Pending">Pending</option>
+                                                <option value="Accepted">Accepted</option>
+                                                <option value="Completed">Completed </option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label for="add-notes" class="form-label fw-light">Additional Notes</label>
+                                            <textarea name="add-notes" id="add-notes" placeholder=". . ."
+                                                class="form-control" rows="1"></textarea>
+                                        </div>
+                                    </div>
+
                                     <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
                                         id="emptyInput"></p>
                                 </div>
@@ -229,18 +312,14 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="addPwd" class="form-label fw-light">Add transaction? Enter Operation
-                                        Supervisor
-                                        <?= $_SESSION['fname'] ?>'s password to proceed.</label>
+                                    <label for="addPwd" class="form-label fw-light">Add transaction? Enter manager
+                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
                                 </div>
                                 <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
                                     id="add-alert"></p>
-                                <!-- <div id="passwordHelpBlock" class="form-text">
-                                Note: deletion of chemicals are irreversible.
-                            </div> -->
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-target="#addModal"
@@ -255,9 +334,8 @@
 
             <!-- view/edit -->
             <form id="viewEditForm">
-                <div class="row g-2 text-dark">
-                    <div class="modal modal-lg fade text-dark modal-edit" id="details-modal" tabindex="-1"
-                        aria-labelledby="create" aria-hidden="true">
+                <div class="row g-2 text-dark m-0">
+                    <div class="modal modal-lg fade text-dark modal-edit" id="details-modal" tabindex="-1">
                         <div class="modal-dialog">
                             <div class="modal-content">
 
@@ -271,7 +349,10 @@
                                 <!-- modal body -->
                                 <div class="modal-body pb-1">
 
-                                    <p class="fw-light text-muted">Transaction details presented below.</p>
+                                    <!-- <p class="fw-light text-muted">Transaction details presented below.</p> -->
+                                    <p
+                                        class="fw-medium mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Customer Information</p>
 
                                     <!-- row 1 -->
                                     <div class="row mb-2">
@@ -296,48 +377,34 @@
 
                                     </div>
 
-                                    <!-- edit technician choices/select, toggle visually-hidden when edit is on -->
-                                    <label for='edit-technicianName' id="edit-technicianName-label"
-                                        class="form-label fw-light visually-hidden">Edit Technician/s:</label>
-
-                                    <!-- container -- ajax -- append -->
-                                    <div class="d-flex flex-column m-0 p-0 visually-hidden" id="edit-technicianName">
-                                    </div>
-
-                                    <!-- add button -->
-                                    <div class="w-50 d-flex visually-hidden" id="techaddbtn">
-                                        <button type="button" id="edit-addTech"
-                                            class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
-                                            <p class="fw-light m-0 me-3">Add Technician</p><i
-                                                class="bi bi-plus-circle text-light"></i>
-                                        </button>
-                                    </div>
-
-
-                                    <!-- row 2 -->
                                     <div class="row mb-2">
-                                        <!-- left side -->
-                                        <div class="dropdown-center col-lg-6 mb-2">
 
-                                            <!-- list technician when in view mode. Handled in ajax -->
-                                            <label for="view-technicians" id="view-technicians-label"
-                                                class="form-label fw-light">Technician/s:
-                                            </label>
-                                            <ul class="list-group list-group-flush" id="view-technicians"></ul>
-
-
+                                        <div class="col-lg-6 mb-2" id='view-addCont'>
+                                            <label for='view-address' class="form-label fw-light">Address:</label>
+                                            <textarea type="text" id="view-address"
+                                                class="form-control-plaintext form-add" readonly
+                                                style="resize: none !important;"></textarea>
                                         </div>
-                                    </div>
 
-                                    <!-- add more technician container (when edit mode) -- this is a row itself -->
-                                    <!-- <div id="edit-techContainer" class="p-0 m-0 mb-2 visually-hidden"></div> -->
+                                        <div class="col-lg-6 mb-2 d-none" id='edit-addCont'>
+                                            <label for='edit-address' class="form-label fw-light">Address:</label>
+                                            <textarea type="text" name="edit-address" id="edit-address"
+                                                class="form-control form-add"></textarea>
+                                        </div>
+
+                                    </div>
 
                                     <hr class="my-2">
+
+                                    <p
+                                        class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Treatment Information
+                                    </p>
 
                                     <!-- row 3  -->
                                     <div class="row mb-2">
                                         <!-- treatment -->
-                                        <div class="col-lg-6 mb-2">
+                                        <div class="col-lg-4 mb-2">
                                             <!-- left side -- treatments in view -->
                                             <label for="view-treatment" class="form-label fw-light"
                                                 id="view-treatment-label">Treatment:</label>
@@ -348,31 +415,43 @@
                                                 id="edit-treatment-label">Treatment</label>
                                             <select name="edit-treatment" id="edit-treatment"
                                                 class="form-select visually-hidden">
-                                                <option value="#" selected>Select Treatment</option>
-                                                <option value="Follow-up Crawling Insects Control">Follow-up Crawling
-                                                    Insects Control</option>
-                                                <option value="Crawling Insects Control">Crawling Insects Control
+                                                <option value="" selected>Select Treatment</option>
+                                                <div id="edit-treatment-options">
+                                                    <!-- ajax -->
+                                                </div>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <label for="edit-treatmentType" class="form-label fw-light">Treatment
+                                                Type:</label>
+                                            <p id="view-treatmentType" class="ps-3"></p>
+                                            <select name="edit-treatmentType" id="edit-treatmentType"
+                                                class="form-select d-none">
+                                                <option value="" selected>Select Treatment Type</option>
+                                                <option value="General Treatment">General Treatment
                                                 </option>
-                                                <option value="Termite Control">Termite Control</option>
-                                                <option value="Wooden Structures Treatment">Wooden Structures Treatment
+                                                <option value="Follow-up Treatment">Follow-up Treatment
                                                 </option>
-                                                <option value="Termite Powder Application">Termite Powder Application
+                                                <option value="Quarterly Treatment">Quarterly Treatment</option>
+                                                <option value="Monthly Treatment">Monthly Treatment
                                                 </option>
-                                                <option value="Soil Injection">Soil Injection</option>
                                             </select>
                                         </div>
 
                                         <!-- right side -->
-                                        <div class="col-lg-6 mb-2">
-                                            <!-- remove readonly in edit mode -->
+                                        <div class="col-lg-3 mb-2">
                                             <label for="view-treatmentDate" class="form-label fw-light">Treatment
                                                 Date:</label>
-                                            <input type="date" name="edit-treatmentDate" id="view-treatmentDate"
-                                                min="2025-01-01" class="form-control form-add"
-                                                style="border: none !important;" readonly>
+                                            <input type="text" name="edit-treatmentDate" id="view-treatmentDate"
+                                                class="form-control form-add" style="border: none !important;" disabled>
                                         </div>
 
-
+                                        <div class="col-lg-2 mb-2">
+                                            <label for="view-treatmentTime" class="form-label fw-light">Treatment
+                                                Time:</label>
+                                            <input type="text" name="edit-treatmentTime" id="view-treatmentTime"
+                                                class="form-control form-add" style="border: none !important;" disabled>
+                                        </div>
                                     </div>
 
                                     <div class="row mb-2">
@@ -395,6 +474,44 @@
                                         </div>
                                     </div>
 
+                                    <div class="row mb-2">
+
+                                        <div class="col-lg-6">
+                                            <label for="edit-package" class="form-label fw-light">Package:</label>
+                                            <p id="view-package" class="ps-3"></p>
+                                            <select name="edit-package" class="form-select d-none"
+                                                id="edit-package-select">
+                                                <option value="none">None</option>
+                                                <div id="edit-package"></div>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <label for="edit-session" class="form-label text-nowrap fw-light">Session
+                                                number:</label>
+                                            <input type="text" class="form-control-plaintext ps-3" id="edit-session"
+                                                name="edit-session" readonly>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <label for="view-start" class="form-label fw-light">Warranty
+                                                Start:</label>
+                                            <input class="form-control ps-3" placeholder="--/--/--" id="view-start"
+                                                disabled>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <label for="view-expiry" class="form-label text-nowrap fw-light">Warranty
+                                                Expiry:</label>
+                                            <input class="form-control-plaintext ps-3" placeholder="--/--/--"
+                                                id="view-expiry" disabled readonly>
+                                        </div>
+                                    </div>
+
+                                    <hr class="my-2">
+
+                                    <p
+                                        class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Additional Information
+                                    </p>
+
                                     <div class="visually-hidden" id="edit-chemBrandUsed"></div>
 
                                     <!-- <div class="visually-hidden" id="edit-chemBrandUsed-addContainer"></div> -->
@@ -407,13 +524,13 @@
                                                 Used:</label>
                                             <ul class="list-group list-group-flush" id="view-chemUsed"></ul>
                                         </div>
+
                                         <!-- right side -- view -->
                                         <div class="col-lg-6 mb-2" id="view-status-col">
                                             <label for="view-status" class="form-label mb-0 fw-light p-0">Transaction
                                                 Status:</label>
-                                            <ul class="list-group list-group-flush" id="view-status">
-                                                <li class="list-group-item" id="list-status"></li>
-                                            </ul>
+                                            <p class="fw-light ps-3" id="view-status">
+                                            </p>
                                         </div>
 
                                         <!-- placed under -- add button for rows toggle in edit mode as well. -->
@@ -427,23 +544,67 @@
 
                                     </div>
 
+                                    <div class="row mb-2">
+                                        <div class="col-lg-6">
+                                            <!-- edit technician choices/select, toggle visually-hidden when edit is on -->
+                                            <label for='edit-technicianName' id="edit-technicianName-label"
+                                                class="form-label fw-light visually-hidden">Edit Technician/s:</label>
+
+                                            <!-- container -- ajax -- append -->
+                                            <div class="d-flex flex-column m-0 p-0 visually-hidden"
+                                                id="edit-technicianName">
+                                            </div>
+
+                                            <!-- add button -->
+                                            <div class="w-50 d-flex visually-hidden" id="techaddbtn">
+                                                <button type="button" id="edit-addTech"
+                                                    class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
+                                                    <p class="fw-light m-0 me-3">Add Technician</p><i
+                                                        class="bi bi-plus-circle text-light"></i>
+                                                </button>
+                                            </div>
+
+                                            <div class="dropdown-center col-lg-6 mb-2">
+                                                <!-- list technician when in view mode. Handled in ajax -->
+                                                <label for="view-technicians" id="view-technicians-label"
+                                                    class="form-label fw-light">Technician/s:
+                                                </label>
+                                                <ul class="list-group list-group-flush" id="view-technicians"></ul>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-6 mb-2" id="view-noteContainer">
+                                            <label for="view-note" class="form-label fw-light">Additional
+                                                Notes:</label>
+                                            <p class="ps-3 fw-light" id="view-note"></p>
+                                        </div>
+                                        <div class="col-lg-6 mb-2 d-none" id="edit-noteContainer">
+                                            <label for="edit-note" class="form-label fw-light">Additional
+                                                Notes:</label>
+                                            <textarea class="fw-light form-control" name="edit-note"
+                                                id="edit-note"></textarea>
+                                        </div>
+
+                                    </div>
+
                                     <div class="p-0 m-0 mb-2" id="edit-chemContainer">
                                         <!-- template add chemical -->
                                     </div>
 
-                                    <div class="row mb-2 mx-auto visually-hidden" id="edit-status-col">
+                                    <div class="row mb-2 d-none" id="edit-status-col">
                                         <!-- edit -->
-                                        <label for="edit-status" class="form-label mb-0 fw-light p-0 "
-                                            id='label-edit-status'>Transaction Status:</label>
-                                        <select name="edit-status" id="edit-status" class="form-select ">
-                                            <option value="#" selected>Select Status</option>
-                                            <option value="Pending">Pending</option>
-                                            <option value="Accepted">Accepted</option>
-                                            <option value="Completed">Completed </option>
-                                            <option value="Voided">Voided </option>
-                                        </select>
-                                        <p class="text-muted ps-1 pt-2 fw-light visually-hidden" id="edit-voidwarning">
-                                        </p>
+                                        <div class="col-lg-4">
+                                            <label for="edit-status" class="form-label"
+                                                id='label-edit-status'>Transaction Status:</label>
+                                            <select name="edit-status" id="edit-status" class="form-select ">
+                                                <option value="" selected>Select Status</option>
+                                                <option value="Pending">Pending</option>
+                                                <option value="Accepted">Accepted</option>
+                                                <option value="Voided">Voided</option>
+                                                <option value="Completed">Completed </option>
+                                            </select>
+                                        </div>
+                                        <p id="statusNote" class="text-muted fw-light d-none ms-2"></p>
                                     </div>
 
                                     <!-- toggle visually hidden when edit -->
@@ -487,7 +648,7 @@
                             <div class="modal-body">
                                 <div class="row mb-2">
                                     <label for="addPwd" class="form-label fw-light">Enter manager
-                                        <?= $_SESSION['fname'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="edit-saPwd" class="form-control" id="editPwd">
                                     </div>
@@ -518,65 +679,12 @@
         </main>
     </div>
 
-    <!-- approve modal -->
-    <form id="approvependingtransactions">
-        <div class="modal fade text-dark modal-edit" id="approvemodal" tabindex="0" aria-labelledby="confirmDelete"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-modal-title text-light">
-                        <h1 class="modal-title fs-5">Pending Transaction Approval</h1>
-                        <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
-                                class="bi bi-x text-light"></i></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row mb-2">
-                            <label for="addPwd" class="form-label fw-light">Approve Pending Transaction? <span
-                                    id="transidspan"></span> Enter
-                                <?= $_SESSION['fname'] . '\'s password to proceed.' ?></label>
-                            <div class="col-lg-6 mb-2">
-                                <input type="password" name="approve-pwd" class="form-control">
-                            </div>
-                            <input type="hidden" id="transidinput" name="transid">
-                        </div>
-                        <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
-                            id="approve-alert">
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close Modal</button>
-                        <button type="submit" class="btn btn-grad" id="approvebtn">Approve Transaction</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-
+    <?php include('footer.links.php'); ?>
 
     <script>
         const transUrl = 'contents/trans.data.php';
         const submitUrl = 'contents/transconfig.php';
-
-        $(document).on('change', '#add-status', function () {
-            if ($(this).val() === 'Voided') {
-                $('#add-voidwarning').removeClass("visually-hidden");
-                $('#add-voidwarning').html('Note: Only Managers can void transactions. This transaction will be up for review. Disregard to continue.');
-            } else {
-                $('#add-voidwarning').addClass("visually-hidden");
-                $('#add-voidwarning').html('');
-            }
-        });
-
-        $(document).on('change', '#edit-status', function () {
-            if ($(this).val() === 'Voided') {
-                $('#edit-voidwarning').removeClass("visually-hidden");
-                $('#edit-voidwarning').html('Note: Only Managers can void transactions. This transaction will be up for review. Disregard to continue.');
-            } else {
-                $('#edit-voidwarning').addClass("visually-hidden");
-                $('#edit-voidwarning').html('');
-            }
-        })
-
+        // addTechContainer | add-chemContainer
 
         <?php
         if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
@@ -595,6 +703,79 @@
         }
         ?>
 
+
+        $(document).on('change', '#checkall', function () {
+            $('#checkicon').toggleClass('bi-square bi-check-square');
+            var checked = $(this).prop('checked');
+            $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
+        });
+
+       
+
+        let apd = $('#add-packageStart');
+        addPackageDate = flatpickr(apd, {
+            // altInput: true,
+            // altFormat: "F j, Y",
+            dateFormat: "Y-m-d"
+        });
+
+        async function compute_package_expiry(date, packId) {
+            return $.post(transUrl, {
+                date: date,
+                pack_exp: 'true',
+                pid: packId
+            }, function (data) {
+                // alert(data);
+                return data;
+            })
+                .fail(function (err) {
+                    console.log(err);
+                })
+        }
+
+
+        $(document).on('change', '#add-packageStart', async function (e) {
+            let package_id = $('#add-package').val();
+            if (!$.isNumeric(package_id)) {
+                alert('Please Select a package! Invalid package ID.');
+            } else {
+                let date = $(this).val();
+                let exp = await compute_package_expiry(date, package_id);
+                $('#add-packageExpiry').empty();
+                $('#add-packageExpiry').val(exp);
+                // alert(exp);
+            }
+        })
+
+        let adddate = $('#add-treatmentDate');
+        addDate = flatpickr(adddate, {
+            // altInput: true,
+            // altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+            minDate: new Date().fp_incr(1),
+            setDate: 'today'
+            // enableTime: true
+        });
+
+        let addtime = $('#add-treatmentTime');
+        addTime = flatpickr(addtime, {
+            altInput: true,
+            altFormat: "h:i K",
+            dateFormat: "h:i",
+            enableTime: true,
+            noCalendar: true,
+            setDate: '8:00'
+        });
+
+        $('#viewEditForm').on('change', 'select#edit-status', function () {
+            if ($(this).val() === 'Completed') {
+                // console.log('tte');
+                $('#statusNote').html('Note: Once a transaction is marked as completed, it is no longer editable.').removeClass('d-none');
+            } else {
+                $("#statusNote").addClass('d-none');
+            }
+        })
+
         $(document).on('click', '#pendingbtn', function () {
             let transId = $(this).data('pending-id');
             console.log(transId);
@@ -606,65 +787,16 @@
 
 
 
-        async function empty_form() {
-            $('#viewEditForm')[0].reset();
-            $('#add-technicianName').empty();
-            $('#addTechContainer').empty();
-            $('#add-probCheckbox').empty();
-            $('#add-chemBrandUsed').empty();
-            $('#edit-technicianName').empty();
-            $('#view-technicians').empty();
-            $('#view-treatment').empty();
-            $('#view-probCheckbox').empty();
-            $('#edit-probCheckbox').empty();
-            $('#edit-chemBrandUsed').empty();
-            $('#view-chemUsed').empty();
-            $('#view-status').empty();
-            $('#edit-chemContainer').empty();
-            console.log('modal cleared');
-            return true;
-        }
-
-
-        $('#approvependingtransactions').on('submit', async function (e) {
-            e.preventDefault();
-            console.log($(this).serialize());
-            let status = $('#sortstatus option:selected').val();
+        async function treatments(form) {
             try {
-                const approve = await $.ajax({
-                    method: 'POST',
-                    dataType: 'json',
-                    url: submitUrl,
-                    data: $(this).serialize() + '&approve=true'
+                $.get(transUrl, "treatments=true", function (data) {
+                    $(`#${form}-treatmentContainer`).empty();
+                    $(`#${form}-treatmentContainer`).html(data);
                 });
-
-                if (approve) {
-                    console.log(approve);
-                    $('#approvemodal').modal('hide');
-                    loadpage(1, status);
-                    $("#tableAlert").removeClass('visually-hidden').html(approve.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
-
-                }
-
             } catch (error) {
                 console.log(error);
-                // let err = error.responseText;
-                let err = error.responseJSON;
-
-                switch (err.type) {
-                    case 'wrongpwd':
-                        $("#approve-alert").removeClass('visually-hidden').html(err.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        break;
-                    case 'function':
-                        $("#approve-alert").removeClass('visually-hidden').html(err.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        break;
-                    default:
-                        console.log(err.type);
-                        break;
-                }
-
             }
-        })
+        }
 
         $(document).on('click', '#addbtn', async function () {
             let form = 'add';
@@ -674,18 +806,41 @@
                     get_technician(form),
                     get_problems(form),
                     add_more_chem(),
-                    add_more_tech()
+                    add_more_tech(),
+                    add_packages(),
+                    treatments(form)
                 ]);
                 if (load) {
                     $('#addTransaction')[0].reset();
                     $('#addTechContainer').empty();
-                    $('add-chemContainer').empty();
+                    $('#add-chemContainer').empty();
                     $('#addModal').modal('show');
                 }
+
             } catch (error) {
                 console.log('add get error.')
             }
-        })
+        });
+
+
+        async function add_packages() {
+            try {
+                const package = await $.ajax({
+                    method: 'GET',
+                    url: transUrl,
+                    dataType: 'html',
+                    data: "packages=true"
+                });
+
+                if (package) {
+                    $('#packageSelectContainer').empty();
+                    $('#packageSelectContainer').html(package);
+                }
+            } catch (error) {
+                console.log(error);
+                console.log(error.responseText);
+            }
+        }
 
         // add / delete more technicians
         async function add_more_tech() {
@@ -697,17 +852,30 @@
                 num++;
                 console.log('tech add number: ' + num);
             });
-            $('#deleteTech').off('click').on('click', function () {
-                if (num > 2) {
-                    num--;
-                    let row = `#row-${num}`;
-                    console.log('row number: ' + row);
-                    $(row).remove();
-                } else {
-                    console.log('no more rows to delete.');
-                }
-            })
+
         }
+
+        function get_overview_count(container) {
+            $.get(transUrl, {
+                count: true,
+                status: container
+            })
+                .done(function (d) {
+                    console.log(d);
+                    $(`#count_${container}`).empty();
+                    $(`#count_${container}`).append(d);
+                })
+                .fail(function (e) {
+                    console.log(e);
+                })
+        }
+
+        $(document).ready(function () {
+            get_overview_count('pending');
+            get_overview_count('accepted');
+            get_overview_count('completed');
+            get_overview_count('voided');
+        });
 
         // add / delete chem main function
         async function add_more_chem() {
@@ -720,18 +888,7 @@
                 console.log(num);
 
             });
-            $('#deleteChemRow').off('click').on('click', function () {
-                // console.log(num);
-                if (num > 2) {
-                    num--;
-                    let row = `#row-${num}`;
-                    console.log(row);
-                    $(row).remove();
 
-                } else {
-                    console.log('no more rows to delete.');
-                }
-            })
         }
 
         // append tech row function
@@ -829,14 +986,15 @@
             }
         }
 
-        async function get_chemical_brand(method, transId = null) {
+        async function get_chemical_brand(method, transId = null, status = null) {
             try {
                 const brand = await $.ajax({
                     type: 'GET',
                     url: transUrl,
                     data: {
                         getChem: method,
-                        transId: transId
+                        transId: transId,
+                        status: status
                     }
                 });
 
@@ -850,164 +1008,63 @@
             }
         }
 
-        $(document).on('click', '#tableDetails', async function () {
-            const clearform = await empty_form();
-            if (clearform) {
-                $('#viewEditForm')[0].reset();
-                $(`#edit-chemBrandUsed`).empty();
-                let transId = $(this).data('trans-id');
-                if (toggled) {
-                    await toggle();
-                    toggled = false;
-                    $('#editbtn').html('Edit/Delete Transaction');
-                }
-                await view_transaction(transId);
-            } else {
-                alert('Modal Error. Refresh Page.');
-            }
-
+        let etd = $('#view-treatmentDate');
+        editTransDate = flatpickr(etd, {
+            dateFormat: "Y-m-d",
+            // placeholder: "--/--/--"
+            // minDate: new Date().fp_incr(1),
         });
 
-        async function view_transaction(transId) {
-            try {
-                const details = await $.ajax({
-                    type: 'GET',
-                    url: transUrl,
-                    dataType: 'json',
-                    data: {
-                        details: 'true',
-                        transId: transId
-                    }
-                });
+        // let expdate = $('#view-expiry');
+        // packageExpDate = flatpickr(expdate, {
+        //     dateFormat: "Y-m-d",
+        //     // minDate: new Date().fp_incr(1),
+        // });
 
-                if (details.success) {
-                    console.log(details);
-                    let data = details.success;
-                    // console.log('id ' + data.id);
-                    $('#view-transId').val(data.id);
-                    $('#view-customerName').val(data.customer_name);
-                    // let pprob = get_problems('view');
-                    // $('#view-probCheckbox').val(pprob);
-                    $('#view-treatmentDate').val(data.treatment_date);
-                    $('#list-status').empty();
-                    $('#view-status').html(data.transaction_status);
-                    $(`#edit-status option[value=${data.transaction_status}]`).attr('selected', true);
-                    $(`#edit-treatment option[value='${data.treatment}']`).attr('selected', true);
-                    // console.log(data.transaction_status);
-                    $('#view-time').html('Created at: ' + data.created_at + '<br>Updated at: ' + data.updated_at);
-                    const functions = await Promise.all([
-                        await view_technician(data.id),
-                        await view(data.id, 'treatment'),
-                        await view(data.id, 'probCheckbox'),
-                        await view(data.id, 'chemUsed'),
-                        await edit('technicianName', data.id),
-                        await edit('probCheckbox', data.id),
-                        await get_chemical_brand('edit', data.id)
-                    ]);
-                    if (functions) {
-                        $('#details-modal').modal('show');
-                    } else {
-                        alert('Details Modal Error. Refresh Page.');
-                    }
+        let startdate = $('#view-start');
+        packageStartDate = flatpickr(startdate, {
+            dateFormat: "Y-m-d",
+            // minDate: new Date().fp_incr(1),
+        });
 
-                }
-            } catch (error) {
-                alert(JSON.stringify(error.responseJSON));
-            }
-        }
-
-        function get_addrow(row) {
-            $.get(transUrl, {
-                addrow: 'true'
-            }, function (data) {
-                $(`#edit-${row}`).append(data);
-                console.log(status);
-            })
-        }
-
-        async function check_emptyrow(row) {
-            if ($(`#edit-${row}`).html().trim().length === 0) {
-                console.log("empty div");
-                get_addrow(row);
-            } else {
-                console.log('div not empty');
-            }
-        }
-
-        $(document).on('click', '#edit-deleteTech', async function () {
-            let rowId = $(this).data('row-id');
-            let row = $('#edit-technicianName > div').length;
-            // console.log(row);
-            if (row === 1) {
-                alert('Transaction should have at least one technician.');
-            } else {
-                $(this).parent().remove();
-                console.log('tech row removed');
-                await check_emptyrow('technicianName');
-            }
-        })
-
-        $(document).on('click', '#edit-deleteChemRow', async function () {
-            let rowId = $(this).data('row-id');
-            let row = $('#edit-chemBrandUsed > div').length;
-            if (row === 1) {
-                alert('Transaction should have at least one or two chemical used');
-            } else {
-                if (rowId === '') {
-                    let row = $(this).closest('div.row');
-                    row.remove();
-                    console.log('row with no id removed.');
-                } else {
-                    console.log(rowId);
-                    $(`.row #row-${rowId}`).remove();
-                }
-                await check_emptyrow('chemBrandUsed');
-            }
-        })
-
-        $(document).on('click', '#edit-addTech', async function () {
-            // $.get(transUrl, { editTechAdd: 'true' }, function (data) {
-            //     $('#edit-technicianName').append(data);
-            // })
-            await edit('technicianName');
-        })
-
-        $(document).on('click', '#edit-addMoreChem', async function () {
-            get_addrow('chemBrandUsed');
-        })
-
-        $(document).on('click', '#editbtn', async function () {
-            if (toggled) {
-                await toggle();
-                toggled = false;
-                $(this).html('Edit/Delete Transaction');
-            } else {
-                await toggle();
-                $(this).html('Close Edit/Delete');
-            }
+        let ett = $('#view-treatmentTime');
+        editTransTime = flatpickr(ett, {
+            dateFormat: "H:i",
+            noCalendar: true,
+            enableTime: true,
+            // minDate: new Date().fp_incr(1),
         });
 
         let toggled = false;
 
         async function toggle() {
-            $("#view-customerName").attr("readonly", function (i, attr) {
+            // let package = 
+
+            $("#view-customerName, #edit-session").attr("readonly", function (i, attr) {
                 if (attr) {
                     $(this).removeClass('form-control-plaintext');
                     $(this).addClass('form-control');
+                    if ($('#edit-session').val() == 'One time session.') {
+                        $('#edit-session').val('');
+                    }
                 } else {
+                    if ($('#edit-session').val().length === 0) {
+                        $('#edit-session').val('One time session.');
+                    }
                     $(this).removeClass('form-control');
                     $(this).addClass('form-control-plaintext');
                 }
-                return attr ? null : "readonly";
+
+                return attr ? false : true;
             });
-            $("#view-treatmentDate").attr("readonly", function (i, attr) {
+            $("#view-treatmentDate, #view-treatmentTime, #view-start, #view-expiry").attr("disabled", function (i, attr) {
                 $(this).removeAttr('style');
                 if (attr) {
                     $(this).removeAttr('style');
                 } else {
                     $(this).attr('style', 'border: none !important');
                 }
-                return attr ? null : "readonly";
+                return attr ? false : true;
             });
             $('#view-technicians-label').toggleClass('visually-hidden');
             $('#view-technicians').toggleClass('visually-hidden');
@@ -1018,6 +1075,10 @@
             $('#view-probCheckbox-label').toggleClass('visually-hidden');
             $('#metadata').toggleClass('visually-hidden');
             $('#view-status-col').toggleClass('visually-hidden');
+            $('#view-addCont').toggleClass('d-none');
+            $('#view-treatmentType').toggleClass('d-none');
+            $('#view-package').toggleClass('d-none');
+            $('#view-noteContainer').toggleClass('d-none');
 
             // removes visually-hidden when edit/detele button is clicked
             $('#edit-technicianName-label').toggleClass('visually-hidden');
@@ -1029,11 +1090,44 @@
             $('#edit-chemBrandUsed').toggleClass('visually-hidden');
             $('#edit-techContainer').toggleClass('visually-hidden');
             $('#btn-amountUsed').toggleClass('visually-hidden');
-            $('#edit-status-col').toggleClass('visually-hidden');
+            $('#edit-status-col').toggleClass('d-none');
             $('#editbtns').toggleClass('visually-hidden');
+            $('#edit-addCont').toggleClass('d-none');
+            $('#edit-treatmentType').toggleClass('d-none');
+            $('#edit-package-select').toggleClass('d-none');
+            $('#edit-noteContainer').toggleClass('d-none');
+
+            if ($('#edit-package-select').val() != 'none') {
+                $('#edit-treatment').attr('disabled', function (i, a) {
+                    return a ? a : true;
+                });
+                $('#edit-session, #edit-start').attr('disabled', function (i, a) {
+                    return a ? false : a;
+                });
+            }
+
             return toggled = true;
         }
 
+        $(document).on('change', '#edit-status', function () {
+            let sts = $(this).val();
+            // if (sts == 'Pending' || 'Completed') {
+            //     editTransDate.config.minDate = new Date().fp_incr(1);
+            // } else {
+            //     editTransDate.config.minDate = null;
+            // }
+
+            // $('#edit-addMoreChem').removeAttr('data-status');
+            $('#edit-addMoreChem').data('status', sts);
+
+            if (sts == 'Accepted' || sts == 'Completed') {
+                $('#edit-chemBrandUsed input.form-control').attr('disabled', false);
+                $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
+            } else {
+                $('#edit-chemBrandUsed input.form-control').attr('disabled', true);
+                $('#edit-chemBrandUsed input.form-control').removeAttr('name');
+            }
+        });
 
         async function edit(name, transId = null) {
             try {
@@ -1049,17 +1143,18 @@
 
                 if (target) {
                     // console.log(target);
-                    if (transId !== null) {
+                    if (transId != null) {
                         $(`#edit-${name}`).empty();
                         $(`#edit-${name}`).append(target);
                     } else {
                         $(`#edit-${name}`).append(target);
                     }
                 } else {
-                    alert('no edit returned');
+                    alert('no edit returned' + target);
                 }
             } catch (error) {
-                alert('Error at edit function: ' + edit + '\nerror: ' + error);
+                alert('Error at edit function: ' + name + '\nerror: ' + error);
+                console.log(error);
             }
         }
 
@@ -1109,11 +1204,350 @@
             }
         }
 
+        function treatment_name(id) {
+            $.get(transUrl, `treatmentname=true&id=${id}`)
+                .done(function (d) {
+                    return d;
+                })
+                .fail(function (error, status, errmsg) {
+                    console.log(error);
+                    console.log(status + errmsg);
+                });
+        }
+
+        function get_package_name(id) {
+            $.get(transUrl, `packagename=true&id=${id}`)
+                .done(function (data) {
+                    $('#view-package').empty();
+                    $('#view-package').html(data);
+                })
+                .fail(function (error, status, errmsg) {
+                    console.log(error);
+                    console.log(status + errmsg);
+                });
+        }
+
+        let sval, tval, wval, weval;
+        $(document).on('change', '#edit-package-select', function () {
+            if ($(this).val() === 'none') {
+                sval = $('#edit-session').val();
+                $('#edit-session').val('');
+                $('#edit-session').removeAttr('name');
+                $('#edit-session').attr('disabled', true);
+
+                tval = $('#edit-treatment').val();
+                $('#edit-treatment').val('');
+                $('#edit-treatment').attr('disabled', false);
+                $('#edit-treatment').attr('name', 'edit-treatment');
+
+                wval = $('#view-start').val();
+                weval = $('#view-expiry').val();
+                $('#view-start').val('');
+                $('#view-expiry').val('');
+                $('#view-start, #view-expiry').removeAttr('name');
+                $('#view-start, #view-expiry').attr('disabled', true);
+            } else {
+                $('#edit-treatment').val(tval);
+                $('#edit-treatment').removeAttr('name');
+                $('#edit-treatment').attr('disabled', true);
+
+                $('#edit-session').val(sval);
+                $('#edit-session').attr('disabled', false);
+                $('#edit-session').attr('name', 'edit-session');
+
+                $('#view-start').attr('name', 'edit-start');
+                $('#view-expiry').attr('name', 'edit-expiry');
+                $('#view-start, #view-expiry').attr('disabled', false);
+                $('#view-start').val(wval);
+                $('#view-expiry').val(weval);
+
+            }
+
+        })
+
+        async function view_transaction(transId) {
+            try {
+                const details = await $.ajax({
+                    type: 'GET',
+                    url: transUrl,
+                    dataType: 'json',
+                    data: {
+                        details: 'true',
+                        transId: transId
+                    }
+                });
+
+                if (details.success) {
+                    console.log(details);
+                    let d = details.success;
+                    $('#view-transId').val(d.id);
+                    $('#view-customerName').val(d.customer_name ?? `Name not set.`);
+                    editTransDate.clear();
+                    editTransDate.setDate(d.treatment_date);
+                    // packageExpDate.clear();
+                    // packageExpDate.setDate(d.pack_exp ?? '--/--/--');
+                    $('#view-expiry').val(d.pack_exp ?? '--/--/--');
+                    packageStartDate.clear();
+                    packageStartDate.setDate(d.pack_start ?? '--/--/--');
+                    $('#list-status').empty();
+                    $('#view-status').html(d.transaction_status);
+                    $('#view-address').html(d.customer_address ?? 'Address not set.');
+                    $('#edit-address').html(d.customer_address ?? '');
+                    editTransTime.setDate(d.transaction_time);
+                    $('#edit-session').val(d.session_no ?? '-');
+                    $('#view-treatmentType').html(d.treatment_type ?? 'Treatment type not set');
+
+                    if (d.transaction_status == 'Completed' || d.transaction_status == 'Voided') {
+                        $('#editbtn').attr('disabled', true);
+                    } else {
+                        $('#editbtn').attr('disabled', false);
+                    }
+
+                    if (d.package_id != null) {
+                        // package assigned
+                        $('#edit-treatment').removeAttr('name');
+                        $('#view-expiry').attr('name', function (i, a) {
+                            return a ? a : 'edit-expiry'
+                        });
+                        $('#view-start').attr('name', function (i, a) {
+                            return a ? a : 'edit-start'
+                        });
+                        $('#edit-session').attr('disabled', function (i, a) {
+                            return a == true ? false : a;
+                        });
+                        $('#edit-treatment').attr('disabled', function (i, a) {
+                            return a == true ? false : a;
+                        });
+                    } else {
+                        // null | no package assigned
+                        $('#edit-treatment').attr('name', function (i, a) {
+                            return a ? a : 'edit-treatment'
+                        });
+                        $('#edit-session, #view-expiry, #view-start').removeAttr('name');
+                        $('#edit-session, #view-expiry, #view-start').attr('disabled', true);
+                    }
+
+                    $('#edit-note').val(d.notes ?? '');
+                    $('#view-note').html(d.notes ?? 'No existing note.');
+
+                    $(`#edit-status option[value=${d.transaction_status}]`).attr('selected', true);
+
+                    // if (d.transaction_status == 'Pending') {
+                    //     editTransDate.config.minDate = new Date().fp_incr(1);
+                    // } else {
+                    //     editTransDate.config.minDate = null;
+                    // }
+                    $('#edit-addMoreChem').attr('data-status', d.transaction_status);
+
+                    let tname = treatment_name(d.treatment);
+                    $(`#edit-treatment option[value='${tname}']`).attr('selected', true);
+                    $(`#edit-treatmentType option[value='${d.treatment_type}']`).attr('selected', true);
+                    $('#view-time').html('Created at: ' + d.created_at + '<br>Updated at: ' + d.updated_at);
+
+                    const functions = await Promise.all([
+                        await view_technician(d.id),
+                        await view(d.treatment, 'treatment'),
+                        await view(d.id, 'probCheckbox'),
+                        await view(d.id, 'chemUsed'),
+                        await edit('treatment-options', d.treatment), //treatment option
+                        await edit('technicianName', d.id),
+                        await edit('probCheckbox', d.id),
+                        await edit('package', d.package_id ?? 0),
+                        await get_chemical_brand('edit', d.id, d.transaction_status),
+                        await get_package_name(d.package_id ?? 'none')
+                    ]);
+
+                    if (functions) {
+                        console.log(d.package_id);
+                        $('#details-modal').modal('show');
+                    } else {
+                        alert('Details Modal Error. Refresh Page.');
+                    }
+                }
+            } catch (error) {
+                alert(error.responseText);
+            }
+        }
+
+        $(document).on('focus', '#view-start', async function (e) {
+            let package_id = $('#edit-package-select').val();
+            if (!$.isNumeric(package_id)) {
+                alert('Please Select a package! Invalid package ID.');
+            } else {
+                let date = $(this).val();
+                let exp = await compute_package_expiry(date, package_id);
+                $('#view-expiry').empty();
+                $('#view-expiry').val(exp);
+                // alert(exp);
+            }
+        })
+
+        $(document).on('click', '#editbtn', async function () {
+            let transId = $('#view-transId').val();
+            if (toggled) {
+                await toggle();
+                toggled = false;
+                $(this).html('Edit/Delete Transaction');
+            } else {
+                await toggle();
+                $(this).html('Close Edit/Delete');
+            }
+            await view_transaction(transId);
+        });
+
+        // open details
+        $(document).on('click', '#tableDetails', async function () {
+            const clearform = await empty_form();
+            if (clearform) {
+                $('#viewEditForm')[0].reset();
+                $(`#edit-chemBrandUsed`).empty();
+                let transId = $(this).data('trans-id');
+                if (toggled) {
+                    await toggle();
+                    toggled = false;
+                    $('#editbtn').html('Edit/Delete Transaction');
+                }
+                await view_transaction(transId);
+            } else {
+                alert('Modal Error. Refresh Page.');
+            }
+        });
+
+        function get_addrow(row, status = null) {
+            $.get(transUrl, {
+                addrow: 'true',
+                status: status
+            }, function (data) {
+                $(`#edit-${row}`).append(data);
+                console.log(status);
+            })
+        }
+
+        async function check_emptyrow(row) {
+            if ($(`#edit-${row}`).html().trim().length === 0) {
+                console.log("empty div");
+                get_addrow(row);
+            } else {
+                console.log('div not empty');
+            }
+        }
+
+        $(document).on('click', '#edit-deleteTech', async function () {
+            let rowId = $(this).data('row-id');
+            let row = $('#edit-technicianName > div').length;
+            if (row === 1) {
+                alert('Transaction should have at least one technician.');
+            } else {
+                $(this).parent().remove();
+                console.log('tech row removed');
+                await check_emptyrow('technicianName');
+            }
+        })
+
+        $(document).on('click', '#deleteTech', async function () {
+            let rowId = $(this).data('row-id');
+            let row = $('#addTechContainer').length;
+            if (row === 0) {
+                alert('Transaction should have at least one technician.');
+            } else {
+                $(this).parent().parent().remove();
+                // console.log('tech row removed');
+                // await check_emptyrow('technicianName');
+            }
+        })
+
+        $(document).on('click', 'button.ef-del-btn.btn.btn-grad', async function () {
+            let rowId = $(this).data('row-id');
+            let row = $('#edit-chemBrandUsed > div').length;
+            if (row === 1) {
+                alert('Transaction should have at least one or two chemical used');
+            } else {
+                if (rowId === '') {
+                    let row = $(this).closest('div.row');
+                    row.remove();
+                    // console.log('row with no id removed.');
+                } else {
+                    // console.log(rowId);
+                    $(`.row #row-${rowId}`).remove();
+                }
+                await check_emptyrow('chemBrandUsed');
+            }
+        })
+
+        $(document).on('click', '#edit-addTech', async function () {
+            // $.get(transUrl, { editTechAdd: 'true' }, function (data) {
+            //     $('#edit-technicianName').append(data);
+            // })
+            await edit('technicianName');
+        })
+
+        $(document).on('click', '#edit-addMoreChem', async function () {
+            let stats = $(this).data('status');
+            get_addrow('chemBrandUsed', stats);
+        })
+
+
+
+        $(document).on('click', '#deleteChem', function () {
+            $(this).parent().parent().remove();
+        });
+
+        async function empty_form() {
+            $('#viewEditForm')[0].reset();
+            $('#add-technicianName').empty();
+            $('#addTechContainer').empty();
+            $('#add-probCheckbox').empty();
+            $('#add-chemBrandUsed').empty();
+            $('#edit-technicianName').empty();
+            $('#view-technicians').empty();
+            $('#view-treatment').empty();
+            $('#view-probCheckbox').empty();
+            $('#edit-probCheckbox').empty();
+            $('#edit-chemBrandUsed').empty();
+            $('#view-chemUsed').empty();
+            $('#view-status').empty();
+            $('#edit-chemContainer').empty();
+            console.log('modal cleared');
+            return true;
+        }
+
+
+        // toggle name and disable when package is active
+        let aps, at, a_s, ae;
+        $(document).on('change', '#add-package', function () {
+            let package = $(this).val();
+            // console.log(package);
+            if (package === 'none') {
+                aps = $('#add-packageStart').val();
+                a_s = $('#add-session').val();
+                ae = $('#add-packageExpiry').val();
+                $('#add-session').attr('disabled', true).val('');
+                $('#add-treatment').attr('disabled', false).val(at);
+                $('#add-packageStart').attr('disabled', true).val('');
+                $('#add-packageExpiry').attr('disabled', true).val('');
+            } else {
+                at = $('#add-treatment').val();
+                $('#add-session').attr('disabled', false).val(a_s);
+                $('#add-treatment').attr('disabled', true).val('');
+                $('#add-packageStart').attr('disabled', false).val(aps);
+                $('#add-packageExpiry').attr('disabled', false).val(ae);
+            }
+        });
+
+        $(document).on('focusout', 'form input, form select, form textarea', function () {
+            if ($(this).val() == '' || $(this).val() == '#') {
+                $(this).addClass('border border-danger');
+            } else {
+                $(this).removeClass('border border-danger');
+            }
+        });
+
         // submit
         $(function () {
             $('#addTransaction').on('submit', async function (e) {
                 e.preventDefault();
-                // console.log($(this).serialize());
+                let status = $("#sortstatus").val();
+                console.log($(this).serialize());
                 try {
                     const trans = await $.ajax({
                         type: 'POST',
@@ -1123,23 +1557,26 @@
                     });
 
                     if (trans.success) {
-                        // alert('success');
                         console.log(trans.success);
                         console.log(trans.iterate);
-                        await load_paginated_table();
+                        await loadpage(1, status);
                         $('#confirmAdd').modal('hide');
                         $('#addTransaction')[0].reset();
+                        $('#tableAlert').removeClass('visually-hidden').html(trans.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                    }
+                    if (trans) {
+                        console.log(trans);
                     }
 
                 } catch (error) {
-                    console.log(JSON.stringify(error));
+                    console.log(error);
                     // console.log(error);
                     let errorData = error.responseJSON;
                     if (errorData && errorData.errorMessage) {
                         // alert('Error Message: ' + errorData.errorMessage + ';\n\nLine: ' + errorData.line + ';\n\nFile: ' + errorData.file + ';\n\nTrace: ' + errorData.trace);
                         $('#add-alert').removeClass('visually-hidden').html(errorData.errorMessage).hide().fadeIn(400).delay(2000).fadeOut(1000);
                     } else {
-                        alert('unknown error occured.');
+                        // alert('unknown error occured.');
                     }
                 }
             })
@@ -1177,6 +1614,7 @@
         })
 
         async function update_transaction() {
+            let status = $("#sortstatus").val();
             try {
                 const update = await $.ajax({
                     type: 'POST',
@@ -1186,35 +1624,24 @@
                 });
 
                 if (update) {
-                    console.log(update.success);
-                    // console.log(update.data);
-                    console.log('final tech: ' + update.ftech);
-                    console.log('final chems: ' + update.fchems);
-                    console.log('final problems: ' + update.fprob);
-                    console.log(update.techs);
-                    console.log(update.diffs);
-                    await load_paginated_table();
+                    await loadpage(1, status);
                     $('#confirmation').modal('hide');
                     $('#viewEditForm')[0].reset();
                     $('#tableAlert').removeClass('visually-hidden').html(update.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
                 }
             } catch (error) {
-                let err = jQuery.parseJSON(error.responseText);
-                console.log('ERROR: ' + error.responseText);
-                $('#del-errormessage').removeClass('visually-hidden').html(err.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                console.log(error);
+                alert(error.responseText);
+                let err = error.responseText;
+                $('#del-errormessage').removeClass('visually-hidden').html(err).hide().fadeIn(400).delay(2000).fadeOut(1000);
                 $('input#editPwd').addClass('border border-danger-subtle').fadeIn(400);
             }
         }
 
         async function delete_transaction() {
-
+            let status = $("#sortstatus").val();
             let row = $('#view-transId').val();
             let pwd = $('#editPwd').val();
-            // console.log(saId);
-            // console.log(row);
-            // $.post(submitUrl, { delete: 'true', id: row }, function (data, status) {
-            //     console.log(data + ' ' + status);
-            // })
 
             try {
                 const del = await $.ajax({
@@ -1229,9 +1656,7 @@
                 });
 
                 if (del) {
-                    // let res = JSON.parse(res.responseText);
-                    // console.log(del.success + ' SUCCESS' + JSON.stringify(del));
-                    await load_paginated_table();
+                    await loadpage(1, status);
                     $('#confirmation').modal('hide');
                     $('#viewEditForm')[0].reset();
                     $('#tableAlert').removeClass('visually-hidden').html(del.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
@@ -1243,17 +1668,13 @@
 
                 console.log('fail   ' + errdata.error);
                 if (errdata && errdata.error) {
-                    // alert(errdata.error);
                     $('#editPwd').addClass('border border-danger').fadeIn(400);
                     $('#del-errormessage').removeClass('visually-hidden').html(errdata.error).hide().fadeIn(400);
                 } else {
                     alert('unknown error.');
                 }
-                // console.log(errdata.error);
             }
         }
-
-
 
         // search function
         $(function () {
@@ -1266,7 +1687,7 @@
 
                 delay = setTimeout(async function () {
                     var search = $('#searchbar').val();
-                    var sort = $('#sortstatus').val();
+                    let status = $('#sortstatus').val();
                     try {
                         const searchtransaction = await $.ajax({
                             url: 'contents/trans.pagination.php',
@@ -1274,7 +1695,7 @@
                             dataType: 'html',
                             data: {
                                 search: search,
-                                status: sort
+                                status: status
                             }
                         });
                         if (searchtransaction) {
@@ -1285,8 +1706,7 @@
                                 $('#pagination').empty();
                             } else {
                                 $('#loader').addClass('visually-hidden');
-                                // await load_paginated_table();
-                                await loadpage(1, sort);
+                                await loadpage(1, status);
                             }
                         }
                     } catch (error) {
@@ -1314,7 +1734,6 @@
                 if (pagination) {
                     $('#pagination').empty();
                     $('#pagination').append(pagination);
-                    // window.history.pushState(null, "", "?page=" + page);
                 }
             } catch (error) {
                 console.log(error);
@@ -1344,8 +1763,15 @@
             }
         }
 
-        $(document).ready(async function () {
-            await loadpage();
+        $(document).ready(function () {
+            loadpage(1);
+        })
+
+
+        $("#sortstatus").on('change', async function () {
+            let status = $("#sortstatus option:selected").val();
+            $("#searchbar").val('');
+            await loadpage(1, status);
         })
 
         async function loadpage(page = 1, status = '') {
@@ -1353,29 +1779,13 @@
             await load_paginated_table(page, status);
         }
 
-        $("#sortstatus").on('change', async function () {
-            let status = $("#sortstatus option:selected").val();
-            $("#searchbar").val('');
-            if (status != '') {
-                await loadpage(1, status);
-            } else {
-                await loadpage();
-            }
-        })
-
         $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
             let status = $("#sortstatus option:selected").val();
 
             let currentpage = $(this).data('page');
             console.log(currentpage);
-
-            // $('#chemicalTable').empty();
             window.history.pushState(null, "", "?page=" + currentpage);
-            // await load_paginated_table(currentpage);
-
-            // $('#pagination').empty();
-            // await loadpagination(currentpage);
             await loadpage(currentpage, status);
         })
 
@@ -1395,7 +1805,6 @@
         // });
     </script>
 
-    <?php include('footer.links.php'); ?>
 </body>
 
 </html>
