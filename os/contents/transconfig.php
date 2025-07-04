@@ -151,11 +151,13 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         exit();
     }
 
-    for($i = 0; $i < count($amtUsed); $i++) {
-        if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
-            http_response_code(400);
-            echo "Error. Invalid Amount Used.";
-            exit();
+    if ($status !== "Pending") {
+        for ($i = 0; $i < count($amtUsed); $i++) {
+            if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
+                http_response_code(400);
+                echo "Error. Invalid Amount Used.";
+                exit();
+            }
         }
     }
 
@@ -189,7 +191,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
             echo $treatment['error'];
             exit();
         }
-    }else{
+    } else {
         $package = null;
     }
 

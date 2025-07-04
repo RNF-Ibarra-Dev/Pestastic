@@ -67,7 +67,7 @@ require("startsession.php");
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 w-25 px-2 text-light"
                     title="Hide Entries"><i class="bi bi-eye-slash me-2"></i><span id="hideEnText">Hide
                         Entries</span></button>
-                <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light" type="search"
+                <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light" 
                     placeholder="Search . . ." id="searchbar" name="searchforafuckingchemical"
                     autocomplete="one-time-code">
                 <button type="button" id="loadChem"

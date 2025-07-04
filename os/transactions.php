@@ -22,46 +22,46 @@
             <?php include('navbar.php'); ?>
 
             <!-- content start -->
-            <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2">
+            <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2 ">
                 <h1 class="display-6 text-light mb-0 fw-medium text-center">Manage Transactions</h1>
             </div>
-            <div class="d-flex gap-3 mb-2 mx-3">
-                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
+            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
+                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
                     <p class="fs-5 fw-bold align-middle"><i
                             class="bi bi-alarm-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Pending
                     </p>
-                    <p class="fw-light mb-0 mt-4">Pending transactions that needs to be approved by either Operations
+                    <p class="fw-light mb-0 ">Pending transactions that needs to be approved by either Operations
                         Supervisor or Manager.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_pending"></p>
+                    <p class="fs-4 fw-bold mb-0 mt-2" id="count_pending"></p>
                 </div>
-                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
+                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-clipboard-check-fill me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Accepted
                     </p>
-                    <p class="fw-light mb-0 mt-4">Accepted transactions that is at standby until dispatched at a
+                    <p class="fw-light mb-0 ">Accepted transactions that is at standby until dispatched at a
                         specific date.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_accepted"></p>
+                    <p class="fs-4 fw-bold mb-0 mt-2" id="count_accepted"></p>
                 </div>
-                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
+                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-calendar2-check-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Completed
                     </p>
-                    <p class="fw-light mb-0 mt-4">Completed transactions marked done by Technicians and approved by
+                    <p class="fw-light mb-0 ">Completed transactions marked done by Technicians and approved by
                         Operations Supervisors.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_completed"></p>
+                    <p class="fs-4 fw-bold mb-0 mt-2" id="count_completed"></p>
                 </div>
-                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
+                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-clipboard-x-fill me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Voided
                     </p>
-                    <p class="fw-light mb-0 mt-4">Voided transactions cancelled due to a specific cause.</p>
+                    <p class="fw-light mb-0 ">Voided transactions cancelled due to a specific cause.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_voided"></p>
                 </div>
             </div>
 
             <div class="hstack gap-2 mt-2 mx-3">
                 <select
-                    class="form-select select-transparent bg-light bg-opacity-25 py-2 border-0 h-100 text-light w-25"
+                    class="form-select select-transparent bg-light bg-opacity-25 rounded py-2 border-0 h-100 text-light w-25 "
                     id="sortstatus" aria-label="Default select example">
                     <option value='' selected>Show All Status</option>
                     <option value="Pending">Pending</option>
@@ -69,11 +69,13 @@
                     <option value="Completed">Completed</option>
                     <option value="Voided">Voided</option>
                 </select>
-                <input class="form-control form-custom me-auto py-2 align-middle px-3 rounded-pill text-light"
-                    type="search" placeholder="Search transactions . . ." id="searchbar" name="searchTrans"
+                <input class="form-control form-custom me-auto py-2 align-middle px-3 rounded-pill text-light "
+                    placeholder="Search transactions . . ." id="searchbar" name="searchTrans"
                     autocomplete="one-time-code">
+                <button type="button" id="pending" class="btn w-50 rounded btn-sidebar bg-light bg-opacity-25 border-0 text-light py-2 px-1 "><i
+                        class="bi bi-calendar2-check me-2"></i>Recently Completed</button>
                 <div class="vr"></div>
-                <button type="button" id="addbtn" class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3"
+                <button type="button" id="addbtn" title="Add Transaction" class="btn btn-sidebar rounded border-0 bg-light bg-opacity-25 text-light py-2 px-3 "
                     disabled-data-bs-toggle="modal" disabled-data-bs-target="#addModal"><i
                         class="bi bi-file-earmark-plus"></i></button>
             </div>
@@ -101,9 +103,9 @@
             <!-- modals -->
             <form id="addTransaction">
                 <div class="row g-2 text-dark m-0">
-                    <div class="modal modal-lg fade text-dark modal-edit" id="addModal" tabindex="-1"
+                    <div class="modal fade text-dark modal-edit" id="addModal" tabindex="-1"
                         aria-labelledby="create" aria-hidden="true">
-                        <div class="modal-dialog">
+                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
                                     <h1 class="modal-title fs-5">Add New Transaction</h1>
@@ -278,7 +280,9 @@
                                                 <option value="Pending">Pending</option>
                                                 <option value="Accepted">Accepted</option>
                                                 <option value="Completed">Completed </option>
+                                                <option value="Voided">Voided </option>
                                             </select>
+                                            <p class="alert alert-warning py-1 mt-2" style="display: none !important;"></p>
                                         </div>
                                         <div class="col-lg-6">
                                             <label for="add-notes" class="form-label fw-light">Additional Notes</label>
@@ -335,8 +339,8 @@
             <!-- view/edit -->
             <form id="viewEditForm">
                 <div class="row g-2 text-dark m-0">
-                    <div class="modal modal-lg fade text-dark modal-edit" id="details-modal" tabindex="-1">
-                        <div class="modal-dialog">
+                    <div class="modal fade text-dark modal-edit" id="details-modal" tabindex="-1">
+                        <div class="modal-xl modal-dialog-scrollable modal-dialog">
                             <div class="modal-content">
 
                                 <!-- modal header -->
@@ -593,7 +597,7 @@
 
                                     <div class="row mb-2 d-none" id="edit-status-col">
                                         <!-- edit -->
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-6">
                                             <label for="edit-status" class="form-label"
                                                 id='label-edit-status'>Transaction Status:</label>
                                             <select name="edit-status" id="edit-status" class="form-select ">
@@ -603,6 +607,7 @@
                                                 <option value="Voided">Voided</option>
                                                 <option value="Completed">Completed </option>
                                             </select>
+                                            <p class="alert alert-warning py-1 mt-2" style="display: none !important;"></p>
                                         </div>
                                         <p id="statusNote" class="text-muted fw-light d-none ms-2"></p>
                                     </div>
@@ -688,29 +693,29 @@
 
         <?php
         if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
-            ?>
+        ?>
             $('#viewEditForm')[0].reset();
             let id = <?= $_GET['id']; ?>;
             console.log(id);
             view_transaction(id);
-            $('#details-modal').on('hidden.bs.modal', function (e) {
+            $('#details-modal').on('hidden.bs.modal', function(e) {
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.delete('openmodal');
                 currentUrl.searchParams.delete('id');
                 window.history.pushState(null, "", currentUrl.pathname + currentUrl.search);
             });
-            <?php
+        <?php
         }
         ?>
 
 
-        $(document).on('change', '#checkall', function () {
+        $(document).on('change', '#checkall', function() {
             $('#checkicon').toggleClass('bi-square bi-check-square');
             var checked = $(this).prop('checked');
             $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
         });
 
-       
+
 
         let apd = $('#add-packageStart');
         addPackageDate = flatpickr(apd, {
@@ -721,20 +726,20 @@
 
         async function compute_package_expiry(date, packId) {
             return $.post(transUrl, {
-                date: date,
-                pack_exp: 'true',
-                pid: packId
-            }, function (data) {
-                // alert(data);
-                return data;
-            })
-                .fail(function (err) {
+                    date: date,
+                    pack_exp: 'true',
+                    pid: packId
+                }, function(data) {
+                    // alert(data);
+                    return data;
+                })
+                .fail(function(err) {
                     console.log(err);
                 })
         }
 
 
-        $(document).on('change', '#add-packageStart', async function (e) {
+        $(document).on('change', '#add-packageStart', async function(e) {
             let package_id = $('#add-package').val();
             if (!$.isNumeric(package_id)) {
                 alert('Please Select a package! Invalid package ID.');
@@ -767,7 +772,7 @@
             setDate: '8:00'
         });
 
-        $('#viewEditForm').on('change', 'select#edit-status', function () {
+        $('#viewEditForm').on('change', 'select#edit-status', function() {
             if ($(this).val() === 'Completed') {
                 // console.log('tte');
                 $('#statusNote').html('Note: Once a transaction is marked as completed, it is no longer editable.').removeClass('d-none');
@@ -776,7 +781,7 @@
             }
         })
 
-        $(document).on('click', '#pendingbtn', function () {
+        $(document).on('click', '#pendingbtn', function() {
             let transId = $(this).data('pending-id');
             console.log(transId);
             $('#transidinput').val(transId);
@@ -789,7 +794,7 @@
 
         async function treatments(form) {
             try {
-                $.get(transUrl, "treatments=true", function (data) {
+                $.get(transUrl, "treatments=true", function(data) {
                     $(`#${form}-treatmentContainer`).empty();
                     $(`#${form}-treatmentContainer`).html(data);
                 });
@@ -798,7 +803,7 @@
             }
         }
 
-        $(document).on('click', '#addbtn', async function () {
+        $(document).on('click', '#addbtn', async function() {
             let form = 'add';
             try {
                 const load = await Promise.all([
@@ -846,7 +851,7 @@
         async function add_more_tech() {
             let num = 2;
 
-            $('#addMoreTech', '#addModal').off('click').on('click', async function () {
+            $('#addMoreTech', '#addModal').off('click').on('click', async function() {
                 // console.log('tite' + num);
                 await get_more_tech(num);
                 num++;
@@ -857,20 +862,20 @@
 
         function get_overview_count(container) {
             $.get(transUrl, {
-                count: true,
-                status: container
-            })
-                .done(function (d) {
+                    count: true,
+                    status: container
+                })
+                .done(function(d) {
                     console.log(d);
                     $(`#count_${container}`).empty();
                     $(`#count_${container}`).append(d);
                 })
-                .fail(function (e) {
+                .fail(function(e) {
                     console.log(e);
                 })
         }
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             get_overview_count('pending');
             get_overview_count('accepted');
             get_overview_count('completed');
@@ -882,7 +887,7 @@
             // let moreChemTemp = $('#add-chemicalData').html();
             let num = 2;
 
-            $('#addMoreChem', '#addModal').off('click').on('click', async function () {
+            $('#addMoreChem', '#addModal').off('click').on('click', async function() {
                 await add_used_chem(num);
                 num++;
                 console.log(num);
@@ -1040,7 +1045,7 @@
         async function toggle() {
             // let package = 
 
-            $("#view-customerName, #edit-session").attr("readonly", function (i, attr) {
+            $("#view-customerName, #edit-session").attr("readonly", function(i, attr) {
                 if (attr) {
                     $(this).removeClass('form-control-plaintext');
                     $(this).addClass('form-control');
@@ -1057,7 +1062,7 @@
 
                 return attr ? false : true;
             });
-            $("#view-treatmentDate, #view-treatmentTime, #view-start, #view-expiry").attr("disabled", function (i, attr) {
+            $("#view-treatmentDate, #view-treatmentTime, #view-start, #view-expiry").attr("disabled", function(i, attr) {
                 $(this).removeAttr('style');
                 if (attr) {
                     $(this).removeAttr('style');
@@ -1098,10 +1103,10 @@
             $('#edit-noteContainer').toggleClass('d-none');
 
             if ($('#edit-package-select').val() != 'none') {
-                $('#edit-treatment').attr('disabled', function (i, a) {
+                $('#edit-treatment').attr('disabled', function(i, a) {
                     return a ? a : true;
                 });
-                $('#edit-session, #edit-start').attr('disabled', function (i, a) {
+                $('#edit-session, #edit-start').attr('disabled', function(i, a) {
                     return a ? false : a;
                 });
             }
@@ -1109,7 +1114,7 @@
             return toggled = true;
         }
 
-        $(document).on('change', '#edit-status', function () {
+        $(document).on('change', '#edit-status', function() {
             let sts = $(this).val();
             // if (sts == 'Pending' || 'Completed') {
             //     editTransDate.config.minDate = new Date().fp_incr(1);
@@ -1206,10 +1211,10 @@
 
         function treatment_name(id) {
             $.get(transUrl, `treatmentname=true&id=${id}`)
-                .done(function (d) {
+                .done(function(d) {
                     return d;
                 })
-                .fail(function (error, status, errmsg) {
+                .fail(function(error, status, errmsg) {
                     console.log(error);
                     console.log(status + errmsg);
                 });
@@ -1217,18 +1222,18 @@
 
         function get_package_name(id) {
             $.get(transUrl, `packagename=true&id=${id}`)
-                .done(function (data) {
+                .done(function(data) {
                     $('#view-package').empty();
                     $('#view-package').html(data);
                 })
-                .fail(function (error, status, errmsg) {
+                .fail(function(error, status, errmsg) {
                     console.log(error);
                     console.log(status + errmsg);
                 });
         }
 
         let sval, tval, wval, weval;
-        $(document).on('change', '#edit-package-select', function () {
+        $(document).on('change', '#edit-package-select', function() {
             if ($(this).val() === 'none') {
                 sval = $('#edit-session').val();
                 $('#edit-session').val('');
@@ -1306,21 +1311,21 @@
                     if (d.package_id != null) {
                         // package assigned
                         $('#edit-treatment').removeAttr('name');
-                        $('#view-expiry').attr('name', function (i, a) {
+                        $('#view-expiry').attr('name', function(i, a) {
                             return a ? a : 'edit-expiry'
                         });
-                        $('#view-start').attr('name', function (i, a) {
+                        $('#view-start').attr('name', function(i, a) {
                             return a ? a : 'edit-start'
                         });
-                        $('#edit-session').attr('disabled', function (i, a) {
+                        $('#edit-session').attr('disabled', function(i, a) {
                             return a == true ? false : a;
                         });
-                        $('#edit-treatment').attr('disabled', function (i, a) {
+                        $('#edit-treatment').attr('disabled', function(i, a) {
                             return a == true ? false : a;
                         });
                     } else {
                         // null | no package assigned
-                        $('#edit-treatment').attr('name', function (i, a) {
+                        $('#edit-treatment').attr('name', function(i, a) {
                             return a ? a : 'edit-treatment'
                         });
                         $('#edit-session, #view-expiry, #view-start').removeAttr('name');
@@ -1369,7 +1374,7 @@
             }
         }
 
-        $(document).on('focus', '#view-start', async function (e) {
+        $(document).on('focus', '#view-start', async function(e) {
             let package_id = $('#edit-package-select').val();
             if (!$.isNumeric(package_id)) {
                 alert('Please Select a package! Invalid package ID.');
@@ -1382,7 +1387,7 @@
             }
         })
 
-        $(document).on('click', '#editbtn', async function () {
+        $(document).on('click', '#editbtn', async function() {
             let transId = $('#view-transId').val();
             if (toggled) {
                 await toggle();
@@ -1396,7 +1401,7 @@
         });
 
         // open details
-        $(document).on('click', '#tableDetails', async function () {
+        $(document).on('click', '#tableDetails', async function() {
             const clearform = await empty_form();
             if (clearform) {
                 $('#viewEditForm')[0].reset();
@@ -1417,11 +1422,24 @@
             $.get(transUrl, {
                 addrow: 'true',
                 status: status
-            }, function (data) {
+            }, function(data) {
                 $(`#edit-${row}`).append(data);
                 console.log(status);
             })
         }
+
+        $(document).on('change', '#add-status, #edit-status', function() {
+            let sel = $(this);
+            if (sel.val() === 'Voided') {
+                sel.next().fadeIn(750).html("Note. Voiding a transaction completely will require Manager approval. Ignore to continue.");
+            } else if (sel.val() === 'Accepted') {
+                sel.next().fadeIn(750).html("Make sure to double check the details at least before the dispatch date.");
+            } else if (sel.val() === 'Completed') {
+                sel.next().fadeIn(750).html("Make sure to double check details. Setting this transaction to complete will make this viewonly.");
+            } else {
+                sel.next().fadeOut(1000);
+            }
+        })
 
         async function check_emptyrow(row) {
             if ($(`#edit-${row}`).html().trim().length === 0) {
@@ -1432,7 +1450,7 @@
             }
         }
 
-        $(document).on('click', '#edit-deleteTech', async function () {
+        $(document).on('click', '#edit-deleteTech', async function() {
             let rowId = $(this).data('row-id');
             let row = $('#edit-technicianName > div').length;
             if (row === 1) {
@@ -1444,7 +1462,7 @@
             }
         })
 
-        $(document).on('click', '#deleteTech', async function () {
+        $(document).on('click', '#deleteTech', async function() {
             let rowId = $(this).data('row-id');
             let row = $('#addTechContainer').length;
             if (row === 0) {
@@ -1456,7 +1474,7 @@
             }
         })
 
-        $(document).on('click', 'button.ef-del-btn.btn.btn-grad', async function () {
+        $(document).on('click', 'button.ef-del-btn.btn.btn-grad', async function() {
             let rowId = $(this).data('row-id');
             let row = $('#edit-chemBrandUsed > div').length;
             if (row === 1) {
@@ -1474,21 +1492,21 @@
             }
         })
 
-        $(document).on('click', '#edit-addTech', async function () {
+        $(document).on('click', '#edit-addTech', async function() {
             // $.get(transUrl, { editTechAdd: 'true' }, function (data) {
             //     $('#edit-technicianName').append(data);
             // })
             await edit('technicianName');
         })
 
-        $(document).on('click', '#edit-addMoreChem', async function () {
+        $(document).on('click', '#edit-addMoreChem', async function() {
             let stats = $(this).data('status');
             get_addrow('chemBrandUsed', stats);
         })
 
 
 
-        $(document).on('click', '#deleteChem', function () {
+        $(document).on('click', '#deleteChem', function() {
             $(this).parent().parent().remove();
         });
 
@@ -1514,7 +1532,7 @@
 
         // toggle name and disable when package is active
         let aps, at, a_s, ae;
-        $(document).on('change', '#add-package', function () {
+        $(document).on('change', '#add-package', function() {
             let package = $(this).val();
             // console.log(package);
             if (package === 'none') {
@@ -1534,7 +1552,7 @@
             }
         });
 
-        $(document).on('focusout', 'form input, form select, form textarea', function () {
+        $(document).on('focusout', 'form input, form select, form textarea', function() {
             if ($(this).val() == '' || $(this).val() == '#') {
                 $(this).addClass('border border-danger');
             } else {
@@ -1543,8 +1561,8 @@
         });
 
         // submit
-        $(function () {
-            $('#addTransaction').on('submit', async function (e) {
+        $(function() {
+            $('#addTransaction').on('submit', async function(e) {
                 e.preventDefault();
                 let status = $("#sortstatus").val();
                 console.log($(this).serialize());
@@ -1583,7 +1601,7 @@
         });
 
         // edit section
-        $(document).on('click', '#confirmUpdate', function () {
+        $(document).on('click', '#confirmUpdate', function() {
             $('#confirmation #verifyAdd').text('Verify Transaction Update');
             $('#confirmation #edit-confirm').text('Update Transaction');
             $('#confirmation #edit-confirm').attr('data-update', 'update');
@@ -1591,7 +1609,7 @@
         })
 
         // edit section
-        $(document).on('click', '#confirmDelete', function () {
+        $(document).on('click', '#confirmDelete', function() {
             $('#confirmation #verifyAdd').text('Verify Transaction Deletion');
             $('#confirmation #edit-confirm').text('Delete Transaction');
             $('#confirmation #edit-confirm').attr('data-update', 'delete');
@@ -1599,7 +1617,7 @@
         })
 
         // submit section | confirmation modal
-        $(document).on('click', '#edit-confirm', async function () {
+        $(document).on('click', '#edit-confirm', async function() {
             let update = $(this).attr('data-update');
             // console.log(update);
             if (update === 'delete') {
@@ -1677,15 +1695,15 @@
         }
 
         // search function
-        $(function () {
+        $(function() {
             let delay = null;
 
-            $('#searchbar').keyup(function () {
+            $('#searchbar').keyup(function() {
                 clearTimeout(delay);
                 $('#table').empty();
                 $('#loader').removeClass('visually-hidden');
 
-                delay = setTimeout(async function () {
+                delay = setTimeout(async function() {
                     var search = $('#searchbar').val();
                     let status = $('#sortstatus').val();
                     try {
@@ -1763,12 +1781,12 @@
             }
         }
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             loadpage(1);
         })
 
 
-        $("#sortstatus").on('change', async function () {
+        $("#sortstatus").on('change', async function() {
             let status = $("#sortstatus option:selected").val();
             $("#searchbar").val('');
             await loadpage(1, status);
@@ -1779,7 +1797,7 @@
             await load_paginated_table(page, status);
         }
 
-        $('#pagination').on('click', '.page-link', async function (e) {
+        $('#pagination').on('click', '.page-link', async function(e) {
             e.preventDefault();
             let status = $("#sortstatus option:selected").val();
 
