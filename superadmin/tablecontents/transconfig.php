@@ -23,6 +23,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $status = $_POST['add-status'];
     $session = $_POST['add-session'] ?? null;
     $saPwd = $_POST['saPwd'];
+    $addedBy = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
 
     if ($package != 'none') {
@@ -97,7 +98,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-    $transaction = newTransaction($conn, $customerName, $address, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp);
+    $transaction = newTransaction($conn, $customerName, $address, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp, $addedBy);
 
     if (!isset($transaction['success'])) {
         http_response_code(400);

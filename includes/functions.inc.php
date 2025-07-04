@@ -715,18 +715,18 @@ function get_chem_level($conn, $id)
     }
 }
 
-function newTransaction($conn, $customerName, $address, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note, $pstart, $pend)
+function newTransaction($conn, $customerName, $address, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note, $pstart, $pend, $addedby)
 {
 
     mysqli_begin_transaction($conn);
     try {
-        $transSql = "INSERT INTO transactions (customer_name, customer_address, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at, package_id, treatment_type, session_no, notes, pack_start, pack_exp) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?);";
+        $transSql = "INSERT INTO transactions (customer_name, customer_address, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at, package_id, treatment_type, session_no, notes, pack_start, pack_exp, created_by) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?, ?);";
         $transStmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($transStmt, $transSql)) {
             throw new Exception('Stmt Failed: ' . mysqli_stmt_error($transStmt));
         }
-        mysqli_stmt_bind_param($transStmt, 'ssssssisisss', $customerName, $address, $treatmentDate, $treatmentTime, $treatment, $status, $package, $type, $session, $note, $pstart, $pend);
+        mysqli_stmt_bind_param($transStmt, 'ssssssisissss', $customerName, $address, $treatmentDate, $treatmentTime, $treatment, $status, $package, $type, $session, $note, $pstart, $pend, $addedby);
         mysqli_stmt_execute($transStmt);
 
         if (mysqli_stmt_affected_rows($transStmt) > 0) {
@@ -1029,7 +1029,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                     } else {
                         $amount = (int) $amtUsed[$i];
                         $amount = !in_array($amtUsed[$i], $existingChems) ? $amount * -1 : $amount;
-                        throw new Exception($amount);
+                        // throw new Exception($amount);
 
                         $reflect = reflect_trans_chem($conn, $amount, $chemUsed[$i]);
                         if (isset($reflect['error'])) {
@@ -1132,7 +1132,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
         $transSql = "UPDATE transactions SET treatment_date = ?, customer_name = ?, 
         treatment = ?, transaction_status = ?, customer_address = ?, transaction_time = ?, 
-        treatment_type = ?, package_id = ?, pack_start = ?, pack_exp = ?, session_no = ?, notes = ? WHERE id = ?;";
+        treatment_type = ?, package_id = ?, pack_start = ?, pack_exp = ?, session_no = ?, notes = ?, updated_by = ? WHERE id = ?;";
         $transStmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($transStmt, $transSql)) {
@@ -1141,7 +1141,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
         mysqli_stmt_bind_param(
             $transStmt,
-            'sssssssissisi',
+            'sssssssississi',
             $transData['treatmentDate'],
             $transData['customer'],
             $transData['treatment'],
@@ -1154,7 +1154,8 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
             $transData['pexp'],
             $transData['session'],
             $transData['note'],
-            $transData['transId'],
+            $transData['upby'],
+            $transData['transId']
         );
         mysqli_stmt_execute($transStmt);
 

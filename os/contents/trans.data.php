@@ -860,7 +860,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
         echo "stmt error";
         exit();
     }
-    
+
     mysqli_stmt_bind_param($stmt, "s", $status);
     mysqli_stmt_execute($stmt);
 
@@ -869,4 +869,46 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
 
     echo $row[0];
     exit();
+}
+
+if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
+    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Completed' ORDER BY updated_at DESC LIMIT 5;";
+    $result = mysqli_query($conn, $sql);
+    $rows = mysqli_num_rows($result);
+
+    if ($rows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $customerName = $row['customer_name'];
+            $treatmentDate = $row['treatment_date'];
+            $td = date('F j, Y', strtotime($treatmentDate));
+            $request = $row['void_request'];
+            $upby = $row['updated_by'];
+            $cby = $row['created_by'];
+            ?>
+            <tr class="text-center">
+                <td class="text-dark" scope="row"><?= htmlspecialchars($id) ?></td>
+                <td class="text-dark"><?= htmlspecialchars($customerName) ?></td>
+                <td class="text-dark"><?= htmlspecialchars($td) ?></td>
+                <td class="text-dark">
+                    <?= $upby === "No User" && $cby === "No User" ? htmlspecialchars("No Recorded User.") : ($upby === $cby ? htmlspecialchars("Updated/Created by $upby") : ($upby !== 'No User' ? htmlspecialchars("Updated by $upby") : htmlspecialchars("Created by $cby"))) ?>
+                </td>
+                <td class="text-dark">
+                    <div class="d-flex justify-content-center">
+
+                        <input type="checkbox" class="btn-check" value="<?= $id ?>" name="trans[]" id="c-<?= $id ?>"
+                            autocomplete="off">
+                        <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i class="bi bi-check-circle me-2"></i>Finalize
+                            Transaction</label>
+
+                    </div>
+                </td>
+            </tr>
+
+
+            <?php
+        }
+    } else {
+        echo "<tr><td scope='row' colspan='5' class='text-center'>No Void Requests.</td></tr>";
+    }
 }

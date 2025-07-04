@@ -735,7 +735,7 @@
             <form id="voidrequestform">
                 <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static" id="voidrequestmodal"
                     tabindex="0" aria-labelledby="confirmAdd" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title">
                                 <h1 class="modal-title fs-5 text-light">Void Requests</h1>

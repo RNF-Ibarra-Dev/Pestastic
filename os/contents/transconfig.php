@@ -24,6 +24,8 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $session = $_POST['add-session'] ?? null;
     $saPwd = $_POST['saPwd'];
 
+    // add created by
+    $addedBy = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
     if ($package != 'none') {
         if (!in_array($package, $packageIds)) {
@@ -85,7 +87,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-    $transaction = newTransaction($conn, $customerName, $address, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp);
+    $transaction = newTransaction($conn, $customerName, $address, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp, $addedBy);
 
     if (!isset($transaction['success'])) {
         http_response_code(400);
@@ -142,8 +144,12 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $status = $_POST['edit-status'];
     $note = $_POST['edit-note'] ?? null;
     $saPwd = $_POST['edit-saPwd'];
+    $upby = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
+    
 
     $allowedUpdateStatus = ['Pending', 'Accepted'];
+
+    // add updated by 
 
     if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatmentTime) || empty($problems) || empty($chemUsed) || empty($status) || empty($ttype) || empty($address)) {
         http_response_code(400);
@@ -178,6 +184,9 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         echo 'Invalid Status. Make sure the status is Pending or Accepted.';
         exit();
     }
+    // http_response_code(400);
+    // echo var_dump($upby);
+    // exit();
 
     if ($package != 'none') {
         if (!in_array($package, $packageIds)) {
@@ -212,7 +221,8 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         'session' => $session,
         'pstart' => $pstart,
         'pexp' => $pexp,
-        'note' => $note
+        'note' => $note,
+        'upby' => $upby
     ];
 
     if (!validateOS($conn, $saPwd)) {
