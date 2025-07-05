@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 29, 2025 at 04:51 PM
+-- Generation Time: Jul 05, 2025 at 10:11 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,7 +46,7 @@ CREATE TABLE `branchadmin` (
 --
 
 INSERT INTO `branchadmin` (`baID`, `baFName`, `baLName`, `baUsn`, `baEmail`, `baPwd`, `baEmpId`, `baAddress`, `baContact`, `baBirthdate`, `user_branch`) VALUES
-(1, 'branch', 'admin', 'bAdmin', 'bAdmin@email.com', 'bAdmin', '012345678', '-', '123', '1930-01-14', 1),
+(1, 'branch', 'admin', 'bAdmin', 'bAdmin@email.com', '$2y$13$4bt2QK95Yrz929t9CoHIc.balO5OVF.kFsirEhEU2krxHSyvhb7ji', '012345678', '-', '123', '1930-01-14', 1),
 (2, 'os', 'os', 'os', 'os@email.com', '$2y$10$qikFsWEjotZYeneR0x5.C.fTlLe/qQEkYLPlit8koQaQYFNh4cb.6', '0123', '-', '123', '1930-01-01', 2),
 (3, 'wers', 'wers', 'wers', 'wer@gmail.com', '$2y$10$EeO/yYAJ/2NLT0QJ0yNzke9HVVnXXmiNHEuB1lWMOk/lryJpcoAg2', '123123', '-', '123123000', '1930-01-01', 1),
 (5, 'aya', 'ibarra', 'aya123', 'aya@gmail.com', '$2y$10$fuswGyoFW1DOV.Hb3Y04W.L4BQvwHfxiGjz2wur3Q7OFkKiynjlf2', '002', '--', '123123123', '2020-06-10', 1),
@@ -97,42 +97,42 @@ CREATE TABLE `chemicals` (
   `branch` int(11) NOT NULL DEFAULT 1,
   `added_by` varchar(64) NOT NULL DEFAULT 'No Record',
   `updated_by` varchar(64) NOT NULL DEFAULT 'No Update Record',
-  `date_received` date DEFAULT NULL
+  `date_received` date DEFAULT NULL,
+  `quantity_unit` enum('mg','g','kg','L','mL') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `chemicals`
 --
 
-INSERT INTO `chemicals` (`id`, `name`, `brand`, `chemLevel`, `container_size`, `unop_cont`, `expiryDate`, `added_at`, `updated_at`, `request`, `notes`, `branch`, `added_by`, `updated_by`, `date_received`) VALUES
-(1, 'Deltacide', 'ENVU', 5, 1000, 1, '2025-03-06', '2025-04-12 15:06:30', '2025-06-29 14:17:48', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(2, 'Abates', 'BASF', 3, 250, 2, '2032-03-11', '2025-04-12 15:06:30', '2025-06-29 14:17:54', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(3, 'chemical', 'ABXV', 1, 1000, 1, '2028-01-19', '2025-04-12 15:06:30', '2025-06-29 14:17:56', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(19, 'qwe', 'qwe', 0, 1000, 0, '2025-04-03', '2025-04-12 15:06:30', '2025-06-29 14:05:37', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(44, 'asd', 'asd', 0, 1000, 0, '2025-01-01', '2025-04-12 15:06:30', '2025-06-29 14:05:37', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(45, 'g', 'g', 0, 1000, 0, '2025-01-01', '2025-04-12 15:06:30', '2025-06-29 14:05:37', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(46, 'n', 'n', 0, 1000, 0, '2025-04-03', '2025-04-12 15:06:30', '2025-06-29 14:05:37', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(47, 'sad', 'asd', 500, 1000, 0, '2025-01-01', '2025-04-12 15:06:30', '2025-06-29 14:05:37', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(49, 'asd', 'asd', 0, 1000, 0, '2026-06-04', '2025-04-12 15:06:30', '2025-06-29 14:05:37', 0, '', 1, 'No Record', 'sAdmin | Employee no. 123', '2025-06-13'),
-(50, 'Deltacides', 'CHEM', 0, 1000, 0, '2025-01-01', '2025-04-12 15:06:30', '2025-06-29 14:05:37', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(51, 'asd', 'asd', 30, 1000, 0, '2025-01-29', '2025-04-12 15:06:30', '2025-06-29 14:05:37', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(52, 'asd', 'asd', 25, 1000, 0, '2025-01-29', '2025-04-12 15:06:30', '2025-06-29 14:05:37', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(54, 'chem B', 'brand B', 86, 1000, 0, '2029-06-21', '2025-04-12 15:06:30', '2025-06-29 14:05:37', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(1000, 'hj', 'hj', 5, 1000, 0, '2025-01-01', '2025-04-17 13:03:08', '2025-06-29 14:05:37', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(1001, 'gh', 'gh', 6, 1000, 0, '2025-01-01', '2025-04-17 13:15:47', '2025-06-29 14:05:37', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(1002, 'fgh', 'fgh', 6, 1000, 0, '2025-01-01', '2025-04-17 13:16:32', '2025-06-29 14:05:37', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(1003, 'asd', 'asd', 3, 500, 0, '2025-01-01', '2025-04-17 13:17:16', '2025-06-29 14:05:46', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(1004, 'fgh', 'fgh', 5, 1000, 2, '2025-01-01', '2025-04-17 13:17:42', '2025-06-29 14:18:11', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(1005, 'hk', 'hjk', 8, 1000, 0, '2025-01-01', '2025-04-17 13:23:47', '2025-06-29 14:05:37', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(1006, 'fgd', 'd', 5, 1000, 4, '2025-01-01', '2025-04-17 13:24:22', '2025-06-29 14:18:08', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(1007, 'fgh', 'fgh', 6, 250, 0, '2025-01-01', '2025-04-17 13:25:27', '2025-06-29 14:05:49', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(1008, 'fgh', 'fgh', 6, 1000, 5, '2025-01-01', '2025-04-17 13:25:30', '2025-06-29 14:18:04', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(1009, 'fgh', 'fgh', 6, 1000, 0, '2025-01-01', '2025-04-17 13:25:31', '2025-06-29 14:05:37', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(1012, 'ghjp', 'ghj', 6, 500, 0, '2025-01-01', '2025-04-17 13:27:35', '2025-06-29 14:05:52', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13'),
-(1013, 'jhh', 'gdfg', 500, 1000, 3, '2025-01-01', '2025-04-17 13:31:02', '2025-06-29 14:18:02', 0, '', 1, 'No Record', 'sAdmin | Employee no. 123', '2025-06-13'),
-(1014, 'jhghj', 'hjghj', 70, 1000, 0, '2025-01-01', '2025-04-17 13:33:20', '2025-06-29 14:05:37', 1, '', 1, 'No Record', '[1] - sAdmin', '2025-06-13'),
-(1039, 'asasas', 'asasas', 2, 1000, 0, '2025-06-10', '2025-06-11 16:00:00', '2025-06-29 14:05:37', 1, '', 1, '[1] - sAdmin', 'No Update Record', '2025-06-13'),
-(1040, 'dsdsds', 'dsdsds', 2, 1000, 0, '2025-06-04', '2025-06-02 16:00:00', '2025-06-29 14:05:37', 1, NULL, 1, '[1] - sAdmin', 'No Update Record', '2025-06-13');
+INSERT INTO `chemicals` (`id`, `name`, `brand`, `chemLevel`, `container_size`, `unop_cont`, `expiryDate`, `added_at`, `updated_at`, `request`, `notes`, `branch`, `added_by`, `updated_by`, `date_received`, `quantity_unit`) VALUES
+(1, 'Deltacide', 'ENVU', 5, 1000, 1, '2025-03-06', '2025-04-12 15:06:30', '2025-07-05 06:42:00', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(2, 'Abates', 'BASF', 3, 250, 2, '2032-03-11', '2025-04-12 15:06:30', '2025-07-05 06:42:00', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(3, 'chemical', 'ABXV', 1, 1000, 1, '2028-01-19', '2025-04-12 15:06:30', '2025-07-05 07:18:34', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'kg'),
+(19, 'qwe', 'qwe', 0, 1000, 0, '2025-04-03', '2025-04-12 15:06:30', '2025-07-05 06:42:00', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(44, 'asd', 'asd', 0, 1000, 0, '2025-01-01', '2025-04-12 15:06:30', '2025-07-05 06:42:00', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(45, 'g', 'g', 0, 1000, 0, '2025-01-01', '2025-04-12 15:06:30', '2025-07-05 06:42:00', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(46, 'n', 'n', 0, 1000, 0, '2025-04-03', '2025-04-12 15:06:30', '2025-07-05 06:42:00', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(47, 'sad', 'asd', 491, 1000, 0, '2028-07-19', '2025-04-12 15:06:30', '2025-07-05 06:42:00', 0, '', 1, 'No Record', 'sAdmin | Employee no. 123', '2025-06-13', 'mL'),
+(49, 'asd', 'asd', 0, 1000, 0, '2027-08-13', '2025-04-12 15:06:30', '2025-07-05 06:42:00', 0, '', 1, 'No Record', 'sAdmin | Employee no. 123', '2025-06-13', 'mL'),
+(50, 'Deltacides', 'CHEMM', 500, 1000, 5, '2025-01-01', '2025-04-12 15:06:30', '2025-07-05 06:42:00', 1, '', 1, 'No Record', 'bAdmin | Employee no. 012345678', '2025-06-13', 'mL'),
+(51, 'asd', 'asd', 30, 1000, 0, '2025-01-29', '2025-04-12 15:06:30', '2025-07-05 06:42:00', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(52, 'asd', 'asd', 25, 1000, 0, '2025-01-29', '2025-04-12 15:06:30', '2025-07-05 06:42:00', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(54, 'chem B', 'brand B', 86, 1000, 0, '2029-06-21', '2025-04-12 15:06:30', '2025-07-05 06:42:00', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(1000, 'hj', 'hj', 5, 1000, 0, '2025-01-01', '2025-04-17 13:03:08', '2025-07-05 06:42:00', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(1001, 'gh', 'gh', 3, 1000, 0, '2025-01-01', '2025-04-17 13:15:47', '2025-07-05 06:42:00', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(1002, 'fgh', 'fgh', 6, 1000, 0, '2025-01-01', '2025-04-17 13:16:32', '2025-07-05 07:13:26', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'g'),
+(1004, 'fgh', 'fgh', 5, 1000, 2, '2025-01-01', '2025-04-17 13:17:42', '2025-07-05 06:42:00', 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(1005, 'hk', 'hjk', 8, 1000, 0, '2025-01-01', '2025-04-17 13:23:47', '2025-07-05 06:42:00', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(1006, 'fgd', 'd', 5, 1000, 4, '2025-01-01', '2025-04-17 13:24:22', '2025-07-05 06:42:00', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(1007, 'fgh', 'fgh', 6, 250, 0, '2025-01-01', '2025-04-17 13:25:27', '2025-07-05 06:42:00', 1, '', 1, 'No Record', 'bAdmin | Employee no. 012345678', '2025-06-13', 'mL'),
+(1008, 'fgh', 'fgh', 6, 1000, 5, '2025-01-01', '2025-04-17 13:25:30', '2025-07-05 07:13:32', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'kg'),
+(1009, 'fgh', 'fgh', 6, 1000, 0, '2025-01-01', '2025-04-17 13:25:31', '2025-07-05 06:42:00', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(1012, 'ghjp', 'ghj', 6, 500, 0, '2025-01-01', '2025-04-17 13:27:35', '2025-07-05 06:42:00', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
+(1013, 'tamod', 'gdfg', 500, 1000, 5, '2025-07-04', '2025-04-17 13:31:02', '2025-07-05 06:42:00', 0, '', 1, 'No Record', 'sAdmin | Employee no. 123', '2025-06-13', 'mL'),
+(1014, 'jhghj', 'hjghj', 70, 1000, 0, '2025-01-01', '2025-04-17 13:33:20', '2025-07-05 06:42:00', 1, '', 1, 'No Record', '[1] - sAdmin', '2025-06-13', 'mL'),
+(1063, 'ssdf', 'sdfsdf', 250, 500, 2, '2026-08-06', '2025-07-03 02:19:10', '2025-07-05 06:42:00', 0, NULL, 1, '[1] - bAdmin', 'No Update Record', '2025-07-11', 'mL'),
+(1065, 'ddg', 'dfgdfg', 200, 200, 2, '2025-07-03', '2025-07-03 07:40:26', '2025-07-05 06:42:00', 0, '424242', 1, '[1] - sAdmin', 'No Update Record', '2025-07-03', 'mL');
 
 -- --------------------------------------------------------
 
@@ -209,11 +209,9 @@ INSERT INTO `pest_problems` (`id`, `problems`) VALUES
 (10, 'Centipedes'),
 (4, 'Cockroach'),
 (1, 'Drywood Termites'),
-(21, 'fghfgh'),
 (12, 'Fleas'),
 (8, 'Flies'),
 (3, 'German Cockroach'),
-(22, 'kkkk'),
 (13, 'Milipedes'),
 (7, 'Mosquitoes'),
 (2, 'Subterranean Termites'),
@@ -239,7 +237,8 @@ CREATE TABLE `reset_password` (
 
 INSERT INTO `reset_password` (`id`, `email`, `reset_token_hash`, `reset_token_expires_at`) VALUES
 (1, 'yacava6772@exitbit.com', 'b6565d9731f6bab39ab914033d18f28b2b4319dea7822ef5ee358333a6d2f883', '2025-06-26 14:05:18'),
-(3, 'rnnoleal@gmail.com', 'c83057191e4d4c5b99abb1cb020240e036ecc03f12d2e1839cde00eb115f994b', '2025-06-26 21:25:40');
+(3, 'rnnoleal@gmail.com', 'c83057191e4d4c5b99abb1cb020240e036ecc03f12d2e1839cde00eb115f994b', '2025-06-26 21:25:40'),
+(21, 'alenadatolayta10@gmail.com', '7e433b304e340418ec7c978b24849b3ca7563aedc3de2e13cba15e24e6d7c6e5', '2025-07-01 13:28:25');
 
 -- --------------------------------------------------------
 
@@ -339,7 +338,7 @@ INSERT INTO `transactions` (`id`, `treatment_date`, `customer_name`, `customer_a
 (82, NULL, 'ggddf', NULL, '2025-04-05 13:46:48', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1),
 (83, '2025-05-01', 'sssss', NULL, '2025-04-05 13:47:19', '2025-04-05 13:47:19', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1),
 (84, '2025-05-20', 'asd', NULL, '2025-04-05 14:14:53', '2025-05-30 10:06:07', 'Completed', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1),
-(85, '2025-04-19', 'kkjljkl', NULL, '2025-04-06 05:19:12', '2025-04-13 14:09:32', 'Accepted', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1),
+(85, '2025-04-19', 'kkjljkl', NULL, '2025-04-06 05:19:12', '2025-07-04 13:57:12', 'Accepted', 0, '11:14:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1),
 (96, '2025-04-19', 'dfsdf', NULL, '2025-04-10 06:51:37', '2025-05-28 14:22:40', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1),
 (97, '2025-04-25', 'ghj', NULL, '2025-04-10 06:53:43', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1),
 (98, '2025-04-25', 'jkl', NULL, '2025-04-10 06:54:24', '2025-05-30 10:06:07', 'Pending', 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1),
@@ -359,7 +358,9 @@ INSERT INTO `transactions` (`id`, `treatment_date`, `customer_name`, `customer_a
 (10020, '2025-06-12', 'ggh', NULL, '2025-06-01 06:59:38', '2025-06-28 13:56:45', 'Accepted', 0, '02:00:00', NULL, NULL, NULL, 'General Treatment', 3, NULL, NULL, NULL, 'No User', 'No User', 2),
 (10021, '2025-06-11', 'Albert Einstein', NULL, '2025-06-01 07:05:44', '2025-06-02 12:20:35', 'Pending', 0, '02:00:00', NULL, NULL, NULL, 'Follow-up Treatment', 2, NULL, NULL, NULL, 'No User', 'No User', 1),
 (10022, '2025-06-03', 'Sigmund Freud', 'asdas', '2025-06-02 14:44:33', '2025-06-28 13:58:59', 'Accepted', 0, '12:00:00', '', NULL, 102, 'Follow-up Treatment', 4, '2027-06-17', 3, '2025-06-17', 'No User', 'No User', 1),
-(10023, '2025-06-26', 'Name', 'Address', '2025-06-05 14:08:45', '2025-06-07 15:02:57', 'Accepted', 0, '09:05:00', 'notess\r\n', NULL, 101, 'Follow-up Treatment', 4, '2027-06-18', 4, '2025-06-18', 'No User', 'No User', 1);
+(10023, '2025-06-26', 'Name', 'Address', '2025-06-05 14:08:45', '2025-06-07 15:02:57', 'Accepted', 0, '09:05:00', 'notess\r\n', NULL, 101, 'Follow-up Treatment', 4, '2027-06-18', 4, '2025-06-18', 'No User', 'No User', 1),
+(10024, '2025-07-24', 'tutu', 'fghfgh', '2025-07-03 14:47:52', '2025-07-05 05:18:21', 'Pending', 0, '02:00:00', '', NULL, 101, 'Follow-up Treatment', 4, '2027-07-16', NULL, '2025-07-16', 'branch admin', 'No User', 1),
+(10027, '2025-07-23', 'ttiititit', 'sdfsdf', '2025-07-03 15:16:18', '2025-07-04 15:25:05', 'Completed', 0, '10:00:00', '', NULL, NULL, 'General Treatment', 1, NULL, NULL, NULL, '0', 'No User', 1);
 
 -- --------------------------------------------------------
 
@@ -410,7 +411,9 @@ INSERT INTO `transaction_chemicals` (`trans_id`, `chem_id`, `chem_brand`, `amt_u
 (10021, 54, 'chem B | brand B', 0),
 (10021, 1005, 'hk | hjk', 0),
 (10022, 51, 'asd | asd', 3),
-(10023, 52, 'asd | asd', 5);
+(10023, 52, 'asd | asd', 5),
+(10024, 54, 'chem B | brand B', 0),
+(10027, 1001, 'gh | gh', 3);
 
 --
 -- Triggers `transaction_chemicals`
@@ -498,7 +501,13 @@ INSERT INTO `transaction_problems` (`trans_id`, `problem_id`) VALUES
 (10023, 1),
 (10023, 3),
 (10023, 6),
-(10023, 13);
+(10023, 13),
+(10024, 2),
+(10024, 9),
+(10024, 10),
+(10027, 2),
+(10027, 3),
+(10027, 10);
 
 -- --------------------------------------------------------
 
@@ -548,7 +557,9 @@ INSERT INTO `transaction_technicians` (`trans_id`, `tech_id`, `tech_info`) VALUE
 (10021, 10, 'fgh fgh'),
 (10022, 4, 'rayan ibarra'),
 (10022, 10, 'fgh fgh'),
-(10023, 15, 'alena datolayta');
+(10023, 15, 'alena datolayta'),
+(10024, 10, 'fgh fgh'),
+(10027, 2, 'asdf asdf');
 
 --
 -- Triggers `transaction_technicians`
@@ -712,7 +723,7 @@ ALTER TABLE `branches`
 -- AUTO_INCREMENT for table `chemicals`
 --
 ALTER TABLE `chemicals`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1063;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1066;
 
 --
 -- AUTO_INCREMENT for table `equipments`
@@ -736,7 +747,7 @@ ALTER TABLE `pest_problems`
 -- AUTO_INCREMENT for table `reset_password`
 --
 ALTER TABLE `reset_password`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `superadmin`
@@ -754,7 +765,7 @@ ALTER TABLE `technician`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10024;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10028;
 
 --
 -- AUTO_INCREMENT for table `treatments`

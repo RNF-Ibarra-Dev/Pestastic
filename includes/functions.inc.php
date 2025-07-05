@@ -1246,6 +1246,27 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
     }
 }
 
+function get_unit($conn, $chemId)
+{
+    if (!is_numeric($chemId)) {
+        return ['error' => 'Invalid Chemical ID'];
+    }
+    $sql = "SELECT quantity_unit FROM chemicals WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'Fetch chemical unit stmt failed.'];
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $chemId);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    if ($row = mysqli_fetch_assoc($result)) {
+        return $row['quantity_unit'];
+    } else {
+        return ['error' => 'No chemical found with that ID.'];
+    }
+}
+
 function void_transaction($conn, $id)
 {
     $questionmarks = array_fill(0, count($id), '?');

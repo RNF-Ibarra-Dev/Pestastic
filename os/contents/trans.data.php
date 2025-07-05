@@ -169,10 +169,11 @@ function get_chem($conn, $active = null)
         $brand = $row['brand'];
         $name = $row['name'];
         $level = $row['chemLevel'];
-        $req = $row['request']
-            ?>
+        $req = $row['request'];
+        $unit = $row['quantity_unit'];
+        ?>
         <option value="<?= htmlspecialchars($id) ?>" <?= $level <= 0 || $req == 1 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?>>
-            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars($level) . "ml" ?>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level $unit") ?>
             <?= $req == 1 ? " | Chemical Under Review" : '' ?>
         </option>
         <?php
@@ -197,10 +198,11 @@ function get_chem_edit($conn, $active = null)
         $brand = $row['brand'];
         $name = $row['name'];
         $level = $row['chemLevel'];
-        $req = $row['request']
-            ?>
+        $req = $row['request'];
+        $unit = $row['quantity_unit'];
+        ?>
         <option value="<?= htmlspecialchars($id) ?>" <?= $id == $active ? 'selected' : '' ?>>
-            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars($level) . "ml" ?>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level $unit") ?>
             <?= $req == 1 ? " | Chemical Under Review" : '' ?>
         </option>
         <?php
@@ -408,7 +410,7 @@ if (isset($_GET['view']) && $_GET['view'] == 'probCheckbox') {
 if (isset($_GET['view']) && $_GET['view'] == 'chemUsed') {
     $transId = $_GET['transId'];
 
-    $sql = "SELECT chem_brand, amt_used FROM transaction_chemicals WHERE trans_id = ?;";
+    $sql = "SELECT chem_brand, amt_used, chem_id FROM transaction_chemicals WHERE trans_id = ?;";
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         echo json_encode(['type' => 'stmt', 'message' => mysqli_stmt_error($stmt)]);
@@ -424,18 +426,21 @@ if (isset($_GET['view']) && $_GET['view'] == 'chemUsed') {
     if ($numRows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             $chemUsed = $row['chem_brand'];
+            $chemId = $row['chem_id'];
             $amtUsed = $row['amt_used'];
+            $unit = $unit = get_unit($conn, $chemId);
+            ;
 
             ?>
             <li class="list-group-item mb-2"><strong>Chemical:</strong> <?= $chemUsed ?><br><strong>Amount used:
-                </strong><?= $amtUsed != 0 ? $amtUsed . ' ml' : 'Amount Pending' ?></li>
+                </strong><?= $amtUsed != 0 ? "$amtUsed $unit" : 'Amount Pending' ?></li>
             <?php
         }
         mysqli_stmt_close($stmt);
         exit();
     } else {
         ?>
-        <li class="list-group-item">There are no logged chemicals. Please contact administration.</li>
+        <li class="list-group-item">No chemical found. Chemical might be deleted.</li>
         <?php
         mysqli_stmt_close($stmt);
         exit();
@@ -548,6 +553,7 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
         while ($row = mysqli_fetch_assoc($results)) {
             $id = $row['chem_id'];
             $amtUsed = $row['amt_used'];
+            $unit = get_unit($conn, $id);
 
             ?>
             <div class="row" id="row-<?= $id ?>">
@@ -563,12 +569,12 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
                     <div class="d-flex flex-column">
                         <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
                             id="edit-amountUsed-label">Amount:</label>
-                        <input type="number" <?= $status != 'Accepted' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
+                        <input type="number" <?= $status !== 'Completed' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
                             id="edit-amountUsed-<?= $id ?>" class="form-control form-add me-3" autocomplete="one-time-code"
-                            value="<?= $amtUsed ?>" <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
+                            value="<?= $amtUsed ?>" <?= $status !== 'Completed' ? 'disabled' : '' ?>>
                     </div>
-                    <span id="passwordHelpInline-<?= $id ?>" class="form-text mt-auto mb-2">
-                        /ml
+                    <span class="form-text mt-auto mb-2">
+                        <?= $unit ?>
                     </span>
                     <button type="button" data-row-id="<?= $id ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
                             class="bi bi-dash-circle text-light"></i></button>
@@ -595,12 +601,12 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
                 <div class="d-flex flex-column">
                     <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light"
                         id="edit-amountUsed-label">Amount:</label>
-                    <input type="number" <?= $status != 'Accepted' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
+                    <input type="number" <?= $status !== 'Completed' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
                         id="edit-amountUsed-<?= $idd ?>" class="form-control form-add me-3" autocomplete="one-time-code"
-                        <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
+                        <?= $status != 'Completed' ? 'disabled' : '' ?>>
                 </div>
-                <span id="passwordHelpInline" class="form-text mt-auto mb-2">
-                    /ml
+                <span class="form-text mt-auto ms-2 mb-2">
+                    -
                 </span>
                 <button type="button" data-row-id="<? $idd ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
                         class="bi bi-dash-circle text-light"></i></button>
@@ -630,12 +636,13 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
         <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
                 <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light">Amount:</label>
-                <input type="number" <?= $status != 'Accepted' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
+                <input type="number" <?= $status !== 'Completed' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
                     id="edit-amountUsed-<?= $idd ?>" class="form-control form-add me-3" autocomplete="one-time-code"
-                    <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
+                    <?= $status !== 'Completed' ? 'disabled' : '' ?>>
             </div>
-            <span id="passwordHelpInline" class="form-text mt-auto mb-2">
-                /ml
+            <!-- change this line to select -->
+            <span class="form-text mt-auto ms-2 mb-2">
+                -
             </span>
             <button type="button" data-row-id="<?= $idd ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
                     class="bi bi-dash-circle text-light"></i></button>
@@ -645,6 +652,24 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
     exit();
 }
 
+if (isset($_GET['getunit']) && $_GET['getunit'] === 'true') {
+    $chemId = $_GET['chemid'];
+    if (!is_numeric($chemId)) {
+        http_response_code(400);
+        echo "Invalid Chemical ID.";
+        exit();
+    }
+    $unit = get_unit($conn, $chemId);
+    if (isset($unit['error'])) {
+        http_response_code(400);
+        echo $unit['error'];
+        exit();
+    } else {
+        echo $unit;
+        exit();
+    }
+
+}
 
 function packages($conn)
 {
@@ -887,7 +912,7 @@ if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
             $cby = $row['created_by'];
             ?>
             <tr class="text-center">
-                <td class="text-dark" scope="row"><?= htmlspecialchars($id) ?></td>
+                <td class="text-dark" scope="row"><button type="button" class="btn btn-sidebar text-dark finalize-peek-trans-btn" data-trans-id="<?=htmlspecialchars($id)?>"><?= htmlspecialchars($id) ?></button></td>
                 <td class="text-dark"><?= htmlspecialchars($customerName) ?></td>
                 <td class="text-dark"><?= htmlspecialchars($td) ?></td>
                 <td class="text-dark">
@@ -895,12 +920,10 @@ if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
                 </td>
                 <td class="text-dark">
                     <div class="d-flex justify-content-center">
-
                         <input type="checkbox" class="btn-check" value="<?= $id ?>" name="trans[]" id="c-<?= $id ?>"
                             autocomplete="off">
                         <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i class="bi bi-check-circle me-2"></i>Finalize
                             Transaction</label>
-
                     </div>
                 </td>
             </tr>

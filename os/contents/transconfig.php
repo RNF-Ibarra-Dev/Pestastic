@@ -145,7 +145,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $note = $_POST['edit-note'] ?? null;
     $saPwd = $_POST['edit-saPwd'];
     $upby = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
-    
+
 
     $allowedUpdateStatus = ['Pending', 'Accepted'];
 
@@ -157,7 +157,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         exit();
     }
 
-    if ($status !== "Pending") {
+    if ($status !== "Pending" || $status !== "Accepted") {
         for ($i = 0; $i < count($amtUsed); $i++) {
             if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
                 http_response_code(400);
@@ -191,7 +191,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     if ($package != 'none') {
         if (!in_array($package, $packageIds)) {
             http_response_code(400);
-            echo 'Invalid Package. Please Try Again.';
+            echo 'Invalid Package ID. Please Try Again.';
             exit();
         }
         $treatment = get_package_treatment($conn, $package);

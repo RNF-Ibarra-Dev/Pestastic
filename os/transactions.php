@@ -603,7 +603,7 @@
 
                                     <div class="row mb-2 d-none" id="edit-status-col">
                                         <!-- edit -->
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-6 d-flex flex-column">
                                             <label for="edit-status" class="form-label"
                                                 id='label-edit-status'>Transaction Status:</label>
                                             <select name="edit-status" id="edit-status" class="form-select ">
@@ -616,7 +616,7 @@
                                             <p class="alert alert-warning py-1 mt-2" style="display: none !important;">
                                             </p>
                                         </div>
-                                        <p id="statusNote" class="text-muted fw-light d-none ms-2"></p>
+
                                     </div>
 
                                     <!-- toggle visually hidden when edit -->
@@ -638,6 +638,8 @@
 
                                 <!-- footer -->
                                 <div class="modal-footer">
+                                    <button type="button" class="btn mt-auto btn-grad me-auto">Request Void
+                                        Transaction</button>
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close
                                         Details</button>
                                     <button type="button" class="btn btn-grad" id="editbtn">Edit/Delete
@@ -692,8 +694,9 @@
                             <div class="modal-body text-dark p-3">
                                 <div class="table-responsive-sm  d-flex justify-content-center">
                                     <table class="table align-middle table-hover w-100" id="approvechemtable">
-                                        <caption class="fw-light text-muted">List of recently finished transactions.
-                                            These are marked by technicians</caption>
+                                        <caption class="fw-light text-muted">List of recently finished transactions
+                                            marked by technicians. Select the transaction number ID to view transaction.
+                                        </caption>
                                         <thead>
                                             <tr class="text-center align-middle">
                                                 <th class="text-dark" scope="col">Transaction ID</th>
@@ -750,7 +753,8 @@
                                     action
                                     cannot be undone.
                                 </div>
-                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none;" id="finalizealert">
+                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                    id="finalizealert">
                                 </p>
                             </div>
                             <div class="modal-footer">
@@ -874,7 +878,7 @@
                     $("#finalizetranstable").append(d);
                     loadpage(1, status);
                 })
-                .fail(function(e){
+                .fail(function (e) {
                     console.log(e);
                 })
         });
@@ -904,7 +908,7 @@
                     $("#finalizealert").removeClass('visually-hidden').html(err.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
                 });
         });
-            
+
 
         $(document).on('change', '#add-packageStart', async function (e) {
             let package_id = $('#add-package').val();
@@ -939,14 +943,14 @@
             setDate: '8:00'
         });
 
-        $('#viewEditForm').on('change', 'select#edit-status', function () {
-            if ($(this).val() === 'Completed') {
-                // console.log('tte');
-                $('#statusNote').html('Note: Once a transaction is marked as completed, it is no longer editable.').removeClass('d-none');
-            } else {
-                $("#statusNote").addClass('d-none');
-            }
-        })
+        // $('#viewEditForm').on('change', 'select#edit-status', function () {
+        //     if ($(this).val() === 'Completed') {
+        //         // console.log('tte');
+        //         $('#statusNote').html('Note: Once a transaction is marked as completed, it is no longer editable.').removeClass('d-none');
+        //     } else {
+        //         $("#statusNote").addClass('d-none');
+        //     }
+        // })
 
         $(document).on('click', '#pendingbtn', function () {
             let transId = $(this).data('pending-id');
@@ -1330,7 +1334,7 @@
             // $('#edit-addMoreChem').removeAttr('data-status');
             $('#edit-addMoreChem').data('status', sts);
 
-            if (sts == 'Accepted' || sts == 'Completed') {
+            if (sts === 'Completed') {
                 $('#edit-chemBrandUsed input.form-control').attr('disabled', false);
                 $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
             } else {
@@ -1488,7 +1492,7 @@
                 });
 
                 if (details.success) {
-                    console.log(details);
+                    // console.log(details);
                     let d = details.success;
                     $('#view-transId').val(d.id);
                     $('#view-customerName').val(d.customer_name ?? `Name not set.`);
@@ -1552,7 +1556,7 @@
                     let tname = treatment_name(d.treatment);
                     $(`#edit-treatment option[value='${tname}']`).attr('selected', true);
                     $(`#edit-treatmentType option[value='${d.treatment_type}']`).attr('selected', true);
-                    $('#view-time').html('Created at: ' + d.created_at + '<br>Updated at: ' + d.updated_at);
+                    $('#view-time').html('Created at: ' + d.created_at + ( d.created_by == 'No User' ? " by " + d.created_by : '') + '<br>Updated at: ' + d.updated_at + (d.updated_by == 'No User' ? '---' : " by " + d.updated_by));
 
                     const functions = await Promise.all([
                         await view_technician(d.id),
@@ -1568,7 +1572,7 @@
                     ]);
 
                     if (functions) {
-                        console.log(d.package_id);
+                        // console.log(d.package_id);
                         $('#details-modal').modal('show');
                     } else {
                         alert('Details Modal Error. Refresh Page.');
@@ -1605,8 +1609,12 @@
             await view_transaction(transId);
         });
 
+        $(document).on('click', '.finalize-peek-trans-btn', function () {
+            $('#finalizetransactionmodal').modal('hide');
+        })
+
         // open details
-        $(document).on('click', '#tableDetails', async function () {
+        $(document).on('click', '#tableDetails, .finalize-peek-trans-btn', async function () {
             const clearform = await empty_form();
             if (clearform) {
                 $('#viewEditForm')[0].reset();
@@ -1633,6 +1641,7 @@
             })
         }
 
+        // new
         $(document).on('change', '#add-status, #edit-status', function () {
             let sel = $(this);
             if (sel.val() === 'Voided') {
@@ -1645,6 +1654,11 @@
                 sel.next().fadeOut(1000);
             }
         })
+
+        // new
+        $("#addModal, #details-modal").on('hidden.bs.modal', async function () {
+            $("#add-status, #edit-status").next().hide();
+        });
 
         async function check_emptyrow(row) {
             if ($(`#edit-${row}`).html().trim().length === 0) {
@@ -1662,7 +1676,7 @@
                 alert('Transaction should have at least one technician.');
             } else {
                 $(this).parent().remove();
-                console.log('tech row removed');
+                // console.log('tech row removed');
                 await check_emptyrow('technicianName');
             }
         })
@@ -1677,6 +1691,23 @@
                 // console.log('tech row removed');
                 // await check_emptyrow('technicianName');
             }
+        })
+
+        $(document).on('change', '#edit-chemBrandUsed select.form-select', function () {
+            // console.log($(this).val());
+            let span = $(this).parent().next().find('span');
+            $.get(transUrl, {
+                getunit: 'true',
+                chemid: $(this).val()
+            })
+                .done(function (d) {
+                    // console.log(d);
+                    span.html(d);
+                })
+                .fail(function (err) {
+                    console.log(err);
+                    span.html('-');
+                });
         })
 
         $(document).on('click', 'button.ef-del-btn.btn.btn-grad', async function () {
