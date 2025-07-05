@@ -1493,11 +1493,28 @@ function update_pwd_hash($conn, $table, $newhashedpwd, $pwdcol, $id, $idcol)
     }
 }
 
-function finalize_transaction($conn, $ids){
-    $sql = "UPDATE transactions SET transaction_status = 'Completed', complete_request = 0 WHERE id = ?;";
-    $stmt = mysqli_stmt_init($conn);
+function finalize_transaction($conn, $ids)
+{
+    mysqli_begin_transaction($conn);
+    try {
 
-    
+
+        $sql = "UPDATE transactions SET transaction_status = 'Completed', complete_request = 0 WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            return ['error' => 'stmt error.'];
+        }
+
+        for ($i = 0; $i < count($ids); $i++) {
+            mysqli_stmt_bind_param($stmt, 'i', $ids[$i]);
+            mysqli_stmt_execute($stmt);
+        }
+    } catch (Exception $e) {
+        mysqli_rollback($stmt);
+        return [
+            
+        ]
+    }
 }
 
 function loginMultiUser($conn, $uidEmail, $pwd)

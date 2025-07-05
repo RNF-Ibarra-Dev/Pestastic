@@ -315,7 +315,7 @@ if(isset($_POST['finalize']) && $_POST['finalize'] === 'true'){
         exit();
     }
 
-    for($i = 0; $i > $count($ids); $i++){
+    for($i = 0; $i < $count($ids); $i++){
         $status = check_status($conn, $ids[$i]);
         if($status !== "Accepted"){
             http_response_code(400);
