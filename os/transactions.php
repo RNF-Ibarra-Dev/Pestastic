@@ -1556,7 +1556,7 @@
                     let tname = treatment_name(d.treatment);
                     $(`#edit-treatment option[value='${tname}']`).attr('selected', true);
                     $(`#edit-treatmentType option[value='${d.treatment_type}']`).attr('selected', true);
-                    $('#view-time').html('Created at: ' + d.created_at + ( d.created_by == 'No User' ? " by " + d.created_by : '') + '<br>Updated at: ' + d.updated_at + (d.updated_by == 'No User' ? '---' : " by " + d.updated_by));
+                    $('#view-time').html('Created at: ' + d.created_at + ' by ' + (d.created_by == 'No User' ? 'User not found.' : d.created_by) + '<br>Updated at: ' + d.updated_at + (d.updated_by == 'No User' ? '---' : " by " + d.updated_by));
 
                     const functions = await Promise.all([
                         await view_technician(d.id),
