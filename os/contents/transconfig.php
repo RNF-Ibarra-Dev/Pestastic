@@ -297,3 +297,39 @@ if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
     echo json_encode(['success' => $voidreq['success']]);
     exit();
 }
+
+
+if(isset($_POST['finalize']) && $_POST['finalize'] === 'true'){
+    $ids = $_POST['trans'] ?? [];
+    $pwd = $_POST['baPwd'];
+
+    if(empty($ids)){
+        http_response_code(400);
+        echo "Please select a transaction.";
+        exit();
+    }
+
+    if(empty($pwd)){
+        http_response_code(400);
+        echo "Empty Password.";
+        exit();
+    }
+
+    for($i = 0; $i > $count($ids); $i++){
+        $status = check_status($conn, $ids[$i]);
+        if($status !== "Accepted"){
+            http_response_code(400);
+            echo "Invalid Status.";
+            exit();
+        }
+    }
+
+    if(!validateOS($conn, $pwd)){
+        http_response_code(400);
+        echo "Wrong Password.";
+        exit();
+    }
+
+    
+
+}

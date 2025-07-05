@@ -1493,6 +1493,13 @@ function update_pwd_hash($conn, $table, $newhashedpwd, $pwdcol, $id, $idcol)
     }
 }
 
+function finalize_transaction($conn, $ids){
+    $sql = "UPDATE transactions SET transaction_status = 'Completed', complete_request = 0 WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    
+}
+
 function loginMultiUser($conn, $uidEmail, $pwd)
 {
     // sets the row from the user exists check
