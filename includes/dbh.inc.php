@@ -7,7 +7,7 @@
 // $dBName = "pestastic_db";
 
 // hosting
-$servername = "https://orchid-sheep-106391.hostingersite.com/";
+$servername = "localhost";
 $dBUsername = "u877186800_PestasticInv";
 $dBPassword = "officialPestasticInv69";
 $dBName = "u877186800_Pestastic_db";
