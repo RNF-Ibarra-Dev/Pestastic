@@ -2524,3 +2524,62 @@ function delete_package($conn, $ids)
         ];
     }
 }
+
+function reschedule_transaction($conn, $id, $date, $time)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "UPDATE transactions SET treatment_date = ?, transaction_time = ?, transaction_status = 'Accepted' WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("stmt failed.");
+        }
+
+        mysqli_stmt_bind_param($stmt, 'ssi', $date, $time, $id);
+        mysqli_stmt_execute($stmt);
+
+        if (!mysqli_affected_rows($conn) > 0) {
+            throw new Exception("Update failed.");
+        }
+        mysqli_commit($conn);
+        return true;
+
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ];
+    }
+}
+
+function cancel_transaction($conn, $id)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "UPDATE transactions SET transaction_status = 'Cancelled' WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("stmt failed.");
+        }
+
+        mysqli_stmt_bind_param($stmt, 'i', $id);
+        mysqli_stmt_execute($stmt);
+
+        if (!mysqli_affected_rows($conn) > 0) {
+            throw new Exception("Update failed.");
+        }
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ];
+    }
+}

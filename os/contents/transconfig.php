@@ -317,7 +317,7 @@ if (isset($_POST['finalize']) && $_POST['finalize'] === 'true') {
 
     for ($i = 0; $i < count($ids); $i++) {
         $status = check_status($conn, $ids[$i]);
-        if ($status !== "Accepted") {
+        if ($status !== "Finalizing") {
             http_response_code(400);
             echo "Invalid Status. Make sure the status is Accepted and Completed.";
             exit();
@@ -342,6 +342,91 @@ if (isset($_POST['finalize']) && $_POST['finalize'] === 'true') {
     }
 }
 
-if(isset($_POST['reschedule']) && $_POST['reschedule'] === 'true'){
-    
+if (isset($_POST['reschedule']) && $_POST['reschedule'] === 'true') {
+    $id = $_POST['reschedid'];
+    $date = $_POST['reschedDate'];
+    $time = $_POST['reschedTime'];
+    $pwd = $_POST['baPwd'];
+
+    if (!is_numeric($id) || empty($id)) {
+        http_response_code(400);
+        echo 'Invalid Transaction ID.';
+        exit();
+    }
+
+    if (empty($date) || empty($time)) {
+        http_response_code(400);
+        echo 'Date and Time are required.';
+        exit();
+    }
+
+    $status = check_status($conn, $id);
+    if ($status !== 'Cancelled') {
+        http_response_code(400);
+        echo 'Invalid Status. Only cancelled transactions can be rescheduled.';
+        exit();
+    }
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo 'Wrong Password.';
+        exit();
+    }
+
+    $resched = reschedule_transaction($conn, $id, $date, $time);
+    if (isset($resched['error'])) {
+        http_response_code(400);
+        echo $resched['error'] . ' at line ' . $resched['line'] . ' in file ' . $resched['file'];
+        exit();
+    } else {
+        http_response_code(200);
+        echo json_encode(['success' => 'Transaction Rescheduled.']);
+        exit();
+    }
+}
+
+
+if ($_POST['cancel'] && $_POST['cancel'] === 'true') {
+    $id = $_POST['transid'];
+    $pwd = $_POST['baPwd'];
+
+    $status = check_status($conn, $id);
+    if ($status === 'Cancelled') {
+        http_response_code(400);
+        echo "Transaction already cancelled.";
+        exit();
+    }
+
+    if (empty($id)) {
+        http_response_code(400);
+        echo "Invalid ID.";
+        exit();
+    }
+
+    if (empty($pwd)) {
+        http_response_code(400);
+        echo "Password is empty.";
+        exit();
+    }
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo "Wrong Password.";
+        exit();
+    }
+
+    $cancel = cancel_transaction($conn, $id);
+    if (isset($cancel['error'])) {
+        http_response_code(400);
+        echo $cancel['error'] . ' at line ' . $cancel['line'] . ' in file ' . $cancel['file'];
+        exit();
+    } elseif ($cancel) {
+        http_response_code(200);
+        echo json_encode(['success' => 'Transaction Cancelled.']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo 'Unkown Error Occured.';
+        exit();
+    }
 }
