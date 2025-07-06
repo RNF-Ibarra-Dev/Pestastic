@@ -1,9 +1,16 @@
 <?php
 
-$servername = "localhost";
-$dBUsername = "root";
-$dBPassword = "";
-$dBName = "pestastic_db";
+// localhost
+// $servername = "localhost";
+// $dBUsername = "root";
+// $dBPassword = "";
+// $dBName = "pestastic_db";
+
+// hosting
+$servername = "https://orchid-sheep-106391.hostingersite.com/";
+$dBUsername = "u877186800_PestasticInv";
+$dBPassword = "officialPestasticInv69";
+$dBName = "u877186800_Pestastic_db";
 
 $conn = mysqli_connect($servername, $dBUsername, $dBPassword, $dBName); 
 
