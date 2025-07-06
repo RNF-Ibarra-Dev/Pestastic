@@ -147,7 +147,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $upby = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
 
-    $allowedUpdateStatus = ['Pending', 'Accepted'];
+    $allowedUpdateStatus = ['Pending', 'Accepted', 'Finalizing', 'Cancelled'];
 
     // add updated by 
 
@@ -157,7 +157,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         exit();
     }
 
-    if ($status !== "Pending" || $status !== "Accepted") {
+    if ($status === 'Finalizing') {
         for ($i = 0; $i < count($amtUsed); $i++) {
             if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
                 http_response_code(400);
@@ -181,7 +181,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     } elseif (!in_array($oStatus, $allowedUpdateStatus)) {
         // if status is not pending or accepted
         http_response_code(400);
-        echo 'Invalid Status. Make sure the status is Pending or Accepted.';
+        echo 'Invalid Status. Completed and voided transactions cannot be edited.';
         exit();
     }
     // http_response_code(400);
@@ -315,11 +315,11 @@ if(isset($_POST['finalize']) && $_POST['finalize'] === 'true'){
         exit();
     }
 
-    for($i = 0; $i < $count($ids); $i++){
+    for($i = 0; $i < count($ids); $i++){
         $status = check_status($conn, $ids[$i]);
         if($status !== "Accepted"){
             http_response_code(400);
-            echo "Invalid Status.";
+            echo "Invalid Status. Make sure the status is Accepted and Completed.";
             exit();
         }
     }
@@ -330,6 +330,15 @@ if(isset($_POST['finalize']) && $_POST['finalize'] === 'true'){
         exit();
     }
 
+    $finalize = finalize_transactions($conn, $ids);
+    if(isset($finalize['error'])){
+        http_response_code(400);
+        echo $finalize['error'];
+        exit();
+    } else {
+        http_response_code(200);
+        echo json_encode(['success' => 'Transactions Finalized.']);
+        exit();
+    }
     
-
 }

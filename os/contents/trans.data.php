@@ -168,11 +168,11 @@ function get_chem($conn, $active = null)
         $id = $row['id'];
         $brand = $row['brand'];
         $name = $row['name'];
-        $level = $row['chemLevel'];
-        $req = $row['request'];
+        $level = (int) $row['chemLevel'];
+        $req = (int) $row['request'];
         $unit = $row['quantity_unit'];
         ?>
-        <option value="<?= htmlspecialchars($id) ?>" <?= $level <= 0 || $req == 1 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?>>
+        <option value="<?= htmlspecialchars($id) ?>" <?= $level <= 0 || $req === 1 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?>>
             <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level $unit") ?>
             <?= $req == 1 ? " | Chemical Under Review" : '' ?>
         </option>
@@ -198,7 +198,7 @@ function get_chem_edit($conn, $active = null)
         $brand = $row['brand'];
         $name = $row['name'];
         $level = $row['chemLevel'];
-        $req = $row['request'];
+        $req = (int )$row['request'];
         $unit = $row['quantity_unit'];
         ?>
         <option value="<?= htmlspecialchars($id) ?>" <?= $id == $active ? 'selected' : '' ?>>
@@ -569,9 +569,9 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
                     <div class="d-flex flex-column">
                         <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
                             id="edit-amountUsed-label">Amount:</label>
-                        <input type="number" <?= $status !== 'Completed' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
+                        <input type="number" <?= $status !== 'Finalizing' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
                             id="edit-amountUsed-<?= $id ?>" class="form-control form-add me-3" autocomplete="one-time-code"
-                            value="<?= $amtUsed ?>" <?= $status !== 'Completed' ? 'disabled' : '' ?>>
+                            value="<?= $amtUsed ?>" <?= $status !== 'Finalizing' ? 'disabled' : '' ?>>
                     </div>
                     <span class="form-text mt-auto mb-2">
                         <?= $unit ?>
@@ -601,9 +601,9 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
                 <div class="d-flex flex-column">
                     <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light"
                         id="edit-amountUsed-label">Amount:</label>
-                    <input type="number" <?= $status !== 'Completed' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
+                    <input type="number" <?= $status !== 'Finalizing' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
                         id="edit-amountUsed-<?= $idd ?>" class="form-control form-add me-3" autocomplete="one-time-code"
-                        <?= $status != 'Completed' ? 'disabled' : '' ?>>
+                        <?= $status != 'Accepted' ? 'disabled' : '' ?>>
                 </div>
                 <span class="form-text mt-auto ms-2 mb-2">
                     -
@@ -636,9 +636,9 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
         <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
                 <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light">Amount:</label>
-                <input type="number" <?= $status !== 'Completed' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
+                <input type="number" <?= $status !== 'Finalizing' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
                     id="edit-amountUsed-<?= $idd ?>" class="form-control form-add me-3" autocomplete="one-time-code"
-                    <?= $status !== 'Completed' ? 'disabled' : '' ?>>
+                    <?= $status !== 'Finalizing' ? 'disabled' : '' ?>>
             </div>
             <!-- change this line to select -->
             <span class="form-text mt-auto ms-2 mb-2">

@@ -133,13 +133,12 @@ body {
   background-color: #146778;
 }
 
-.form-select option {
+.hstack .form-select option {
   color: black !important;
 }
 
 select:focus {
   border-color: #bababa !important;
-  /* color: #000; */
 }
 
 

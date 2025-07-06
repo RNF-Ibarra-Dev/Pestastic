@@ -72,6 +72,7 @@ if (isset($_GET['search'])) {
             $createdAt = $row['created_at'];
             $updatedAt = $row['updated_at'];
             $status = $row['transaction_status'];
+            $cr = (int) $row['complete_request'];
 ?>
             <tr class="text-center">
                 <td scope="row"><?= $id ?></td>
@@ -81,7 +82,12 @@ if (isset($_GET['search'])) {
                 <td>
                     <?=
                     $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
-                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'text-light badge rounded-pill w-100 text-bg-warning bg-opacity-25'>Pending</span></a>" : ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" : ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" : ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
+                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'w-100 text-light badge rounded-pill text-bg-warning bg-opacity-25'>Pending</span></a>" : 
+                             ($status === 'Accepted' ? ($cr === 1 ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalize-btn'>Finalizing . . .</span>" :
+                             "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>") : 
+                             ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" : 
+                             ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
+                    
                     ?>
                 </td>
                 <td>
@@ -318,18 +324,18 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $cr = (int) $row['complete_request'];
     ?>
             <tr class="text-center">
-                <td scope="row"><?= $id ?></td>
+                <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
                 <td><?= htmlspecialchars($td) ?></td>
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
-                    $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
-                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'w-100 text-light badge rounded-pill text-bg-warning bg-opacity-25'>Pending</span></a>" : 
-                             ($status === 'Accepted' ? ($cr === 1 ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalize-btn'>Finalizing</span>" :
-                             "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>") : 
-                             ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" : 
-                             ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
+                    $status === 'Pending' ? "<span id='pendingbtn' data-pending-id='$id' data-bs-toggle='modal' data-bs-target='#approvemodal' class = 'w-100 text-light badge btn btn-sidebar rounded-pill text-bg-warning bg-opacity-25'>Pending</span>" : 
+                    ($status === 'Accepted' ? "<span data-accepted-id='$id' class='btn btn-sidebar badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" : 
+                    ($status === 'Finalizing' ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalize-btn'>$status</span>" : 
+                    ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" : 
+                    ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : 
+                    ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge rounded-pill btn btn-sidebar text-bg-secondary bg-opacity-50 w-100'>$status</span>" : $status)))))
                     
                     ?>
                 </td>

@@ -66,7 +66,9 @@
                     <option value='' selected>Show All Status</option>
                     <option value="Pending">Pending</option>
                     <option value="Accepted">Accepted</option>
+                    <option value="Finalizing">Finalizing</option>
                     <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
                     <option value="Voided">Voided</option>
                 </select>
                 <input class="form-control form-custom me-auto py-2 align-middle px-3 rounded-pill text-light "
@@ -284,7 +286,9 @@
                                                 <option value="" selected>Select Status</option>
                                                 <option value="Pending">Pending</option>
                                                 <option value="Accepted">Accepted</option>
+                                                <option value="Finalizing">Finalizing </option>
                                                 <option value="Completed">Completed </option>
+                                                <option value="Cancelled">Cancelled </option>
                                                 <option value="Voided">Voided </option>
                                             </select>
                                             <p class="alert alert-warning py-1 mt-2" style="display: none !important;">
@@ -610,8 +614,8 @@
                                                 <option value="" selected>Select Status</option>
                                                 <option value="Pending">Pending</option>
                                                 <option value="Accepted">Accepted</option>
-                                                <option value="Voided">Voided</option>
                                                 <option value="Completed">Completed </option>
+                                                <option value="Voided">Voided</option>
                                             </select>
                                             <p class="alert alert-warning py-1 mt-2" style="display: none !important;">
                                             </p>
@@ -638,8 +642,15 @@
 
                                 <!-- footer -->
                                 <div class="modal-footer">
-                                    <button type="button" class="btn mt-auto btn-grad me-auto">Request Void
-                                        Transaction</button>
+                                    <div class="m-0 p-0 me-auto d-flex gap-2">
+                                        <button type="button" class="btn mt-auto btn-grad" data-bs-toggle="modal"
+                                            data-bs-target="#voidrequestmodal" id="requestvoidbtn">Request Void
+                                            Transaction</button>
+                                        <button type="button" class="btn btn-grad" id="modalcancelbtn"
+                                            data-bs-toggle="modal" data-bs-target="#cancelscheduledmodal">Cancel
+                                            Scheduled
+                                            Transaction</button>
+                                    </div>
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close
                                         Details</button>
                                     <button type="button" class="btn btn-grad" id="editbtn">Edit/Delete
@@ -754,7 +765,7 @@
                                     action
                                     cannot be undone.
                                 </div>
-                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                <p class="text-center alert alert-info mt-2 mb-0 w-75 mx-auto" style="display: none;"
                                     id="finalizealert">
                                 </p>
                             </div>
@@ -803,7 +814,80 @@
                 </div>
             </form>
 
+            <form id="voidrequestform">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="voidrequestmodal"
+                    tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Void Request Confirmation</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Request to void
+                                        transactions?
+                                        Enter Operation Supervisor
+                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="baPwd" class="form-control"
+                                            id="confirmapprove-inputpwd">
+                                    </div>
+                                </div>
+                                <div id="passwordHelpBlock" class="form-text">
+                                    Note: This might take a while for the Manager to process. Please be patient.
+                                </div>
+                                <p class="text-center alert alert-info w-75 mx-auto visually-hidden" id="voidalert">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#details-modal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Send Request</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
 
+            <form id="cancelscheduledform">
+                <input type="hidden" name="transid" id="transidinputcancel">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="cancelscheduledmodal"
+                    tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Schedule Cancellation</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Cancel Transaction?
+                                        Enter Operation Supervisor
+                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="baPwd" class="form-control"
+                                            id="confirmapprove-inputpwd">
+                                    </div>
+                                </div>
+                                <div id="passwordHelpBlock" class="form-text">
+                                    Note: Cancelled transactions must be rescheduled soon or manager can void it
+                                    directly.
+                                </div>
+                                <p class="text-center alert alert-info w-75 mx-auto visually-hidden" id="voidalert">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#details-modal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Send Request</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
             <!-- modals end -->
 
             <div class="d-flex justify-content-center mb-5 visually-hidden" id="loader">
@@ -826,23 +910,23 @@
 
         <?php
         if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
-        ?>
+            ?>
             $('#viewEditForm')[0].reset();
             let id = <?= $_GET['id']; ?>;
             console.log(id);
             view_transaction(id);
-            $('#details-modal').on('hidden.bs.modal', function(e) {
+            $('#details-modal').on('hidden.bs.modal', function (e) {
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.delete('openmodal');
                 currentUrl.searchParams.delete('id');
                 window.history.pushState(null, "", currentUrl.pathname + currentUrl.search);
             });
-        <?php
+            <?php
         }
         ?>
 
 
-        $(document).on('change', '#checkall', function() {
+        $(document).on('change', '#checkall', function () {
             $('#checkicon').toggleClass('bi-square bi-check-square');
             var checked = $(this).prop('checked');
             $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
@@ -859,71 +943,72 @@
 
         async function compute_package_expiry(date, packId) {
             return $.post(transUrl, {
-                    date: date,
-                    pack_exp: 'true',
-                    pid: packId
-                }, function(data) {
-                    // alert(data);
-                    return data;
-                })
-                .fail(function(err) {
+                date: date,
+                pack_exp: 'true',
+                pid: packId
+            }, function (data) {
+                // alert(data);
+                return data;
+            })
+                .fail(function (err) {
                     console.log(err);
                 })
         }
 
-        $(document).on("shown.bs.modal", "#finalizetransactionmodal", async function() {
+        $(document).on("shown.bs.modal", "#finalizetransactionmodal", async function () {
             let status = $("#sortstatus").val();
             await $.get(transUrl, "&finalizetrans=true")
-                .done(function(d) {
+                .done(function (d) {
                     $("#finalizetranstable").empty();
                     $("#finalizetranstable").append(d);
                     loadpage(1, status);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                 })
         });
 
-        $(document).on('submit', "#finalizetransactionform", async function(e) {
+        $(document).on('submit', "#finalizetransactionform", async function (e) {
 
             e.preventDefault();
             console.log($(this).serialize());
             await $.ajax({
-                    method: 'POST',
-                    url: submitUrl,
-                    dataType: 'json',
-                    data: $(this).serialize() + '&finalize=true'
-                })
-                .done(function(data) {
+                method: 'POST',
+                url: submitUrl,
+                dataType: 'json',
+                data: $(this).serialize() + '&finalize=true'
+            })
+                .done(function (data) {
                     console.log(data);
                     if (data.success) {
-                        $('#finalizetransactionmodal').modal('hide');
+                        $('#finalizeconfirm').modal('hide');
                         $("#tableAlert").removeClass('visually-hidden').html(data.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
                         loadpage(1, $("#sortstatus").val());
-                    } else {
-                        $("#finalizealert").html(data.error).fadeIn(400).delay(2000).fadeOut(1000);
                     }
                 })
-                .fail(function(err) {
+                .fail(function (err) {
                     console.log(err);
-                    $("#finalizealert").removeClass('visually-hidden').html(err.responseJSON.error).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                    $("#finalizealert").html(err.responseText).fadeIn(400).delay(2000).fadeOut(1000);
                 });
         });
 
-        $("#table").on('click', '.finalize-btn', function() {
+        $("#table").on('click', '.finalize-btn', function () {
             // console.log($(this).data('finalize-id'));
             let id = $(this).data('finalize-id');
-            $("#finalizebackbtn").hide();
+            $("#finalizebackbtn").hide().attr('data-bs-target', '');
             $("#finalizeconfirm").modal('show');
-            $("#finalizeconfirm").on('hidden.bs.modal', function() {
-                $("#finalizebackbtn").show();
+            $("#finalizeconfirm").on('hidden.bs.modal', function () {
+                $("#finalizebackbtn").show().attr('data-bs-target', '#finalizetransactionmodal');
                 $("#finalizesingletransinput").prop('disabled', true);
             });
             $("#finalizesingletransinput").prop('disabled', false).val(id);
         });
 
+        // $('#table').on('click', 'cancel-btn')
 
-        $(document).on('change', '#add-packageStart', async function(e) {
+
+
+        $(document).on('change', '#add-packageStart', async function (e) {
             let package_id = $('#add-package').val();
             if (!$.isNumeric(package_id)) {
                 alert('Please Select a package! Invalid package ID.');
@@ -965,7 +1050,7 @@
         //     }
         // })
 
-        $(document).on('click', '#pendingbtn', function() {
+        $(document).on('click', '#pendingbtn', function () {
             let transId = $(this).data('pending-id');
             console.log(transId);
             $('#transidinput').val(transId);
@@ -975,7 +1060,7 @@
         });
 
 
-        $('#approvependingtransactions').on('submit', async function(e) {
+        $('#approvependingtransactions').on('submit', async function (e) {
             e.preventDefault();
             // console.log($(this).serialize());
             let status = $('#sortstatus').val();
@@ -1016,7 +1101,7 @@
 
         async function treatments(form) {
             try {
-                $.get(transUrl, "treatments=true", function(data) {
+                $.get(transUrl, "treatments=true", function (data) {
                     $(`#${form}-treatmentContainer`).empty();
                     $(`#${form}-treatmentContainer`).html(data);
                 });
@@ -1025,7 +1110,7 @@
             }
         }
 
-        $(document).on('click', '#addbtn', async function() {
+        $(document).on('click', '#addbtn', async function () {
             let form = 'add';
             try {
                 const load = await Promise.all([
@@ -1073,7 +1158,7 @@
         async function add_more_tech() {
             let num = 2;
 
-            $('#addMoreTech', '#addModal').off('click').on('click', async function() {
+            $('#addMoreTech', '#addModal').off('click').on('click', async function () {
                 // console.log('tite' + num);
                 await get_more_tech(num);
                 num++;
@@ -1084,20 +1169,20 @@
 
         function get_overview_count(container) {
             $.get(transUrl, {
-                    count: true,
-                    status: container
-                })
-                .done(function(d) {
+                count: true,
+                status: container
+            })
+                .done(function (d) {
                     console.log(d);
                     $(`#count_${container}`).empty();
                     $(`#count_${container}`).append(d);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                 })
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             get_overview_count('pending');
             get_overview_count('accepted');
             get_overview_count('completed');
@@ -1109,7 +1194,7 @@
             // let moreChemTemp = $('#add-chemicalData').html();
             let num = 2;
 
-            $('#addMoreChem', '#addModal').off('click').on('click', async function() {
+            $('#addMoreChem', '#addModal').off('click').on('click', async function () {
                 await add_used_chem(num);
                 num++;
                 console.log(num);
@@ -1267,7 +1352,7 @@
         async function toggle() {
             // let package = 
 
-            $("#view-customerName, #edit-session").attr("readonly", function(i, attr) {
+            $("#view-customerName, #edit-session").attr("readonly", function (i, attr) {
                 if (attr) {
                     $(this).removeClass('form-control-plaintext');
                     $(this).addClass('form-control');
@@ -1284,7 +1369,7 @@
 
                 return attr ? false : true;
             });
-            $("#view-treatmentDate, #view-treatmentTime, #view-start, #view-expiry").attr("disabled", function(i, attr) {
+            $("#view-treatmentDate, #view-treatmentTime, #view-start, #view-expiry").attr("disabled", function (i, attr) {
                 $(this).removeAttr('style');
                 if (attr) {
                     $(this).removeAttr('style');
@@ -1325,10 +1410,10 @@
             $('#edit-noteContainer').toggleClass('d-none');
 
             if ($('#edit-package-select').val() != 'none') {
-                $('#edit-treatment').attr('disabled', function(i, a) {
+                $('#edit-treatment').attr('disabled', function (i, a) {
                     return a ? a : true;
                 });
-                $('#edit-session, #edit-start').attr('disabled', function(i, a) {
+                $('#edit-session, #edit-start').attr('disabled', function (i, a) {
                     return a ? false : a;
                 });
             }
@@ -1336,7 +1421,7 @@
             return toggled = true;
         }
 
-        $(document).on('change', '#edit-status', function() {
+        $(document).on('change', '#edit-status', function () {
             let sts = $(this).val();
             // if (sts == 'Pending' || 'Completed') {
             //     editTransDate.config.minDate = new Date().fp_incr(1);
@@ -1347,11 +1432,11 @@
             // $('#edit-addMoreChem').removeAttr('data-status');
             $('#edit-addMoreChem').data('status', sts);
 
-            if (sts === 'Completed') {
-                $('#edit-chemBrandUsed input.form-control').attr('disabled', false);
+            if (sts === 'Completed' || sts === 'Accepted' || sts === 'Finalizing') {
+                $('#edit-chemBrandUsed input.form-control').prop('disabled', false);
                 $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
             } else {
-                $('#edit-chemBrandUsed input.form-control').attr('disabled', true);
+                $('#edit-chemBrandUsed input.form-control').prop('disabled', true);
                 $('#edit-chemBrandUsed input.form-control').removeAttr('name');
             }
         });
@@ -1433,10 +1518,10 @@
 
         function treatment_name(id) {
             $.get(transUrl, `treatmentname=true&id=${id}`)
-                .done(function(d) {
+                .done(function (d) {
                     return d;
                 })
-                .fail(function(error, status, errmsg) {
+                .fail(function (error, status, errmsg) {
                     console.log(error);
                     console.log(status + errmsg);
                 });
@@ -1444,18 +1529,18 @@
 
         function get_package_name(id) {
             $.get(transUrl, `packagename=true&id=${id}`)
-                .done(function(data) {
+                .done(function (data) {
                     $('#view-package').empty();
                     $('#view-package').html(data);
                 })
-                .fail(function(error, status, errmsg) {
+                .fail(function (error, status, errmsg) {
                     console.log(error);
                     console.log(status + errmsg);
                 });
         }
 
         let sval, tval, wval, weval;
-        $(document).on('change', '#edit-package-select', function() {
+        $(document).on('change', '#edit-package-select', function () {
             if ($(this).val() === 'none') {
                 sval = $('#edit-session').val();
                 $('#edit-session').val('');
@@ -1490,7 +1575,17 @@
 
             }
 
-        })
+        });
+
+        $(document).on('click', "#modalcancelbtn", function () {
+            let id = $('#view-transId').val();
+            // console.log(id);
+            $('#transidinputcancel').val(id);
+            $('#cancelscheduledform').on('hidden.bs.modal', function () {
+                $("#cancelscheduledform")[0].reset();
+
+            });
+        });
 
         async function view_transaction(transId) {
             try {
@@ -1505,7 +1600,7 @@
                 });
 
                 if (details.success) {
-                    // console.log(details);
+                    console.log(details);
                     let d = details.success;
                     $('#view-transId').val(d.id);
                     $('#view-customerName').val(d.customer_name ?? `Name not set.`);
@@ -1525,29 +1620,51 @@
                     $('#view-treatmentType').html(d.treatment_type ?? 'Treatment type not set');
 
                     if (d.transaction_status == 'Completed' || d.transaction_status == 'Voided') {
-                        $('#editbtn').attr('disabled', true);
+                        $('#editbtn').hide().attr('disabled', true);
+                        $("#viewEditForm #requestvoidbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                        $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                    } else if (d.transaction_status === 'Cancelled') {
+                        $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                    } else if (d.transaction_status === 'Voided') {
+                        $("#viewEditForm #requestvoidbtn").hide().prop('disabled', true).attr('data-bs-target', '');
                     } else {
-                        $('#editbtn').attr('disabled', false);
+                        $('#editbtn').show().attr('disabled', false);
+                        $("#viewEditForm #requestvoidbtn").show().prop('disabled', false).attr('data-bs-target', '#voidrequestmodal');
+                        $("#viewEditForm #modalcancelbtn").show().prop('disabled', false).attr('data-bs-target', '#cancelscheduledmodal');
+
+                    }
+
+                    // if (d.transaction_status !== 'Completed' || d.transaction_status !== 'Voided') {
+                    //     $("#viewEditForm #requestvoidbtn").show().prop('disabled', false).attr('data-bs-target', '#voidrequestmodal');
+                    //     $("#viewEditForm #modalcancelbtn").show().prop('disabled', false).attr('data-bs-target', '#cancelscheduledmodal');
+                    // } else {
+                    //     $("#viewEditForm #requestvoidbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                    //     $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                    // }
+
+                    if (d.transaction_status === 'Finalizing') {
+                        $('#edit-chemBrandUsed input.form-control.form-add').attr('disabled', false);
+                        $('#edit-chemBrandUsed input.form-control.form-add').attr('name', 'edit-amountUsed[]');
                     }
 
                     if (d.package_id != null) {
                         // package assigned
                         $('#edit-treatment').removeAttr('name');
-                        $('#view-expiry').attr('name', function(i, a) {
+                        $('#view-expiry').attr('name', function (i, a) {
                             return a ? a : 'edit-expiry'
                         });
-                        $('#view-start').attr('name', function(i, a) {
+                        $('#view-start').attr('name', function (i, a) {
                             return a ? a : 'edit-start'
                         });
-                        $('#edit-session').attr('disabled', function(i, a) {
+                        $('#edit-session').attr('disabled', function (i, a) {
                             return a == true ? false : a;
                         });
-                        $('#edit-treatment').attr('disabled', function(i, a) {
+                        $('#edit-treatment').attr('disabled', function (i, a) {
                             return a == true ? false : a;
                         });
                     } else {
                         // null | no package assigned
-                        $('#edit-treatment').attr('name', function(i, a) {
+                        $('#edit-treatment').attr('name', function (i, a) {
                             return a ? a : 'edit-treatment'
                         });
                         $('#edit-session, #view-expiry, #view-start').removeAttr('name');
@@ -1557,7 +1674,8 @@
                     $('#edit-note').val(d.notes ?? '');
                     $('#view-note').html(d.notes ?? 'No existing note.');
 
-                    $(`#edit-status option[value=${d.transaction_status}]`).attr('selected', true);
+                    // $(`#edit-status option[value=${d.transaction_status}]`).attr('selected', true);
+                    $('#edit-status').val(d.transaction_status);
 
                     // if (d.transaction_status == 'Pending') {
                     //     editTransDate.config.minDate = new Date().fp_incr(1);
@@ -1596,7 +1714,7 @@
             }
         }
 
-        $(document).on('focus', '#view-start', async function(e) {
+        $(document).on('focus', '#view-start', async function (e) {
             let package_id = $('#edit-package-select').val();
             if (!$.isNumeric(package_id)) {
                 alert('Please Select a package! Invalid package ID.');
@@ -1609,7 +1727,7 @@
             }
         })
 
-        $(document).on('click', '#editbtn', async function() {
+        $(document).on('click', '#editbtn', async function () {
             let transId = $('#view-transId').val();
             if (toggled) {
                 await toggle();
@@ -1622,12 +1740,12 @@
             await view_transaction(transId);
         });
 
-        $(document).on('click', '.finalize-peek-trans-btn', function() {
+        $(document).on('click', '.finalize-peek-trans-btn', function () {
             $('#finalizetransactionmodal').modal('hide');
         })
 
         // open details
-        $(document).on('click', '#tableDetails, .finalize-peek-trans-btn', async function() {
+        $(document).on('click', '#tableDetails, .finalize-peek-trans-btn', async function () {
             const clearform = await empty_form();
             if (clearform) {
                 $('#viewEditForm')[0].reset();
@@ -1648,28 +1766,32 @@
             $.get(transUrl, {
                 addrow: 'true',
                 status: status
-            }, function(data) {
+            }, function (data) {
                 $(`#edit-${row}`).append(data);
                 console.log(status);
             })
         }
 
         // new
-        $(document).on('change', '#add-status, #edit-status', function() {
+        $(document).on('change', '#add-status, #edit-status', function () {
             let sel = $(this);
             if (sel.val() === 'Voided') {
                 sel.next().fadeIn(750).html("Note. Voiding a transaction completely will require Manager approval. Ignore to continue.");
             } else if (sel.val() === 'Accepted') {
                 sel.next().fadeIn(750).html("Make sure to double check the details at least before the dispatch date.");
+            } else if (sel.val() === 'Finalizing') {
+                sel.next().fadeIn(750).html("Note. Transactions with this status will be subjected to completion, please make sure to double check the details.");
+            } else if (sel.val() === 'Cancelled') {
+                sel.next().fadeIn(750).html("Cancelled transactions are accepted and is needed to be rescheduled.");
             } else if (sel.val() === 'Completed') {
                 sel.next().fadeIn(750).html("Make sure to double check details. Setting this transaction to complete will make this viewonly.");
             } else {
                 sel.next().fadeOut(1000);
             }
-        })
+        });
 
         // new
-        $("#addModal, #details-modal").on('hidden.bs.modal', async function() {
+        $("#addModal, #details-modal").on('hidden.bs.modal', async function () {
             $("#add-status, #edit-status").next().hide();
         });
 
@@ -1682,7 +1804,7 @@
             }
         }
 
-        $(document).on('click', '#edit-deleteTech', async function() {
+        $(document).on('click', '#edit-deleteTech', async function () {
             let rowId = $(this).data('row-id');
             let row = $('#edit-technicianName > div').length;
             if (row === 1) {
@@ -1694,7 +1816,7 @@
             }
         })
 
-        $(document).on('click', '#deleteTech', async function() {
+        $(document).on('click', '#deleteTech', async function () {
             let rowId = $(this).data('row-id');
             let row = $('#addTechContainer').length;
             if (row === 0) {
@@ -1706,24 +1828,24 @@
             }
         })
 
-        $(document).on('change', '#edit-chemBrandUsed select.form-select', function() {
+        $(document).on('change', '#edit-chemBrandUsed select.form-select', function () {
             // console.log($(this).val());
             let span = $(this).parent().next().find('span');
             $.get(transUrl, {
-                    getunit: 'true',
-                    chemid: $(this).val()
-                })
-                .done(function(d) {
+                getunit: 'true',
+                chemid: $(this).val()
+            })
+                .done(function (d) {
                     // console.log(d);
                     span.html(d);
                 })
-                .fail(function(err) {
+                .fail(function (err) {
                     console.log(err);
                     span.html('-');
                 });
         })
 
-        $(document).on('click', 'button.ef-del-btn.btn.btn-grad', async function() {
+        $(document).on('click', 'button.ef-del-btn.btn.btn-grad', async function () {
             let rowId = $(this).data('row-id');
             let row = $('#edit-chemBrandUsed > div').length;
             if (row === 1) {
@@ -1741,21 +1863,21 @@
             }
         })
 
-        $(document).on('click', '#edit-addTech', async function() {
+        $(document).on('click', '#edit-addTech', async function () {
             // $.get(transUrl, { editTechAdd: 'true' }, function (data) {
             //     $('#edit-technicianName').append(data);
             // })
             await edit('technicianName');
         })
 
-        $(document).on('click', '#edit-addMoreChem', async function() {
+        $(document).on('click', '#edit-addMoreChem', async function () {
             let stats = $(this).data('status');
             get_addrow('chemBrandUsed', stats);
         })
 
 
 
-        $(document).on('click', '#deleteChem', function() {
+        $(document).on('click', '#deleteChem', function () {
             $(this).parent().parent().remove();
         });
 
@@ -1781,7 +1903,7 @@
 
         // toggle name and disable when package is active
         let aps, at, a_s, ae;
-        $(document).on('change', '#add-package', function() {
+        $(document).on('change', '#add-package', function () {
             let package = $(this).val();
             // console.log(package);
             if (package === 'none') {
@@ -1801,7 +1923,7 @@
             }
         });
 
-        $(document).on('focusout', 'form input, form select, form textarea', function() {
+        $(document).on('focusout', 'form input, form select, form textarea', function () {
             if ($(this).val() == '' || $(this).val() == '#') {
                 $(this).addClass('border border-danger');
             } else {
@@ -1810,8 +1932,8 @@
         });
 
         // submit
-        $(function() {
-            $('#addTransaction').on('submit', async function(e) {
+        $(function () {
+            $('#addTransaction').on('submit', async function (e) {
                 e.preventDefault();
                 let status = $("#sortstatus").val();
                 console.log($(this).serialize());
@@ -1850,7 +1972,7 @@
         });
 
         // edit section
-        $(document).on('click', '#confirmUpdate', function() {
+        $(document).on('click', '#confirmUpdate', function () {
             $('#confirmation #verifyAdd').text('Verify Transaction Update');
             $('#confirmation #edit-confirm').text('Update Transaction');
             $('#confirmation #edit-confirm').attr('data-update', 'update');
@@ -1858,7 +1980,7 @@
         })
 
         // edit section
-        $(document).on('click', '#confirmDelete', function() {
+        $(document).on('click', '#confirmDelete', function () {
             $('#confirmation #verifyAdd').text('Verify Transaction Deletion');
             $('#confirmation #edit-confirm').text('Delete Transaction');
             $('#confirmation #edit-confirm').attr('data-update', 'delete');
@@ -1866,7 +1988,7 @@
         })
 
         // submit section | confirmation modal
-        $(document).on('click', '#edit-confirm', async function() {
+        $(document).on('click', '#edit-confirm', async function () {
             let update = $(this).attr('data-update');
             // console.log(update);
             if (update === 'delete') {
@@ -1944,15 +2066,15 @@
         }
 
         // search function
-        $(function() {
+        $(function () {
             let delay = null;
 
-            $('#searchbar').keyup(function() {
+            $('#searchbar').keyup(function () {
                 clearTimeout(delay);
                 $('#table').empty();
                 $('#loader').removeClass('visually-hidden');
 
-                delay = setTimeout(async function() {
+                delay = setTimeout(async function () {
                     var search = $('#searchbar').val();
                     let status = $('#sortstatus').val();
                     try {
@@ -2030,12 +2152,12 @@
             }
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             loadpage(1);
         })
 
 
-        $("#sortstatus").on('change', async function() {
+        $("#sortstatus").on('change', async function () {
             let status = $("#sortstatus option:selected").val();
             $("#searchbar").val('');
             await loadpage(1, status);
@@ -2046,7 +2168,7 @@
             await load_paginated_table(page, status);
         }
 
-        $('#pagination').on('click', '.page-link', async function(e) {
+        $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
             let status = $("#sortstatus option:selected").val();
 
@@ -2054,7 +2176,10 @@
             console.log(currentpage);
             window.history.pushState(null, "", "?page=" + currentpage);
             await loadpage(currentpage, status);
-        })
+        });
+
+
+
 
 
         // $(document).ready(function () {

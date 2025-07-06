@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 05, 2025 at 12:58 PM
+-- Generation Time: Jul 06, 2025 at 10:51 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -130,7 +130,7 @@ INSERT INTO `chemicals` (`id`, `name`, `brand`, `chemLevel`, `container_size`, `
 (1009, 'fgh', 'fgh', 6, 1000, 0, '2025-01-01', '2025-04-17 13:25:31', '2025-07-05 06:42:00', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
 (1012, 'ghjp', 'ghj', 6, 500, 0, '2025-01-01', '2025-04-17 13:27:35', '2025-07-05 06:42:00', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
 (1013, 'tamod', 'gdfg', 500, 1000, 5, '2025-07-04', '2025-04-17 13:31:02', '2025-07-05 06:42:00', 0, '', 1, 'No Record', 'sAdmin | Employee no. 123', '2025-06-13', 'mL'),
-(1014, 'jhghj', 'hjghj', 70, 1000, 0, '2025-01-01', '2025-04-17 13:33:20', '2025-07-05 06:42:00', 1, '', 1, 'No Record', '[1] - sAdmin', '2025-06-13', 'mL'),
+(1014, 'jhghj', 'hjghj', 71, 1000, 0, '2025-01-01', '2025-04-17 13:33:20', '2025-07-05 14:13:02', 1, '', 1, 'No Record', '[1] - sAdmin', '2025-06-13', 'mL'),
 (1063, 'ssdf', 'sdfsdf', 250, 500, 2, '2026-08-06', '2025-07-03 02:19:10', '2025-07-05 06:42:00', 0, NULL, 1, '[1] - bAdmin', 'No Update Record', '2025-07-11', 'mL'),
 (1065, 'ddg', 'dfgdfg', 200, 200, 2, '2025-07-03', '2025-07-03 07:40:26', '2025-07-05 06:42:00', 0, '424242', 1, '[1] - sAdmin', 'No Update Record', '2025-07-03', 'mL');
 
@@ -312,7 +312,7 @@ CREATE TABLE `transactions` (
   `customer_address` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `transaction_status` enum('Pending','Accepted','Voided','Completed','Cancelled') NOT NULL DEFAULT 'Pending',
+  `transaction_status` enum('Pending','Accepted','Voided','Completed','Cancelled','Finalizing') NOT NULL DEFAULT 'Pending',
   `void_request` tinyint(1) NOT NULL DEFAULT 0,
   `transaction_time` time DEFAULT NULL,
   `notes` varchar(255) DEFAULT NULL,
@@ -339,29 +339,29 @@ INSERT INTO `transactions` (`id`, `treatment_date`, `customer_name`, `customer_a
 (82, NULL, 'ggddf', NULL, '2025-04-05 13:46:48', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
 (83, '2025-05-01', 'sssss', NULL, '2025-04-05 13:47:19', '2025-04-05 13:47:19', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
 (84, '2025-05-20', 'asd', NULL, '2025-04-05 14:14:53', '2025-05-30 10:06:07', 'Completed', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
-(85, '2025-04-19', 'kkjljkl', NULL, '2025-04-06 05:19:12', '2025-07-04 13:57:12', 'Accepted', 0, '11:14:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
+(85, '2025-04-19', 'kkjljkl', NULL, '2025-04-06 05:19:12', '2025-07-06 05:46:29', 'Finalizing', 0, '11:14:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 1),
 (96, '2025-04-19', 'dfsdf', NULL, '2025-04-10 06:51:37', '2025-05-28 14:22:40', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
 (97, '2025-04-25', 'ghj', NULL, '2025-04-10 06:53:43', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
-(98, '2025-04-25', 'jkl', NULL, '2025-04-10 06:54:24', '2025-05-30 10:06:07', 'Pending', 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
+(98, '2025-04-25', 'jkl', NULL, '2025-04-10 06:54:24', '2025-07-06 05:50:29', 'Cancelled', 0, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
 (99, '2025-04-25', NULL, NULL, '2025-04-10 06:57:10', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
 (100, '2025-04-25', 'ghbgh', NULL, '2025-04-10 07:07:38', '2025-06-28 06:36:27', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 2, 0),
 (101, NULL, 'hjkjk', NULL, '2025-04-10 07:08:48', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
 (102, '2025-04-18', 'lkkl', NULL, '2025-04-10 07:12:11', '2025-05-30 10:06:07', 'Pending', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
 (103, '2025-04-24', 'sdf', NULL, '2025-04-10 13:15:57', '2025-05-01 13:38:29', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
-(104, '2025-05-02', 'dfgdf', NULL, '2025-04-12 15:10:19', '2025-05-30 10:06:07', 'Accepted', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
+(104, '2025-05-02', 'dfgdf', NULL, '2025-04-12 15:10:19', '2025-07-06 05:46:29', 'Finalizing', 1, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 1),
 (10001, '2025-04-26', 'gfhfgh', NULL, '2025-04-12 15:15:31', '2025-06-28 06:36:32', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 3, 0),
-(10002, '2025-06-06', 'jhh', NULL, '2025-04-20 13:13:41', '2025-06-28 06:36:19', 'Accepted', 1, '12:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 2, 0),
+(10002, '2025-06-06', 'jhh', NULL, '2025-04-20 13:13:41', '2025-07-06 05:46:29', 'Finalizing', 1, '12:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 2, 1),
 (10003, '2025-05-01', 'sdfsds', NULL, '2025-04-22 07:52:06', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
 (10004, '2025-05-01', '......', NULL, '2025-04-22 07:56:38', '2025-05-29 12:12:41', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
-(10017, '2025-05-30', 'asd', NULL, '2025-05-11 07:11:03', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
-(10018, '2025-05-30', 'dfgfg', NULL, '2025-05-22 06:18:45', '2025-05-30 10:06:07', 'Pending', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
+(10017, '2025-05-30', 'asd', 'erererer', '2025-05-11 07:11:03', '2025-07-05 14:13:02', 'Pending', 0, '00:00:00', '', NULL, 101, 'General Treatment', 4, '2027-07-15', 4, '2025-07-15', 'branch admin', 'No User', 1, 0),
 (10019, '2025-06-05', 'customer', NULL, '2025-05-29 15:18:17', '2025-05-30 10:06:07', 'Pending', 0, '11:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
-(10020, '2025-06-12', 'ggh', NULL, '2025-06-01 06:59:38', '2025-07-05 09:47:51', 'Accepted', 0, '02:00:00', NULL, NULL, NULL, 'General Treatment', 3, NULL, NULL, NULL, 'No User', 'No User', 2, 1),
+(10020, '2025-06-12', 'ggh', NULL, '2025-06-01 06:59:38', '2025-07-06 05:46:29', 'Finalizing', 0, '02:00:00', NULL, NULL, NULL, 'General Treatment', 3, NULL, NULL, NULL, 'No User', 'No User', 2, 1),
 (10021, '2025-06-11', 'Albert Einstein', NULL, '2025-06-01 07:05:44', '2025-06-02 12:20:35', 'Pending', 0, '02:00:00', NULL, NULL, NULL, 'Follow-up Treatment', 2, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
-(10022, '2025-06-03', 'Sigmund Freud', 'asdas', '2025-06-02 14:44:33', '2025-06-28 13:58:59', 'Accepted', 0, '12:00:00', '', NULL, 102, 'Follow-up Treatment', 4, '2027-06-17', 3, '2025-06-17', 'No User', 'No User', 1, 0),
-(10023, '2025-06-26', 'Name', 'Address', '2025-06-05 14:08:45', '2025-06-07 15:02:57', 'Accepted', 0, '09:05:00', 'notess\r\n', NULL, 101, 'Follow-up Treatment', 4, '2027-06-18', 4, '2025-06-18', 'No User', 'No User', 1, 0),
+(10022, '2025-06-03', 'Sigmund Freud', 'asdas', '2025-06-02 14:44:33', '2025-07-06 05:46:29', 'Finalizing', 0, '12:00:00', '', NULL, 102, 'Follow-up Treatment', 4, '2027-06-17', 3, '2025-06-17', 'No User', 'No User', 1, 1),
+(10023, '2025-06-26', 'Name', 'Address', '2025-06-05 14:08:45', '2025-07-06 05:46:29', 'Finalizing', 0, '09:05:00', 'notess\r\n', NULL, 101, 'Follow-up Treatment', 4, '2027-06-18', 4, '2025-06-18', 'No User', 'No User', 1, 1),
 (10024, '2025-07-24', 'tutu', 'fghfgh', '2025-07-03 14:47:52', '2025-07-05 05:18:21', 'Pending', 0, '02:00:00', '', NULL, 101, 'Follow-up Treatment', 4, '2027-07-16', NULL, '2025-07-16', 'branch admin', 'No User', 1, 0),
-(10027, '2025-07-23', 'ttiititit', 'sdfsdf', '2025-07-03 15:16:18', '2025-07-04 15:25:05', 'Completed', 0, '10:00:00', '', NULL, NULL, 'General Treatment', 1, NULL, NULL, NULL, '0', 'No User', 1, 0);
+(10027, '2025-07-23', 'ttiititit', 'sdfsdf', '2025-07-03 15:16:18', '2025-07-04 15:25:05', 'Completed', 0, '10:00:00', '', NULL, NULL, 'General Treatment', 1, NULL, NULL, NULL, '0', 'No User', 1, 0),
+(10028, '2025-07-22', '123456', 'sdffsdf', '2025-07-06 06:18:53', '2025-07-06 06:18:53', 'Cancelled', 0, '10:00:00', '', NULL, NULL, 'General Treatment', 2, NULL, NULL, NULL, 'No User', 'branch admin', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -404,8 +404,6 @@ INSERT INTO `transaction_chemicals` (`trans_id`, `chem_id`, `chem_brand`, `amt_u
 (10003, 51, 'asd | asd', 3),
 (10003, 1002, 'fgh | fgh', 3),
 (10004, 1004, 'fgh | fgh', 7),
-(10017, 1014, 'jhghj | hjghj', 4),
-(10018, 50, 'Deltacides | CHEM', 3),
 (10019, 54, 'chem B | brand B', 5),
 (10020, 54, 'chem B | brand B', 0),
 (10020, 1004, 'fgh | fgh', 0),
@@ -414,7 +412,8 @@ INSERT INTO `transaction_chemicals` (`trans_id`, `chem_id`, `chem_brand`, `amt_u
 (10022, 51, 'asd | asd', 3),
 (10023, 52, 'asd | asd', 5),
 (10024, 54, 'chem B | brand B', 0),
-(10027, 1001, 'gh | gh', 3);
+(10027, 1001, 'gh | gh', 3),
+(10028, 1013, 'tamod | gdfg', 0);
 
 --
 -- Triggers `transaction_chemicals`
@@ -490,8 +489,6 @@ INSERT INTO `transaction_problems` (`trans_id`, `problem_id`) VALUES
 (10004, 4),
 (10017, 3),
 (10017, 10),
-(10018, 3),
-(10018, 10),
 (10019, 3),
 (10019, 10),
 (10020, 2),
@@ -508,7 +505,9 @@ INSERT INTO `transaction_problems` (`trans_id`, `problem_id`) VALUES
 (10024, 10),
 (10027, 2),
 (10027, 3),
-(10027, 10);
+(10027, 10),
+(10028, 2),
+(10028, 10);
 
 -- --------------------------------------------------------
 
@@ -560,7 +559,8 @@ INSERT INTO `transaction_technicians` (`trans_id`, `tech_id`, `tech_info`) VALUE
 (10022, 10, 'fgh fgh'),
 (10023, 15, 'alena datolayta'),
 (10024, 10, 'fgh fgh'),
-(10027, 2, 'asdf asdf');
+(10027, 2, 'asdf asdf'),
+(10028, 1, 'rayan ibarra');
 
 --
 -- Triggers `transaction_technicians`
@@ -766,7 +766,7 @@ ALTER TABLE `technician`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10028;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10029;
 
 --
 -- AUTO_INCREMENT for table `treatments`

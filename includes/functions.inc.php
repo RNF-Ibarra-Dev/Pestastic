@@ -1493,7 +1493,7 @@ function update_pwd_hash($conn, $table, $newhashedpwd, $pwdcol, $id, $idcol)
     }
 }
 
-function finalize_transaction($conn, $ids)
+function finalize_transactions($conn, $ids)
 {
     mysqli_begin_transaction($conn);
     try {
@@ -1502,18 +1502,23 @@ function finalize_transaction($conn, $ids)
         $sql = "UPDATE transactions SET transaction_status = 'Completed', complete_request = 0 WHERE id = ?;";
         $stmt = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($stmt, $sql)) {
-            return ['error' => 'stmt error.'];
+            throw new Exception("Finalization stmt failed.");
         }
 
         for ($i = 0; $i < count($ids); $i++) {
             mysqli_stmt_bind_param($stmt, 'i', $ids[$i]);
             mysqli_stmt_execute($stmt);
+            if (mysqli_stmt_affected_rows($stmt) <= 0) {
+                throw new Exception("Cannot update transaction ID: " . $ids[$i] . mysqli_stmt_error($stmt));
+            }
         }
+        mysqli_stmt_close($stmt);
+        mysqli_commit($conn);
     } catch (Exception $e) {
-        mysqli_rollback($stmt);
+        mysqli_rollback($conn);
         return [
-            
-        ]
+            'error' => $e->getMessage() . " at line " . $e->getLine() . " at file " . $e->getFile(),
+        ];
     }
 }
 
