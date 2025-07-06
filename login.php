@@ -853,7 +853,7 @@ if (!isset($_SESSION["techId"]) && !isset($_SESSION['baID']) && !isset($_SESSION
                         <div class="form-floating form-custom mb-2">
                             <input type="password" name="pwd" class="form-control" id="floatingPassword"
                                 placeholder="Password" autocapitalize="new-password">
-                            <label for="floatingPassword">Passwordsdsdf</label>
+                            <label for="floatingPassword">Password</label>
                         </div>
 
                         <!-- <div class="form-check text-start my-3"></div> -->
