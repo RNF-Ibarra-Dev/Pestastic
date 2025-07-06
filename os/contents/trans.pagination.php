@@ -68,6 +68,7 @@ if (isset($_GET['search'])) {
             $customerName = $row['customer_name'];
             $treatmentDate = $row['treatment_date'];
             $treatment = $row['treatment'];
+            $td = date("F j, Y", strtotime($treatmentDate));
             $t_name = treatment_name($conn, intval($treatment));
             $createdAt = $row['created_at'];
             $updatedAt = $row['updated_at'];
@@ -77,7 +78,7 @@ if (isset($_GET['search'])) {
             <tr class="text-center">
                 <td scope="row"><?= $id ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= htmlspecialchars($treatmentDate) ?></td>
+                <td><?= $status  === 'Cancelled' ? "<s class='text-warning'><i class='bi bi-exclamation'></i>" . htmlspecialchars($td) . "</s>" : htmlspecialchars($td)?></td>
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
@@ -326,7 +327,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <tr class="text-center">
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= htmlspecialchars($td) ?></td>
+                <td><?= $status  === 'Cancelled' ? "<s class='text-warning'><i class='bi bi-exclamation'></i>" . htmlspecialchars($td) . "</s>" : htmlspecialchars($td)?></td>
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=

@@ -299,39 +299,39 @@ if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
 }
 
 
-if(isset($_POST['finalize']) && $_POST['finalize'] === 'true'){
+if (isset($_POST['finalize']) && $_POST['finalize'] === 'true') {
     $ids = $_POST['trans'] ?? [];
     $pwd = $_POST['baPwd'];
 
-    if(empty($ids)){
+    if (empty($ids)) {
         http_response_code(400);
         echo "Please select a transaction.";
         exit();
     }
 
-    if(empty($pwd)){
+    if (empty($pwd)) {
         http_response_code(400);
         echo "Empty Password.";
         exit();
     }
 
-    for($i = 0; $i < count($ids); $i++){
+    for ($i = 0; $i < count($ids); $i++) {
         $status = check_status($conn, $ids[$i]);
-        if($status !== "Accepted"){
+        if ($status !== "Accepted") {
             http_response_code(400);
             echo "Invalid Status. Make sure the status is Accepted and Completed.";
             exit();
         }
     }
 
-    if(!validateOS($conn, $pwd)){
+    if (!validateOS($conn, $pwd)) {
         http_response_code(400);
         echo "Wrong Password.";
         exit();
     }
 
     $finalize = finalize_transactions($conn, $ids);
-    if(isset($finalize['error'])){
+    if (isset($finalize['error'])) {
         http_response_code(400);
         echo $finalize['error'];
         exit();
@@ -340,5 +340,8 @@ if(isset($_POST['finalize']) && $_POST['finalize'] === 'true'){
         echo json_encode(['success' => 'Transactions Finalized.']);
         exit();
     }
+}
+
+if(isset($_POST['reschedule']) && $_POST['reschedule'] === 'true'){
     
 }
