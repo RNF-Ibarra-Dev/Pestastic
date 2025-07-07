@@ -408,7 +408,7 @@ if (isset($_POST['reschedule']) && $_POST['reschedule'] === 'true') {
 }
 
 
-if ($_POST['cancel'] && $_POST['cancel'] === 'true') {
+if (isset($_POST['cancel']) && $_POST['cancel'] === 'true') {
     $id = $_POST['transid'];
     $pwd = $_POST['baPwd'];
 

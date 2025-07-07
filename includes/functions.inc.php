@@ -996,7 +996,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         }
 
         $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transData['transId']);
-        if ($transData['status'] === 'Accepted' || $transData['status'] === 'Completed') {
+        if ($transData['status'] === 'Finalizing' || $transData['status'] === 'Completed') {
             // get transaction chemicals previous amount used
             for ($i = 0; $i < count($chemUsed); $i++) {
 
@@ -1178,7 +1178,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         }
 
         $chemAR = 0;
-        if ($transData['status'] === 'Accepted' || $transData['status'] === 'Completed') {
+        if ($transData['status'] === 'Finalizing' || $transData['status'] === 'Completed') {
             if (count($chemUsed) === count($amtUsed)) {
                 $chemSql = "INSERT INTO transaction_chemicals (trans_id, chem_id, chem_brand, amt_used) VALUES (?, ?, ?, ?) 
                 ON DUPLICATE KEY UPDATE chem_brand = VALUES(chem_brand), amt_used = VALUES(amt_used);";

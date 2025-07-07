@@ -74,22 +74,23 @@ if (isset($_GET['search'])) {
             $updatedAt = $row['updated_at'];
             $status = $row['transaction_status'];
             $cr = (int) $row['complete_request'];
-?>
+            ?>
             <tr class="text-center">
                 <td scope="row"><?= $id ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= $status  === 'Cancelled' ? "<s class='text-warning'><i class='bi bi-exclamation'></i>" . htmlspecialchars($td) . "</s>" : htmlspecialchars($td)?></td>
+                <td><?= $status === 'Cancelled' ? "<s class='text-warning'><i class='bi bi-exclamation'></i>" . htmlspecialchars($td) . "</s>" : htmlspecialchars($td) ?>
+                </td>
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
-                    $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
-                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'w-100 text-light badge rounded-pill text-bg-warning bg-opacity-25'>Pending</span></a>" : 
-                             ($status === 'Accepted' ? ($cr === 1 ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalize-btn'>Finalizing . . .</span>" :
-                             "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>") : 
-                             ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" : 
-                             ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
-                    
-                    ?>
+                        $status === 'Pending' ? "<span id='pendingbtn' data-pending-id='$id' data-bs-toggle='modal' data-bs-target='#approvemodal' class = 'w-100 text-light badge btn btn-sidebar rounded-pill text-bg-warning bg-opacity-25'>Pending</span>" :
+                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" :
+                            ($status === 'Finalizing' ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalize-btn'>$status</span>" :
+                                ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" :
+                                    ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" :
+                                        ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge rounded-pill btn btn-sidebar text-bg-secondary bg-opacity-50 w-100'>$status</span>" : $status)))))
+
+                        ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
@@ -100,7 +101,7 @@ if (isset($_GET['search'])) {
             </tr>
 
 
-    <?php
+            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='6' class='text-center'>Search not found.</td></tr>";
@@ -176,7 +177,7 @@ function load_pagination($conn, $activepage = 1, $status = '')
             <?php
             // set active page ex. 1 = first page. Checks if numeric as well.
             // $activepage = isset($_GET['active']) && is_numeric($_GET['active']) ? $_GET['active'] : 1;
-
+        
             // set next and previous pagination button data
             $prev = $activepage - 1;
             $next = $activepage + 1;
@@ -200,7 +201,7 @@ function load_pagination($conn, $activepage = 1, $status = '')
 
             $lastpages = $totalPages;
             // var_dump($lastpages);
-
+        
             ?>
             <li class="page-item">
                 <a class="page-link" data-page="1" href=""><i class="bi bi-caret-left-fill"></i></a>
@@ -209,12 +210,12 @@ function load_pagination($conn, $activepage = 1, $status = '')
             <li class="page-item">
                 <?php
                 if ($prev > 0) {
-                ?>
+                    ?>
                     <a class="page-link" data-page="<?= $prev ?>"><i class="bi bi-caret-left"></i></a>
-                <?php
+                    <?php
                 } else { ?>
                     <a class="page-link" data-page="1"><i class="bi bi-caret-left"></i></a>
-                <?php
+                    <?php
                 }
                 ?>
             </li>
@@ -234,7 +235,7 @@ function load_pagination($conn, $activepage = 1, $status = '')
                     $limitreached = true;
 
                     if ($currentPage != $lastpages && $currentPage <= $lastpages) {
-                ?>
+                        ?>
                         <li class="page-item disabled">
                             <a class="page-link">...</a>
                         </li>
@@ -242,7 +243,7 @@ function load_pagination($conn, $activepage = 1, $status = '')
                         <li class="page-item">
                             <a class="page-link" data-page="<?= $totalPages ?>"><?= $totalPages ?></a>
                         </li>
-            <?php
+                        <?php
                     }
                     break;
                 }
@@ -252,14 +253,14 @@ function load_pagination($conn, $activepage = 1, $status = '')
             <li class="page-item">
                 <?php
                 if ($next <= $totalPages) {
-                ?>
+                    ?>
                     <a class="page-link" data-page="<?= $totalPages !== 0 ? $next : 1 ?>" href=""><i
                             class="bi bi-caret-right"></i></a>
-                <?php
+                    <?php
                 } else { ?>
                     <a class="page-link" data-page="<?= $totalPages !== 0 ? $totalPages : 1 ?>"><i
                             class="bi bi-caret-right"></i></a>
-                <?php
+                    <?php
                 }
                 ?>
             </li>
@@ -323,22 +324,23 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $updatedAt = $row['updated_at'];
             $status = $row['transaction_status'];
             $cr = (int) $row['complete_request'];
-    ?>
+            ?>
             <tr class="text-center">
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= $status  === 'Cancelled' ? "<s class='text-warning'><i class='bi bi-exclamation'></i>" . htmlspecialchars($td) . "</s>" : htmlspecialchars($td)?></td>
+                <td><?= $status === 'Cancelled' ? "<s class='text-warning'><i class='bi bi-exclamation'></i>" . htmlspecialchars($td) . "</s>" : htmlspecialchars($td) ?>
+                </td>
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
-                    $status === 'Pending' ? "<span id='pendingbtn' data-pending-id='$id' data-bs-toggle='modal' data-bs-target='#approvemodal' class = 'w-100 text-light badge btn btn-sidebar rounded-pill text-bg-warning bg-opacity-25'>Pending</span>" : 
-                    ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" : 
-                    ($status === 'Finalizing' ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalize-btn'>$status</span>" : 
-                    ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" : 
-                    ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : 
-                    ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge rounded-pill btn btn-sidebar text-bg-secondary bg-opacity-50 w-100'>$status</span>" : $status)))))
-                    
-                    ?>
+                        $status === 'Pending' ? "<span id='pendingbtn' data-pending-id='$id' data-bs-toggle='modal' data-bs-target='#approvemodal' class = 'w-100 text-light badge btn btn-sidebar rounded-pill text-bg-warning bg-opacity-25'>Pending</span>" :
+                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" :
+                            ($status === 'Finalizing' ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalize-btn'>$status</span>" :
+                                ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" :
+                                    ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" :
+                                        ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge rounded-pill btn btn-sidebar text-bg-secondary bg-opacity-50 w-100'>$status</span>" : $status)))))
+
+                        ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
@@ -349,7 +351,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             </tr>
 
 
-<?php
+            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='6' class='text-center'>No data found.</td></tr>";

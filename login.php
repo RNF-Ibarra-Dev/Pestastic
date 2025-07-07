@@ -843,7 +843,8 @@ if (!isset($_SESSION["techId"]) && !isset($_SESSION['baID']) && !isset($_SESSION
                 </div>
                 <div class="col-5 px-5 border-start">
                     <form action="includes/login.inc.php" method="post" class="d-flex py-2 ps-3 pe-5 flex-column">
-                        <img src="img/logo.svg" alt='logo' width="75" height="75" class="mb-1 mt-2 align-self-center rounded">
+                        <img src="img/logo.svg" alt='logo' width="75" height="75"
+                            class="mb-1 mt-2 align-self-center rounded">
                         <p class="fs-2 fw-medium text-light text-center">Login</p>
                         <div class="form-floating form-custom mb-2">
                             <input type="text" name="userEmail" class="form-control" id="floatingInput"
@@ -885,21 +886,36 @@ if (!isset($_SESSION["techId"]) && !isset($_SESSION['baID']) && !isset($_SESSION
 } elseif (isset($_SESSION["techId"]) || isset($_SESSION["baID"]) || isset($_SESSION["saID"])) {
     include("includes/functions.inc.php");
     $activeUser = activeUser();
-    echo "<h1 class='display-6 mx-auto text-center'>You are already logged in as $activeUser.<br>Redirecting you back to dashboard...</h1>";
-    include("footer.php");
-    if (isset($_SESSION['saUsn'])) {
-        header("Refresh: 3; url=superadmin/index.php");
-        exit();
-    } elseif (isset($_SESSION['baUsn'])) {
-        header("Refresh: 3; url=os/index.php");
-        exit();
-    } elseif (isset($_SESSION['techUsn'])) {
-        header("Refresh: 3; url=technician/index.php");
-        exit();
-    }
+    ?>
+        <div class='d-flex flex-column align-self-center w-100 text-light justify-content-center h-100'>
+            <div class="mx-auto my-4">
+                <div class="spinner-grow spinner-grow-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="spinner-grow spinner-grow-sm mx-4" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="spinner-grow spinner-grow-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <h1 class='display-6 mx-auto text-center justify-self-center h-100 text-light fw-medium d-flex'>Error. Session active.</h1>
+            <p class="mx-auto fs-3 fw-light text-light">Redirecting you back to dashboard...</p>
+        </div>
+        <?php
+        include("footer.php");
+        if (isset($_SESSION['saUsn'])) {
+            header("Refresh: 3; url=superadmin/index.php");
+            exit();
+        } elseif (isset($_SESSION['baUsn'])) {
+            header("Refresh: 3; url=os/index.php");
+            exit();
+        } elseif (isset($_SESSION['techUsn'])) {
+            header("Refresh: 3; url=technician/index.php");
+            exit();
+        }
 
 }
 include("footer.php");
 
 
-?>

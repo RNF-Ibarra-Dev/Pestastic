@@ -153,7 +153,7 @@ function get_prob($conn, $checked = null)
 function get_chem($conn, $active = null)
 {
     $active = $active == null ? '' : $active;
-    $sql = 'SELECT * FROM chemicals ORDER BY id DESC;';
+    $sql = 'SELECT * FROM chemicals WHERE request = 0 ORDER BY id DESC;';
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -172,9 +172,8 @@ function get_chem($conn, $active = null)
         $req = (int) $row['request'];
         $unit = $row['quantity_unit'];
         ?>
-        <option value="<?= htmlspecialchars($id) ?>" <?= $level <= 0 || $req === 1 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?>>
+        <option value="<?= htmlspecialchars($id) ?>"<?= $id == $active ? 'selected' : '' ?>>
             <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level $unit") ?>
-            <?= $req == 1 ? " | Chemical Under Review" : '' ?>
         </option>
         <?php
     }
@@ -182,7 +181,7 @@ function get_chem($conn, $active = null)
 function get_chem_edit($conn, $active = null)
 {
     $active = $active == null ? '' : $active;
-    $sql = 'SELECT * FROM chemicals ORDER BY id DESC;';
+    $sql = 'SELECT * FROM chemicals WHERE request = 0 ORDER BY id DESC;';
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -198,12 +197,11 @@ function get_chem_edit($conn, $active = null)
         $brand = $row['brand'];
         $name = $row['name'];
         $level = $row['chemLevel'];
-        $req = (int )$row['request'];
+        $req = (int) $row['request'];
         $unit = $row['quantity_unit'];
         ?>
-        <option value="<?= htmlspecialchars($id) ?>" <?= $id == $active ? 'selected' : '' ?>>
+        <option value="<?= htmlspecialchars($id) ?>" <?= $id === $active ? 'selected' : '' ?>>
             <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level $unit") ?>
-            <?= $req == 1 ? " | Chemical Under Review" : '' ?>
         </option>
         <?php
     }
@@ -912,7 +910,8 @@ if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
             $cby = $row['created_by'];
             ?>
             <tr class="text-center">
-                <td class="text-dark" scope="row"><button type="button" class="btn btn-sidebar text-dark finalize-peek-trans-btn" data-trans-id="<?=htmlspecialchars($id)?>"><?= htmlspecialchars($id) ?></button></td>
+                <td class="text-dark" scope="row"><button type="button" class="btn btn-sidebar text-dark finalize-peek-trans-btn"
+                        data-trans-id="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></button></td>
                 <td class="text-dark"><?= htmlspecialchars($customerName) ?></td>
                 <td class="text-dark"><?= htmlspecialchars($td) ?></td>
                 <td class="text-dark">
@@ -951,7 +950,8 @@ if (isset($_GET['voidrequest']) && $_GET['voidrequest'] === 'true') {
             $cby = $row['created_by'];
             ?>
             <tr class="text-center">
-                <td class="text-dark" scope="row"><button type="button" class="btn btn-sidebar text-dark check-void-req-btn" data-trans-id="<?=htmlspecialchars($id)?>"><?= htmlspecialchars($id) ?></button></td>
+                <td class="text-dark" scope="row"><button type="button" class="btn btn-sidebar text-dark check-void-req-btn"
+                        data-trans-id="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></button></td>
                 <td class="text-dark"><?= htmlspecialchars($customerName) ?></td>
                 <td class="text-dark"><?= htmlspecialchars($upby) ?></td>
             </tr>
