@@ -8,9 +8,9 @@
 
 // hosting
 $servername = "localhost";
-$dBUsername = "u877186800_PestasticInv";
-$dBPassword = "officialPestasticInv69";
-$dBName = "u877186800_Pestastic_db";
+$dBUsername = "u877186800_pestastic_inv";
+$dBPassword = "Pestastic_inv1";
+$dBName = "u877186800_pestastic_db";
 
 $conn = mysqli_connect($servername, $dBUsername, $dBPassword, $dBName); 
 
