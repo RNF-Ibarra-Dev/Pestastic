@@ -194,6 +194,9 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
+                        <!-- add dispatch/return chem -->
+                        <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
+                                class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
                         <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                 class="bi bi-info-circle"></i></button>
                         <button type="button" class="btn btn-sidebar delbtn" data-bs-toggle="modal" data-bs-target="#deleteModal"
@@ -275,3 +278,4 @@ if (isset($_GET['search'])) {
         echo "<tr><td scope='row' colspan='7' class='text-center'>Your search does not exist.</td></tr>";
     }
 }
+

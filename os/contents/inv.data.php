@@ -337,3 +337,72 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
     echo mysqli_fetch_row($res)[0];
     exit();
 }
+
+if (isset($_GET['table']) && $_GET['table'] == 'true') {
+    $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
+    $entries = $_GET['hideentries'];
+
+    $limitstart = ($current - 1) * $pageRows;
+
+    $sql = "SELECT * FROM chemicals";
+
+    $sql .= $entries === 'true' ? " WHERE request = 0 " : ' ';
+
+    $sql .= "ORDER BY request DESC, id DESC LIMIT " . $limitstart
+        . ", " . $pageRows . ";";
+
+    $result = mysqli_query($conn, $sql);
+    $rows = mysqli_num_rows($result);
+
+
+    // echo "<caption class='text-light'>List of all shit.</caption>";
+
+    if ($rows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $name = $row["name"];
+            $brand = $row["brand"];
+            $level = $row["chemLevel"];
+            $expDate = $row["expiryDate"];
+            $request = $row['request'];
+            $now = date("Y-m-d");
+            $exp = date_create($expDate);
+            $remcom = $row['unop_cont'];
+            $contsize = $row['container_size'];
+            ?>
+            <tr class="text-center">
+                <td scope="row">
+                    <?=
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                    ?>
+                </td>
+                <td><?= htmlspecialchars($brand) ?></td>
+                <td>
+                    <?= htmlspecialchars("$level ml  / $contsize ml") ?>
+                </td>
+                <td><?= htmlspecialchars($remcom) ?></td>
+                <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
+                    <?= htmlspecialchars(date_format($exp, "F j, Y")) ?>
+                </td>
+                <td><?= $level === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : ($level <= $contsize * 0.2 ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Low Stock</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
+                </td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <!-- add dispatch/return chem -->
+                        <button type="button" id="editbtn" class="btn btn-sidebar " data-chem="<?= $id ?>"><i
+                                class="bi bi-info-circle"></i></button>
+                        <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
+                                class="bi bi-info-circle"></i></button>
+                        <button type="button" class="btn btn-sidebar delbtn" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
+                    </div>
+                </td>
+            </tr>
+
+            <?php
+        }
+    } else {
+        // echo json_encode(['']);
+        echo "<tr><td scope='row' colspan='5' class='text-center'>Your search does not exist.</td></tr>";
+    }
+}

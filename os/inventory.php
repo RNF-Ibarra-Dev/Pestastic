@@ -53,6 +53,8 @@ require("startsession.php");
                     <p class="fw-light mb-0 mt-4">Number of chemicals past their expiration date.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_expired"></p>
                 </div>
+            </div>
+            <div class="d-flex gap-3 mb-2 mx-3">
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-clock-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Pending
@@ -61,21 +63,132 @@ require("startsession.php");
                     <p class="fw-light mb-0 mt-4">Number of pending chemical entries.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_entries"></p>
                 </div>
+                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
+                    <p class="fs-5 fw-bold"><i
+                            class="bi bi-check-circle-fill me-2 bg-success bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle"></i>Available
+                        Chemicals
+                    </p>
+                    <p class="fw-light mb-0 mt-4">Number of pending chemical entries.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_entries"></p>
+                </div>
+                <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
+                    <p class="fs-5 fw-bold"><i
+                            class="bi bi-truck-flatbed me-2 bg-secondary bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle"></i>Chemicals
+                        In Use
+                    </p>
+                    <p class="fw-light mb-0 mt-4">Number of pending chemical entries.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_entries"></p>
+                </div>
             </div>
+
             <div class="hstack gap-3 my-3 mx-3">
                 <button type="button" id="hideentries"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 w-25 px-2 text-light"
                     title="Hide Entries"><i class="bi bi-eye-slash me-2"></i><span id="hideEnText">Hide
                         Entries</span></button>
-                <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light" 
-                    placeholder="Search . . ." id="searchbar" name="searchforafuckingchemical"
-                    autocomplete="one-time-code">
+                <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light"
+                    placeholder="Search . . ." id="searchbar" name="search" autocomplete="one-time-code">
+                <button type="button" id="inventorylogbtn"
+                    class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 px-4 text-light"
+                    title="Inventory Logs"><i class="bi bi-file-earmark-text"></i><span id="hideEnText"></button>
                 <button type="button" id="loadChem"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded text-light py-2 px-4" data-bs-toggle="modal"
                     data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
                         class="bi bi-plus-square"></i></button>
 
             </div>
+
+
+            <!-- inventory log modal -->
+            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static"
+                id="inventorylogmodal" tabindex="0">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title">
+                            <h1 class="modal-title fs-5 text-light">Transactions Completion</h1>
+                            <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
+                                aria-label="Close"><i class="bi bi-x"></i></button>
+                        </div>
+
+                        <div class="modal-body text-dark p-3">
+                            <div class="table-responsive-sm  d-flex justify-content-center">
+                                <table class="table align-middle table-hover w-100" id="approvechemtable">
+                                    <caption class="fw-light text-muted">List of recently finished transactions
+                                        marked by technicians. Select the transaction number ID to view transaction.
+                                    </caption>
+                                    <thead>
+                                        <tr class="text-center align-middle">
+                                            <th class="text-dark" scope="col">Date & Time</th>
+                                            <th class="text-dark">Activity Type</th>
+                                            <th class="text-dark">Chemical</th>
+                                            <th class="text-dark">Amount</th>
+                                            <th class="text-dark">Performed By</th>
+                                            <th class="text-dark">Transaction ID</th>
+                                            <th class="text-dark">Notes</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="inventorylogtable" class="table-group-divider">
+                                    </tbody>
+
+                                </table>
+                                <div id="inventorylogpaginationbtns"></div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#finalizeconfirm">Continue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static"
+                id="chemicallogmodal" tabindex="0">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title">
+                            <h1 class="modal-title fs-5 text-light">Chemical Log</h1>
+                            <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
+                                aria-label="Close"><i class="bi bi-x"></i></button>
+                        </div>
+
+                        <div class="modal-body text-dark p-3">
+                            <div class="table-responsive-sm  d-flex justify-content-center">
+                                <table class="table align-middle table-hover w-100">
+                                    <!-- <caption class="fw-light text-muted">List of recently finished transactions
+                                        marked by technicians. Select the transaction number ID to view transaction.
+                                    </caption> -->
+                                    <thead>
+                                        <tr class="text-center align-middle">
+                                            <th class="text-dark" scope="col">Date & Time</th>
+                                            <th class="text-dark">Activity Type</th>
+                                            <th class="text-dark">Amount</th>
+                                            <th class="text-dark">Performed By</th>
+                                            <th class="text-dark">Transaction ID</th>
+                                            <th class="text-dark">Notes</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="loghistorytable" class="table-group-divider">
+                                    </tbody>
+
+                                </table>
+                                <div id="loghistorypagination"></div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#finalizeconfirm">Continue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
             <!-- edit chemical -->
             <form id="editChemForm">
@@ -824,6 +937,22 @@ require("startsession.php");
 
         $(document).ready(function () {
             overview_display();
+        });
+
+
+        $(document).on('click', '#inventorylogbtn', function () {
+            $('#inventorylogmodal').modal('show');
+            $.get('contents/inv.pagination.php', {
+                inventorylog: true
+            })
+                .done(function (data) {
+                    $('#inventorylogmodal .modal-body #inventorylogtable').empty();
+                    $('#inventorylogmodal .modal-body #inventorylogtable').append(data);
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $('#inventorylogmodal .modal-body').html('<p class="text-center text-danger">Error loading inventory log.</p>');
+                });
         });
     </script>
 </body>
