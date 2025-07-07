@@ -1267,6 +1267,34 @@ function get_unit($conn, $chemId)
     }
 }
 
+function request_void($conn, $id, $author)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "UPDATE transactions SET void_request = 1, updated_by = ? WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception('Stmt Failed: ' . mysqli_stmt_error($stmt));
+        }
+
+        mysqli_stmt_bind_param($stmt, 'si', $author, $id);
+        mysqli_stmt_execute($stmt);
+
+        if (!mysqli_stmt_affected_rows($stmt) > 0) {
+            throw new Exception('There was an error requesting void. Please try again later.');
+        }
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' in file ' . $e->getFile(),
+            'id' => $id
+        ];
+    }
+}
+
 function void_transaction($conn, $id)
 {
     $questionmarks = array_fill(0, count($id), '?');
@@ -1393,36 +1421,47 @@ function check_normalized_data($conn, $id)
     }
 }
 
-function approve_transaction($conn, $id)
+function approve_transaction($conn, $id, $author)
 {
-    $checkTrans = check_approve($conn, $id);
-    if (isset($checkTrans['error'])) {
-        return $checkTrans['error'];
-    } elseif (!$checkTrans) {
-        return 'Missing data. Make sure that all transaction fields are filled in.';
-    }
 
-    $checkNormalized = check_normalized_data($conn, $id);
-    if (isset($checkNormalized['error'])) {
-        return $checkNormalized['error'];
-    } elseif (!$checkNormalized) {
-        return "Missing data. Make sure that all transaction fields are filled in.";
-    }
+    mysqli_begin_transaction($conn);
+    try{
 
-    $sql = "UPDATE transactions SET transaction_status = 'Accepted' WHERE id = ?;";
-    $stmt = mysqli_stmt_init($conn);
-
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        echo 'STMT FAILED.';
-        exit();
-    }
-
-    mysqli_stmt_bind_param($stmt, 'i', $id);
-    mysqli_stmt_execute($stmt);
-    if (mysqli_stmt_affected_rows($stmt) > 0) {
+        $checkTrans = check_approve($conn, $id);
+        if (isset($checkTrans['error'])) {
+            throw new Exception($checkTrans['error']);
+        } elseif (!$checkTrans) {
+            throw new Exception('Missing data. Make sure that all transaction fields are filled in.');
+        }
+    
+        $checkNormalized = check_normalized_data($conn, $id);
+        if (isset($checkNormalized['error'])) {
+            throw new Exception($checkNormalized['error']);
+        } elseif (!$checkNormalized) {
+            throw new Exception("Missing data. Make sure that all transaction fields are filled in.");
+        }
+    
+        $sql = "UPDATE transactions SET transaction_status = 'Accepted', updated_by = ? WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+    
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            echo 'STMT FAILED.';
+            exit();
+        }
+    
+        mysqli_stmt_bind_param($stmt, 'si', $author, $id);
+        mysqli_stmt_execute($stmt);
+        if (!mysqli_affected_rows($conn) > 0) {
+            throw new Exception('Transaction acceptance failed. Please try again later.' . $author . $id);
+        }
+        mysqli_commit($conn);
         return true;
-    } else {
-        return false;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' in file ' . $e->getFile(),
+            'id' => $id
+        ];
     }
 }
 
@@ -1493,20 +1532,20 @@ function update_pwd_hash($conn, $table, $newhashedpwd, $pwdcol, $id, $idcol)
     }
 }
 
-function finalize_transactions($conn, $ids)
+function finalize_transactions($conn, $ids, $author)
 {
     mysqli_begin_transaction($conn);
     try {
 
 
-        $sql = "UPDATE transactions SET transaction_status = 'Completed', complete_request = 0 WHERE id = ?;";
+        $sql = "UPDATE transactions SET transaction_status = 'Completed', complete_request = 0, updated_by = ? WHERE id = ?;";
         $stmt = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             throw new Exception("Finalization stmt failed.");
         }
 
         for ($i = 0; $i < count($ids); $i++) {
-            mysqli_stmt_bind_param($stmt, 'i', $ids[$i]);
+            mysqli_stmt_bind_param($stmt, 'si', $author, $ids[$i]);
             mysqli_stmt_execute($stmt);
             if (mysqli_stmt_affected_rows($stmt) <= 0) {
                 throw new Exception("Cannot update transaction ID: " . $ids[$i] . mysqli_stmt_error($stmt));
@@ -2525,18 +2564,18 @@ function delete_package($conn, $ids)
     }
 }
 
-function reschedule_transaction($conn, $id, $date, $time)
+function reschedule_transaction($conn, $id, $date, $time, $author)
 {
     mysqli_begin_transaction($conn);
     try {
-        $sql = "UPDATE transactions SET treatment_date = ?, transaction_time = ?, transaction_status = 'Accepted' WHERE id = ?;";
+        $sql = "UPDATE transactions SET treatment_date = ?, transaction_time = ?, transaction_status = 'Accepted', updated_by = ? WHERE id = ?;";
         $stmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             throw new Exception("stmt failed.");
         }
 
-        mysqli_stmt_bind_param($stmt, 'ssi', $date, $time, $id);
+        mysqli_stmt_bind_param($stmt, 'sssi', $date, $time, $author, $id);
         mysqli_stmt_execute($stmt);
 
         if (!mysqli_affected_rows($conn) > 0) {
@@ -2544,7 +2583,6 @@ function reschedule_transaction($conn, $id, $date, $time)
         }
         mysqli_commit($conn);
         return true;
-
     } catch (Exception $e) {
         mysqli_rollback($conn);
         return [
@@ -2555,18 +2593,18 @@ function reschedule_transaction($conn, $id, $date, $time)
     }
 }
 
-function cancel_transaction($conn, $id)
+function cancel_transaction($conn, $id, $author)
 {
     mysqli_begin_transaction($conn);
     try {
-        $sql = "UPDATE transactions SET transaction_status = 'Cancelled' WHERE id = ?;";
+        $sql = "UPDATE transactions SET transaction_status = 'Cancelled', updated_by = ? WHERE id = ?;";
         $stmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             throw new Exception("stmt failed.");
         }
 
-        mysqli_stmt_bind_param($stmt, 'i', $id);
+        mysqli_stmt_bind_param($stmt, 'si', $author, $id);
         mysqli_stmt_execute($stmt);
 
         if (!mysqli_affected_rows($conn) > 0) {

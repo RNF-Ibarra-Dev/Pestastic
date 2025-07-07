@@ -932,6 +932,34 @@ if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
             <?php
         }
     } else {
+        echo "<tr><td scope='row' colspan='5' class='text-center'>No finalizing transactions.</td></tr>";
+    }
+}
+if (isset($_GET['voidrequest']) && $_GET['voidrequest'] === 'true') {
+    $sql = "SELECT * FROM transactions WHERE void_request = 1 ORDER BY updated_at DESC;";
+    $result = mysqli_query($conn, $sql);
+    $rows = mysqli_num_rows($result);
+
+    if ($rows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $customerName = $row['customer_name'];
+            $treatmentDate = $row['treatment_date'];
+            $td = date('F j, Y', strtotime($treatmentDate));
+            $request = $row['void_request'];
+            $upby = $row['updated_by'];
+            $cby = $row['created_by'];
+            ?>
+            <tr class="text-center">
+                <td class="text-dark" scope="row"><button type="button" class="btn btn-sidebar text-dark check-void-req-btn" data-trans-id="<?=htmlspecialchars($id)?>"><?= htmlspecialchars($id) ?></button></td>
+                <td class="text-dark"><?= htmlspecialchars($customerName) ?></td>
+                <td class="text-dark"><?= htmlspecialchars($upby) ?></td>
+            </tr>
+
+
+            <?php
+        }
+    } else {
         echo "<tr><td scope='row' colspan='5' class='text-center'>No Void Requests.</td></tr>";
     }
 }

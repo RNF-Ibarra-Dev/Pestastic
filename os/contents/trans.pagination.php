@@ -44,7 +44,7 @@ if (isset($_GET['search'])) {
         $types = 's';
     }
 
-    $sql .= " ORDER BY id DESC;";
+    $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC;";
 
 
     $stmt = mysqli_stmt_init($conn);
@@ -297,14 +297,14 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
         }
 
 
-        $sql .= " ORDER BY id DESC LIMIT $limitstart, $pageRows;";
+        $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC LIMIT $limitstart, $pageRows;";
         mysqli_stmt_prepare($stmt, $sql);
         mysqli_stmt_bind_param($stmt, $types, ...$data);
         mysqli_stmt_execute($stmt);
 
         $result = mysqli_stmt_get_result($stmt);
     } else {
-        $sql .= " ORDER BY id DESC LIMIT $limitstart, $pageRows;";
+        $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC LIMIT $limitstart, $pageRows;";
         $result = mysqli_query($conn, $sql);
     }
 
@@ -332,7 +332,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td>
                     <?=
                     $status === 'Pending' ? "<span id='pendingbtn' data-pending-id='$id' data-bs-toggle='modal' data-bs-target='#approvemodal' class = 'w-100 text-light badge btn btn-sidebar rounded-pill text-bg-warning bg-opacity-25'>Pending</span>" : 
-                    ($status === 'Accepted' ? "<span data-accepted-id='$id' class='btn btn-sidebar badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" : 
+                    ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" : 
                     ($status === 'Finalizing' ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalize-btn'>$status</span>" : 
                     ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" : 
                     ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : 

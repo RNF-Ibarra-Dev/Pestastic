@@ -5,6 +5,9 @@ require_once '../../includes/functions.inc.php';
 // var_dump($_POST);
 require_once 'arrays.php';
 
+$author = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
+
+
 if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     // echo 'success';
     $customerName = $_POST['add-customerName'];
@@ -236,13 +239,14 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         http_response_code(400);
         echo $update['errorMessage'] . ' ' . $update['line'] . ' ' . $update['file'];
     } else {
+        http_response_code(200);
         echo json_encode([
             'success' => 'Transaction Updated.',
-            'techs' => $update['ids'],
-            'diffs' => $update['diffs'],
-            'ftech' => $update['ftech'],
-            'fchems' => $update['fchems'],
-            'fprob' => $update['fprob']
+            // 'techs' => $update['ids'],
+            // 'diffs' => $update['diffs'],
+            // 'ftech' => $update['ftech'],
+            // 'fchems' => $update['fchems'],
+            // 'fprob' => $update['fprob']
         ]);
     }
 }
@@ -253,49 +257,67 @@ if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
 
     if (!validateOS($conn, $pwd)) {
         http_response_code(400);
-        echo json_encode(['type' => 'wrongpwd', 'error' => 'Wrong Password']);
+        echo 'wrong password';
         exit();
     }
 
-    $approve = approve_transaction($conn, $transId);
-    if ($approve === true) {
+    $approve = approve_transaction($conn, $transId, $author);
+    if (isset($approve['error'])) {
+        http_response_code(400);
+        echo $approve['error'];
+        exit();
+    }else if($approve) {
         http_response_code(200);
-        echo json_encode(['success' => 'Transaction Accepted!']);
+        echo json_encode(['success' => 'Transaction Accepted.']);
         exit();
     } else {
         http_response_code(400);
-        echo json_encode(['type' => 'function', 'error' => $approve]);
+        echo 'Unknown Error Occurred.';
         exit();
     }
 }
 
 if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
-    $trans = $_POST['trans'];
-    $pwd = $_POST['saPwd'];
+    $trans = $_POST['transid'];
+    $pwd = $_POST['baPwd'];
+
+
+
+    $status = check_status($conn, $trans);
+    if ($status === 'Voided' || $status === 'Finalizing' || $status === 'Completed') {
+        http_response_code(400);
+        echo 'Invalid Status. Transaction already voided or completed.';
+        exit();
+    }
+
 
     if (empty($trans) || empty($pwd)) {
         http_response_code(400);
-        echo json_encode(['error' => 'Empty Inputs.']);
+        echo 'Empty Inputs.';
         exit();
     }
 
     if (!validateOS($conn, $pwd)) {
         http_response_code(400);
-        echo json_encode(['error' => 'Wrong Password.']);
+        echo 'Wrong Password.';
         exit();
     }
 
-    $voidreq = void_transaction($conn, $trans);
+    $voidreq = request_void($conn, $trans, $author);
 
-    if (isset($voidreq['msg'])) {
+    if (isset($voidreq['error'])) {
         http_response_code(400);
-        echo json_encode(['error' => $voidreq['msg'] . $voidreq['id']]);
+        echo $voidreq['error'];
+        exit();
+    } elseif ($voidreq) {
+        http_response_code(200);
+        echo json_encode(['success' => 'Void Request Submitted.']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo 'Unknown Error Occurred.';
         exit();
     }
-
-    http_response_code(200);
-    echo json_encode(['success' => $voidreq['success']]);
-    exit();
 }
 
 
@@ -330,7 +352,7 @@ if (isset($_POST['finalize']) && $_POST['finalize'] === 'true') {
         exit();
     }
 
-    $finalize = finalize_transactions($conn, $ids);
+    $finalize = finalize_transactions($conn, $ids, $author);
     if (isset($finalize['error'])) {
         http_response_code(400);
         echo $finalize['error'];
@@ -373,7 +395,7 @@ if (isset($_POST['reschedule']) && $_POST['reschedule'] === 'true') {
         exit();
     }
 
-    $resched = reschedule_transaction($conn, $id, $date, $time);
+    $resched = reschedule_transaction($conn, $id, $date, $time, $author);
     if (isset($resched['error'])) {
         http_response_code(400);
         echo $resched['error'] . ' at line ' . $resched['line'] . ' in file ' . $resched['file'];
@@ -415,7 +437,7 @@ if ($_POST['cancel'] && $_POST['cancel'] === 'true') {
         exit();
     }
 
-    $cancel = cancel_transaction($conn, $id);
+    $cancel = cancel_transaction($conn, $id, $author);
     if (isset($cancel['error'])) {
         http_response_code(400);
         echo $cancel['error'] . ' at line ' . $cancel['line'] . ' in file ' . $cancel['file'];
