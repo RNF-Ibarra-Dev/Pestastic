@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 06, 2025 at 10:51 AM
+-- Generation Time: Jul 08, 2025 at 06:14 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -129,8 +129,8 @@ INSERT INTO `chemicals` (`id`, `name`, `brand`, `chemLevel`, `container_size`, `
 (1008, 'fgh', 'fgh', 6, 1000, 5, '2025-01-01', '2025-04-17 13:25:30', '2025-07-05 07:13:32', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'kg'),
 (1009, 'fgh', 'fgh', 6, 1000, 0, '2025-01-01', '2025-04-17 13:25:31', '2025-07-05 06:42:00', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
 (1012, 'ghjp', 'ghj', 6, 500, 0, '2025-01-01', '2025-04-17 13:27:35', '2025-07-05 06:42:00', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
-(1013, 'tamod', 'gdfg', 500, 1000, 5, '2025-07-04', '2025-04-17 13:31:02', '2025-07-05 06:42:00', 0, '', 1, 'No Record', 'sAdmin | Employee no. 123', '2025-06-13', 'mL'),
-(1014, 'jhghj', 'hjghj', 71, 1000, 0, '2025-01-01', '2025-04-17 13:33:20', '2025-07-05 14:13:02', 1, '', 1, 'No Record', '[1] - sAdmin', '2025-06-13', 'mL'),
+(1013, 'asbg', 'gdfg', 498, 1000, 0, '2025-07-24', '2025-04-17 13:31:02', '2025-07-08 16:12:47', 1, '', 1, 'No Record', 'bAdmin | Employee no. 012345678', '2025-06-13', 'mL'),
+(1014, 'jhghj', 'hjghj', 74, 1000, 0, '2025-01-01', '2025-04-17 13:33:20', '2025-07-08 15:15:19', 1, '', 1, 'No Record', '[1] - sAdmin', '2025-06-13', 'mL'),
 (1063, 'ssdf', 'sdfsdf', 250, 500, 2, '2026-08-06', '2025-07-03 02:19:10', '2025-07-05 06:42:00', 0, NULL, 1, '[1] - bAdmin', 'No Update Record', '2025-07-11', 'mL'),
 (1065, 'ddg', 'dfgdfg', 200, 200, 2, '2025-07-03', '2025-07-03 07:40:26', '2025-07-05 06:42:00', 0, '424242', 1, '[1] - sAdmin', 'No Update Record', '2025-07-03', 'mL');
 
@@ -163,6 +163,33 @@ INSERT INTO `equipments` (`id`, `equipment`, `availability`, `equipment_image`, 
 (8, 'Moisture Meter', 'Unavailable', NULL, ''),
 (9, 'Termite Detector', 'Unavailable', NULL, 'FFFFs'),
 (28, 'Tulip', 'Available', '../../uploads/e_68219b9315e777.44682019-7b325eeb8b126ff93b7f22f65c3c7849841f4a300617365cd9515c1e4e20aba8_25-05-12_single tulip.jpg', 'Tulip');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventory_log`
+--
+
+CREATE TABLE `inventory_log` (
+  `log_id` int(11) NOT NULL,
+  `chem_id` int(11) NOT NULL,
+  `log_type` varchar(50) NOT NULL,
+  `quantity` decimal(10,2) NOT NULL,
+  `log_date` datetime DEFAULT current_timestamp(),
+  `user_id` int(11) DEFAULT NULL,
+  `user_role` varchar(50) DEFAULT NULL,
+  `trans_id` int(11) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `branch` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `inventory_log`
+--
+
+INSERT INTO `inventory_log` (`log_id`, `chem_id`, `log_type`, `quantity`, `log_date`, `user_id`, `user_role`, `trans_id`, `notes`, `branch`) VALUES
+(1, 1014, 'Manual Stock Correction (In)', 3.00, '2025-07-08 00:00:00', 1, 'branchadmin', NULL, 'f', 1),
+(2, 1013, 'Lost/Damaged Item', -2.00, '2025-07-09 00:12:47', 1, 'branchadmin', NULL, 'nawala ngani', 1);
 
 -- --------------------------------------------------------
 
@@ -354,14 +381,14 @@ INSERT INTO `transactions` (`id`, `treatment_date`, `customer_name`, `customer_a
 (10003, '2025-05-01', 'sdfsds', NULL, '2025-04-22 07:52:06', '2025-05-30 10:06:07', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
 (10004, '2025-05-01', '......', NULL, '2025-04-22 07:56:38', '2025-05-29 12:12:41', 'Voided', 0, '00:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
 (10017, '2025-05-30', 'asd', 'erererer', '2025-05-11 07:11:03', '2025-07-05 14:13:02', 'Pending', 0, '00:00:00', '', NULL, 101, 'General Treatment', 4, '2027-07-15', 4, '2025-07-15', 'branch admin', 'No User', 1, 0),
-(10019, '2025-06-05', 'customer', NULL, '2025-05-29 15:18:17', '2025-05-30 10:06:07', 'Pending', 0, '11:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
+(10019, '2025-07-10', 'customer', NULL, '2025-05-29 15:18:17', '2025-07-06 15:27:30', 'Accepted', 0, '12:00:00', NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
 (10020, '2025-06-12', 'ggh', NULL, '2025-06-01 06:59:38', '2025-07-06 05:46:29', 'Finalizing', 0, '02:00:00', NULL, NULL, NULL, 'General Treatment', 3, NULL, NULL, NULL, 'No User', 'No User', 2, 1),
-(10021, '2025-06-11', 'Albert Einstein', NULL, '2025-06-01 07:05:44', '2025-06-02 12:20:35', 'Pending', 0, '02:00:00', NULL, NULL, NULL, 'Follow-up Treatment', 2, NULL, NULL, NULL, 'No User', 'No User', 1, 0),
+(10021, '2025-06-11', 'Albert Einstein', NULL, '2025-06-01 07:05:44', '2025-07-07 14:27:24', 'Accepted', 0, '02:00:00', NULL, NULL, NULL, 'Follow-up Treatment', 2, NULL, NULL, NULL, 'branch admin', 'No User', 1, 0),
 (10022, '2025-06-03', 'Sigmund Freud', 'asdas', '2025-06-02 14:44:33', '2025-07-06 05:46:29', 'Finalizing', 0, '12:00:00', '', NULL, 102, 'Follow-up Treatment', 4, '2027-06-17', 3, '2025-06-17', 'No User', 'No User', 1, 1),
-(10023, '2025-06-26', 'Name', 'Address', '2025-06-05 14:08:45', '2025-07-06 05:46:29', 'Finalizing', 0, '09:05:00', 'notess\r\n', NULL, 101, 'Follow-up Treatment', 4, '2027-06-18', 4, '2025-06-18', 'No User', 'No User', 1, 1),
-(10024, '2025-07-24', 'tutu', 'fghfgh', '2025-07-03 14:47:52', '2025-07-05 05:18:21', 'Pending', 0, '02:00:00', '', NULL, 101, 'Follow-up Treatment', 4, '2027-07-16', NULL, '2025-07-16', 'branch admin', 'No User', 1, 0),
+(10023, '2025-06-26', 'Name', 'Address', '2025-06-05 14:08:45', '2025-07-06 14:53:18', 'Completed', 0, '09:05:00', 'notess\r\n', NULL, 101, 'Follow-up Treatment', 4, '2027-06-18', 4, '2025-06-18', 'No User', 'No User', 1, 0),
+(10024, '2025-07-24', 'tutu', 'fghfgh', '2025-07-03 14:47:52', '2025-07-07 14:27:49', 'Accepted', 0, '02:00:00', '', NULL, 101, 'Follow-up Treatment', 4, '2027-07-16', 0, '2025-07-16', 'branch admin', 'No User', 1, 0),
 (10027, '2025-07-23', 'ttiititit', 'sdfsdf', '2025-07-03 15:16:18', '2025-07-04 15:25:05', 'Completed', 0, '10:00:00', '', NULL, NULL, 'General Treatment', 1, NULL, NULL, NULL, '0', 'No User', 1, 0),
-(10028, '2025-07-22', '123456', 'sdffsdf', '2025-07-06 06:18:53', '2025-07-06 06:18:53', 'Cancelled', 0, '10:00:00', '', NULL, NULL, 'General Treatment', 2, NULL, NULL, NULL, 'No User', 'branch admin', 1, 0);
+(10028, '2025-07-16', '123456', 'sdffsdf', '2025-07-06 06:18:53', '2025-07-07 14:35:47', 'Pending', 0, '11:00:00', '', NULL, NULL, 'General Treatment', 2, NULL, NULL, NULL, 'branch admin', 'branch admin', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -630,6 +657,15 @@ ALTER TABLE `equipments`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `inventory_log`
+--
+ALTER TABLE `inventory_log`
+  ADD PRIMARY KEY (`log_id`),
+  ADD KEY `fk_chemical_id` (`chem_id`),
+  ADD KEY `fk_trans_id` (`trans_id`),
+  ADD KEY `fk_branch` (`branch`);
+
+--
 -- Indexes for table `packages`
 --
 ALTER TABLE `packages`
@@ -733,6 +769,12 @@ ALTER TABLE `equipments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
+-- AUTO_INCREMENT for table `inventory_log`
+--
+ALTER TABLE `inventory_log`
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `packages`
 --
 ALTER TABLE `packages`
@@ -790,6 +832,14 @@ ALTER TABLE `branchadmin`
 --
 ALTER TABLE `chemicals`
   ADD CONSTRAINT `fk_chem_branch` FOREIGN KEY (`branch`) REFERENCES `branches` (`id`);
+
+--
+-- Constraints for table `inventory_log`
+--
+ALTER TABLE `inventory_log`
+  ADD CONSTRAINT `fk_branch` FOREIGN KEY (`branch`) REFERENCES `branches` (`id`),
+  ADD CONSTRAINT `fk_chemical_id` FOREIGN KEY (`chem_id`) REFERENCES `chemicals` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_trans_id` FOREIGN KEY (`trans_id`) REFERENCES `transactions` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `packages`
