@@ -18,6 +18,11 @@
   box-sizing: border-box !important;
 }
 
+#inventorylogtable tr td,
+#chemicalhistorylogtable tr td{
+  color: #000 !important;
+}
+
 #chemicallogmodal .nav-tabs .nav-link{
   color: #7f7f7f !important;
 }

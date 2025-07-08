@@ -2622,84 +2622,106 @@ function cancel_transaction($conn, $id, $author)
     }
 }
 
-function reflect_chem_log($conn, $chemid, $qty)
+function reflect_chem_log($conn, $chemid, $qty, $containercount = NULL)
 {
+
     mysqli_begin_transaction($conn);
     try {
-        $sql = "UPDATE chemicals SET chemLevel = chemLevel + ? WHERE id = ?;";
+        $sql = "UPDATE chemicals SET chemLevel = chemLevel + ?";
+        $datatypes = "di";
+        $data[] = $qty;
+
+        if ($containercount !== NULL || !empty($containercount)) {
+            $current = get_chem_level($conn, $chemid);
+            if ($qty > $current) {
+                $qty = 0;
+            }
+            $sql .= ", unop_cont = ?";
+            $datatypes .= "i";
+            $data[] = $containercount;
+        }
+        $data[] = $chemid;
+        $sql .= " WHERE id = ?;";
         $stmt = mysqli_stmt_init($conn);
-        if(!mysqli_stmt_prepare($stmt, $sql)){
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
             throw new Exception("Reflecting chemical log stmt failed.");
         }
 
-        mysqli_stmt_bind_param($stmt, 'di', $qty, $chemid);
+        mysqli_stmt_bind_param($stmt, $datatypes, ...$data);
         mysqli_stmt_execute($stmt);
 
-        if(!mysqli_affected_rows($conn) > 0){
+        if (!mysqli_affected_rows($conn) > 0) {
             throw new Exception("Chemical reflection failed.");
         }
 
-        return true;
         mysqli_commit($conn);
+        return true;
     } catch (Exception $e) {
         mysqli_rollback($conn);
-        return[
-            'error' => $e->getMessage();
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' on file ' . $e->getFile()
         ];
     }
 }
 
 
-function adjust_chemical($conn, $chemid, $logtype, $qty, $notes, $user_id, $user_role, $branch)
+function adjust_chemical($conn, $chemid, $logtype, $containerCount, $qty, $notes, $user_id, $user_role, $branch)
 {
-
     mysqli_begin_transaction($conn);
-
     try {
+
+        $reflect = reflect_chem_log($conn, $chemid, $qty, $containerCount);
+        if (isset($reflect['error'])) {
+            throw new Exception($reflect['error']);
+        }
+
         $sql = "INSERT INTO inventory_log (chem_id, log_type, quantity, log_date, user_id, user_role, notes, branch) 
-    VALUES (?, ?, ?, CURDATE(), ?, ?, ?, ?);";
+    VALUES (?, ?, ?, NOW(), ?, ?, ?, ?);";
         $stmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             return ['error' => 'stmt failed.'];
         }
 
-        $current_date = date('Y-m-d H:i:s');
-        mysqli_stmt_bind_param($stmt, "ssdsssss", $chemid, $logtype, $qty, $current_date, $user_id, $user_role, $notes, $branch);
+        mysqli_stmt_bind_param($stmt, "ssdssss", $chemid, $logtype, $qty, $user_id, $user_role, $notes, $branch);
 
-        // Update the chemical quantity in the inventory
-        $update_sql = "";
-        if ($logtype === "IN") {
-            $update_sql = "UPDATE chemical_inventory SET quantity = quantity + ? WHERE chem_id = ?";
-        } else if ($logtype === "OUT") {
-            $update_sql = "UPDATE chemical_inventory SET quantity = quantity - ? WHERE chem_id = ?";
-        } else {
-            return ['error' => 'Invalid log type'];
-        }
-        // Execute the log insertion
         if (!mysqli_stmt_execute($stmt)) {
             throw new Exception("Failed to insert log");
         }
 
-        // Prepare and execute the update
-        $update_stmt = mysqli_stmt_init($conn);
-        if (!mysqli_stmt_prepare($update_stmt, $update_sql)) {
-            throw new Exception("Failed to prepare update statement");
-        }
-
-        mysqli_stmt_bind_param($update_stmt, "ds", $qty, $chemid);
-        if (!mysqli_stmt_execute($update_stmt)) {
-            throw new Exception("Failed to update inventory");
-        }
-
-        // Commit the transaction
         mysqli_commit($conn);
         mysqli_stmt_close($stmt);
-        mysqli_stmt_close($update_stmt);
 
         return ['success' => true];
     } catch (Exception $e) {
         mysqli_rollback($conn);
-        return ['error' => $e->getMessage()];
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' on file ' . $e->getFile()
+        ];
+    }
+}
+
+
+function get_user($conn, $userid, $role)
+{
+    $usertypes = $GLOBALS['userTypes'];
+    foreach ($usertypes as $roles => $columns) {
+        if ($columns['table'] === $role) {
+            $datacol = $columns;
+            break;
+        }
+    }
+    $idcol = $datacol['id'];
+    $table = $datacol['table'];
+    $usn = $datacol['usn'];
+    $sql = "SELECT $usn FROM $table WHERE $idcol = $userid;";
+    $res = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($res) > 0) {
+        $row = mysqli_fetch_assoc($res);
+        $usnn = $row[$usn];
+        return $usnn;
+    } else {
+        return false;
     }
 }

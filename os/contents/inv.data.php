@@ -6,7 +6,7 @@ require_once('../../includes/functions.inc.php');
 // user information
 
 $role = "branchadmin";
-$user = $_SESSION['baId'];
+$user = $_SESSION['baID'];
 $branch = $_SESSION['branch'];
 
 
@@ -243,7 +243,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete') {
 
 
 if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
-?>
+    ?>
     <div class="add-row-container">
         <hr class="my-2">
         <div class="row mb-2 pe-2">
@@ -373,11 +373,11 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $exp = date_create($expDate);
             $remcom = $row['unop_cont'];
             $contsize = $row['container_size'];
-    ?>
+            ?>
             <tr class="text-center">
                 <td scope="row">
                     <?=
-                    $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
@@ -403,7 +403,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
             </tr>
 
-<?php
+            <?php
         }
     } else {
         // echo json_encode(['']);
@@ -458,20 +458,21 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     $chemId = $_POST['chemid'];
     $qty = $_POST['qty'];
     $logtype = $_POST['logtype'];
-    $ologtype = $_POST['other_logtype'] ?? NULL;
-    $adjust = $_POST['adjust'] ?? NULL;
+    $ologtype = isset($_POST['other_logtype']) ? $_POST['other_logtype'] : NULL;
+    $op = isset($_POST['operator']) ? $_POST['operator'] : NULL;
     $notes = $_POST['notes'];
+    $wcontainer = isset($_POST['containerchk']);
+    $ccontainer = isset($_POST['containercount']) ? $_POST['containercount'] : (int) 0;
 
-
-    if (!is_numeric(($chemId) || empty($chemId))) {
+    if (empty($qty)) {
         http_response_code(400);
-        echo "Invalid Chemical.";
+        echo "Quantity is required.";
         exit();
     }
 
-    if (empty($notes)) {
+    if (!is_numeric($chemId) || empty($chemId)) {
         http_response_code(400);
-        echo "Please explain the reason for adjustment at the notes section.";
+        echo "Invalid Chemical.";
         exit();
     }
 
@@ -481,28 +482,38 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
         exit();
     }
 
-    if (empty($qty)) {
-        http_response_code(400);
-        echo "Quantity is required.";
-        exit();
+    if ($wcontainer) {
+        if ($ccontainer <= 0 ) {
+            http_response_code(400);
+            echo "Invalid container count.";
+            exit();
+        }
     }
 
     $valid_qty = (float) $qty;
 
     if (!in_array($logtype, $logtypes)) {
-        if (!isset($ologtype) || $ologtype === NULL) {
+        // if other type is null, logtype should be restricted and only fixed datas are allowed
+        if ($ologtype === NULL) {
             http_response_code(400);
-            echo "Invalid adjustment type.";
+            echo "Please choose a valid adjustment type.";
             exit();
         }
+        // if not null pass to final variable
         $valid_logtype = $ologtype;
 
-        if (empty($adjust) || $adjust === NULL) {
+        // check if positive or not
+        if ($op === NULL) {
             http_response_code(400);
             echo "Please specify if the quantity should be added or subtracted.";
             exit();
+        } else if($op === 'add'){
+            $final_qty = $valid_qty;
+        } else if($op === 'subtract'){
+            $final_qty = $valid_qty * -1;
         }
     } else {
+        // trigger switch if in select - restrict choices
         switch ($logtype) {
             case 'in':
                 $valid_logtype = "Manual Stock Correction (In)";
@@ -510,15 +521,15 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
                 break;
             case 'out':
                 $valid_logtype = "Manual Stock Correction (Out)";
-                $final_qty = -$valid_qty;
+                $final_qty = $valid_qty * -1;
                 break;
             case 'lost':
                 $valid_logtype = "Lost/Damaged Item";
-                $final_qty = -$valid_qty;
+                $final_qty = $valid_qty * -1;
                 break;
             case 'scrapped':
                 $valid_logtype = "Trashed Item";
-                $final_qty = -$valid_qty;
+                $final_qty = $valid_qty * -1;
                 break;
             default:
                 http_response_code(400);
@@ -527,9 +538,25 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
         }
     }
 
+    if (empty($notes)) {
+        http_response_code(400);
+        echo "Please explain the reason for adjustment at the notes section.";
+        exit();
+    }
     // valid logtype, final qty
 
-
-
-    $adjust = adjust_chemical($conn);
+    $adjust = adjust_chemical($conn, $chemId, $valid_logtype, $ccontainer, $final_qty, $notes, $user, $role, $branch);
+    if (isset($adjust['error'])) {
+        http_response_code(400);
+        echo $adjust['error'];
+        exit();
+    } elseif ($adjust) {
+        http_response_code(200);
+        echo json_encode(['success' => 'Changes Applied.']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo "An unknown error occured. Please try again later.";
+        exit();
+    }
 }
