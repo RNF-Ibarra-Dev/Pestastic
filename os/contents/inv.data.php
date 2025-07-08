@@ -96,19 +96,19 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         $expDate = '2025-01-01';
     }
 
-    if(strtotime($expDate) < strtotime($dateRec)){
+    if (strtotime($expDate) < strtotime($dateRec)) {
         http_response_code(400);
         echo 'Expiry date cannot be before the received date.';
         exit();
     }
 
-    if(strtotime($dateRec) > strtotime(date('Y-m-d'))){
+    if (strtotime($dateRec) > strtotime(date('Y-m-d'))) {
         http_response_code(400);
         echo 'Invalid received date.';
         exit();
     }
 
-    if(strtotime($expDate) < strtotime(date('Y-m-d'))){
+    if (strtotime($expDate) < strtotime(date('Y-m-d'))) {
         http_response_code(400);
         echo 'You are setting an expired chemical.';
         exit();
@@ -212,20 +212,20 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete') {
         exit();
     }
 
-    if(empty($pwd)){
+    if (empty($pwd)) {
         http_response_code(400);
         echo 'Password verification cannot be empty.';
         exit();
     }
 
-    if(!validateOS($conn, $pwd)){
+    if (!validateOS($conn, $pwd)) {
         http_response_code(400);
         echo 'Incorrect Password.';
         exit();
     }
 
     $delete = deleteChem($conn, $chemId);
-    if(!$delete){
+    if (!$delete) {
         http_response_code(400);
         echo 'Error. Deletion Failed.';
         exit();
@@ -404,5 +404,50 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
     } else {
         // echo json_encode(['']);
         echo "<tr><td scope='row' colspan='5' class='text-center'>Your search does not exist.</td></tr>";
+    }
+}
+
+if (isset($_GET['chemLog']) && $_GET['chemLog'] === 'true') {
+    $id = $_GET['id'];
+
+    if (!is_numeric($id) || $id === NULL) {
+        http_response_code(400);
+        echo 'Invalid ID.';
+        exit();
+    }
+
+    // $sql = "SELECT * FROM inventory_log JOIN chemicals ON inventory_log.chem_id = chemicals.id WHERE chemicals.id = ?;";
+    $sql = "SELECT * FROM chemicals LEFT JOIN inventory_log ON chemicals.id = inventory_log.chem_id WHERE chemicals.id = ?";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo 'stmt failed.';
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+
+    $res = mysqli_stmt_get_result($stmt);
+    $data = [];
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
+            // $data['id'] = $row['id'];
+            // $data['chem_id'] = $row['chem_id'];
+            // $data['ltype'] = $row['log_type'];
+            // $data['qty'] = $row['quantity'];
+            // $data['ldate'] = $row['log_date'];
+            // $data['user'] = $row['user_id'];
+            // $data['role'] = $row['user_role'];
+            // $data['notes'] = $row['notes'];
+            echo json_encode(['success' => json_encode($row)]);
+
+        }
+        // echo json_encode(['success' => json_encode($data)]);
+        mysqli_stmt_close($stmt);
+        exit();
+    } else {
+        http_response_code(400);
+        echo 'Chemical not found.';
+        exit();
     }
 }

@@ -100,12 +100,12 @@ require("startsession.php");
 
 
             <!-- inventory log modal -->
-            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static"
-                id="inventorylogmodal" tabindex="0">
+            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="inventorylogmodal"
+                tabindex="0">
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title">
-                            <h1 class="modal-title fs-5 text-light">Transactions Completion</h1>
+                            <h1 class="modal-title fs-5 text-light">Chemical Logs</h1>
                             <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
                                 aria-label="Close"><i class="bi bi-x"></i></button>
                         </div>
@@ -144,9 +144,10 @@ require("startsession.php");
                     </div>
                 </div>
             </div>
-            
-            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static"
-                id="chemicallogmodal" tabindex="0">
+
+            <!-- individual chemical modal -->
+            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="chemicallogmodal"
+                tabindex="0">
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title">
@@ -156,34 +157,119 @@ require("startsession.php");
                         </div>
 
                         <div class="modal-body text-dark p-3">
-                            <div class="table-responsive-sm  d-flex justify-content-center">
-                                <table class="table align-middle table-hover w-100">
-                                    <!-- <caption class="fw-light text-muted">List of recently finished transactions
-                                        marked by technicians. Select the transaction number ID to view transaction.
-                                    </caption> -->
-                                    <thead>
-                                        <tr class="text-center align-middle">
-                                            <th class="text-dark" scope="col">Date & Time</th>
-                                            <th class="text-dark">Activity Type</th>
-                                            <th class="text-dark">Amount</th>
-                                            <th class="text-dark">Performed By</th>
-                                            <th class="text-dark">Transaction ID</th>
-                                            <th class="text-dark">Notes</th>
-                                        </tr>
-                                    </thead>
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+                                        data-bs-target="#loghistory" type="button" role="tab"
+                                        aria-selected="true">Chemical Log History</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
+                                        data-bs-target="#adjust" type="button" role="tab" aria-selected="false">Adjust
+                                        Stock</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="loghistory" role="tabpanel" tabindex="0">
 
-                                    <tbody id="loghistorytable" class="table-group-divider">
-                                    </tbody>
+                                    <div class="table-responsive-sm  d-flex justify-content-center">
+                                        <table class="table align-middle table-hover w-100" id="chemicalhistorylog">
+                                            <thead>
+                                                <tr class="text-center align-middle">
+                                                    <th class="text-dark" scope="col">Date & Time</th>
+                                                    <th class="text-dark">Activity Type</th>
+                                                    <th class="text-dark">Amount</th>
+                                                    <th class="text-dark">Performed By</th>
+                                                    <th class="text-dark">Transaction ID</th>
+                                                    <th class="text-dark">Notes</th>
+                                                </tr>
+                                            </thead>
 
-                                </table>
-                                <div id="loghistorypagination"></div>
+                                            <tbody id="chemicalhistorylogtable" class="table-group-divider">
+                                            </tbody>
+
+                                        </table>
+                                        <!-- <div id="inventorylogpaginationbtns"></div> -->
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane fade" id="adjust" role="tabpanel" tabindex="0">
+
+                                    <form id="adjustform">
+                                        <input type="hidden" name="chemid" class="log-chem-id">
+                                        <h3 class="fw-medium text-center mt-2">Adjust Chemical</h3>
+                                        <p class="text-body-secondary text-center fw-light">Adjust chemical levels
+                                            accordingly.</p>
+                                        <div class="row mb-2 px-2">
+                                            <div class="col-lg-3 mb-2">
+                                                <label for="adjust-name" class="form-label fw-medium">Chemical
+                                                    Name:</label>
+                                                <input type="text" id="adjust-name"
+                                                    class="ps-2 form-control-plaintext chem-name" readonly>
+                                            </div>
+                                            <!-- log_type = return chemical stock to inventory -->
+                                            <div class="col-lg-3 mb-2">
+                                                <label for="adjust-curlevel" class="form-label fw-medium">Currently
+                                                    Available:</label>
+                                                <p id="adjust-curlevel" class="mt-1 mb-0">
+                                                </p>
+                                            </div>
+                                            <div class="col-lg-3 mb-2">
+                                                <label for="adjust-dispatched" class="form-label fw-medium">Currently
+                                                    Dispatched/In Use:</label>
+                                                <p id="adjust-dispatched" class="mt-1 mb-0">
+                                                </p>
+                                            </div>
+                                            <div class="col-lg-3 mb-2">
+                                                <label for="adjust-qty" class="form-label fw-medium">Quantity</label>
+                                                <input type="number" class="form-control ps-2" id="adjust-qty" placeholder="Quantity to add/decrease">
+                                            </div>
+                                            <div class="col-lg-3 mb-2">
+                                                <label for="adjust-logtype" class="form-label fw-medium">Adjustment
+                                                    Type</label>
+                                                <select name="adjust-logtype" class="form-select" id="adjust-logtype">
+                                                    <option selected>Adjustment Types</option>
+                                                    <option value="in">Manual Stock Correction (In)</option>
+                                                    <option value="out">Manual Stock Correction (Out)</option>
+                                                    <option value="lost">Lost/Damaged Stock</option>
+                                                    <option value="scrapped">Scrapped</option>
+                                                    <option value="other">Other (Please Specify)</option>
+                                                </select>
+                                                <input type="text" id="otherlogtype" name="adjust-logtype"
+                                                    class="form-control mt-1 d-none" disabled>
+                                            </div>
+                                            <div class="col-lg-3 mb-2">
+                                                <label for="adjust-notes" class="form-label fw-medium">Notes:</label>
+                                                <textarea name="adjust-notes" id="adjust-notes" rows="1"
+                                                    class="ps-2 form-control" autocomplete="off"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2 px-2">
+                                            <div class="col-lg-3 mb-2">
+                                                <label for="adjust-user" class="form-label fw-medium">User:</label>
+                                                <p id="adjust-user" class="mt-1 mb-0 text-capitalize">
+                                                    <?= $_SESSION['fname'] . ' ' . $_SESSION['lname'] ?>
+                                                </p>
+                                            </div>
+                                            <div class="col-lg-3 mb-2">
+                                                <label for="adjust-user" class="form-label fw-medium">User:</label>
+                                                <p id="adjust-user" class="mt-1 mb-0 text-capitalize">
+                                                    <?= $_SESSION['fname'] . ' ' . $_SESSION['lname'] ?>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-grad mx-auto">Adjust Chemical</button>
+                                    </form>
+
+                                </div>
                             </div>
+
+
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                data-bs-target="#finalizeconfirm">Continue</button>
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+
                         </div>
                     </div>
                 </div>
@@ -954,6 +1040,54 @@ require("startsession.php");
                     $('#inventorylogmodal .modal-body').html('<p class="text-center text-danger">Error loading inventory log.</p>');
                 });
         });
+
+        async function get_chem_log(id) {
+            console.log(id);
+            $.ajax({
+                method: 'GET',
+                url: urldata,
+                data: {
+                    chemLog: true,
+                    id: id
+                },
+                dataType: 'json'
+            }).done(function (data) {
+                console.log(data);
+
+                if (data.success) {
+                    let d = JSON.parse(data.success);
+                    $(".log-chem-id").val(d.id);
+                    $(".chem-name").val(d.name);
+                    $(".qty-unit").text(' - ' + d.quantity_unit);
+
+                    $("#adjust-curlevel").text(d.chemLevel + '/' + d.container_size + d.quantity_unit + ' (' + d.unop_cont + ' containers left.)');
+                    $("#adjust-dispatched").text(d.log_type === 'Dispatched' ? d.quantity + d.quantity_unit : "Chemical currently not dispatched.");
+
+
+                    $('#chemicallogmodal').modal('show');
+
+                } else {
+                    alert('Unknown Error. Please try again later.');
+                }
+            })
+                .fail(function (e) {
+                    console.log(e);
+                })
+        }
+
+        $("#chemicalTable").on('click', '.log-chem-btn', function () {
+            let id = $(this).data('chem');
+            get_chem_log(id);
+        });
+
+        $('#adjust-logtype').on('change', function () {
+            if ($(this).val() === 'other') {
+                $("#otherlogtype").toggleClass('d-none').prop('disabled', false);
+            } else {
+                $("#otherlogtype").hasClass('d-none') ? $("#otherlogtype").prop('disabled', true) : $("#otherlogtype").prop('disabled', true).addClass('d-none');
+            }
+        })
+
     </script>
 </body>
 

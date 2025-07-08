@@ -15,6 +15,13 @@
   box-sizing: border-box !important;
 }
 
+#chemicallogmodal .nav-tabs .nav-link{
+  color: #7f7f7f !important;
+}
+#chemicallogmodal .nav-tabs .nav-link.active{
+  color: #000 !important;
+}
+
 /* html,
 body {
   min-height: 100vh;
