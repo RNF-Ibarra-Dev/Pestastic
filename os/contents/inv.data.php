@@ -456,7 +456,7 @@ $logtypes = [
 
 if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     $chemId = $_POST['chemid'];
-    $qty = $_POST['qty'];
+    $qty = isset($_POST['qty']) ? $_POST['qty'] : 0;
     $logtype = $_POST['logtype'];
     $ologtype = isset($_POST['other_logtype']) ? $_POST['other_logtype'] : NULL;
     $op = isset($_POST['operator']) ? $_POST['operator'] : NULL;
@@ -464,10 +464,22 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     $wcontainer = isset($_POST['containerchk']);
     $ccontainer = isset($_POST['containercount']) ? $_POST['containercount'] : (int) 0;
 
-    if (empty($qty)) {
-        http_response_code(400);
-        echo "Quantity is required.";
-        exit();
+
+    if (!$wcontainer) {
+        if (empty($qty)) {
+            http_response_code(400);
+            echo "Quantity is required.";
+            exit();
+        }
+    } else {
+        // $chemcapacity = get_chem_capacity($conn, $chemId);
+        $oremainingcont = get_chem_containercount($conn, $chemId);
+        if (isset($chemcapacity['error'])) {
+            http_response_code(400);
+            echo $chemcapacity['error'];
+            exit();
+        }
+        // $qty = (int) $chemcapacity;
     }
 
     if (!is_numeric($chemId) || empty($chemId)) {
@@ -483,7 +495,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     }
 
     if ($wcontainer) {
-        if ($ccontainer <= 0 ) {
+        if ($ccontainer <= 0) {
             http_response_code(400);
             echo "Invalid container count.";
             exit();
@@ -500,16 +512,16 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
             exit();
         }
         // if not null pass to final variable
-        $valid_logtype = $ologtype;
+        $valid_logtype = ucwords($ologtype);
 
         // check if positive or not
         if ($op === NULL) {
             http_response_code(400);
             echo "Please specify if the quantity should be added or subtracted.";
             exit();
-        } else if($op === 'add'){
+        } else if ($op === 'add') {
             $final_qty = $valid_qty;
-        } else if($op === 'subtract'){
+        } else if ($op === 'subtract') {
             $final_qty = $valid_qty * -1;
         }
     } else {
@@ -535,6 +547,18 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
                 http_response_code(400);
                 echo "Invalid adjustment type.";
                 exit();
+        }
+    }
+
+    // if negative, it will be subtracted
+    if ($final_qty < 0) {
+        if ($wcontainer) {
+            if ($oremainingcont < $ccontainer) {
+                http_response_code(400);
+                echo "Cannot reduce container count below the current available containers.";
+                exit();
+            }
+            $ccontainer = (int) $ccontainer * -1;
         }
     }
 

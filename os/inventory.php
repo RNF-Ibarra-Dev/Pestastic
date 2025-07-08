@@ -189,7 +189,7 @@ require("startsession.php");
                                             </tbody>
 
                                         </table>
-                                        <!-- <div id="inventorylogpaginationbtns"></div> -->
+                                        <div id="inventorylogpaginationbtns"></div>
                                     </div>
                                 </div>
 
@@ -251,6 +251,8 @@ require("startsession.php");
                                                         id="adjust-container" name="containercount" disabled>
                                                     <span class="fw-light ms-2 my-auto">Container/s</span>
                                                 </div>
+                                                <p class="fw-light">Note. Containers with different capacity should be
+                                                    added as a separate chemical.</p>
                                             </div>
                                             <div class="col-lg-3 mb-2">
                                                 <label for="adjust-logtype" class="form-label fw-medium">Adjustment
@@ -641,7 +643,16 @@ require("startsession.php");
             </p>
 
         </main>
-
+        <div class="toast-container m-2 me-3 bottom-0 end-0 position-fixed">
+            <div class="toast align-items-center" role="alert" id="toast" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body text-dark ps-4 text-success-emphasis" id="toastmsg">
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <?php include('footer.links.php'); ?>
@@ -649,6 +660,13 @@ require("startsession.php");
     <script>
         const urldata = 'contents/inv.data.php';
         const urlpage = 'contents/inv.pagination.php';
+
+        function show_toast(message) {
+            $('#toastmsg').html(message);
+            var toastid = $('#toast');
+            var toast = new bootstrap.Toast(toastid);
+            toast.show();
+        }
 
         $(document).ready(async function () {
             // get_data();
@@ -1074,9 +1092,7 @@ require("startsession.php");
                 });
         });
 
-
-        $("#chemicalTable").on('click', '.log-chem-btn', function () {
-            let id = $(this).data('chem');
+        function load_chem_log_history(id) {
             $.get('contents/inv.log.pagination.php', {
                 chemloghistory: true,
                 chemid: id
@@ -1089,7 +1105,13 @@ require("startsession.php");
                     console.log(e);
                     $('#chemicallogmodal .modal-body').html('<p class="text-center text-danger">Error loading inventory log.</p>');
                 });
-        })
+        }
+
+
+        $("#chemicalTable").on('click', '.log-chem-btn', async function () {
+            let id = $(this).data('chem');
+            await load_chem_log_history(id);
+        });
 
         async function get_chem_log(id) {
             console.log(id);
@@ -1110,16 +1132,23 @@ require("startsession.php");
                     $(".chem-name").val(d.name);
                     $(".qty-unit").text(' - ' + d.quantity_unit);
 
-                    $("#adjust-curlevel").text(d.chemLevel + '/' + d.container_size + d.quantity_unit + ' (' + d.unop_cont + ' containers left.)');
+                    $("#adjust-curlevel").text(d.chemLevel + '/' + d.container_size + d.quantity_unit + ' (' + d.unop_cont + ' container/s left.)');
                     $("#adjust-dispatched").text(d.log_type === 'Dispatched' ? d.quantity + d.quantity_unit : "Chemical currently not dispatched.");
 
+                    if (!$("#wholecontainercheck").prop('checked')) {
+                        $("#adjust-containerinput").hide();
+                        $("#adjust-containerinput input").prop('disabled', true);
+                        $("#adjust-qty").prop('disabled', false);
+                    }
                     $('#wholecontainercheck').on('change', function () {
                         if ($(this).prop('checked')) {
                             $("#adjust-containerinput").show();
                             $("#adjust-containerinput input").prop('disabled', false);
+                            $("#adjust-qty").prop('disabled', true);
                         } else {
                             $("#adjust-containerinput").hide();
                             $("#adjust-containerinput input").prop('disabled', true);
+                            $("#adjust-qty").prop('disabled', false);
                         }
                     })
 
@@ -1152,7 +1181,6 @@ require("startsession.php");
         });
 
 
-
         $(document).on('submit', '#adjustform', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
@@ -1164,7 +1192,10 @@ require("startsession.php");
             })
                 .done(function (d) {
                     $("#adjustform")[0].reset();
-                    $("#adjustalert").text(d.success).fadeIn(300).delay(2000).fadeOut(1000);
+                    // $("#adjustalert").text(d.success).fadeIn(300).delay(2000).fadeOut(1000);
+                    $("#chemicallogmodal").modal('hide');
+                    show_toast(d.success);
+                    loadpage(1, entryHidden);
                 })
                 .fail(function (e) {
                     $("#adjustalert").text(e.responseText).fadeIn(300).delay(2000).fadeOut(1000);

@@ -38,13 +38,13 @@ if (isset($_GET['inventorylog']) && $_GET['inventorylog'] == 'true') {
 
             ?>
             <tr class="text-center text-dark">
-                <td scope="row"><?=htmlspecialchars($logdate)?></td>
-                <td><?=htmlspecialchars($logtype)?></td>
-                <td><?=htmlspecialchars($chemname)?></td>
-                <td><?=htmlspecialchars($qty)?></td>
-                <td><?=htmlspecialchars($user)?></td>
-                <td><?=htmlspecialchars($transid)?></td>
-                <td><?=htmlspecialchars($notes)?></td>
+                <td scope="row"><?= htmlspecialchars($logdate) ?></td>
+                <td><?= htmlspecialchars($logtype) ?></td>
+                <td><?= htmlspecialchars($chemname) ?></td>
+                <td><?= htmlspecialchars($qty) ?></td>
+                <td><?= htmlspecialchars($user) ?></td>
+                <td><?= htmlspecialchars($transid) ?></td>
+                <td><?= htmlspecialchars($notes) ?></td>
             </tr>
 
             <?php
@@ -59,9 +59,9 @@ if (isset($_GET['chemloghistory']) && $_GET['chemloghistory'] == 'true') {
     // $limitstart = ($current - 1) * $pageRows;
     $chemid = (int) $_GET['chemid'];
 
-    $sql = "SELECT * FROM inventory_log WHERE chem_id = ?;";
+    $sql = "SELECT * FROM inventory_log WHERE chem_id = ? ORDER BY log_date DESC LIMIT 0, 10;";
     $stmt = mysqli_stmt_init($conn);
-    if(!mysqli_stmt_prepare($stmt, $sql)){
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
         http_response_code(400);
         echo "Stmt Failed. Please try again later.";
         exit();
@@ -91,12 +91,12 @@ if (isset($_GET['chemloghistory']) && $_GET['chemloghistory'] == 'true') {
 
             ?>
             <tr class="text-center text-dark">
-                <td scope="row"><?=htmlspecialchars($logdate)?></td>
-                <td><?=htmlspecialchars($logtype)?></td>
-                <td><?=htmlspecialchars($qty)?></td>
-                <td><?=htmlspecialchars($user)?></td>
-                <td><?=htmlspecialchars($transid)?></td>
-                <td><?=htmlspecialchars($notes)?></td>
+                <td scope="row"><?= htmlspecialchars($logdate) ?></td>
+                <td><?= htmlspecialchars($logtype) ?></td>
+                <td><?= htmlspecialchars($qty) ?></td>
+                <td><?= htmlspecialchars($user) ?></td>
+                <td><?= htmlspecialchars($transid) ?></td>
+                <td><?= htmlspecialchars($notes) ?></td>
             </tr>
 
             <?php

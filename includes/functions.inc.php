@@ -2622,6 +2622,39 @@ function cancel_transaction($conn, $id, $author)
     }
 }
 
+function get_chem_capacity($conn, $id)
+{
+    $sql = "SELECT container_size FROM chemicals WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'stmt failed.'];
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if ($row = mysqli_fetch_assoc($result)) {
+        return $row['container_size'];
+    } else {
+        return ['error' => 'Chemical not found.'];
+    }
+}
+function get_chem_containercount($conn, $id)
+{
+    $sql = "SELECT unop_cont FROM chemicals WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'stmt failed.'];
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if ($row = mysqli_fetch_assoc($result)) {
+        return $row['unop_cont'];
+    } else {
+        return ['error' => 'Chemical not found.'];
+    }
+}
+
 function reflect_chem_log($conn, $chemid, $qty, $containercount = NULL)
 {
 
@@ -2631,14 +2664,18 @@ function reflect_chem_log($conn, $chemid, $qty, $containercount = NULL)
         $datatypes = "di";
         $data[] = $qty;
 
-        if ($containercount !== NULL || !empty($containercount)) {
-            $current = get_chem_level($conn, $chemid);
+        $current = get_chem_level($conn, $chemid);
+        if ($containercount !== NULL && $containercount !== '') {
             if ($qty > $current) {
                 $qty = 0;
             }
-            $sql .= ", unop_cont = ?";
+            $sql .= ", unop_cont = unop_cont + ?";
             $datatypes .= "i";
             $data[] = $containercount;
+        } else {
+            if ($qty > $current) {
+                throw new Exception("You cannot add a chemical more than its full capacity.");
+            }
         }
         $data[] = $chemid;
         $sql .= " WHERE id = ?;";
@@ -2665,15 +2702,27 @@ function reflect_chem_log($conn, $chemid, $qty, $containercount = NULL)
 }
 
 
+
 function adjust_chemical($conn, $chemid, $logtype, $containerCount, $qty, $notes, $user_id, $user_role, $branch)
 {
     mysqli_begin_transaction($conn);
     try {
+        if ($qty === 0 && $containerCount != 0) {
+            $qtytoreflect = $qty;
+            $ocapacity = get_chem_capacity($conn, $chemid);
+            if (isset($ocapacity['error'])) {
+                throw new Exception($ocapacity['error']);
+            }
+            $qty = $ocapacity * $containerCount;
+        } else {
+            $qtytoreflect = $qty;
+        }
 
-        $reflect = reflect_chem_log($conn, $chemid, $qty, $containerCount);
+        $reflect = reflect_chem_log($conn, $chemid, $qtytoreflect, $containerCount);
         if (isset($reflect['error'])) {
             throw new Exception($reflect['error']);
         }
+
 
         $sql = "INSERT INTO inventory_log (chem_id, log_type, quantity, log_date, user_id, user_role, notes, branch) 
     VALUES (?, ?, ?, NOW(), ?, ?, ?, ?);";
@@ -2725,3 +2774,5 @@ function get_user($conn, $userid, $role)
         return false;
     }
 }
+
+
