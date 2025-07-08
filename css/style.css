@@ -10,6 +10,9 @@
   --night-bg-color: #16404d;
 }
 
+#chemicallogmodal   input.form-check-input {
+    background-color: #2f855d !important;
+}
 
 * {
   box-sizing: border-box !important;

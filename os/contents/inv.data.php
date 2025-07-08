@@ -3,6 +3,12 @@ session_start();
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
+// user information
+
+$role = "branchadmin";
+$user = $_SESSION['baId'];
+$branch = $_SESSION['branch'];
+
 
 if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
     $chemId = $_GET['id'];
@@ -125,7 +131,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         http_response_code(400);
         echo $edit['error'];
         exit();
-
     }
     http_response_code(200);
     echo json_encode(['success' => 'Changes Saved.']);
@@ -233,13 +238,12 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete') {
     http_response_code(200);
     echo json_encode(['success' => 'Chemical Deleted.']);
     exit();
-
 }
 
 
 
 if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
-    ?>
+?>
     <div class="add-row-container">
         <hr class="my-2">
         <div class="row mb-2 pe-2">
@@ -369,11 +373,11 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $exp = date_create($expDate);
             $remcom = $row['unop_cont'];
             $contsize = $row['container_size'];
-            ?>
+    ?>
             <tr class="text-center">
                 <td scope="row">
                     <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                    $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
@@ -399,7 +403,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
             </tr>
 
-            <?php
+<?php
         }
     } else {
         // echo json_encode(['']);
@@ -431,16 +435,7 @@ if (isset($_GET['chemLog']) && $_GET['chemLog'] === 'true') {
     $data = [];
     if (mysqli_num_rows($res) > 0) {
         if ($row = mysqli_fetch_assoc($res)) {
-            // $data['id'] = $row['id'];
-            // $data['chem_id'] = $row['chem_id'];
-            // $data['ltype'] = $row['log_type'];
-            // $data['qty'] = $row['quantity'];
-            // $data['ldate'] = $row['log_date'];
-            // $data['user'] = $row['user_id'];
-            // $data['role'] = $row['user_role'];
-            // $data['notes'] = $row['notes'];
             echo json_encode(['success' => json_encode($row)]);
-
         }
         // echo json_encode(['success' => json_encode($data)]);
         mysqli_stmt_close($stmt);
@@ -450,4 +445,91 @@ if (isset($_GET['chemLog']) && $_GET['chemLog'] === 'true') {
         echo 'Chemical not found.';
         exit();
     }
+}
+
+$logtypes = [
+    'in',
+    'out',
+    'lost',
+    'scrapped'
+];
+
+if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
+    $chemId = $_POST['chemid'];
+    $qty = $_POST['qty'];
+    $logtype = $_POST['logtype'];
+    $ologtype = $_POST['other_logtype'] ?? NULL;
+    $adjust = $_POST['adjust'] ?? NULL;
+    $notes = $_POST['notes'];
+
+
+    if (!is_numeric(($chemId) || empty($chemId))) {
+        http_response_code(400);
+        echo "Invalid Chemical.";
+        exit();
+    }
+
+    if (empty($notes)) {
+        http_response_code(400);
+        echo "Please explain the reason for adjustment at the notes section.";
+        exit();
+    }
+
+    if (!is_numeric($qty)) {
+        http_response_code(400);
+        echo "Quantity must be a valid number.";
+        exit();
+    }
+
+    if (empty($qty)) {
+        http_response_code(400);
+        echo "Quantity is required.";
+        exit();
+    }
+
+    $valid_qty = (float) $qty;
+
+    if (!in_array($logtype, $logtypes)) {
+        if (!isset($ologtype) || $ologtype === NULL) {
+            http_response_code(400);
+            echo "Invalid adjustment type.";
+            exit();
+        }
+        $valid_logtype = $ologtype;
+
+        if (empty($adjust) || $adjust === NULL) {
+            http_response_code(400);
+            echo "Please specify if the quantity should be added or subtracted.";
+            exit();
+        }
+    } else {
+        switch ($logtype) {
+            case 'in':
+                $valid_logtype = "Manual Stock Correction (In)";
+                $final_qty = $valid_qty;
+                break;
+            case 'out':
+                $valid_logtype = "Manual Stock Correction (Out)";
+                $final_qty = -$valid_qty;
+                break;
+            case 'lost':
+                $valid_logtype = "Lost/Damaged Item";
+                $final_qty = -$valid_qty;
+                break;
+            case 'scrapped':
+                $valid_logtype = "Trashed Item";
+                $final_qty = -$valid_qty;
+                break;
+            default:
+                http_response_code(400);
+                echo "Invalid adjustment type.";
+                exit();
+        }
+    }
+
+    // valid logtype, final qty
+
+
+
+    $adjust = adjust_chemical($conn);
 }
