@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 08, 2025 at 06:14 PM
+-- Generation Time: Jul 09, 2025 at 10:13 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -129,8 +129,8 @@ INSERT INTO `chemicals` (`id`, `name`, `brand`, `chemLevel`, `container_size`, `
 (1008, 'fgh', 'fgh', 6, 1000, 5, '2025-01-01', '2025-04-17 13:25:30', '2025-07-05 07:13:32', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'kg'),
 (1009, 'fgh', 'fgh', 6, 1000, 0, '2025-01-01', '2025-04-17 13:25:31', '2025-07-05 06:42:00', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
 (1012, 'ghjp', 'ghj', 6, 500, 0, '2025-01-01', '2025-04-17 13:27:35', '2025-07-05 06:42:00', 1, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL'),
-(1013, 'asbg', 'gdfg', 498, 1000, 0, '2025-07-24', '2025-04-17 13:31:02', '2025-07-08 16:12:47', 1, '', 1, 'No Record', 'bAdmin | Employee no. 012345678', '2025-06-13', 'mL'),
-(1014, 'jhghj', 'hjghj', 74, 1000, 0, '2025-01-01', '2025-04-17 13:33:20', '2025-07-08 15:15:19', 1, '', 1, 'No Record', '[1] - sAdmin', '2025-06-13', 'mL'),
+(1013, 'asbg', 'gdfg', 500, 1000, 5, '2025-07-24', '2025-04-17 13:31:02', '2025-07-08 23:09:18', 1, '', 1, 'No Record', 'bAdmin | Employee no. 012345678', '2025-06-13', 'mL'),
+(1014, 'jhghj', 'hjghj', 74, 1000, 1, '2025-01-01', '2025-04-17 13:33:20', '2025-07-09 05:09:09', 1, '', 1, 'No Record', '[1] - sAdmin', '2025-06-13', 'mL'),
 (1063, 'ssdf', 'sdfsdf', 250, 500, 2, '2026-08-06', '2025-07-03 02:19:10', '2025-07-05 06:42:00', 0, NULL, 1, '[1] - bAdmin', 'No Update Record', '2025-07-11', 'mL'),
 (1065, 'ddg', 'dfgdfg', 200, 200, 2, '2025-07-03', '2025-07-03 07:40:26', '2025-07-05 06:42:00', 0, '424242', 1, '[1] - sAdmin', 'No Update Record', '2025-07-03', 'mL');
 
@@ -189,7 +189,23 @@ CREATE TABLE `inventory_log` (
 
 INSERT INTO `inventory_log` (`log_id`, `chem_id`, `log_type`, `quantity`, `log_date`, `user_id`, `user_role`, `trans_id`, `notes`, `branch`) VALUES
 (1, 1014, 'Manual Stock Correction (In)', 3.00, '2025-07-08 00:00:00', 1, 'branchadmin', NULL, 'f', 1),
-(2, 1013, 'Lost/Damaged Item', -2.00, '2025-07-09 00:12:47', 1, 'branchadmin', NULL, 'nawala ngani', 1);
+(2, 1013, 'Lost/Damaged Item', -2.00, '2025-07-09 00:12:47', 1, 'branchadmin', NULL, 'nawala ngani', 1),
+(3, 1013, 'Found Outside', 1000.00, '2025-07-09 05:52:22', 1, 'branchadmin', NULL, 'container found outside', 1),
+(4, 1013, 'Manual Stock Correction (In)', 1000.00, '2025-07-09 06:02:41', 1, 'branchadmin', NULL, 'chemical stock from garage', 1),
+(5, 1013, 'Chemical Adjustment Error', -1000.00, '2025-07-09 06:09:52', 1, 'branchadmin', NULL, 'chemical bug occured', 1),
+(6, 1013, 'Other', -1000.00, '2025-07-09 06:32:24', 1, 'branchadmin', NULL, 'bug testing', 1),
+(7, 1013, 'Manual Stock Correction (Out)', -1000.00, '2025-07-09 06:35:56', 1, 'branchadmin', NULL, 'removing expired container', 1),
+(8, 1013, 'Manual Stock Correction (In)', 0.00, '2025-07-09 06:40:23', 1, 'branchadmin', NULL, '---', 1),
+(9, 1013, 'Manual Stock Correction (In)', 0.00, '2025-07-09 06:56:19', 1, 'branchadmin', NULL, 'none', 1),
+(10, 1013, 'Manual Stock Correction (Out)', -2.00, '2025-07-09 06:56:33', 1, 'branchadmin', NULL, 'leaks', 1),
+(11, 1013, 'Manual Stock Correction (Out)', 0.00, '2025-07-09 07:05:23', 1, 'branchadmin', NULL, 'note', 1),
+(12, 1013, 'Manual Stock Correction (Out)', 0.00, '2025-07-09 07:06:04', 1, 'branchadmin', NULL, 'note', 1),
+(13, 1013, 'Manual Stock Correction (Out)', 0.00, '2025-07-09 07:06:42', 1, 'branchadmin', NULL, 'note', 1),
+(14, 1013, 'Manual Stock Correction (Out)', 0.00, '2025-07-09 07:06:42', 1, 'branchadmin', NULL, 'note', 1),
+(15, 1013, 'Manual Stock Correction (In)', 500.00, '2025-07-09 07:08:48', 1, 'branchadmin', NULL, '000', 1),
+(16, 1013, 'Balance', 0.00, '2025-07-09 07:09:18', 1, 'branchadmin', NULL, '----', 1),
+(17, 1014, 'Manual Stock Correction (In)', 2000.00, '2025-07-09 13:07:56', 1, 'branchadmin', NULL, '--', 1),
+(18, 1014, 'Trashed Item', -1000.00, '2025-07-09 13:09:09', 1, 'branchadmin', NULL, 'expired chemical', 1);
 
 -- --------------------------------------------------------
 
@@ -339,7 +355,7 @@ CREATE TABLE `transactions` (
   `customer_address` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `transaction_status` enum('Pending','Accepted','Voided','Completed','Cancelled','Finalizing') NOT NULL DEFAULT 'Pending',
+  `transaction_status` enum('Pending','Accepted','Voided','Completed','Cancelled','Finalizing','Dispatched') NOT NULL DEFAULT 'Pending',
   `void_request` tinyint(1) NOT NULL DEFAULT 0,
   `transaction_time` time DEFAULT NULL,
   `notes` varchar(255) DEFAULT NULL,
@@ -772,7 +788,7 @@ ALTER TABLE `equipments`
 -- AUTO_INCREMENT for table `inventory_log`
 --
 ALTER TABLE `inventory_log`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `packages`
