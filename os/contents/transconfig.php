@@ -96,9 +96,13 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         http_response_code(400);
         echo json_encode(['type' => 'function', 'errorMessage' => $transaction['errorMessage'], 'line' => $transaction['line'], 'file' => $transaction['file'], 'trace' => $transaction['stringTrace']]);
         exit();
-    } else {
+    } else if(isset($transaction['success'])) {
         http_response_code(200);
         echo json_encode(['success' => 'Transaction added.']);
+        exit();
+    } else{
+        http_response_code(400);
+        echo "An unknown error has occured. Please try again later.";
         exit();
     }
 }

@@ -715,6 +715,48 @@ function get_chem_level($conn, $id)
     }
 }
 
+
+function log_transaction_changes($conn, $transid, $chemids, $qty, $branch, $user_id, $note, $status)
+{
+    try {
+        $logtype = '';
+        switch ($status) {
+            case "Dispatched":
+                $logtype = 'out';
+                break;
+            case "Completed":
+                $logtype = "used";
+                break;
+            default:
+                throw new Exception("Invalid status for logging.");
+        }
+
+        $sql = "INSERT INTO inventory_logs (trans_id, chem_id, log_type, quantity, log_date, user_id, user_role, notes, branch) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?);";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("stmt failed.");
+        }
+
+        if(count($chemids) === count($qty)){
+            throw new Exception("Chemical and amount used count do not match.");
+        }
+
+        for ($i = 0; $i < count($chemids); $i++) {
+            mysqli_stmt_bind_param($stmt, 'iisdiiss', $transid, $chemids[$i], $logtype, $qty[$i], $branch, $user_id, $role, $note);
+            mysqli_stmt_execute($stmt);
+            if(!mysqli_stmt_affected_rows($stmt) > 0){
+                throw new Exception("Failed inserting chemical ID " . $chemids[$i]);
+            }
+        }
+        return true;    
+    } catch (Exception $e) {
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at file ' . $e->getFile()
+        ];
+    }
+}
+
 function newTransaction($conn, $customerName, $address, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note, $pstart, $pend, $addedby)
 {
 
@@ -776,11 +818,12 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
                     throw new Exception('Addition of technicians failed: ' . $technicianIds[$i] . ' ' . mysqli_error($conn));
                 }
             }
+
+            // log changes/addition
+            // log_transaction_changes() . . . 
+
             mysqli_commit($conn);
-            return [
-                'success' => true,
-                // 'iterate' => $iterationLogs
-            ];
+            return true;
         } else {
             throw new Exception('Insertion Failed.');
         }
