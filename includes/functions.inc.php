@@ -738,7 +738,7 @@ function log_transaction($conn, $transid, $chemids, $qty, $branch, $user_id, $ro
             throw new Exception("stmt failed.");
         }
 
-        if (count($chemids) === count($qty)) {
+        if (count($chemids) !== count($qty)) {
             throw new Exception("Chemical and amount used count do not match.");
         }
 

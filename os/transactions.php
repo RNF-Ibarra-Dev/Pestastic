@@ -268,32 +268,41 @@
                                         </div>
                                     </div>
 
-                                    <div class="row mb-2" did="row">
+                                    <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
                                             <label for="add-chemBrandUsed" class="form-label fw-light">Chemical
                                                 Used</label>
                                             <select id="add-chemBrandUsed" name="add_chemBrandUsed[]"
-                                                class="form-select">
+                                                class="form-select chem-brand-select">
                                                 <!-- chem ajax -->
                                             </select>
+                                            <div class="form-check mt-auto">
+                                                <input class="form-check-input whole-container-chk" type="checkbox"
+                                                    value="" id="defaultCheck1">
+                                                <label class="form-check-label" for="defaultCheck1">
+                                                    Whole Container
+                                                </label>
+                                            </div>
                                         </div>
-                                        <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
+                                        <div class="col-lg-6 mb-2 ps-0 d-flex justify-content-evenly">
                                             <div class="d-flex flex-column">
                                                 <label for="add-amountUsed" class="form-label fw-light">Amount
                                                     Used</label>
-                                                <input type="number" maxlength="4" id="add-amountUsed" name="add-amountUsed[]"
-                                                    class="form-control form-add me-3" autocomplete="one-time-code">
+                                                <input type="number" maxlength="4" id="add-amountUsed"
+                                                    name="add-amountUsed[]" class="form-control form-add me-3"
+                                                    autocomplete="one-time-code">
                                             </div>
                                             <span class="form-text my-auto">-</span>
-                                        </div>
-                                        <div class="col-lg-2 mb-2 d-flex gap-1 p-0 justify-content-start">
                                             <button type="button" id="addMoreChem"
-                                                class="btn btn-grad mt-auto py-2 px-3"><i
+                                                class="btn btn-grad my-auto py-2 px-3"><i
                                                     class="bi bi-plus-circle text-light"></i></button>
                                         </div>
+                                        <!-- <div class="col-lg-2 mb-2 d-flex gap-1 p-0 justify-content-start">
+
+                                        </div> -->
                                     </div>
 
-                                    <div class="row mb-2" id="add-chemContainer">
+                                    <div class="mb-2" id="add-chemContainer">
                                         <!-- template add chemical -->
                                     </div>
                                     <div class="row mb-2">
@@ -2121,7 +2130,12 @@
             })
                 .done(function (d) {
                     // console.log(d);
-                    span.html(d);
+
+                    if ($(".whole-container-chk").is(':checked')) {
+                        span.text("Container/s")
+                    } else {
+                        span.text(d);
+                    }
                 })
                 .fail(function (err) {
                     console.log(err);

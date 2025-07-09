@@ -218,20 +218,26 @@ function get_more_chem($conn, $rowNum)
     $id = uniqid();
     ?>
     <div class="row mb-2">
-        <div class="col-lg-6 dropdown-center d-flex flex-column pe-0">
+        <div class="col-lg-6 dropdown-center d-flex flex-column">
             <select id="add-chemBrandUsed-<?= $id ?>" name="add_chemBrandUsed[]" class="form-select chem-brand-select">
                 <?= get_chem($conn); ?>
                 <!-- chem ajax -->
             </select>
+            <div class="form-check mt-auto">
+                <input class="form-check-input whole-container-chk" type="checkbox" name="">
+                <label class="form-check-label" for="defaultCheck1">
+                    Whole Container
+                </label>
+            </div>
         </div>
-        <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
+        <div class="col-lg-6 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
                 <input type="number" maxlength="4" id="add-amountUsed-<?= $id ?>" class="form-control form-add me-3"
                     autocomplete="one-time-code" name="add-amountUsed[]">
             </div>
-            <span class="form-text my-auto">-
+            <span class="form-text mt-2 mb-auto">-
             </span>
-            <button type="button" id="deleteChem" class="btn btn-grad mt-auto py-2 px-3"><i
+            <button type="button" id="deleteChem" class="btn btn-grad mb-auto py-2 px-3"><i
                     class="bi bi-dash-circle text-light"></i></button>
         </div>
     </div>

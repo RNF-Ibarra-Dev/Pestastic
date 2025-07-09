@@ -79,15 +79,23 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         echo 'Invalid Status. Please Try Again.';
         exit();
     }
+
     if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
         if (empty($amtUsed)) {
             http_response_code(400);
             echo "Amount Used is required for the current Status.";
             exit();
-        } 
+        }
+        for ($i = 0; $i < count($amtUsed); $i++) {
+            if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
+                http_response_code(400);
+                echo "Error. Invalid Amount Used.";
+                exit();
+            }
+        }
     }
 
-    if(count($amtUsed) !== count($chemUsed)){
+    if (count($amtUsed) !== count($chemUsed)) {
         http_response_code(400);
         echo "Chemical used and amount used count mismatched. Please refresh the page and try again.";
         exit();
@@ -178,7 +186,12 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         exit();
     }
 
-    if ($status === 'Finalizing') {
+    if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
+        if (empty($amtUsed)) {
+            http_response_code(400);
+            echo "Amount Used is required for the current Status.";
+            exit();
+        }
         for ($i = 0; $i < count($amtUsed); $i++) {
             if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
                 http_response_code(400);
@@ -187,6 +200,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
             }
         }
     }
+
 
     $oStatus = check_status($conn, $transId);
     // no transId
@@ -207,9 +221,6 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         echo 'Invalid Status. Completed and voided transactions cannot be edited.';
         exit();
     }
-    // http_response_code(400);
-    // echo var_dump($upby);
-    // exit();
 
 
     if ($package != 'none') {

@@ -10,7 +10,15 @@
   --night-bg-color: #16404d;
 }
 
-#chemicallogmodal   input.form-check-input {
+#chemicallogmodal input.form-check-input,
+#addTransaction input.form-check-input, 
+#viewEditForm input.form-check-input {
+    border: 1px solid #16404d !important;
+    background-color: #bababa !important;
+}
+#chemicallogmodal input.form-check-input:checked,
+#addTransaction input.form-check-input:checked, 
+#viewEditForm input.form-check-input:checked {
     background-color: #2f855d !important;
 }
 
