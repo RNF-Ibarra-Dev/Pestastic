@@ -276,10 +276,16 @@
                                                 class="form-select">
                                                 <!-- chem ajax -->
                                             </select>
-
                                         </div>
-
-
+                                        <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
+                                            <div class="d-flex flex-column">
+                                                <label for="add-amountUsed" class="form-label fw-light">Amount
+                                                    Used</label>
+                                                <input type="number" maxlength="4" id="add-amountUsed" name="add-amountUsed[]"
+                                                    class="form-control form-add me-3" autocomplete="one-time-code">
+                                            </div>
+                                            <span class="form-text my-auto">-</span>
+                                        </div>
                                         <div class="col-lg-2 mb-2 d-flex gap-1 p-0 justify-content-start">
                                             <button type="button" id="addMoreChem"
                                                 class="btn btn-grad mt-auto py-2 px-3"><i
@@ -2106,7 +2112,7 @@
             }
         })
 
-        $(document).on('change', '#edit-chemBrandUsed select.form-select', function () {
+        $(document).on('change', '#edit-chemBrandUsed select.form-select, select.form-select.chem-brand-select', function () {
             // console.log($(this).val());
             let span = $(this).parent().next().find('span');
             $.get(transUrl, {
@@ -2238,14 +2244,7 @@
 
                 } catch (error) {
                     console.log(error);
-                    // console.log(error);
-                    let errorData = error.responseJSON;
-                    if (errorData && errorData.errorMessage) {
-                        // alert('Error Message: ' + errorData.errorMessage + ';\n\nLine: ' + errorData.line + ';\n\nFile: ' + errorData.file + ';\n\nTrace: ' + errorData.trace);
-                        $('#add-alert').removeClass('visually-hidden').html(errorData.errorMessage).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                    } else {
-                        // alert('unknown error occured.');
-                    }
+                    $("#add-alert").removeClass('visually-hidden').html(error.responseText).hide().fadeIn(400).delay(2000).fadeOut(1000);
                 }
             })
         });
@@ -2460,9 +2459,40 @@
             await loadpage(currentpage, status);
         });
 
+        $('#table').ready(function () {
+            $('.pending-btn').hover(function () {
+                $(this).html('Approve/Accept');
+            }, function () {
+                $(this).html('Pending');
+            });
+        })
 
-
-
+        $(document).ready(function () {
+            $('#table').on('mouseenter', '.pending-btn', function () {
+                $(this).html('Approve/Accept Transaction');
+            });
+            $('#table').on('mouseleave', '.pending-btn', function () {
+                $(this).html('Pending');
+            });
+            $('#table').on('mouseenter', '.accepted-btn', function () {
+                $(this).html('Dispatch Transaction');
+            });
+            $('#table').on('mouseleave', '.accepted-btn', function () {
+                $(this).html('Accepted');
+            });
+            $('#table').on('mouseenter', '.dispatched-btn', function () {
+                $(this).html('Finalize Transaction');
+            });
+            $('#table').on('mouseleave', '.dispatched-btn', function () {
+                $(this).html('Dispatched');
+            });
+            $('#table').on('mouseenter', '.finalizing-btn', function () {
+                $(this).html('Complete Transaction');
+            });
+            $('#table').on('mouseleave', '.finalizing-btn', function () {
+                $(this).html('Finalizing');
+            });
+        });
 
         // $(document).ready(function () {
         //     // Prevent right-click

@@ -172,7 +172,7 @@ function get_chem($conn, $active = null)
         $req = (int) $row['request'];
         $unit = $row['quantity_unit'];
         ?>
-        <option value="<?= htmlspecialchars($id) ?>"<?= $id == $active ? 'selected' : '' ?>>
+        <option value="<?= htmlspecialchars($id) ?>" <?= $id == $active ? 'selected' : '' ?>>
             <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level $unit") ?>
         </option>
         <?php
@@ -215,16 +215,22 @@ function get_more_chem($conn, $rowNum)
         echo 'Error fetching chem data' . mysqli_error($conn);
         return;
     }
-
+    $id = uniqid();
     ?>
     <div class="row mb-2">
         <div class="col-lg-6 dropdown-center d-flex flex-column pe-0">
-            <select id="add-chemBrandUsed" name="add_chemBrandUsed[]" class="form-select">
+            <select id="add-chemBrandUsed-<?= $id ?>" name="add_chemBrandUsed[]" class="form-select chem-brand-select">
                 <?= get_chem($conn); ?>
                 <!-- chem ajax -->
             </select>
         </div>
-        <div class="col-2 d-flex">
+        <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
+            <div class="d-flex flex-column">
+                <input type="number" maxlength="4" id="add-amountUsed-<?= $id ?>" class="form-control form-add me-3"
+                    autocomplete="one-time-code" name="add-amountUsed[]">
+            </div>
+            <span class="form-text my-auto">-
+            </span>
             <button type="button" id="deleteChem" class="btn btn-grad mt-auto py-2 px-3"><i
                     class="bi bi-dash-circle text-light"></i></button>
         </div>

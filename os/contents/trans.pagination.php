@@ -334,13 +334,13 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
-                        $status === 'Pending' ? "<span id='pendingbtn' data-pending-id='$id' data-bs-toggle='modal' data-bs-target='#approvemodal' class = 'w-100 text-light badge btn btn-sidebar rounded-pill text-bg-warning bg-opacity-25'>Pending</span>" :
-                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" :
-                            ($status === 'Finalizing' ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalize-btn'>$status</span>" :
+                        $status === 'Pending' ? "<span id='pendingbtn' data-pending-id='$id' data-bs-toggle='modal' data-bs-target='#approvemodal' class = 'pending-btn w-100 text-light badge btn btn-sidebar rounded-pill text-bg-warning bg-opacity-25'>Pending</span>" :
+                        ($status === 'Accepted' ? "<span data-accepted='$id' class='accepted-btn btn btn-sidebar badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" :
+                            ($status === 'Finalizing' ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalizing-btn'>$status</span>" :
                                 ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" :
                                     ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" :
                                         ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge rounded-pill btn btn-sidebar text-bg-secondary bg-opacity-50 w-100'>$status</span>" :
-                                            ($status === 'Dispatched' ? "<span data-dispatched-id='$id' class='dispatch-btn badge rounded-pill btn btn-sidebar text-bg-warning bg-opacity-50 w-100'>$status</span>" : $status))))))
+                                            ($status === 'Dispatched' ? "<span data-dispatched-id='$id' class='dispatched-btn btn btn-sidebar badge rounded-pill btn btn-sidebar text-bg-warning text-light bg-opacity-50 w-100'>$status</span>" : $status))))))
 
                         ?>
                 </td>

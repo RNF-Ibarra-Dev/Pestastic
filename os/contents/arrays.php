@@ -24,7 +24,8 @@ $allStatus = [
     'Voided',
     'Completed',
     'Finalizing',
-    'Cancelled'
+    'Cancelled',
+    'Dispatched'
 ];
 
 $treatmentType = [

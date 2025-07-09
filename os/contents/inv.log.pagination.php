@@ -14,7 +14,7 @@ if (isset($_GET['inventorylog']) && $_GET['inventorylog'] == 'true') {
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT * FROM inventory_log;";
+    $sql = "SELECT * FROM inventory_log ORDER BY log_date DESC LIMIT 0, 10;";
 
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
@@ -31,6 +31,7 @@ if (isset($_GET['inventorylog']) && $_GET['inventorylog'] == 'true') {
             $logtype = $row['log_type'];
             $qty = $row['quantity'];
             $logdate = $row['log_date'];
+            $lg = date('F j, Y | H:s A');
             $role = $row['user_role'];
             $userid = $row['user_id'];
             $user = get_user($conn, $userid, $role);
@@ -39,7 +40,7 @@ if (isset($_GET['inventorylog']) && $_GET['inventorylog'] == 'true') {
 
             ?>
             <tr class="text-center text-dark">
-                <td scope="row"><?= htmlspecialchars($logdate) ?></td>
+                <td scope="row"><?= htmlspecialchars($lg) ?></td>
                 <td><?= htmlspecialchars($logtype) ?></td>
                 <td><?= htmlspecialchars($chemname) ?></td>
                 <td><?= htmlspecialchars($qty . ' ' . $chem['quantity_unit']) ?></td>
@@ -84,6 +85,7 @@ if (isset($_GET['chemloghistory']) && $_GET['chemloghistory'] == 'true') {
             $logtype = $row['log_type'];
             $qty = $row['quantity'];
             $logdate = $row['log_date'];
+            $lg = date('F j, Y | H:s A');
             $role = $row['user_role'];
             $userid = $row['user_id'];
             $user = get_user($conn, $userid, $role);
@@ -92,7 +94,7 @@ if (isset($_GET['chemloghistory']) && $_GET['chemloghistory'] == 'true') {
             $chem = get_chemical($conn, $chemid);
             ?>
             <tr class="text-center text-dark">
-                <td scope="row"><?= htmlspecialchars($logdate) ?></td>
+                <td scope="row"><?= htmlspecialchars($lg) ?></td>
                 <td><?= htmlspecialchars($logtype) ?></td>
                 <td><?= htmlspecialchars($qty . ' ' . $chem['quantity_unit']) ?></td>
                 <td><?= htmlspecialchars($user) ?></td>

@@ -716,7 +716,7 @@ function get_chem_level($conn, $id)
 }
 
 
-function log_transaction_changes($conn, $transid, $chemids, $qty, $branch, $user_id, $note, $status)
+function log_transaction($conn, $transid, $chemids, $qty, $branch, $user_id, $role, $note, $status)
 {
     try {
         $logtype = '';
@@ -738,18 +738,18 @@ function log_transaction_changes($conn, $transid, $chemids, $qty, $branch, $user
             throw new Exception("stmt failed.");
         }
 
-        if(count($chemids) === count($qty)){
+        if (count($chemids) === count($qty)) {
             throw new Exception("Chemical and amount used count do not match.");
         }
 
         for ($i = 0; $i < count($chemids); $i++) {
-            mysqli_stmt_bind_param($stmt, 'iisdiiss', $transid, $chemids[$i], $logtype, $qty[$i], $branch, $user_id, $role, $note);
+            mysqli_stmt_bind_param($stmt, 'iisdissi', $transid, $chemids[$i], $logtype, $qty[$i], $user_id, $role, $note, $branch);
             mysqli_stmt_execute($stmt);
-            if(!mysqli_stmt_affected_rows($stmt) > 0){
+            if (!mysqli_stmt_affected_rows($stmt) > 0) {
                 throw new Exception("Failed inserting chemical ID " . $chemids[$i]);
             }
         }
-        return true;    
+        return true;
     } catch (Exception $e) {
         return [
             'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at file ' . $e->getFile()
@@ -757,18 +757,18 @@ function log_transaction_changes($conn, $transid, $chemids, $qty, $branch, $user
     }
 }
 
-function newTransaction($conn, $customerName, $address, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note, $pstart, $pend, $addedby)
+function newTransaction($conn, $customerName, $address, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note, $pstart, $pend, $addedby, $amtUsed, $user_id = 0, $user_role = '', $branch = 1)
 {
 
     mysqli_begin_transaction($conn);
     try {
-        $transSql = "INSERT INTO transactions (customer_name, customer_address, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at, package_id, treatment_type, session_no, notes, pack_start, pack_exp, created_by) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?, ?);";
+        $transSql = "INSERT INTO transactions (customer_name, customer_address, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at, package_id, treatment_type, session_no, notes, pack_start, pack_exp, created_by, branch) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?, ?, ?);";
         $transStmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($transStmt, $transSql)) {
             throw new Exception('Stmt Failed: ' . mysqli_stmt_error($transStmt));
         }
-        mysqli_stmt_bind_param($transStmt, 'ssssssisissss', $customerName, $address, $treatmentDate, $treatmentTime, $treatment, $status, $package, $type, $session, $note, $pstart, $pend, $addedby);
+        mysqli_stmt_bind_param($transStmt, 'ssssssisissssi', $customerName, $address, $treatmentDate, $treatmentTime, $treatment, $status, $package, $type, $session, $note, $pstart, $pend, $addedby, $branch);
         mysqli_stmt_execute($transStmt);
 
         if (mysqli_stmt_affected_rows($transStmt) > 0) {
@@ -777,28 +777,22 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
 
             // $iterationLogs = [];
             // error_log("Total count of chemUsed: " . count($chemUsed));
+            if($status !== "Completed"){
+                for ($i=0; $i < count($amtUsed); $i++) { 
+                    $amtUsed[$i] = 0;
+                }
+            }
 
             for ($i = 0; $i < count($chemUsed); $i++) {
-                $addChemFunc = add_chemical_used($conn, $transId, $chemUsed[$i]);
+                $addChemFunc = add_chemical_used($conn, $transId, $chemUsed[$i], $amtUsed[$i]);
                 if (!$addChemFunc) {
                     error_log("Insert failed at iteration $i");
                     throw new Exception('The chemical used addition failed: ' . $chemUsed[$i] . ' ' . mysqli_error($conn));
                 }
-
-                // $iterationLogs[] = "iterated $i";
-
-                // get original value
-                // $level = get_chem_level($conn, $chemUsed[$i]);
-
-                // if ($amtUsed[$i] > $level) {
-                //     throw new Exception('Insufficient Chemical');
-                // }
-
-                // $update = update_chem_level($conn, $chemUsed[$i], $level, $amtUsed[$i]);
-
-                // if (isset($update['error'])) {
-                //     throw new Exception('Chemical not updated. Chem ID: ' . $chemUsed[$i] . $update['error']);
-                // }
+                $level = get_chem_level($conn, $chemUsed[$i]);
+                if ($amtUsed[$i] > $level) {
+                    throw new Exception('Insufficient Chemical');
+                }
             }
 
             // insert pest prob to database
@@ -808,9 +802,6 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
                     throw new Exception("Adding pest problem failed: " . $pestProblem[$i] . ' ' . mysqli_error($conn));
                 }
             }
-            // error_log("Transaction ID: " . $transId);
-            // error_log("Technician IDs: " . json_encode($technicianIds));
-
             // insert technicians to database
             for ($i = 0; $i < count($technicianIds); $i++) {
                 $addTech = add_tech_trans($conn, $transId, $technicianIds[$i]);
@@ -821,6 +812,13 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
 
             // log changes/addition
             // log_transaction_changes() . . . 
+            if ($status === 'Dispatched' || $status === 'Finalizing') {
+                $logchems = log_transaction($conn, $transId, $chemUsed, $amtUsed, $branch, $user_id, $user_role, $note, $status);
+                if(isset($logchems['error'])){
+                    throw new Exception($logchems['error']);
+                }
+            }
+
 
             mysqli_commit($conn);
             return true;
@@ -834,6 +832,7 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
             'line' => $e->getLine(),
             'file' => $e->getFile(),
             'stringTrace' => $e->getTraceAsString(),
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at file ' . $e->getFile()
         ];
     }
 }
@@ -1024,19 +1023,19 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
     mysqli_begin_transaction($conn);
     try {
 
-        if ($transData['status'] != 'Pending') {
-            if (empty($pestProblem)) {
-                throw new Exception("Transaction should be pending if Pest Problem is not indicated.");
-            }
+        // if ($transData['status'] != 'Pending') {
+        //     if (empty($pestProblem)) {
+        //         throw new Exception("Transaction should be pending if Pest Problem is not indicated.");
+        //     }
 
-            if (in_array('#', $technicianIds) || empty($technicianIds)) {
-                throw new Exception("Transaction should be pending if there is no assigned technicians.");
-            }
+        //     if (in_array('#', $technicianIds) || empty($technicianIds)) {
+        //         throw new Exception("Transaction should be pending if there is no assigned technicians.");
+        //     }
 
-            if (in_array('#', $chemUsed) || empty($chemUsed)) {
-                throw new Exception("Transaction should be pending if there is no used chemicals.");
-            }
-        }
+        //     if (in_array('#', $chemUsed) || empty($chemUsed)) {
+        //         throw new Exception("Transaction should be pending if there is no used chemicals.");
+        //     }
+        // }
 
         $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transData['transId']);
         if ($transData['status'] === 'Finalizing' || $transData['status'] === 'Completed') {
