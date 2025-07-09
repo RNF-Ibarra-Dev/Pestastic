@@ -318,6 +318,8 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
         case "entries":
             $sql = "SELECT COUNT(*) FROM chemicals WHERE request = 1";
             break;
+        case "available":
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel > 0 OR unop_cont > 0;";
     }
 
     if ($branchquery !== '') {
@@ -446,7 +448,6 @@ if (isset($_GET['chemLog']) && $_GET['chemLog'] === 'true') {
         exit();
     }
 }
-
 $logtypes = [
     'in',
     'out',
@@ -456,43 +457,29 @@ $logtypes = [
 
 if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     $chemId = $_POST['chemid'];
-    $qty = isset($_POST['qty']) ? $_POST['qty'] : 0;
+    $qty = isset($_POST['qty']) ? $_POST['qty'] : (float) 0;
     $logtype = $_POST['logtype'];
     $ologtype = isset($_POST['other_logtype']) ? $_POST['other_logtype'] : NULL;
     $op = isset($_POST['operator']) ? $_POST['operator'] : NULL;
     $notes = $_POST['notes'];
+
     $wcontainer = isset($_POST['containerchk']);
     $ccontainer = isset($_POST['containercount']) ? $_POST['containercount'] : (int) 0;
 
-
     if (!$wcontainer) {
-        if (empty($qty)) {
+        if (empty($qty) || !is_numeric($qty)) {
             http_response_code(400);
-            echo "Quantity is required.";
+            echo "Quantity must be a valid number and should not be empty.";
             exit();
         }
-    } else {
-        // $chemcapacity = get_chem_capacity($conn, $chemId);
-        $oremainingcont = get_chem_containercount($conn, $chemId);
-        if (isset($chemcapacity['error'])) {
-            http_response_code(400);
-            echo $chemcapacity['error'];
-            exit();
-        }
-        // $qty = (int) $chemcapacity;
     }
 
     if (!is_numeric($chemId) || empty($chemId)) {
         http_response_code(400);
-        echo "Invalid Chemical.";
+        echo "Invalid Chemical ID.";
         exit();
     }
 
-    if (!is_numeric($qty)) {
-        http_response_code(400);
-        echo "Quantity must be a valid number.";
-        exit();
-    }
 
     if ($wcontainer) {
         if ($ccontainer <= 0) {
@@ -500,13 +487,20 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
             echo "Invalid container count.";
             exit();
         }
+        $chemcapacity = get_chem_capacity($conn, $chemId);
+        if (isset($chemcapacity['error'])) {
+            http_response_code(400);
+            echo $chemcapacity['error'];
+            exit();
+        }
+        $qty = (float) $chemcapacity * $ccontainer;
     }
 
-    $valid_qty = (float) $qty;
-
+    // $valid_logtype = '';
+    // $final_qty = 0;
     if (!in_array($logtype, $logtypes)) {
         // if other type is null, logtype should be restricted and only fixed datas are allowed
-        if ($ologtype === NULL) {
+        if ($ologtype === NULL || empty($ologtype)) {
             http_response_code(400);
             echo "Please choose a valid adjustment type.";
             exit();
@@ -515,33 +509,47 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
         $valid_logtype = ucwords($ologtype);
 
         // check if positive or not
-        if ($op === NULL) {
+        if ($op === NULL || ($op !== 'add' && $op !== 'subtract')) {
             http_response_code(400);
-            echo "Please specify if the quantity should be added or subtracted.";
+            echo "Please specify if the quantity should be added or subtracted for the 'Other' type.";
             exit();
-        } else if ($op === 'add') {
-            $final_qty = $valid_qty;
-        } else if ($op === 'subtract') {
-            $final_qty = $valid_qty * -1;
+        }
+
+        if ($op === 'add') {
+            $final_qty = $qty;
+            if ($wcontainer)
+                $fccontainer = $ccontainer;
+        } else {
+            $final_qty = $qty * -1;
+            if ($wcontainer)
+                $fccontainer = $ccontainer * -1;
         }
     } else {
         // trigger switch if in select - restrict choices
         switch ($logtype) {
             case 'in':
                 $valid_logtype = "Manual Stock Correction (In)";
-                $final_qty = $valid_qty;
+                $final_qty = $qty;
+                if ($wcontainer)
+                    $fccontainer = $ccontainer;
                 break;
             case 'out':
                 $valid_logtype = "Manual Stock Correction (Out)";
-                $final_qty = $valid_qty * -1;
+                $final_qty = $qty * -1;
+                if ($wcontainer)
+                    $fccontainer = $ccontainer * -1;
                 break;
             case 'lost':
                 $valid_logtype = "Lost/Damaged Item";
-                $final_qty = $valid_qty * -1;
+                $final_qty = $qty * -1;
+                if ($wcontainer)
+                    $fccontainer = $ccontainer * -1;
                 break;
             case 'scrapped':
                 $valid_logtype = "Trashed Item";
-                $final_qty = $valid_qty * -1;
+                $final_qty = $qty * -1;
+                if ($wcontainer)
+                    $fccontainer = $ccontainer * -1;
                 break;
             default:
                 http_response_code(400);
@@ -550,15 +558,19 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
         }
     }
 
-    // if negative, it will be subtracted
-    if ($final_qty < 0) {
-        if ($wcontainer) {
-            if ($oremainingcont < $ccontainer) {
-                http_response_code(400);
-                echo "Cannot reduce container count below the current available containers.";
-                exit();
-            }
-            $ccontainer = (int) $ccontainer * -1;
+    // if checked
+    if ($wcontainer && $final_qty < 0) {
+        // get from database
+        $oremainingcont = get_chem_containercount($conn, $chemId);
+        if (isset($chemcapacity['error'])) {
+            http_response_code(400);
+            echo $chemcapacity['error'];
+            exit();
+        }
+        if ($oremainingcont < abs($ccontainer)) {
+            http_response_code(400);
+            echo "Cannot reduce container count below the current available containers.";
+            exit();
         }
     }
 
@@ -569,7 +581,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     }
     // valid logtype, final qty
 
-    $adjust = adjust_chemical($conn, $chemId, $valid_logtype, $ccontainer, $final_qty, $notes, $user, $role, $branch);
+    $adjust = adjust_chemical($conn, $chemId, $valid_logtype, $fccontainer, $final_qty, $notes, $user, $role, $branch);
     if (isset($adjust['error'])) {
         http_response_code(400);
         echo $adjust['error'];

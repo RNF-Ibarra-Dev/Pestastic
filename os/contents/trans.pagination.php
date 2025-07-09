@@ -88,7 +88,8 @@ if (isset($_GET['search'])) {
                             ($status === 'Finalizing' ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalize-btn'>$status</span>" :
                                 ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" :
                                     ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" :
-                                        ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge rounded-pill btn btn-sidebar text-bg-secondary bg-opacity-50 w-100'>$status</span>" : $status)))))
+                                        ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge rounded-pill btn btn-sidebar text-bg-secondary bg-opacity-50 w-100'>$status</span>" :
+                                            ($status === 'Dispatched' ? "<span data-dispatched-id='$id' class='dispatch-btn badge rounded-pill btn btn-sidebar text-bg-warning bg-opacity-50 w-100'>$status</span>" : $status))))))
 
                         ?>
                 </td>
@@ -338,7 +339,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                             ($status === 'Finalizing' ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalize-btn'>$status</span>" :
                                 ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" :
                                     ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" :
-                                        ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge rounded-pill btn btn-sidebar text-bg-secondary bg-opacity-50 w-100'>$status</span>" : $status)))))
+                                        ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge rounded-pill btn btn-sidebar text-bg-secondary bg-opacity-50 w-100'>$status</span>" :
+                                            ($status === 'Dispatched' ? "<span data-dispatched-id='$id' class='dispatch-btn badge rounded-pill btn btn-sidebar text-bg-warning bg-opacity-50 w-100'>$status</span>" : $status))))))
 
                         ?>
                 </td>

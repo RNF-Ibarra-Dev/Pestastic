@@ -44,14 +44,20 @@
                 </div>
                 <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
                     <p class="fs-5 fw-bold"><i
-                            class="bi bi-calendar2-check-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm "></i>Completed
+                            class="bi bi-truck-flatbed me-2 bg-warning bg-opacity-50 py-1 px-2 rounded shadow-sm "></i>Dispatched
                     </p>
-                    <p class="fw-light mb-0 ">Completed transactions marked done by Technicians and approved by
-                        Operations Supervisors.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-2" id="count_completed"></p>
+                    <p class="fw-light mb-0 ">Transactions that are currently being carried out.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-2" id="count_dispatched"></p>
                 </div>
             </div>
             <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
+                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <p class="fs-5 fw-bold"><i
+                            class="bi bi-calendar2-check-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm "></i>Completed
+                    </p>
+                    <p class="fw-light mb-0 ">Reviewed and approved as finished.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-2" id="count_completed"></p>
+                </div>
                 <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-clipboard-x-fill me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm "></i>Voided
@@ -83,6 +89,7 @@
                     <option value='' selected>Show All Status</option>
                     <option value="Pending">Pending</option>
                     <option value="Accepted">Accepted</option>
+                    <option value="Dispatched">Dispatched</option>
                     <option value="Finalizing">Finalizing</option>
                     <option value="Completed">Completed</option>
                     <option value="Cancelled">Cancelled</option>

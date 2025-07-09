@@ -26,6 +26,7 @@ if (isset($_GET['inventorylog']) && $_GET['inventorylog'] == 'true') {
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['log_id'];
             $chemid = $row['chem_id'];
+            $chem = get_chemical($conn, $chemid);
             $chemname = get_chemical_name($conn, $chemid);
             $logtype = $row['log_type'];
             $qty = $row['quantity'];
@@ -41,7 +42,7 @@ if (isset($_GET['inventorylog']) && $_GET['inventorylog'] == 'true') {
                 <td scope="row"><?= htmlspecialchars($logdate) ?></td>
                 <td><?= htmlspecialchars($logtype) ?></td>
                 <td><?= htmlspecialchars($chemname) ?></td>
-                <td><?= htmlspecialchars($qty) ?></td>
+                <td><?= htmlspecialchars($qty . ' ' . $chem['quantity_unit']) ?></td>
                 <td><?= htmlspecialchars($user) ?></td>
                 <td><?= htmlspecialchars($transid) ?></td>
                 <td><?= htmlspecialchars($notes) ?></td>
@@ -88,12 +89,12 @@ if (isset($_GET['chemloghistory']) && $_GET['chemloghistory'] == 'true') {
             $user = get_user($conn, $userid, $role);
             $transid = $row['trans_id'] === NULL ? 'None' : $row['trans_id'];
             $notes = $row['notes'];
-
+            $chem = get_chemical($conn, $chemid);
             ?>
             <tr class="text-center text-dark">
                 <td scope="row"><?= htmlspecialchars($logdate) ?></td>
                 <td><?= htmlspecialchars($logtype) ?></td>
-                <td><?= htmlspecialchars($qty) ?></td>
+                <td><?= htmlspecialchars($qty . ' ' . $chem['quantity_unit']) ?></td>
                 <td><?= htmlspecialchars($user) ?></td>
                 <td><?= htmlspecialchars($transid) ?></td>
                 <td><?= htmlspecialchars($notes) ?></td>

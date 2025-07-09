@@ -34,7 +34,7 @@ require("startsession.php");
                             class="bi bi-archive-fill me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Total
                         Chemicals
                     </p>
-                    <p class="fw-light mb-0 mt-4">Total chemicals in stock.</p>
+                    <p class="fw-light mb-0 mt-4">Total chemical count.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_total"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -68,16 +68,15 @@ require("startsession.php");
                             class="bi bi-check-circle-fill me-2 bg-success bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle"></i>Available
                         Chemicals
                     </p>
-                    <p class="fw-light mb-0 mt-4">Number of pending chemical entries.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_entries"></p>
+                    <p class="fw-light mb-0 mt-4">Number of available chemicals inside the storage.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_available"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <p class="fs-5 fw-bold"><i
-                            class="bi bi-truck-flatbed me-2 bg-secondary bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle"></i>Chemicals
-                        In Use
+                            class="bi bi-truck-flatbed me-2 bg-secondary bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle"></i>Dispatched Chemicals
                     </p>
-                    <p class="fw-light mb-0 mt-4">Number of pending chemical entries.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_entries"></p>
+                    <p class="fw-light mb-0 mt-4">Number of chemicals being used at transactions.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_dispatched"></p>
                 </div>
             </div>
 
@@ -1070,6 +1069,7 @@ require("startsession.php");
             get_overview_count('low', branch);
             get_overview_count('expired', branch);
             get_overview_count('entries', branch);
+            get_overview_count('available', branch);
         }
 
         $(document).ready(function () {

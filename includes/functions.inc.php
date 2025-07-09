@@ -2707,16 +2707,7 @@ function adjust_chemical($conn, $chemid, $logtype, $containerCount, $qty, $notes
 {
     mysqli_begin_transaction($conn);
     try {
-        if ($qty === 0 && $containerCount != 0) {
-            $qtytoreflect = $qty;
-            $ocapacity = get_chem_capacity($conn, $chemid);
-            if (isset($ocapacity['error'])) {
-                throw new Exception($ocapacity['error']);
-            }
-            $qty = $ocapacity * $containerCount;
-        } else {
-            $qtytoreflect = $qty;
-        }
+        $qtytoreflect = $containerCount != 0 ? 0 : $qty;
 
         $reflect = reflect_chem_log($conn, $chemid, $qtytoreflect, $containerCount);
         if (isset($reflect['error'])) {
@@ -2775,4 +2766,19 @@ function get_user($conn, $userid, $role)
     }
 }
 
-
+function get_chemical($conn, $id)
+{
+    $sql = "SELECT * FROM chemicals WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'stmt failed.'];
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if ($row = mysqli_fetch_assoc($result)) {
+        return $row;
+    } else {
+        return ['error' => 'Chemical not found.'];
+    }
+}
