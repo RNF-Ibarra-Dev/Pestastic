@@ -28,13 +28,13 @@ require("startsession.php");
             <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2">
                 <h1 class="display-6 text-light mb-0 fw-medium text-center">Chemical Inventory</h1>
             </div>
-            <div class="d-flex gap-3 mb-2 mx-3">
+            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <p class="fs-5 fw-bold align-middle"><i
                             class="bi bi-archive-fill me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Total
                         Chemicals
                     </p>
-                    <p class="fw-light mb-0 mt-4">Total chemical count.</p>
+                    <p class="fw-light mb-2">Total chemical count.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_total"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -42,7 +42,7 @@ require("startsession.php");
                             class="bi bi-exclamation-triangle-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Low
                         Level Chemicals
                     </p>
-                    <p class="fw-light mb-0 mt-4">Number of chemicals 20% below full capacity.</p>
+                    <p class="fw-light mb-2">Number of chemicals 20% below full capacity.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_low"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -50,17 +50,17 @@ require("startsession.php");
                             class="bi bi-calendar-x-fill me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Expired
                         Chemicals
                     </p>
-                    <p class="fw-light mb-0 mt-4">Number of chemicals past their expiration date.</p>
+                    <p class="fw-light mb-2">Number of chemicals past their expiration date.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_expired"></p>
                 </div>
             </div>
-            <div class="d-flex gap-3 mb-2 mx-3">
+            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-clock-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Pending
                         Entries
                     </p>
-                    <p class="fw-light mb-0 mt-4">Number of pending chemical entries.</p>
+                    <p class="fw-light mb-2">Number of pending chemical entries.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_entries"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -68,14 +68,14 @@ require("startsession.php");
                             class="bi bi-check-circle-fill me-2 bg-success bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle"></i>Available
                         Chemicals
                     </p>
-                    <p class="fw-light mb-0 mt-4">Number of available chemicals inside the storage.</p>
+                    <p class="fw-light mb-2">Number of available chemicals inside the storage.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_available"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-truck-flatbed me-2 bg-secondary bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle"></i>Dispatched Chemicals
                     </p>
-                    <p class="fw-light mb-0 mt-4">Number of chemicals being used at transactions.</p>
+                    <p class="fw-light mb-2">Number of chemicals being used at transactions.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_dispatched"></p>
                 </div>
             </div>

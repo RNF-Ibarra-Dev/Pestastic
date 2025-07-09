@@ -115,9 +115,8 @@
 
             <div class="table-responsive-sm d-flex justify-content-center">
                 <table class="table align-middle table-hover m-3 mt-2 os-table w-100 text-light">
-                    <caption class="text-light text-muted">List of all transactions. For faster transaction approval,
-                        click
-                        'Pending' under the status column.</caption>
+                    <caption class="text-light text-muted">List of all transactions. For easy transaction progress,
+                        click the status badges..</caption>
                     <thead class="text-center">
                         <tr>
                             <th scope="row">Transaction ID</th>
@@ -315,6 +314,7 @@
                                                 <option value="Pending">Pending</option>
                                                 <option value="Accepted">Accepted</option>
                                                 <option value="Finalizing">Finalizing </option>
+                                                <option value="Dispatched">Dispatched </option>
                                                 <option value="Completed">Completed </option>
                                                 <option value="Cancelled">Cancelled </option>
                                                 <option value="Voided">Voided </option>
@@ -642,9 +642,10 @@
                                                 <option value="" selected>Select Status</option>
                                                 <option value="Pending">Pending</option>
                                                 <option value="Accepted">Accepted</option>
-                                                <option value="Finalizing">Finalizing </option>
-                                                <option value="Completed">Completed </option>
-                                                <option value="Cancelled">Cancelled </option>
+                                                <option value="Finalizing">Finalizing</option>
+                                                <option value="Dispatched">Dispatched</option>
+                                                <option value="Completed">Completed</option>
+                                                <option value="Cancelled">Cancelled</option>
                                                 <option value="Voided">Voided</option>
                                             </select>
                                             <p class="alert alert-warning py-1 mt-2" style="display: none !important;">
@@ -1584,7 +1585,7 @@
             // $('#edit-addMoreChem').removeAttr('data-status');
             $('#edit-addMoreChem').data('status', sts);
 
-            if (sts === 'Completed' || sts === 'Finalizing') {
+            if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched') {
                 $('#edit-chemBrandUsed input.form-control').prop('disabled', false);
                 $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
             } else {
@@ -2051,15 +2052,17 @@
         $(document).on('change', '#add-status, #edit-status', function () {
             let sel = $(this);
             if (sel.val() === 'Voided') {
-                sel.next().fadeIn(750).html("Note. Voiding a transaction completely will require Manager approval. Ignore to continue.");
+                sel.next().fadeOut().fadeIn(750).html("Note. Voiding a transaction completely will require Manager approval. Ignore to continue.");
             } else if (sel.val() === 'Accepted') {
-                sel.next().fadeIn(750).html("Make sure to double check the details at least before the dispatch date.");
+                sel.next().fadeOut().fadeIn(750).html("Make sure to double check the details at least before the dispatch date.");
             } else if (sel.val() === 'Finalizing') {
-                sel.next().fadeIn(750).html("Note. Transactions with this status will be subjected to completion, please make sure to double check the details.");
+                sel.next().fadeOut().fadeIn(750).html("Note. Transactions with this status will be subjected to completion, please make sure to double check the details.");
             } else if (sel.val() === 'Cancelled') {
-                sel.next().fadeIn(750).html("Cancelled transactions are accepted and is needed to be rescheduled.");
+                sel.next().fadeOut().fadeIn(750).html("Cancelled transactions are accepted and is needed to be rescheduled.");
+            } else if (sel.val() === 'Dispatched') {
+                sel.next().fadeOut().fadeIn(750).html("Note. Make sure the technicians are ready.");
             } else if (sel.val() === 'Completed') {
-                sel.next().fadeIn(750).html("Make sure to double check details. Setting this transaction to complete will make this viewonly.");
+                sel.next().fadeOut().fadeIn(750).html("Make sure to double check details. Setting this transaction to complete will make this viewonly.");
             } else {
                 sel.next().fadeOut(1000);
             }
