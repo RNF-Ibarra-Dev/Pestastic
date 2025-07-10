@@ -1070,6 +1070,7 @@ require("startsession.php");
             get_overview_count('expired', branch);
             get_overview_count('entries', branch);
             get_overview_count('available', branch);
+            get_overview_count('dispatched', branch);
         }
 
         $(document).ready(function () {

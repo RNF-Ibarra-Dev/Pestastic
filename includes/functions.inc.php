@@ -721,17 +721,20 @@ function log_transaction($conn, $transid, $chemids, $qty, $branch, $user_id, $ro
     try {
         $logtype = '';
         switch ($status) {
+            case "Finalizing":
+                $logtype = 'Used';
+                break;
             case "Dispatched":
-                $logtype = 'out';
+                $logtype = 'Out';
                 break;
             case "Completed":
-                $logtype = "used";
+                $logtype = "Return";
                 break;
             default:
                 throw new Exception("Invalid status for logging.");
         }
 
-        $sql = "INSERT INTO inventory_logs (trans_id, chem_id, log_type, quantity, log_date, user_id, user_role, notes, branch) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?);";
+        $sql = "INSERT INTO inventory_log (trans_id, chem_id, log_type, quantity, log_date, user_id, user_role, notes, branch) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?);";
         $stmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -775,10 +778,20 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
             mysqli_stmt_close($transStmt);
             $transId = mysqli_insert_id($conn);
 
+
+            // log changes/addition
+            // log_transaction_changes() . . . 
+            if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
+                $logchems = log_transaction($conn, $transId, $chemUsed, $amtUsed, $branch, $user_id, $user_role, $note, $status);
+                if (isset($logchems['error'])) {
+                    throw new Exception($logchems['error']);
+                }
+            }
+
             // $iterationLogs = [];
             // error_log("Total count of chemUsed: " . count($chemUsed));
-            if($status !== "Completed"){
-                for ($i=0; $i < count($amtUsed); $i++) { 
+            if ($status !== "Completed") {
+                for ($i = 0; $i < count($amtUsed); $i++) {
                     $amtUsed[$i] = 0;
                 }
             }
@@ -807,15 +820,6 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
                 $addTech = add_tech_trans($conn, $transId, $technicianIds[$i]);
                 if (!$addTech) {
                     throw new Exception('Addition of technicians failed: ' . $technicianIds[$i] . ' ' . mysqli_error($conn));
-                }
-            }
-
-            // log changes/addition
-            // log_transaction_changes() . . . 
-            if ($status === 'Dispatched' || $status === 'Finalizing') {
-                $logchems = log_transaction($conn, $transId, $chemUsed, $amtUsed, $branch, $user_id, $user_role, $note, $status);
-                if(isset($logchems['error'])){
-                    throw new Exception($logchems['error']);
                 }
             }
 
