@@ -178,10 +178,10 @@ function get_chem($conn, $active = null)
         <?php
     }
 }
-function get_chem_edit($conn, $active = null)
+function get_chem_edit($conn, $active = 0)
 {
-    $active = $active == null ? '' : $active;
-    $sql = 'SELECT * FROM chemicals WHERE request = 0 ORDER BY id DESC;';
+    $active = $active === 0 ? 0 : (int) $active;
+    $sql = 'SELECT * FROM chemicals ORDER BY id DESC;';
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -193,7 +193,7 @@ function get_chem_edit($conn, $active = null)
     echo "<hr class='dropdown-divider'>";
 
     while ($row = mysqli_fetch_assoc($result)) {
-        $id = $row['id'];
+        $id = (int) $row['id'];
         $brand = $row['brand'];
         $name = $row['name'];
         $level = $row['chemLevel'];
@@ -201,12 +201,12 @@ function get_chem_edit($conn, $active = null)
         $unit = $row['quantity_unit'];
         ?>
         <option value="<?= htmlspecialchars($id) ?>" <?= $id === $active ? 'selected' : '' ?>>
-            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level $unit") ?>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level $unit") . ' ' . ($req === 1 ? '(Under Review)' : '') ?>
         </option>
         <?php
     }
 }
-function get_more_chem($conn, $status)
+function get_more_chem($conn, $status = '')
 {
     $sql = 'SELECT * FROM chemicals';
     $result = mysqli_query($conn, $sql);
@@ -226,12 +226,12 @@ function get_more_chem($conn, $status)
         </div>
         <div class="col-lg-6 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
-                <input type="number" maxlength="4" id="add-amountUsed-<?= $id ?>" class="form-control amt-used-input form-add me-3"
-                    autocomplete="one-time-code" <?=$status !== 'Finalizing' || $status !== 'Completed' || $status !== 'Dispatched' ? 'disabled' : "name='add-amountUsed[]'" ?>>
+                <input type="number" maxlength="4" id="add-amountUsed-<?= $id ?>"
+                    class="form-control amt-used-input form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed"  ?  "name='add-amountUsed[]'" : 'disabled' ?>>
             </div>
             <span class="form-text mt-2 mb-auto">-
             </span>
-            <button type="button" id="deleteChem<?=$id?>" class="delete-chem-row btn btn-grad mb-auto py-2 px-3"><i
+            <button type="button" id="deleteChem<?= $id ?>" class="delete-chem-row btn btn-grad mb-auto py-2 px-3"><i
                     class="bi bi-dash-circle text-light"></i></button>
         </div>
     </div>
@@ -573,9 +573,8 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
                     <div class="d-flex flex-column">
                         <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
                             id="edit-amountUsed-label">Amount:</label>
-                        <input type="number" <?= $status !== 'Finalizing' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
-                            id="edit-amountUsed-<?= $id ?>" class="form-control form-add me-3" autocomplete="one-time-code"
-                            value="<?= $amtUsed ?>" <?= $status !== 'Finalizing' ? 'disabled' : '' ?>>
+                        <input type="number" <?= $status !== 'Finalizing' || $status !== 'Dispatched' || $status !== 'Completed' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4" id="edit-amountUsed-<?= $id ?>"
+                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>" <?= $status !== 'Finalizing' || $status !== 'Dispatched' || $status !== 'Completed' ? '' : 'disabled' ?>>
                     </div>
                     <span class="form-text mt-auto mb-2">
                         <?= $unit ?>
@@ -624,7 +623,7 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
 
 if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
 
-    $status = $_GET['status'];
+    $status = (string) $_GET['status'];
 
     $idd = uniqid();
     ?>
@@ -640,9 +639,9 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
         <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
                 <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light">Amount:</label>
-                <input type="number" <?= $status !== 'Finalizing' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
+                <input type="number" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? "name='edit-amountUsed[]'" : "" ?> maxlength="4"
                     id="edit-amountUsed-<?= $idd ?>" class="form-control form-add me-3" autocomplete="one-time-code"
-                    <?= $status !== 'Finalizing' ? 'disabled' : '' ?>>
+                    <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? '' : 'disabled' ?>>
             </div>
             <!-- change this line to select -->
             <span class="form-text mt-auto ms-2 mb-2">

@@ -790,21 +790,24 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
 
             // $iterationLogs = [];
             // error_log("Total count of chemUsed: " . count($chemUsed));
-            if ($status !== "Completed") {
-                for ($i = 0; $i < count($amtUsed); $i++) {
-                    $amtUsed[$i] = 0;
-                }
-            }
-
+            // if ($status !== "Completed" || $status !== "Dispatched") {
+            //     for ($i = 0; $i < count($amtUsed); $i++) {
+            //         $amtUsed[$i] = 0;
+            //     }
+            // // }
+            // if ($status === 'Completed' || $status === 'Dispatched') {
+            //     reflect_trans_chem
+            // }
+            
             for ($i = 0; $i < count($chemUsed); $i++) {
+                $level = get_chem_level($conn, $chemUsed[$i]);
+                if ($amtUsed[$i] > $level) {
+                    throw new Exception('Insufficient Chemical');
+                }
                 $addChemFunc = add_chemical_used($conn, $transId, $chemUsed[$i], $amtUsed[$i]);
                 if (!$addChemFunc) {
                     error_log("Insert failed at iteration $i");
                     throw new Exception('The chemical used addition failed: ' . $chemUsed[$i] . ' ' . mysqli_error($conn));
-                }
-                $level = get_chem_level($conn, $chemUsed[$i]);
-                if ($amtUsed[$i] > $level) {
-                    throw new Exception('Insufficient Chemical');
                 }
             }
 
