@@ -781,6 +781,7 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
 
             // log changes/addition
             // log_transaction_changes() . . . 
+            // log chem usage
             if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
                 $logchems = log_transaction($conn, $transId, $chemUsed, $amtUsed, $branch, $user_id, $user_role, $note, $status);
                 if (isset($logchems['error'])) {
@@ -788,26 +789,41 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
                 }
             }
 
-            // $iterationLogs = [];
-            // error_log("Total count of chemUsed: " . count($chemUsed));
-            // if ($status !== "Completed" || $status !== "Dispatched") {
-            //     for ($i = 0; $i < count($amtUsed); $i++) {
-            //         $amtUsed[$i] = 0;
-            //     }
-            // // }
-            // if ($status === 'Completed' || $status === 'Dispatched') {
-            //     reflect_trans_chem
-            // }
-            
+
+            // ONLY records chem and amount used for the transaction
             for ($i = 0; $i < count($chemUsed); $i++) {
                 $level = get_chem_level($conn, $chemUsed[$i]);
                 if ($amtUsed[$i] > $level) {
                     throw new Exception('Insufficient Chemical');
                 }
-                $addChemFunc = add_chemical_used($conn, $transId, $chemUsed[$i], $amtUsed[$i]);
+                $addChemFunc = add_chemical_used($conn, $transId, $chemUsed[$i], abs($amtUsed[$i]));
                 if (!$addChemFunc) {
                     error_log("Insert failed at iteration $i");
                     throw new Exception('The chemical used addition failed: ' . $chemUsed[$i] . ' ' . mysqli_error($conn));
+                }
+            }
+
+            // reflect only if completed or dispatched
+            $op = '';
+            if ($status === 'Completed' || $status === 'Dispatched') {
+                switch ($status) {
+                    case 'Completed':
+                        $op = 1;
+                        break;
+                    case 'Dispatched':
+                        $op = -1;
+                        break;
+                    default:
+                        $op = 0;
+                        break;
+                }
+
+                for ($i = 0; $i < count($chemUsed); $i++) {
+                    $amtUsed[$i] *= $op;
+                    $reflect = reflect_trans_chem($conn, $amtUsed[$i], $chemUsed[$i]);
+                    if (isset($reflect['error'])) {
+                        throw new Exception($reflect['error']);
+                    }
                 }
             }
 
