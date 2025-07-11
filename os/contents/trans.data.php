@@ -972,3 +972,4 @@ if (isset($_GET['voidrequest']) && $_GET['voidrequest'] === 'true') {
         echo "<tr><td scope='row' colspan='5' class='text-center'>No Void Requests.</td></tr>";
     }
 }
+

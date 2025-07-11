@@ -766,6 +766,12 @@
                                     </thead>
 
                                     <tbody id="voidrequesttable" class="table-group-divider">
+                                        <tr>
+                                            <td scope='row' colspan='6' class='text-center'>
+                                                <div class='spinner-grow text-secondary' role='status'><span
+                                                        class='visually-hidden'>Loading...</span></div>
+                                            </td>
+                                        </tr>
                                     </tbody>
 
                                 </table>
@@ -813,6 +819,12 @@
                                         </thead>
 
                                         <tbody id="finalizetranstable" class="table-group-divider">
+                                            <tr>
+                                                <td scope='row' colspan='6' class='text-center'>
+                                                    <div class='spinner-grow text-secondary' role='status'><span
+                                                            class='visually-hidden'>Loading...</span></div>
+                                                </td>
+                                            </tr>
                                         </tbody>
 
                                     </table>
@@ -1061,7 +1073,6 @@
                             </div>
                             <div class="modal-body">
                                 <div class="p-0 m-0 mb-2" id="finalize-chemBrandUsed"></div>
-                                <!-- <div class="p-0 m-0 mb-2" id="finalize-addcontainer"></div> -->
                                 <button type="button" id="finalize-addMoreChem"
                                     class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
                                     <p class="fw-light m-0 me-2">Add Chemical</p><i
@@ -1070,16 +1081,16 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
-                                <button type="button" data-bs-target="#finalizeconfirm" data-bs-toggle="modal"
+                                <button type="button" data-bs-target="#finalconfirm" data-bs-toggle="modal"
                                     class="btn btn-grad">Proceed</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="finalizeconfirm"
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="finalconfirm"
                     tabindex="0">
-                    <div class="modal-dialog modal-lg">
+                    <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5">Finalize Transaction Confirmation</h1>
@@ -1093,11 +1104,11 @@
                                         Enter Operation Supervisor
                                         <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
-                                        <input type="password" name="baPwd" class="form-control w-50"
+                                        <input type="password" name="baPwd" class="form-control w-75"
                                             id="confirmapprove-inputpwd">
                                     </div>
                                 </div>
-                                <p class="text-body-secondary">Note. This will only be set to finalizing status and is
+                                <p class="text-body-secondary fw-light">Note. This will only be set to finalizing status and is
                                     up for review yet.</p>
                                 <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
                                     id="finalizingAlert">
@@ -1106,7 +1117,7 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-toggle="modal"
                                     data-bs-target="#reschedModal">Go back</button>
-                                <button type="submit" class="btn btn-grad">Reschedule</button>
+                                <button type="submit" class="btn btn-grad">Finalize</button>
                             </div>
                         </div>
                     </div>
@@ -1201,8 +1212,12 @@
             let status = $("#sortstatus").val();
             await $.get(transUrl, "&finalizetrans=true")
                 .done(function (d) {
-                    $("#finalizetranstable").empty();
-                    $("#finalizetranstable").append(d);
+                    if ($("#finalizetranstable").length <= 0) {
+                        $("#finalizetranstable").append(d);
+                    } else {
+                        $("#finalizetranstable").empty();
+                        $("#finalizetranstable").append(d);
+                    }
                     loadpage(1, status);
                 })
                 .fail(function (e) {
@@ -1235,6 +1250,28 @@
                     $("#finalizealert").html(err.responseText).fadeIn(400).delay(2000).fadeOut(1000);
                 });
         });
+
+        $(document).on('submit', '#finalizeForm', async function(e){
+            e.preventDefault();
+            console.log($(this).serialize());
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                data: $(this).serialize() + "&finalsingletransact=true",
+                url: submitUrl
+            })
+            .done(function(d){
+                if(d.success){
+                    show_toast(d.success);
+                } else{
+                    alert('Unknown error occured')
+                }
+            })
+            .fail(function(e){
+                console.log(e);
+                $("#finalizingAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+            })
+        })
 
         $("#table").on('click', '.finalize-btn', function () {
             // console.log($(this).data('finalize-id'));
@@ -1552,7 +1589,6 @@
                 });
 
                 if (brand) {
-                    console.log(brand);
                     $(`#${method}-chemBrandUsed`).empty();
                     $(`#${method}-chemBrandUsed`).append(brand);
                     // console.log(brand);
@@ -2302,9 +2338,10 @@
             }, function (data) {
                 $("#finalize-chemBrandUsed").append(data);
                 // console.log(data);
-            }, 'html')
+            }, 'html');
 
         });
+
         $("#finalizeForm").on('click', '#finalize-chemBrandUsed button', async function () {
             let row = $(this).closest('div.row');
             let length = $('#finalize-chemBrandUsed').children('.row').length;

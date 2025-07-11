@@ -497,3 +497,22 @@ if (isset($_POST['cancel']) && $_POST['cancel'] === 'true') {
         exit();
     }
 }
+
+if(isset($_POST['finalsingletransact']) && $_POST['finalsingletransact'] === 'true'){
+    $id = $_POST['finalizeid'];
+    $chemUsed = $_POST['edit_chemBrandUsed'] ?? [];
+    $amtUsed = $_POST['edit-amountUsed'] ?? [];
+    $pwd = $_POST['baPwd'];
+
+    if(!is_numeric($id)){
+        http_response_code(400);
+        echo "Invalid Transaction ID.";
+        exit();
+    }
+
+    if(!validateOS($conn, $pwd)){
+        http_response_code(400);
+        echo "Invalid Password." . var_dump($_SESSION['baID']);
+        exit();
+    }
+}
