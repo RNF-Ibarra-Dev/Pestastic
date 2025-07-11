@@ -227,7 +227,7 @@ function get_more_chem($conn, $status = '')
         <div class="col-lg-6 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
                 <input type="number" maxlength="4" id="add-amountUsed-<?= $id ?>"
-                    class="form-control amt-used-input form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed"  ?  "name='add-amountUsed[]'" : 'disabled' ?>>
+                    class="form-control amt-used-input form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? "name='add-amountUsed[]'" : 'disabled' ?>>
             </div>
             <span class="form-text mt-2 mb-auto">-
             </span>
@@ -536,7 +536,7 @@ if (isset($_GET['edit']) && $_GET['edit'] == 'probCheckbox') {
     }
 }
 
-if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
+if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] === 'finalize')) {
     $transId = $_GET['transId'];
     $status = $_GET['status'];
 
@@ -564,7 +564,7 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
                 <div class="col-lg-4 mb-2">
                     <label for="edit-chemBrandUsed-<?= $id ?>" class="form-label fw-light">Chemical
                         Used:</label>
-                    <select id="edit-chemBrandUsed-<?= $id ?>" name="edit_chemBrandUsed[]" class="form-select">
+                    <select id="edit-chemBrandUsed-<?= $id ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
                         <?php get_chem_edit($conn, $id); ?>
                     </select>
                 </div>
@@ -573,8 +573,8 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
                     <div class="d-flex flex-column">
                         <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
                             id="edit-amountUsed-label">Amount:</label>
-                        <input type="number" <?= $status !== 'Finalizing' || $status !== 'Dispatched' || $status !== 'Completed' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4" id="edit-amountUsed-<?= $id ?>"
-                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>" <?= $status !== 'Finalizing' || $status !== 'Dispatched' || $status !== 'Completed' ? '' : 'disabled' ?>>
+                        <input type="number" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $id ?>"
+                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
                     </div>
                     <span class="form-text mt-auto mb-2">
                         <?= $unit ?>
@@ -595,7 +595,7 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
             <div class="col-lg-4 mb-2">
                 <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
                     Used:</label>
-                <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select">
+                <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
                     <?php get_chem($conn); ?>
                 </select>
             </div>
@@ -604,9 +604,8 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
                 <div class="d-flex flex-column">
                     <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light"
                         id="edit-amountUsed-label">Amount:</label>
-                    <input type="number" <?= $status !== 'Finalizing' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
-                        id="edit-amountUsed-<?= $idd ?>" class="form-control form-add me-3" autocomplete="one-time-code"
-                        <?= $status != 'Accepted' ? 'disabled' : '' ?>>
+                    <input type="number" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $idd ?>"
+                        class="form-control form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
                 </div>
                 <span class="form-text mt-auto ms-2 mb-2">
                     -
@@ -639,9 +638,8 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
         <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
                 <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light">Amount:</label>
-                <input type="number" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? "name='edit-amountUsed[]'" : "" ?> maxlength="4"
-                    id="edit-amountUsed-<?= $idd ?>" class="form-control form-add me-3" autocomplete="one-time-code"
-                    <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? '' : 'disabled' ?>>
+                <input type="number" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $idd ?>"
+                    class="form-control form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? '' : 'disabled' ?>>
             </div>
             <!-- change this line to select -->
             <span class="form-text mt-auto ms-2 mb-2">
@@ -900,7 +898,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
 }
 
 if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
-    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Completed' ORDER BY updated_at DESC LIMIT 5;";
+    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Dispatched' ORDER BY updated_at DESC LIMIT 5;";
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
 
@@ -910,6 +908,8 @@ if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
             $customerName = $row['customer_name'];
             $treatmentDate = $row['treatment_date'];
             $td = date('F j, Y', strtotime($treatmentDate));
+            $updatedat = $row['updated_at'];
+            $ua = date("H:i A", strtotime($updatedat));
             $request = $row['void_request'];
             $upby = $row['updated_by'];
             $cby = $row['created_by'];
@@ -920,8 +920,9 @@ if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
                 <td class="text-dark"><?= htmlspecialchars($customerName) ?></td>
                 <td class="text-dark"><?= htmlspecialchars($td) ?></td>
                 <td class="text-dark">
-                    <?= $upby === "No User" && $cby === "No User" ? htmlspecialchars("No Recorded User.") : ($upby === $cby ? htmlspecialchars("Updated/Created by $upby") : ($upby !== 'No User' ? htmlspecialchars("Updated by $upby") : htmlspecialchars("Created by $cby"))) ?>
+                    <?= $upby === "No User" && $cby === "No User" ? htmlspecialchars("No Recorded User.") : ($upby === $cby ? htmlspecialchars($upby) : ($upby !== 'No User' ? htmlspecialchars($upby) : htmlspecialchars($cby))) ?>
                 </td>
+                <td class="text-dark"><?= htmlspecialchars($ua) ?></td>
                 <td class="text-dark">
                     <div class="d-flex justify-content-center">
                         <input type="checkbox" class="btn-check" value="<?= $id ?>" name="trans[]" id="c-<?= $id ?>"
@@ -953,12 +954,15 @@ if (isset($_GET['voidrequest']) && $_GET['voidrequest'] === 'true') {
             $request = $row['void_request'];
             $upby = $row['updated_by'];
             $cby = $row['created_by'];
+            $requested_at = $row['updated_at'];
+            $ra = date('F j, Y H:i A', strtotime($requested_at));
             ?>
             <tr class="text-center">
                 <td class="text-dark" scope="row"><button type="button" class="btn btn-sidebar text-dark check-void-req-btn"
                         data-trans-id="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></button></td>
                 <td class="text-dark"><?= htmlspecialchars($customerName) ?></td>
                 <td class="text-dark"><?= htmlspecialchars($upby) ?></td>
+                <td class="text-dark"><?= htmlspecialchars($ra) ?></td>
             </tr>
 
 

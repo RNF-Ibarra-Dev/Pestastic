@@ -1063,6 +1063,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transData['transId']);
         if ($transData['status'] === 'Dispatched' || $transData['status'] === 'Completed') {
             // get transaction chemicals previous amount used
+            // throw new Exception(json_encode($amtUsed));
             for ($i = 0; $i < count($chemUsed); $i++) {
 
                 // $amt_used = $amtUsed[$i];
@@ -1212,6 +1213,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
             $transData['branch'],
             $transData['transId']
         );
+        // throw new Exception($transData['treatment']);
         mysqli_stmt_execute($transStmt);
 
         $result = mysqli_stmt_affected_rows($transStmt);
