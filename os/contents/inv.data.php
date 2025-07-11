@@ -319,10 +319,13 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
             $sql = "SELECT COUNT(*) FROM chemicals WHERE request = 1";
             break;
         case "available":
-            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel > 0 OR unop_cont > 0";
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel > 0";
             break;
         case "dispatched":
             $sql = "SELECT COUNT(*) FROM inventory_log WHERE log_type = 'Out'";
+            break;
+        case "out-of-stock":
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel = 0";
             break;
         default:
             http_response_code(400);

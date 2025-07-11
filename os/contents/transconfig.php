@@ -186,7 +186,20 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         exit();
     }
 
+    $oStatus = check_status($conn, $transId);
     if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
+        if ($oStatus === 'Finalizing' && $status === 'Dispatched') {
+            http_response_code(400);
+            echo "Error. You cannot go back once finalizing phase is set.";
+            exit();
+        }
+
+        if ($oStatus === 'Dispatched' && ($status === 'Pending' || $status === 'Accepted')) {
+            http_response_code(400);
+            echo "Error. You cannot go back once the technicians are dispatched. Please cancel the transaction first.";
+            exit();
+        }
+
         if (empty($amtUsed)) {
             http_response_code(400);
             echo "Amount Used is required for the current Status.";
@@ -201,8 +214,6 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         }
     }
 
-
-    $oStatus = check_status($conn, $transId);
     // no transId
     if (!$oStatus) {
         http_response_code(400);
@@ -221,7 +232,6 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         echo 'Invalid Status. Completed and voided transactions cannot be edited.';
         exit();
     }
-
 
     if ($package != 'none') {
         if (!in_array($package, $packageIds)) {
@@ -257,7 +267,10 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         'pstart' => $pstart,
         'pexp' => $pexp,
         'note' => $note,
-        'upby' => $upby
+        'upby' => $upby,
+        'branch' => $_SESSION['branch'],
+        'userid' => $_SESSION['baID'],
+        'role' => 'branchadmin'
     ];
 
     if (!validateOS($conn, $saPwd)) {
