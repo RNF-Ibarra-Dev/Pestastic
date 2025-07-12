@@ -2905,6 +2905,19 @@ function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
         }
 
         $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transid);
+        $delChems = array_diff($existingChems, $chemUsed);
+        if (!empty($delChems)) {
+            $delete = delete_old_ids($conn, 'transaction_chemicals', $transid, 'chem_id', $delChems);
+            if (isset($delete['error'])) {
+                throw new Exception('Error: ' . $delete['error']);
+            }
+
+            $revert = revert_v2($conn, $delChems, $transid);
+            if (isset($revert['error'])) {
+                throw new Exception("Error: " . $revert['error'] . " 864: Current Del Chem ID: $delChems | Transaction ID: " . $transData['transId']);
+            }
+        }
+
         // throw new Exception(var_dump($chemUsed) . var_dump($existingChems));
         for ($i = 0; $i < count($chemUsed); $i++) {
             // $amt_used = $amtUsed[$i];
@@ -2922,24 +2935,16 @@ function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
                 }
             }
             // new chemicals
-            // $chemlevel = get_chem_level($conn, $chemUsed[$i]);
-            // if ((int) $amtUsed[$i] > $chemlevel) {
-            //     $chemname = get_chemical_name($conn, $chemUsed[$i]);
-            //     throw new Exception("Insufficient Chemical: " . $chemname);
-            // } else {
-            //     $amount = (int) $amtUsed[$i];
-            //     $amount = !in_array($amtUsed[$i], $existingChems) ? $amount * -1 : $amount;
-            //     $reflect = reflect_trans_chem($conn, $amount, $chemUsed[$i]);
-            //     if (isset($reflect['error'])) {
-            //         throw new Exception("New chemical error: " . $reflect['error']);
-            //     }
-            // }
-
-            $recordchem = add_chemical_used($conn, $transid, $chemUsed[$i], $amtUsed[$i]);
-            if (!$recordchem) {
-                throw new Exception("Failed to record a chemical. Please try again later.");
-            }
-            continue;
+            $chemlevel = get_chem_level($conn, $chemUsed[$i]);
+            if ((int) $amtUsed[$i] > $chemlevel) {
+                $chemname = get_chemical_name($conn, $chemUsed[$i]);
+                throw new Exception("Insufficient Chemical: " . $chemname);
+            } 
+        }
+        
+        $recordchem = add_chemical_used($conn, $transid, $chemUsed[$i], $amtUsed[$i]);
+        if (!$recordchem) {
+            throw new Exception("Failed to record a chemical. Please try again later.");
         }
 
         // log transaction
@@ -2980,8 +2985,23 @@ function complete_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
             throw new Exception("Failed to update transaction. Please try again later.");
         }
 
+        // delete not existing chemicals at the new set
         $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transid);
+        $delChems = array_diff($existingChems, $chemUsed);
+        if (!empty($delChems)) {
+            $delete = delete_old_ids($conn, 'transaction_chemicals', $transid, 'chem_id', $delChems);
+            if (isset($delete['error'])) {
+                throw new Exception('Error: ' . $delete['error']);
+            }
+
+            $revert = revert_v2($conn, $delChems, $transid);
+            if (isset($revert['error'])) {
+                throw new Exception("Error: " . $revert['error'] . " 864: Current Del Chem ID: $delChems | Transaction ID: " . $transData['transId']);
+            }
+        }
+
         // throw new Exception(var_dump($chemUsed) . var_dump($existingChems));
+        // check -> record -> reflect
         for ($i = 0; $i < count($chemUsed); $i++) {
             // $amt_used = $amtUsed[$i];
             if ($amtUsed[$i] === '' || (int) $amtUsed[$i] === 0) {
@@ -2994,6 +3014,10 @@ function complete_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
                     throw new Exception("Error: " . $prevtransamt['error'] . $chemUsed[$i] . json_encode($existingChems));
                 }
                 if ((int) $amtUsed[$i] === $prevtransamt) {
+                    $recordchem = add_chemical_used($conn, $transid, $chemUsed[$i], $amtUsed[$i]);
+                    if (!$recordchem) {
+                        throw new Exception("Failed to record a chemical. Please try again later.");
+                    }
                     continue;
                 }
             }
@@ -3010,12 +3034,10 @@ function complete_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
                     throw new Exception("New chemical error: " . $reflect['error']);
                 }
             }
-
             $recordchem = add_chemical_used($conn, $transid, $chemUsed[$i], $amtUsed[$i]);
             if (!$recordchem) {
                 throw new Exception("Failed to record a chemical. Please try again later.");
             }
-            continue;
         }
 
         // log transaction
