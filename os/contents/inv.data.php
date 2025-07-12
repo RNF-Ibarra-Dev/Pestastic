@@ -505,6 +505,8 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
             exit();
         }
         $qty = (float) $chemcapacity * $ccontainer;
+    } else {
+        $fccontainer = 0;
     }
 
     // $valid_logtype = '';
@@ -528,12 +530,14 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
 
         if ($op === 'add') {
             $final_qty = $qty;
-            if ($wcontainer)
+            if ($wcontainer) {
                 $fccontainer = $ccontainer;
+            }
         } else {
             $final_qty = $qty * -1;
-            if ($wcontainer)
+            if ($wcontainer) {
                 $fccontainer = $ccontainer * -1;
+            }
         }
     } else {
         // trigger switch if in select - restrict choices
@@ -541,26 +545,30 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
             case 'in':
                 $valid_logtype = "Manual Stock Correction (In)";
                 $final_qty = $qty;
-                if ($wcontainer)
+                if ($wcontainer) {
                     $fccontainer = $ccontainer;
+                }
                 break;
             case 'out':
                 $valid_logtype = "Manual Stock Correction (Out)";
                 $final_qty = $qty * -1;
-                if ($wcontainer)
+                if ($wcontainer) {
                     $fccontainer = $ccontainer * -1;
+                }
                 break;
             case 'lost':
                 $valid_logtype = "Lost/Damaged Item";
                 $final_qty = $qty * -1;
-                if ($wcontainer)
+                if ($wcontainer) {
                     $fccontainer = $ccontainer * -1;
+                }
                 break;
             case 'scrapped':
                 $valid_logtype = "Trashed Item";
                 $final_qty = $qty * -1;
-                if ($wcontainer)
+                if ($wcontainer) {
                     $fccontainer = $ccontainer * -1;
+                }
                 break;
             default:
                 http_response_code(400);

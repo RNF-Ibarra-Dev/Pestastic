@@ -31,8 +31,8 @@ if (isset($_GET['inventorylog']) && $_GET['inventorylog'] == 'true') {
             $logtype = $row['log_type'];
             $qty = $row['quantity'];
             $logdate = $row['log_date'];
-            $lg = date('F j, Y | H:s A');
-            $role = $row['user_role'];
+            $lg = date('F j, Y | h:s A', strtotime($logdate));
+            $role = (string) $row['user_role'];
             $userid = $row['user_id'];
             $user = get_user($conn, $userid, $role);
             $transid = $row['trans_id'] === NULL ? 'None' : $row['trans_id'];
