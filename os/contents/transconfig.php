@@ -95,10 +95,12 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         }
     }
 
-    if (count($amtUsed) !== count($chemUsed)) {
-        http_response_code(400);
-        echo "Chemical used and amount used count mismatched. Please refresh the page and try again.";
-        exit();
+    if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
+        if (count($amtUsed) !== count($chemUsed)) {
+            http_response_code(400);
+            echo "Chemical used and amount used count mismatched. Please refresh the page and try again.";
+            exit();
+        }
     }
 
     if (empty($saPwd)) {
@@ -498,21 +500,24 @@ if (isset($_POST['cancel']) && $_POST['cancel'] === 'true') {
     }
 }
 
-if(isset($_POST['finalsingletransact']) && $_POST['finalsingletransact'] === 'true'){
+if (isset($_POST['finalsingletransact']) && $_POST['finalsingletransact'] === 'true') {
     $id = $_POST['finalizeid'];
     $chemUsed = $_POST['edit_chemBrandUsed'] ?? [];
     $amtUsed = $_POST['edit-amountUsed'] ?? [];
+    $notes = $_POST['note'];
     $pwd = $_POST['baPwd'];
 
-    if(!is_numeric($id)){
+    if (!is_numeric($id)) {
         http_response_code(400);
         echo "Invalid Transaction ID.";
         exit();
     }
 
-    if(!validateOS($conn, $pwd)){
+    if (!validateOS($conn, $pwd)) {
         http_response_code(400);
-        echo "Invalid Password." . var_dump($_SESSION['baID']);
+        echo "Invalid Password.";
         exit();
     }
+
+    // $finalize = finalize_trans($conn, $id, $chemUsed, $amtUsed, $)
 }

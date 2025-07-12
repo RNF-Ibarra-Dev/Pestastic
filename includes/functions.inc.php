@@ -789,7 +789,12 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
                 }
             }
 
-
+            // set amt used to 0
+            if ($status === "Pending" || $status === "Accepted") {
+                for ($i = 0; $i < count($chemUsed); $i++) {
+                    $amtUsed[$i] = 0;
+                }
+            }
             // ONLY records chem and amount used for the transaction
             for ($i = 0; $i < count($chemUsed); $i++) {
                 $level = get_chem_level($conn, $chemUsed[$i]);
@@ -1281,9 +1286,9 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         // completed -> logtype = return
         // if completed, check for logtypes with same transaction
         if ($transData['status'] === 'Dispatched' || $transData['status'] === 'Completed' || $transData['Finalizing']) {
-                $log = log_transaction($conn, $transData['transId'], $chemUsed, $amtUsed, $transData['branch'], $transData['userid'], $transData['role'], $transData['note'], $transData['status']);
-                if (isset($log['error'])) {
-                    throw new Exception($log['error']);
+            $log = log_transaction($conn, $transData['transId'], $chemUsed, $amtUsed, $transData['branch'], $transData['userid'], $transData['role'], $transData['note'], $transData['status']);
+            if (isset($log['error'])) {
+                throw new Exception($log['error']);
             }
         }
 
@@ -1664,6 +1669,7 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             $_SESSION["lastName"] = $userExists['lastName'];
             $_SESSION['empId'] = $userExists['techEmpId'];
             $_SESSION['branch'] = $userExists['user_branch'];
+            $_SESSION['user_role'] = "technician";
             header("location: ../technician/index.php?tech_login=success");
             exit();
         } else {
@@ -1695,6 +1701,7 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             $_SESSION['empId'] = $userExists['baEmpId'];
             $_SESSION['baEmail'] = $userExists['baEmail'];
             $_SESSION['branch'] = $userExists['user_branch'];
+            $_SESSION['user_role'] = "branchadmin";
             header("location: ../os/index.php?os_login=success");
             exit();
         } else {
@@ -1718,6 +1725,7 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             $_SESSION['empId'] = $userExists['saEmpId'];
             $_SESSION['saEmail'] = $userExists['saEmail'];
             $_SESSION['branch'] = $userExists['user_branch'];
+            $_SESSION['user_role'] = "superadmin";
             header("location: ../superadmin/index.php?sa_login=success");
             exit();
         } else {
@@ -2849,5 +2857,96 @@ function get_chemical($conn, $id)
         return $row;
     } else {
         return ['error' => 'Chemical not found.'];
+    }
+}
+
+function get_branch($conn, $transid){
+    
+}
+
+function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $note)
+{
+
+
+    mysqli_begin_transaction($conn);
+    try {
+        $status = check_status($conn, $transid);
+        if ($status !== "Dispatched") {
+            throw new Exception("Finalizing Error. Status is not dispatched.");
+        }
+
+        $status = "Finalizing";
+
+        $sql = "UPDATE transactions SET transaction_status = ? WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("stmt failed.");
+        }
+        mysqli_stmt_bind_param($stmt, 'si', $status, $transid);
+        mysqli_stmt_execute($stmt);
+
+        if (!mysqli_stmt_affected_rows($stmt) > 0) {
+            throw new Exception("Failed to update transaction. Please try again later.");
+        }
+
+        $logchems = log_transaction($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $_SESSION['user_role'], $note, $status);
+        if (isset($logchems['error'])) {
+            throw new Exception($logchems['error']);
+        }
+
+        $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transid);
+        for ($i = 0; $i < count($chemUsed); $i++) {
+            // $amt_used = $amtUsed[$i];
+            if ($amtUsed[$i] === '') {
+                throw new Exception("Amount used should not be empty.");
+            }
+            if (in_array($chemUsed[$i], $existingChems)) {
+                $prevtransamt = prev_trans_amt($conn, $chemUsed[$i], $transid);
+                if (isset($prevtransamt['error'])) {
+                    throw new Exception("Error: " . $prevtransamt['error'] . $chemUsed[$i] . json_encode($existingChems));
+                }
+                if ($amtUsed[$i] == $prevtransamt) {
+                    continue;
+                }
+            } else {
+                $chemlevel = get_chem_level($conn, $chemUsed[$i]);
+                if ($amtUsed[$i] > $chemlevel) {
+                    $chemname = get_chemical_name($conn, $chemUsed[$i]);
+                    throw new Exception("Insufficient Chemical: " . $chemname);
+                } else {
+                    $amount = (int) $amtUsed[$i];
+                    $amount = !in_array($amtUsed[$i], $existingChems) ? $amount * -1 : $amount;
+                    $reflect = reflect_trans_chem($conn, $amount, $chemUsed[$i]);
+                    if (isset($reflect['error'])) {
+                        throw new Exception("New chemical error: " . $reflect['error']);
+                    }
+                }
+                continue;
+            }
+
+            $chemlevel = get_chem_level($conn, $chemUsed[$i]);
+
+            if ($amtUsed[$i] > $chemlevel) {
+                $chemname = get_chemical_name($conn, $chemUsed[$i]);
+                throw new Exception("Insufficient Chemical:  " . $chemname);
+            }
+
+            if ($amtUsed[$i] <= 0 || $amtUsed == null) {
+                throw new Exception("Remove Chemicals without value.");
+            }
+            $difference = $prevtransamt - $amtUsed[$i];
+            $reflect = reflect_trans_chem($conn, $difference, $chemUsed[$i]);
+
+            if (isset($reflect['error'])) {
+                throw new Exception("Modify error: " . $reflect['error'] . 'prev amt: ' . $prevtransamt . ' Amount Used: ' . $amtUsed[$i] . json_encode($amtUsed));
+            }
+        }
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at line ' . $e->getFile()
+        ];
     }
 }

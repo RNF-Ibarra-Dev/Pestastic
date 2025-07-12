@@ -1078,6 +1078,9 @@
                                     <p class="fw-light m-0 me-2">Add Chemical</p><i
                                         class="bi bi-plus-circle text-light"></i>
                                 </button>
+
+                                <label for="finalizenotes" class="fw-light my-2">Note:</label>
+                                <textarea name="note" class="form-control w-50" id="finalizeNotes" cols="1"></textarea>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
@@ -1253,6 +1256,7 @@
 
         $(document).on('submit', '#finalizeForm', async function(e){
             e.preventDefault();
+            let status = $('#sortstatus').val();
             console.log($(this).serialize());
             $.ajax({
                 method: 'POST',
@@ -1262,9 +1266,12 @@
             })
             .done(function(d){
                 if(d.success){
+                    loadpage(1, status);
                     show_toast(d.success);
+                    $("#finalizeForm")[0].reset();
+                    $("#finalconfirm").modal('hide');
                 } else{
-                    alert('Unknown error occured')
+                    alert('Unknown error occured');
                 }
             })
             .fail(function(e){
@@ -1987,8 +1994,18 @@
             // console.log(id);
             $("#finalizeid").val(id);
             await get_chemical_brand('finalize', id, "Dispatched");
+            $.get(transUrl, {
+                notes: true,
+                id: id
+            }, function(d){
+                // console.log(d);
+                // dd = JSON.parse(d);
+                $("#finalizeNotes").val(d.notes);
+            }, 'json')
+            .fail(function(e){
+                console.log(e);
+            })
             $("#finalizeModal").modal('show');
-
         });
 
         async function view_transaction(transId) {

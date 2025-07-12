@@ -973,3 +973,25 @@ if (isset($_GET['voidrequest']) && $_GET['voidrequest'] === 'true') {
     }
 }
 
+if(isset($_GET['notes']) && $_GET['notes'] === 'true'){
+    $id = $_GET['id'];
+
+    $sql = "SELECT notes FROM transactions WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt, $sql)){
+        http_response_code(400);
+        echo "stmt failed";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if($row = mysqli_fetch_row($result)){
+        http_response_code(200);
+        echo json_encode(['notes' => $row]);
+        exit();
+    }
+}
