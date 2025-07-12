@@ -630,7 +630,7 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
         <div class="col-lg-4 mb-2">
             <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
                 Used:</label>
-            <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select">
+            <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
                 <?php get_chem($conn); ?>
             </select>
         </div>

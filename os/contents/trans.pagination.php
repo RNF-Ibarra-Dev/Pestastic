@@ -299,14 +299,14 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
         }
 
 
-        $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC LIMIT $limitstart, $pageRows;";
+        $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY updated_at DESC LIMIT $limitstart, $pageRows;";
         mysqli_stmt_prepare($stmt, $sql);
         mysqli_stmt_bind_param($stmt, $types, ...$data);
         mysqli_stmt_execute($stmt);
 
         $result = mysqli_stmt_get_result($stmt);
     } else {
-        $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC LIMIT $limitstart, $pageRows;";
+        $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY updated_at DESC LIMIT $limitstart, $pageRows;";
         $result = mysqli_query($conn, $sql);
     }
 

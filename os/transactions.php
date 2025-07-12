@@ -1080,7 +1080,7 @@
                                 </button>
 
                                 <label for="finalizenotes" class="fw-light my-2">Note:</label>
-                                <textarea name="note" class="form-control w-50" id="finalizeNotes" cols="1"></textarea>
+                                <textarea name="note" class="form-control w-50" id="finalizeNotes" cols="1" placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
@@ -1119,7 +1119,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                    data-bs-target="#reschedModal">Go back</button>
+                                    data-bs-target="#finalizeModal">Go back</button>
                                 <button type="submit" class="btn btn-grad">Finalize</button>
                             </div>
                         </div>
