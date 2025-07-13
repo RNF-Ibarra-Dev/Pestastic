@@ -513,6 +513,9 @@ if (isset($_POST['finalsingletransact']) && $_POST['finalsingletransact'] === 't
         exit();
     }
 
+    // http_response_code(400);
+    // echo var_dump($chemUsed);
+
     if(count($chemUsed) !== count($amtUsed)){
         http_response_code(400);
         echo "Error. The number of chemicals does not match the number of amount.";
@@ -566,7 +569,48 @@ if (isset($_POST['singleconfirm']) && $_POST['singleconfirm'] === 'true') {
         exit();
     }
 
-    $finalize = finalize_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['baID'], $notes, $_SESSION['user_role']);
+    $finalize = complete_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['baID'], $notes, $_SESSION['user_role']);
+    if(isset($finalize['error'])){
+        http_response_code(400);
+        echo $finalize['error'];
+        exit();
+    } else if($finalize){
+        http_response_code(200);
+        echo json_encode(['success' => 'Transaction Finalized.']);
+        exit();
+    } else{
+        http_response_code(400);
+        echo "Unknown error occured.";
+        exit();
+    }
+}
+
+if (isset($_POST['singledispatch']) && $_POST['singledispatch'] === 'true') {
+    $id = $_POST['dispatchid'];
+    $chemUsed = $_POST['edit_chemBrandUsed'] ?? [];
+    $amtUsed = $_POST['edit-amountUsed'] ?? [];
+    $notes = $_POST['note'];
+    $pwd = $_POST['baPwd'];
+
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo "Invalid Transaction ID.";
+        exit();
+    }
+
+    if(count($chemUsed) !== count($amtUsed)){
+        http_response_code(400);
+        echo "Error. The number of chemicals does not match the number of amount.";
+        exit();
+    }
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo "Invalid Password.";
+        exit();
+    }
+
+    $finalize = dispatch_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['baID'], $notes, $_SESSION['user_role']);
     if(isset($finalize['error'])){
         http_response_code(400);
         echo $finalize['error'];

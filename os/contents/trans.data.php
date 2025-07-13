@@ -536,7 +536,7 @@ if (isset($_GET['edit']) && $_GET['edit'] == 'probCheckbox') {
     }
 }
 
-if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] === 'finalize' || $_GET['getChem'] === 'complete')) {
+if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] === 'finalize' || $_GET['getChem'] === 'complete' || $_GET['getChem'] === 'dispatch')) {
     $transId = $_GET['transId'];
     $status = $_GET['status'];
 
