@@ -32,7 +32,7 @@
                     </p>
                     <p class="fw-light mb-0 ">Pending transactions that needs to be approved by either Operations
                         Supervisor or Manager.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-2" id="count_pending"></p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_pending"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
                     <p class="fs-5 fw-bold"><i
@@ -40,18 +40,24 @@
                     </p>
                     <p class="fw-light mb-0 ">Accepted transactions that is at standby until dispatched at a
                         specific date.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-2" id="count_accepted"></p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_accepted"></p>
                 </div>
+                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <p class="fs-5 fw-bold"><i
+                            class="bi bi-truck-flatbed me-2 bg-warning bg-opacity-50 py-1 px-2 rounded shadow-sm "></i>Dispatched
+                    </p>
+                    <p class="fw-light mb-0 ">Transactions that are currently being carried out.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_dispatched"></p>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
                 <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-calendar2-check-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm "></i>Completed
                     </p>
-                    <p class="fw-light mb-0 ">Completed transactions marked done by Technicians and approved by
-                        Operations Supervisors.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-2" id="count_completed"></p>
+                    <p class="fw-light mb-0 ">Reviewed and approved as finished.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_completed"></p>
                 </div>
-            </div>
-            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
                 <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-clipboard-x-fill me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm "></i>Voided
@@ -83,6 +89,7 @@
                     <option value='' selected>Show All Status</option>
                     <option value="Pending">Pending</option>
                     <option value="Accepted">Accepted</option>
+                    <option value="Dispatched">Dispatched</option>
                     <option value="Finalizing">Finalizing</option>
                     <option value="Completed">Completed</option>
                     <option value="Cancelled">Cancelled</option>
@@ -108,9 +115,8 @@
 
             <div class="table-responsive-sm d-flex justify-content-center">
                 <table class="table align-middle table-hover m-3 mt-2 os-table w-100 text-light">
-                    <caption class="text-light text-muted">List of all transactions. For faster transaction approval,
-                        click
-                        'Pending' under the status column.</caption>
+                    <caption class="text-light text-muted">List of all transactions. For easy transaction progress,
+                        click the status badges..</caption>
                     <thead class="text-center">
                         <tr>
                             <th scope="row">Transaction ID</th>
@@ -223,7 +229,7 @@
                                             <label for="add-packageStart"
                                                 class="form-label fw-light text-nowrap">Package Warranty
                                                 Start</label>
-                                            <input placeholder="--/--/--" id="add-packageStart" name="add-packageStart "
+                                            <input placeholder="--/--/--" id="add-packageStart" name="add-packageStart"
                                                 class="form-control form-add" disabled>
                                         </div>
                                         <div class="col-lg-3 mb-2">
@@ -262,28 +268,43 @@
                                         </div>
                                     </div>
 
-                                    <div class="row mb-2" did="row">
+                                    <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
                                             <label for="add-chemBrandUsed" class="form-label fw-light">Chemical
                                                 Used</label>
                                             <select id="add-chemBrandUsed" name="add_chemBrandUsed[]"
-                                                class="form-select">
+                                                class="form-select chem-brand-select">
                                                 <!-- chem ajax -->
                                             </select>
-
+                                            <!-- <div class="form-check mt-auto">
+                                                <input class="form-check-input whole-container-chk" type="checkbox"
+                                                    value="" id="add-whole-chk">
+                                                <label class="form-check-label" for="add-whole-chk">
+                                                    Whole Container
+                                                </label>
+                                            </div> -->
                                         </div>
-
-
-                                        <div class="col-lg-2 mb-2 d-flex gap-1 p-0 justify-content-start">
+                                        <div class="col-lg-6 mb-2 ps-0 d-flex justify-content-evenly">
+                                            <div class="d-flex flex-column">
+                                                <label for="add-amountUsed" class="form-label fw-light">Amount
+                                                    Used</label>
+                                                <input type="number" maxlength="4" id="add-amountUsed"
+                                                    name="add-amountUsed[]"
+                                                    class="form-control amt-used-input form-add me-3"
+                                                    autocomplete="one-time-code" disabled>
+                                            </div>
+                                            <span class="form-text mt-auto mb-2">-</span>
                                             <button type="button" id="addMoreChem"
                                                 class="btn btn-grad mt-auto py-2 px-3"><i
                                                     class="bi bi-plus-circle text-light"></i></button>
                                         </div>
                                     </div>
-
-                                    <div class="row mb-2" id="add-chemContainer">
+                                    <div class="mb-2" id="add-chemContainer">
                                         <!-- template add chemical -->
                                     </div>
+                                    <p class="alert alert-warning py-1 mt-1 w-50 mx-auto text-center amt-used-alert"
+                                        style="display: none;"></p>
+
                                     <div class="row mb-2">
                                         <div class="dropdown-center col-lg-6 mb-2">
                                             <label for="add-technicianName" class="form-label fw-light">Technicians
@@ -308,6 +329,7 @@
                                                 <option value="Pending">Pending</option>
                                                 <option value="Accepted">Accepted</option>
                                                 <option value="Finalizing">Finalizing </option>
+                                                <option value="Dispatched">Dispatched </option>
                                                 <option value="Completed">Completed </option>
                                                 <option value="Cancelled">Cancelled </option>
                                                 <option value="Voided">Voided </option>
@@ -578,6 +600,8 @@
                                         </div>
 
                                     </div>
+                                    <p class="alert alert-warning py-1 mt-1 w-50 mx-auto text-center amt-used-alert"
+                                        style="display: none;"></p>
 
                                     <div class="row mb-2">
                                         <div class="col-lg-6">
@@ -626,6 +650,7 @@
                                         <!-- template add chemical -->
                                     </div>
 
+
                                     <div class="row mb-2 d-none" id="edit-status-col">
                                         <!-- edit -->
                                         <div class="col-lg-6 d-flex flex-column">
@@ -635,9 +660,10 @@
                                                 <option value="" selected>Select Status</option>
                                                 <option value="Pending">Pending</option>
                                                 <option value="Accepted">Accepted</option>
-                                                <option value="Finalizing">Finalizing </option>
-                                                <option value="Completed">Completed </option>
-                                                <option value="Cancelled">Cancelled </option>
+                                                <option value="Finalizing">Finalizing</option>
+                                                <option value="Dispatched">Dispatched</option>
+                                                <option value="Completed">Completed</option>
+                                                <option value="Cancelled">Cancelled</option>
                                                 <option value="Voided">Voided</option>
                                             </select>
                                             <p class="alert alert-warning py-1 mt-2" style="display: none !important;">
@@ -735,10 +761,17 @@
                                             <th class="text-dark" scope="col">Transaction ID</th>
                                             <th class="text-dark">Customer Name</th>
                                             <th class="text-dark">Requested By</th>
+                                            <th class="text-dark">Requested At</th>
                                         </tr>
                                     </thead>
 
                                     <tbody id="voidrequesttable" class="table-group-divider">
+                                        <tr>
+                                            <td scope='row' colspan='6' class='text-center'>
+                                                <div class='spinner-grow text-secondary' role='status'><span
+                                                        class='visually-hidden'>Loading...</span></div>
+                                            </td>
+                                        </tr>
                                     </tbody>
 
                                 </table>
@@ -775,6 +808,7 @@
                                                 <th class="text-dark">Customer Name</th>
                                                 <th class="text-dark">Treatment Date</th>
                                                 <th class="text-dark">Updated By</th>
+                                                <th class="text-dark">Updated At</th>
                                                 <th class="text-dark">
                                                     <input type="checkbox" class="btn-check" id="checkall"
                                                         autocomplete="off">
@@ -785,6 +819,12 @@
                                         </thead>
 
                                         <tbody id="finalizetranstable" class="table-group-divider">
+                                            <tr>
+                                                <td scope='row' colspan='6' class='text-center'>
+                                                    <div class='spinner-grow text-secondary' role='status'><span
+                                                            class='visually-hidden'>Loading...</span></div>
+                                                </td>
+                                            </tr>
                                         </tbody>
 
                                     </table>
@@ -1019,6 +1059,209 @@
                     </div>
                 </div>
             </form>
+
+            <!-- finalizing shortcut -->
+            <form id="finalizeForm">
+                <input type="hidden" name="finalizeid" id="finalizeid">
+                <div class="modal fade text-dark modal-edit" id="finalizeModal" tabindex="-1" aria-labelledby="create"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Finalize Transaction</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                        class="bi text-light bi-x"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="p-0 m-0 mb-2" id="finalize-chemBrandUsed"></div>
+                                <button type="button" id="finalize-addMoreChem"
+                                    class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
+                                    <p class="fw-light m-0 me-2">Add Chemical</p><i
+                                        class="bi bi-plus-circle text-light"></i>
+                                </button>
+
+                                <label for="finalizenotes" class="fw-light my-2">Note:</label>
+                                <textarea name="note" class="form-control w-50" id="finalizeNotes" cols="1"
+                                    placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
+                                <button type="button" data-bs-target="#finalconfirm" data-bs-toggle="modal"
+                                    class="btn btn-grad">Proceed</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="finalconfirm" tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Finalize Transaction Confirmation</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="finalizing-inputpwd" class="form-label fw-light">Confirm Finalizing
+                                        this transaction?
+                                        Enter Operation Supervisor
+                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="baPwd" class="form-control w-75"
+                                            id="finalizing-inputpwd">
+                                    </div>
+                                </div>
+                                <p class="text-body-secondary fw-light">Note. This will only be set to finalizing status
+                                    and is
+                                    up for review yet.</p>
+                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                    id="finalizingAlert">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#finalizeModal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Finalize</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form id="completeForm">
+                <input type="hidden" name="completeid" id="completeid">
+                <div class="modal fade text-dark modal-edit" id="completeModal" tabindex="-1" aria-labelledby="create"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Finalize Transaction</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                        class="bi text-light bi-x"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="p-0 m-0 mb-2" id="complete-chemBrandUsed"></div>
+                                <button type="button" id="complete-addMoreChem"
+                                    class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
+                                    <p class="fw-light m-0 me-2">Add Chemical</p><i
+                                        class="bi bi-plus-circle text-light"></i>
+                                </button>
+
+                                <label for="completenotes" class="fw-light my-2">Note:</label>
+                                <textarea name="note" class="form-control w-50" id="completenotes" cols="1"
+                                    placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
+                                <button type="button" data-bs-target="#completeconfirm" data-bs-toggle="modal"
+                                    class="btn btn-grad">Proceed</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="completeconfirm"
+                    tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Finalize Transaction Confirmation</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="complete-inputpwd" class="form-label fw-light">Mark
+                                        this transaction as Completed?
+                                        Enter Operation Supervisor
+                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="baPwd" class="form-control w-75"
+                                            id="complete-inputpwd">
+                                    </div>
+                                </div>
+                                <p class="text-body-secondary fw-light">Note. You cannot revert this once marked as
+                                    Complete. It is recommended to double check.</p>
+                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                    id="completeAlert">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#completeModal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Complete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form id="dispatchForm">
+                <input type="hidden" name="dispatchid" id="dispatchid">
+                <div class="modal fade text-dark modal-edit" id="dispatchModal" tabindex="-1" aria-labelledby="create"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Dispatch Transaction</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                        class="bi text-light bi-x"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="p-0 m-0 mb-2" id="dispatch-chemBrandUsed"></div>
+                                <button type="button" id="dispatch-addMoreChem"
+                                    class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
+                                    <p class="fw-light m-0 me-2">Add Chemical</p><i
+                                        class="bi bi-plus-circle text-light"></i>
+                                </button>
+
+                                <label for="dispatchnotes" class="fw-light my-2">Note:</label>
+                                <textarea name="note" class="form-control w-50" id="dispatchnotes" cols="1"
+                                    placeholder="e.g. Chemicals and equipment prepared for dispatch. Technician will bring 500ml Termicide and 2 sprayers."></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
+                                <button type="button" data-bs-target="#dispatchconfirm" data-bs-toggle="modal"
+                                    class="btn btn-grad">Proceed</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="dispatchconfirm"
+                    tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Dispatch Transaction Confirmation</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="complete-inputpwd" class="form-label fw-light">Update transaction to Dispatch?
+                                        Enter Operation Supervisor
+                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="baPwd" class="form-control w-75"
+                                            id="complete-inputpwd">
+                                    </div>
+                                </div>
+                                <p class="text-body-secondary fw-light">Note. Make sure the dispatch team is geared and ready.</p>
+                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                    id="dispatchAlert">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#dispatchModal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Dispatch</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
             <!-- modals end -->
 
             <div class="d-flex justify-content-center mb-5 visually-hidden" id="loader">
@@ -1108,8 +1351,12 @@
             let status = $("#sortstatus").val();
             await $.get(transUrl, "&finalizetrans=true")
                 .done(function (d) {
-                    $("#finalizetranstable").empty();
-                    $("#finalizetranstable").append(d);
+                    if ($("#finalizetranstable").length <= 0) {
+                        $("#finalizetranstable").append(d);
+                    } else {
+                        $("#finalizetranstable").empty();
+                        $("#finalizetranstable").append(d);
+                    }
                     loadpage(1, status);
                 })
                 .fail(function (e) {
@@ -1143,6 +1390,84 @@
                 });
         });
 
+        $(document).on('submit', '#finalizeForm', async function (e) {
+            e.preventDefault();
+            let status = $('#sortstatus').val();
+            // console.log($(this).serialize());
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                data: $(this).serialize() + "&finalsingletransact=true",
+                url: submitUrl
+            })
+                .done(function (d) {
+                    if (d.success) {
+                        loadpage(1, status);
+                        show_toast(d.success);
+                        $("#finalizeForm")[0].reset();
+                        $("#finalconfirm").modal('hide');
+                    } else {
+                        alert('Unknown error occured');
+                    }
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $("#finalizingAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                })
+        });
+
+        $(document).on('submit', '#completeForm', async function (e) {
+            e.preventDefault();
+            let status = $('#sortstatus').val();
+            // console.log($(this).serialize());
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                data: $(this).serialize() + "&singleconfirm=true",
+                url: submitUrl
+            })
+                .done(function (d) {
+                    if (d.success) {
+                        loadpage(1, status);
+                        show_toast(d.success);
+                        $("#completeForm")[0].reset();
+                        $("#completeconfirm").modal('hide');
+                    } else {
+                        alert('Unknown error occured');
+                    }
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $("#completeAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                })
+        });
+
+        $(document).on('submit', '#dispatchForm', async function (e) {
+            e.preventDefault();
+            let status = $('#sortstatus').val();
+            console.log($(this).serialize());
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                data: $(this).serialize() + "&singledispatch=true",
+                url: submitUrl
+            })
+                .done(function (d) {
+                    if (d.success) {
+                        loadpage(1, status);
+                        show_toast(d.success);
+                        $("#dispatchForm")[0].reset();
+                        $("#dispatchconfirm").modal('hide');
+                    } else {
+                        alert('Unknown error occured');
+                    }
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $("#dispatchAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                })
+        });
+
         $("#table").on('click', '.finalize-btn', function () {
             // console.log($(this).data('finalize-id'));
             let id = $(this).data('finalize-id');
@@ -1154,10 +1479,6 @@
             });
             $("#finalizesingletransinput").prop('disabled', false).val(id);
         });
-
-        // $('#table').on('click', 'cancel-btn')
-
-
 
         $(document).on('change', '#add-packageStart', async function (e) {
             let package_id = $('#add-package').val();
@@ -1256,7 +1577,7 @@
                     get_chemical_brand(form),
                     get_technician(form),
                     get_problems(form),
-                    add_more_chem(),
+                    // add_more_chem(),
                     add_more_tech(),
                     add_packages(),
                     treatments(form)
@@ -1332,21 +1653,28 @@
             get_overview_count('voided');
             get_overview_count('cancelled');
             get_overview_count('finalizing');
+            get_overview_count('dispatched');
         }
 
         // add / delete chem main function
-        async function add_more_chem() {
-            // let moreChemTemp = $('#add-chemicalData').html();
-            let num = 2;
+        // async function add_more_chem() {
+        //     // let moreChemTemp = $('#add-chemicalData').html();
+        //     let num = 2;
 
-            $('#addMoreChem', '#addModal').off('click').on('click', async function () {
-                await add_used_chem(num);
-                num++;
-                console.log(num);
+        //     $('#addMoreChem', '#addModal').off('click').on('click', async function() {
+        //         await add_used_chem(num);
+        //         num++;
+        //         console.log(num);
 
-            });
+        //     });
 
-        }
+        // }
+
+        $(document).on('click', '#addMoreChem', async function () {
+            let sts = $(this).data('status');
+            console.log(sts);
+            await add_used_chem(sts);
+        })
 
         // append tech row function
         async function get_more_tech(num) {
@@ -1372,7 +1700,7 @@
         }
 
         // append chem row function
-        async function add_used_chem(num) {
+        async function add_used_chem(status = '') {
             // let rowNum = num;
             try {
                 const addMoreUsed = await $.ajax({
@@ -1381,7 +1709,7 @@
                     dataType: 'html',
                     data: {
                         getMoreChem: 'true',
-                        rowNum: num
+                        status: status
                     }
                 });
 
@@ -1566,22 +1894,30 @@
             return toggled = true;
         }
 
+        $(document).on('change', "#add-status", function () {
+            let sts = $(this).val();
+
+            $('#addMoreChem').data('status', sts);
+
+            if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched') {
+                $('input.form-control.amt-used-input').prop('disabled', false);
+                $('input.form-control.amt-used-input').attr('name', 'add-amountUsed[]');
+            } else {
+                $('input.form-control.amt-used-input').val('-').prop('disabled', true);
+                $('input.form-control.amt-used-input').removeAttr('name');
+            }
+
+        })
+
         $(document).on('change', '#edit-status', function () {
             let sts = $(this).val();
-            // if (sts == 'Pending' || 'Completed') {
-            //     editTransDate.config.minDate = new Date().fp_incr(1);
-            // } else {
-            //     editTransDate.config.minDate = null;
-            // }
-
-            // $('#edit-addMoreChem').removeAttr('data-status');
             $('#edit-addMoreChem').data('status', sts);
 
-            if (sts === 'Completed' || sts === 'Finalizing') {
+            if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched') {
                 $('#edit-chemBrandUsed input.form-control').prop('disabled', false);
                 $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
             } else {
-                $('#edit-chemBrandUsed input.form-control').prop('disabled', true);
+                $('#edit-chemBrandUsed input.form-control').val('-').prop('disabled', true);
                 $('#edit-chemBrandUsed input.form-control').removeAttr('name');
             }
         });
@@ -1799,6 +2135,8 @@
             $("#reschedModal").modal('show');
         })
 
+
+
         // resched dates flatpickr
         let reschedDatee = document.getElementById('reschedDate');
         reschedDate = flatpickr(reschedDatee, {
@@ -1839,7 +2177,60 @@
                 })
         });
 
+        $("#table").on('click', '.dispatched-btn', async function () {
+            let id = $(this).data('dispatched-id');
+            // console.log(id);
+            $("#finalizeid").val(id);
+            await get_chemical_brand('finalize', id, "Dispatched");
+            $.get(transUrl, {
+                notes: true,
+                id: id
+            }, function (d) {
+                // console.log(d);
+                // dd = JSON.parse(d);
+                $("#finalizeNotes").val(d.notes);
+            }, 'json')
+                .fail(function (e) {
+                    console.log(e);
+                })
+            $("#finalizeModal").modal('show');
+        });
 
+        $("#table").on('click', '.accepted-btn', async function () {
+            let id = $(this).data('accepted');
+            // console.log(id);
+            $("#dispatchid").val(id);
+            await get_chemical_brand('dispatch', id, "Dispatched");
+            $.get(transUrl, {
+                notes: true,
+                id: id
+            }, function (d) {
+                // console.log(d);
+                // dd = JSON.parse(d);
+                $("#dispatchNotes").val(d.notes);
+            }, 'json')
+                .fail(function (e) {
+                    console.log(e);
+                })
+            $("#dispatchModal").modal('show');
+        });
+
+        $("#table").on('click', '.finalizing-btn', async function () {
+            let id = $(this).data('finalize-id');
+
+            $("#completeid").val(id);
+            await get_chemical_brand('complete', id, "Finalizing");
+            $.get(transUrl, {
+                notes: true,
+                id: id
+            }, function (d) {
+                $("#completenotes").val(d.notes);
+            }, 'json')
+                .fail(function (e) {
+                    console.log(e);
+                })
+            $("#completeModal").modal('show');
+        });
 
         async function view_transaction(transId) {
             try {
@@ -1878,10 +2269,18 @@
                         $("#viewEditForm #requestvoidbtn").hide().prop('disabled', true).attr('data-bs-target', '');
                         $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
                     } else if (d.transaction_status === 'Cancelled') {
+                        $('#editbtn').show().attr('disabled', false);
+                        $("#viewEditForm #requestvoidbtn").show().prop('disabled', false).attr('data-bs-target', '#voidrequestmodal');
                         $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
                     } else if (d.transaction_status === 'Voided') {
                         $("#viewEditForm #requestvoidbtn").hide().prop('disabled', true).attr('data-bs-target', '');
                     } else if (d.transaction_status === 'Finalizing') {
+                        $('#editbtn').show().attr('disabled', false);
+                        $("#viewEditForm #requestvoidbtn").show().prop('disabled', false).attr('data-bs-target', '#voidrequestmodal');
+                        $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                    } else if (d.transaction_status === 'Dispatched') {
+                        $('#editbtn').show().attr('disabled', false);
+                        $("#viewEditForm #requestvoidbtn").show().prop('disabled', false).attr('data-bs-target', '#voidrequestmodal');
                         $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
                     } else {
                         $('#editbtn').show().attr('disabled', false);
@@ -1889,16 +2288,12 @@
                         $("#viewEditForm #modalcancelbtn").show().prop('disabled', false).attr('data-bs-target', '#cancelscheduledmodal');
                     }
 
-                    if (d.transaction_status === "Finalizing") {
+                    if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {
                         $("#edit-status option[value='Accepted']").prop('disabled', true);
                         $("#edit-status option[value='Pending']").prop('disabled', true);
-                        $("#edit-status option[value='Cancelled']").prop('disabled', true);
-                        $("#edit-status option[value='Voided']").prop('disabled', true);
                     } else {
                         $("#edit-status option[value='Accepted']").prop('disabled', false);
                         $("#edit-status option[value='Pending']").prop('disabled', false);
-                        $("#edit-status option[value='Cancelled']").prop('disabled', false);
-                        $("#edit-status option[value='Voided']").prop('disabled', false);
                     }
 
                     if (d.void_request === 1) {
@@ -1907,12 +2302,12 @@
                         $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
                     }
 
-                    if (d.transaction_status === 'Finalizing') {
+                    if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {
                         $('#edit-chemBrandUsed input.form-control.form-add').attr('disabled', false);
                         $('#edit-chemBrandUsed input.form-control.form-add').attr('name', 'edit-amountUsed[]');
                     }
 
-                    if (d.package_id != null) {
+                    if (d.package_id !== null) {
                         // package assigned
                         $('#edit-treatment').removeAttr('name');
                         $('#view-expiry').attr('name', function (i, a) {
@@ -2044,18 +2439,30 @@
         $(document).on('change', '#add-status, #edit-status', function () {
             let sel = $(this);
             if (sel.val() === 'Voided') {
-                sel.next().fadeIn(750).html("Note. Voiding a transaction completely will require Manager approval. Ignore to continue.");
+                sel.next().fadeOut().fadeIn(750).html("Note. Voiding a transaction completely will require Manager approval. Ignore to continue.");
+                $(".amt-used-alert").fadeOut(1000);
             } else if (sel.val() === 'Accepted') {
-                sel.next().fadeIn(750).html("Make sure to double check the details at least before the dispatch date.");
+                sel.next().fadeOut().fadeIn(750).html("Make sure to double check the details at least before the dispatch date.");
+                $(".amt-used-alert").fadeOut(1000);
             } else if (sel.val() === 'Finalizing') {
-                sel.next().fadeIn(750).html("Note. Transactions with this status will be subjected to completion, please make sure to double check the details.");
+                sel.next().fadeOut().fadeIn(750).html("Note. Transactions with this status will be subjected to completion, please make sure to double check the details.");
+                $(".amt-used-alert").fadeOut().fadeIn(750).html('Note. Only report the amount the technician used.');
             } else if (sel.val() === 'Cancelled') {
-                sel.next().fadeIn(750).html("Cancelled transactions are accepted and is needed to be rescheduled.");
+                sel.next().fadeOut().fadeIn(750).html("Cancelled transactions are accepted and is needed to be rescheduled.");
+                $(".amt-used-alert").fadeOut(1000);
+            } else if (sel.val() === 'Dispatched') {
+                sel.next().fadeOut().fadeIn(750).html("Note. Make sure the technicians are ready.");
+                $(".amt-used-alert").fadeOut().fadeIn(750).html('Note. Only put the amount the technician will bring.');
             } else if (sel.val() === 'Completed') {
-                sel.next().fadeIn(750).html("Make sure to double check details. Setting this transaction to complete will make this viewonly.");
+                sel.next().fadeOut().fadeIn(750).html("Make sure to double check details. Setting this transaction to complete will make this viewonly.");
+                $(".amt-used-alert").fadeOut().fadeIn(750).html('Note. Make sure to put only the actual amount of the used chemical.');
             } else {
                 sel.next().fadeOut(1000);
+                $(".amt-used-alert").fadeOut(1000);
             }
+            $(document).on('click', '#editbtn', function () {
+                $(".amt-used-alert").hide();
+            })
         });
 
         // new
@@ -2096,24 +2503,46 @@
             }
         })
 
-        $(document).on('change', '#edit-chemBrandUsed select.form-select', function () {
-            // console.log($(this).val());
-            let span = $(this).parent().next().find('span');
+        $(document).on('change', '#edit-chemBrandUsed select.form-select, select.form-select.chem-brand-select', function () {
+            let span = $(this).closest('.row').find('span');
+
             $.get(transUrl, {
                 getunit: 'true',
                 chemid: $(this).val()
             })
                 .done(function (d) {
-                    // console.log(d);
-                    span.html(d);
+                    span.text(d);
                 })
                 .fail(function (err) {
                     console.log(err);
-                    span.html('-');
+                    $span.text('-');
                 });
-        })
+        });
 
-        $(document).on('click', 'button.ef-del-btn.btn.btn-grad', async function () {
+        // // Update unit span when checkbox is changed (even if select is not changed)
+        // $(document).on('change', '.whole-container-chk', function() {
+        //     let $chk = $(this);
+        //     let $row = $chk.closest('.row');
+        //     let $select = $row.find('select.form-select, select.form-select.chem-brand-select');
+        //     let $span = $row.find('span');
+        //     if ($chk.is(':checked')) {
+        //         $span.text("Container/s");
+        //     } else {
+        //         // Fetch unit for the selected chemical
+        //         $.get(transUrl, {
+        //                 getunit: 'true',
+        //                 chemid: $select.val()
+        //             })
+        //             .done(function(unit) {
+        //                 $span.text(unit);
+        //             })
+        //             .fail(function() {
+        //                 $span.text('-');
+        //             });
+        //     }
+        // });
+
+        $(document).on('click', '#edit-chemBrandUsed button.ef-del-btn.btn.btn-grad', async function () {
             let rowId = $(this).data('row-id');
             let row = $('#edit-chemBrandUsed > div').length;
             if (row === 1) {
@@ -2143,9 +2572,67 @@
             get_addrow('chemBrandUsed', stats);
         })
 
+        $("#finalizeForm").on('click', "#finalize-addMoreChem", function () {
+            $.get(transUrl, {
+                addrow: 'true',
+                status: 'Finalizing'
+            }, function (data) {
+                $("#finalize-chemBrandUsed").append(data);
+                // console.log(data);
+            }, 'html');
+
+        });
+        $("#completeForm").on('click', "#complete-addMoreChem", function () {
+            $.get(transUrl, {
+                addrow: 'true',
+                status: 'Completed'
+            }, function (data) {
+                $("#complete-chemBrandUsed").append(data);
+            }, 'html');
+
+        });
+        $("#dispatchForm").on('click', "#dispatch-addMoreChem", function () {
+            $.get(transUrl, {
+                addrow: 'true',
+                status: 'Dispatched'
+            }, function (data) {
+                $("#dispatch-chemBrandUsed").append(data);
+            }, 'html');
+
+        });
+
+        $("#finalizeForm").on('click', '#finalize-chemBrandUsed button', async function () {
+            let row = $(this).closest('div.row');
+            let length = $('#finalize-chemBrandUsed').children('.row').length;
+            if (length === 1) {
+                alert('One or more chemicals are required in order to proceed.');
+                console.log($('#finalize-chemBrandUsed'));
+            } else {
+                row.remove();
+            }
+        });
+        $("#completeForm").on('click', '#complete-chemBrandUsed button', async function () {
+            let row = $(this).closest('div.row');
+            let length = $('#complete-chemBrandUsed').children('.row').length;
+            if (length === 1) {
+                alert('One or more chemicals are required in order to proceed.');
+            } else {
+                row.remove();
+            }
+        });
+
+        $("#dispatchForm").on('click', '#dispatch-chemBrandUsed button', async function () {
+            let row = $(this).closest('div.row');
+            let length = $('#dispatch-chemBrandUsed').children('.row').length;
+            if (length === 1) {
+                alert('One or more chemicals are required in order to proceed.');
+            } else {
+                row.remove();
+            }
+        });
 
 
-        $(document).on('click', '#deleteChem', function () {
+        $(document).on('click', '#deleteChem, .delete-chem-row', function () {
             $(this).parent().parent().remove();
         });
 
@@ -2228,14 +2715,7 @@
 
                 } catch (error) {
                     console.log(error);
-                    // console.log(error);
-                    let errorData = error.responseJSON;
-                    if (errorData && errorData.errorMessage) {
-                        // alert('Error Message: ' + errorData.errorMessage + ';\n\nLine: ' + errorData.line + ';\n\nFile: ' + errorData.file + ';\n\nTrace: ' + errorData.trace);
-                        $('#add-alert').removeClass('visually-hidden').html(errorData.errorMessage).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                    } else {
-                        // alert('unknown error occured.');
-                    }
+                    $("#add-alert").removeClass('visually-hidden').html(error.responseText).hide().fadeIn(400).delay(2000).fadeOut(1000);
                 }
             })
         });
@@ -2450,9 +2930,46 @@
             await loadpage(currentpage, status);
         });
 
+        $('#table').ready(function () {
+            $('.pending-btn').hover(function () {
+                $(this).html('Approve/Accept');
+            }, function () {
+                $(this).html('Pending');
+            });
+        })
 
-
-
+        $(document).ready(function () {
+            $('#table').on('mouseenter', '.pending-btn', function () {
+                $(this).html('Approve/Accept Transaction');
+            });
+            $('#table').on('mouseleave', '.pending-btn', function () {
+                $(this).html('Pending');
+            });
+            $('#table').on('mouseenter', '.accepted-btn', function () {
+                $(this).html('Dispatch Transaction');
+            });
+            $('#table').on('mouseleave', '.accepted-btn', function () {
+                $(this).html('Accepted');
+            });
+            $('#table').on('mouseenter', '.dispatched-btn', function () {
+                $(this).html('Finalize Transaction');
+            });
+            $('#table').on('mouseleave', '.dispatched-btn', function () {
+                $(this).html('Dispatched');
+            });
+            $('#table').on('mouseenter', '.finalizing-btn', function () {
+                $(this).html('Complete Transaction');
+            });
+            $('#table').on('mouseleave', '.finalizing-btn', function () {
+                $(this).html('Finalizing');
+            });
+            $('#table').on('mouseenter', '.cancel-btn', function () {
+                $(this).html('Reschedule');
+            });
+            $('#table').on('mouseleave', '.cancel-btn', function () {
+                $(this).html('Cancelled');
+            });
+        });
 
         // $(document).ready(function () {
         //     // Prevent right-click

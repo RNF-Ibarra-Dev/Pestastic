@@ -492,7 +492,7 @@ function addChemv2($conn, $dataArr, $branch, $addby, $request)
 {
     mysqli_begin_transaction($conn);
     try {
-        $sql = "INSERT INTO chemicals (name, brand, chemLevel, expiryDate, date_received, notes, branch, request, added_by, container_size, unop_cont) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        $sql = "INSERT INTO chemicals (name, brand, quantity_unit, expiryDate, date_received, notes, branch, request, added_by, container_size, unop_cont, chemLevel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         $stmt = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             echo "stmt failed";
@@ -502,7 +502,7 @@ function addChemv2($conn, $dataArr, $branch, $addby, $request)
         for ($i = 0; $i < count($dataArr['name']); $i++) {
             $cnote = $dataArr['notes'][$i] ?? '';
             $notes = $cnote === '' ? null : $cnote;
-            mysqli_stmt_bind_param($stmt, 'ssissssisii', $dataArr['name'][$i], $dataArr['brand'][$i], $dataArr['level'][$i], $dataArr['eDate'][$i], $dataArr['rDate'][$i], $notes, $branch, $request, $addby, $dataArr['csize'][$i], $dataArr['ccount'][$i]);
+            mysqli_stmt_bind_param($stmt, 'sssssssisiii', $dataArr['name'][$i], $dataArr['brand'][$i], $dataArr['unit'][$i], $dataArr['eDate'][$i], $dataArr['rDate'][$i], $notes, $branch, $request, $addby, $dataArr['csize'][$i], $dataArr['ccount'][$i], $dataArr['level'][$i]);
             if (!mysqli_stmt_execute($stmt)) {
                 throw new Exception("Error at " . $dataArr['name'] . ' ' . $dataArr['brand']);
             }
@@ -578,13 +578,14 @@ function get_chemical_name($conn, $chemId)
 
 function add_chemical_used($conn, $transactionId, $chemUsedId, $amtUsed = 0)
 {
-    $chemBrand = get_chemical_name($conn, $chemUsedId);
+    $chemBrand = get_chemical_name($conn, (int) $chemUsedId);
     if (!$chemBrand) {
         echo "Chemical Not Found";
         exit();
     }
 
-    $sql = "INSERT INTO transaction_chemicals(trans_id, chem_id, chem_brand, amt_used) VALUES (?, ?, ?, ?);";
+    $sql = "INSERT INTO transaction_chemicals(trans_id, chem_id, chem_brand, amt_used) VALUES (?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE trans_id = VALUES(trans_id), chem_id = VALUES(chem_id), chem_brand = VALUES(chem_brand), amt_used = VALUES(amt_used);";
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         echo 'add chemical usage stmt failed.';
@@ -593,13 +594,13 @@ function add_chemical_used($conn, $transactionId, $chemUsedId, $amtUsed = 0)
     mysqli_stmt_bind_param($stmt, "iisi", $transactionId, $chemUsedId, $chemBrand, $amtUsed);
     mysqli_stmt_execute($stmt);
 
-    if (mysqli_stmt_affected_rows($stmt) > 0) {
-        mysqli_stmt_close($stmt);
-        return true;
-    } else {
+    if (!mysqli_stmt_affected_rows($stmt) > 0) {
         mysqli_stmt_close($stmt);
         return false;
     }
+    mysqli_stmt_close($stmt);
+    return true;
+
 }
 
 function add_pest_prob($conn, $transId, $pestProblem)
@@ -715,48 +716,123 @@ function get_chem_level($conn, $id)
     }
 }
 
-function newTransaction($conn, $customerName, $address, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note, $pstart, $pend, $addedby)
+
+function log_transaction($conn, $transid, $chemids, $qty, $branch, $user_id, $role, $note, $status, $logtype = NULL)
+{
+    try {
+        // $logtype = '';
+        if ($logtype === NULL) {
+            switch ($status) {
+                case "Finalizing":
+                    $logtype = 'Used';
+                    break;
+                case "Dispatched":
+                    $logtype = 'Out';
+                    break;
+                case "Completed":
+                    $logtype = "Return";
+                    break;
+                default:
+                    throw new Exception("Invalid status for logging.");
+            }
+        }
+
+        $sql = "INSERT INTO inventory_log (trans_id, chem_id, log_type, quantity, log_date, user_id, user_role, notes, branch) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?);";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("stmt failed.");
+        }
+
+        if (count($chemids) !== count($qty)) {
+            throw new Exception("Chemical and amount used count do not match.");
+        }
+
+        for ($i = 0; $i < count($chemids); $i++) {
+            mysqli_stmt_bind_param($stmt, 'iisdissi', $transid, $chemids[$i], $logtype, $qty[$i], $user_id, $role, $note, $branch);
+            mysqli_stmt_execute($stmt);
+            if (!mysqli_stmt_affected_rows($stmt) > 0) {
+                throw new Exception("Failed inserting chemical ID " . $chemids[$i]);
+            }
+        }
+        return true;
+    } catch (Exception $e) {
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at file ' . $e->getFile()
+        ];
+    }
+}
+
+function newTransaction($conn, $customerName, $address, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note, $pstart, $pend, $addedby, $amtUsed, $user_id = 0, $user_role = '', $branch = 1)
 {
 
     mysqli_begin_transaction($conn);
     try {
-        $transSql = "INSERT INTO transactions (customer_name, customer_address, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at, package_id, treatment_type, session_no, notes, pack_start, pack_exp, created_by) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?, ?);";
+        $transSql = "INSERT INTO transactions (customer_name, customer_address, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at, package_id, treatment_type, session_no, notes, pack_start, pack_exp, created_by, branch) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?, ?, ?);";
         $transStmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($transStmt, $transSql)) {
             throw new Exception('Stmt Failed: ' . mysqli_stmt_error($transStmt));
         }
-        mysqli_stmt_bind_param($transStmt, 'ssssssisissss', $customerName, $address, $treatmentDate, $treatmentTime, $treatment, $status, $package, $type, $session, $note, $pstart, $pend, $addedby);
+        mysqli_stmt_bind_param($transStmt, 'ssssssisissssi', $customerName, $address, $treatmentDate, $treatmentTime, $treatment, $status, $package, $type, $session, $note, $pstart, $pend, $addedby, $branch);
         mysqli_stmt_execute($transStmt);
 
         if (mysqli_stmt_affected_rows($transStmt) > 0) {
             mysqli_stmt_close($transStmt);
             $transId = mysqli_insert_id($conn);
 
-            // $iterationLogs = [];
-            // error_log("Total count of chemUsed: " . count($chemUsed));
 
+            // log changes/addition
+            // log_transaction_changes() . . . 
+            // log chem usage
+            if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
+                $logchems = log_transaction($conn, $transId, $chemUsed, $amtUsed, $branch, $user_id, $user_role, $note, $status);
+                if (isset($logchems['error'])) {
+                    throw new Exception($logchems['error']);
+                }
+            }
+
+            // set amt used to 0
+            if ($status === "Pending" || $status === "Accepted") {
+                for ($i = 0; $i < count($chemUsed); $i++) {
+                    $amtUsed[$i] = 0;
+                }
+            }
+            // ONLY records chem and amount used for the transaction
             for ($i = 0; $i < count($chemUsed); $i++) {
-                $addChemFunc = add_chemical_used($conn, $transId, $chemUsed[$i]);
+                $level = get_chem_level($conn, $chemUsed[$i]);
+                if ($amtUsed[$i] > $level) {
+                    throw new Exception('Insufficient Chemical');
+                }
+                $addChemFunc = add_chemical_used($conn, $transId, $chemUsed[$i], abs($amtUsed[$i]));
                 if (!$addChemFunc) {
                     error_log("Insert failed at iteration $i");
                     throw new Exception('The chemical used addition failed: ' . $chemUsed[$i] . ' ' . mysqli_error($conn));
                 }
+            }
 
-                // $iterationLogs[] = "iterated $i";
+            // reflect only if completed or dispatched - finalizing is going to report the used. Not confirmed.
+            $op = '';
+            if ($status === 'Completed' || $status === 'Dispatched') {
+                switch ($status) {
+                    case 'Completed':
+                        $op = 1;
+                        break;
+                    case 'Dispatched':
+                        $op = -1;
+                        break;
+                    default:
+                        $op = 0;
+                        break;
+                }
 
-                // get original value
-                // $level = get_chem_level($conn, $chemUsed[$i]);
-
-                // if ($amtUsed[$i] > $level) {
-                //     throw new Exception('Insufficient Chemical');
-                // }
-
-                // $update = update_chem_level($conn, $chemUsed[$i], $level, $amtUsed[$i]);
-
-                // if (isset($update['error'])) {
-                //     throw new Exception('Chemical not updated. Chem ID: ' . $chemUsed[$i] . $update['error']);
-                // }
+                for ($i = 0; $i < count($chemUsed); $i++) {
+                    $amtUsed[$i] *= $op;
+                    $reflect = reflect_trans_chem($conn, $amtUsed[$i], $chemUsed[$i]);
+                    if (isset($reflect['error'])) {
+                        throw new Exception($reflect['error']);
+                    }
+                }
             }
 
             // insert pest prob to database
@@ -766,9 +842,6 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
                     throw new Exception("Adding pest problem failed: " . $pestProblem[$i] . ' ' . mysqli_error($conn));
                 }
             }
-            // error_log("Transaction ID: " . $transId);
-            // error_log("Technician IDs: " . json_encode($technicianIds));
-
             // insert technicians to database
             for ($i = 0; $i < count($technicianIds); $i++) {
                 $addTech = add_tech_trans($conn, $transId, $technicianIds[$i]);
@@ -776,11 +849,10 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
                     throw new Exception('Addition of technicians failed: ' . $technicianIds[$i] . ' ' . mysqli_error($conn));
                 }
             }
+
+
             mysqli_commit($conn);
-            return [
-                'success' => true,
-                // 'iterate' => $iterationLogs
-            ];
+            return true;
         } else {
             throw new Exception('Insertion Failed.');
         }
@@ -791,6 +863,7 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
             'line' => $e->getLine(),
             'file' => $e->getFile(),
             'stringTrace' => $e->getTraceAsString(),
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at file ' . $e->getFile()
         ];
     }
 }
@@ -981,23 +1054,24 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
     mysqli_begin_transaction($conn);
     try {
 
-        if ($transData['status'] != 'Pending') {
-            if (empty($pestProblem)) {
-                throw new Exception("Transaction should be pending if Pest Problem is not indicated.");
-            }
+        // if ($transData['status'] != 'Pending') {
+        //     if (empty($pestProblem)) {
+        //         throw new Exception("Transaction should be pending if Pest Problem is not indicated.");
+        //     }
 
-            if (in_array('#', $technicianIds) || empty($technicianIds)) {
-                throw new Exception("Transaction should be pending if there is no assigned technicians.");
-            }
+        //     if (in_array('#', $technicianIds) || empty($technicianIds)) {
+        //         throw new Exception("Transaction should be pending if there is no assigned technicians.");
+        //     }
 
-            if (in_array('#', $chemUsed) || empty($chemUsed)) {
-                throw new Exception("Transaction should be pending if there is no used chemicals.");
-            }
-        }
+        //     if (in_array('#', $chemUsed) || empty($chemUsed)) {
+        //         throw new Exception("Transaction should be pending if there is no used chemicals.");
+        //     }
+        // }
 
         $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transData['transId']);
-        if ($transData['status'] === 'Finalizing' || $transData['status'] === 'Completed') {
+        if ($transData['status'] === 'Dispatched' || $transData['status'] === 'Completed') {
             // get transaction chemicals previous amount used
+            // throw new Exception(json_encode($amtUsed));
             for ($i = 0; $i < count($chemUsed); $i++) {
 
                 // $amt_used = $amtUsed[$i];
@@ -1015,7 +1089,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                     // throw new Exception($chemUsed[$i] . json_encode($existingChems) . $amtUsed[$i] . $prevtransamt);
                     // check if the value is the same
                     if ($amtUsed[$i] == $prevtransamt) {
-                        // skip loop if value is the same
+                        // // skip whole ass loop if value is the same (same value = no changes)
                         continue;
                     }
                 } else {
@@ -1028,7 +1102,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                         throw new Exception("Insufficient Chemical: " . $chemname);
                     } else {
                         $amount = (int) $amtUsed[$i];
-                        $amount = !in_array($amtUsed[$i], $existingChems) ? $amount * -1 : $amount;
+                        $amount = !in_array((int) $amtUsed[$i], $existingChems) ? $amount * -1 : $amount;
                         // throw new Exception($amount);
 
                         $reflect = reflect_trans_chem($conn, $amount, $chemUsed[$i]);
@@ -1069,7 +1143,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         $delChems = array_diff($existingChems, $chemUsed);
         $delProblems = array_diff($existingProblems, $pestProblem);
 
-        // set array to delete old removed data -- technician, chemical used, and 
+        // set array to delete old removed data -- technician, chemical used, and pest problems
         if (!empty($delTechs)) {
             $delete = delete_old_ids($conn, 'transaction_technicians', $transData['transId'], 'tech_id', $delTechs);
             if (isset($delete['error'])) {
@@ -1084,31 +1158,21 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
         // deletes chemicals that aren't at the new transaction
         if (!empty($delChems)) {
+            // delete old id record from transaction_chemicals 
+            // 'old id record'
             $delete = delete_old_ids($conn, 'transaction_chemicals', $transData['transId'], 'chem_id', $delChems);
             if (isset($delete['error'])) {
                 throw new Exception('Error: ' . $delete['error']);
             }
-            //function to revert chemical to their original value. Unless Completed.
-            // foreach ($delChems as $key => $delChemss) {
-            //     // throw new Exception("chem id: $delChemss transaction id: " . $transData['transId']);
-            //     $prevamttorestore = prev_trans_amt($conn, $delChemss, $transData['transId']);
-            //     // throw new Exception("$prevamttorestore $delChemss " . var_export($delChems));
-            //     $chemId = $delChemss;
-            //     $revert = update_trans_chem_revert($conn, $chemId, $transData['transId']);
-            //     if (isset($revert['error'])) {
-            //         throw new Exception("Error: " . $revert['error'] . " 813: Current Del Chem ID: $delChemss | Transaction ID: " . $transData['transId']);
-            //     } else {
-            //         throw new Exception($revert);
-            //     }
-            // }
 
-            $revert = revert_v2($conn, $delChems, $transData['transId']);
-            if (isset($revert['error'])) {
-                throw new Exception("Error: " . $revert['error'] . " 864: Current Del Chem ID: $delChems | Transaction ID: " . $transData['transId']);
-            } else {
-                // throw new Exception($revert);
+            // if it has a recorded amt used, revert.
+            if ($transData['status'] === 'Completed' || $transData['status'] === 'Dispatched') {
+                // reverts them especially if it is reflected. only completed and dispatched are the one reflected
+                $revert = revert_v2($conn, $delChems, $transData['transId']);
+                if (isset($revert['error'])) {
+                    throw new Exception("Error: " . $revert['error'] . " 864: Current Del Chem ID: $delChems | Transaction ID: " . $transData['transId']);
+                }
             }
-
             $fchems = array_merge($chemUsed, array_diff($existingChems, $delChems));
             $fchems = array_unique($fchems);
         } else {
@@ -1132,7 +1196,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
         $transSql = "UPDATE transactions SET treatment_date = ?, customer_name = ?, 
         treatment = ?, transaction_status = ?, customer_address = ?, transaction_time = ?, 
-        treatment_type = ?, package_id = ?, pack_start = ?, pack_exp = ?, session_no = ?, notes = ?, updated_by = ? WHERE id = ?;";
+        treatment_type = ?, package_id = ?, pack_start = ?, pack_exp = ?, session_no = ?, notes = ?, updated_by = ?, branch = ? WHERE id = ?;";
         $transStmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($transStmt, $transSql)) {
@@ -1141,7 +1205,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
         mysqli_stmt_bind_param(
             $transStmt,
-            'sssssssississi',
+            'sssssssississii',
             $transData['treatmentDate'],
             $transData['customer'],
             $transData['treatment'],
@@ -1155,11 +1219,15 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
             $transData['session'],
             $transData['note'],
             $transData['upby'],
+            $transData['branch'],
             $transData['transId']
         );
+        // throw new Exception($transData['treatment']);
         mysqli_stmt_execute($transStmt);
 
         $result = mysqli_stmt_affected_rows($transStmt);
+
+
 
         $techAR = 0;
         foreach ($fTechs as $tech) {
@@ -1178,33 +1246,44 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         }
 
         $chemAR = 0;
-        if ($transData['status'] === 'Finalizing' || $transData['status'] === 'Completed') {
-            if (count($chemUsed) === count($amtUsed)) {
-                $chemSql = "INSERT INTO transaction_chemicals (trans_id, chem_id, chem_brand, amt_used) VALUES (?, ?, ?, ?) 
+
+        if ($transData['status'] === 'Pending' || $transData['status'] === 'Accepted') {
+            $amtUsed = [];
+            for ($i = 0; $i < count($chemUsed); $i++) {
+                $amtUsed[$i] = 0;
+            }
+        }
+
+        // throw new Exception(var_dump($chemUsed) . var_dump($amtUsed));
+
+        if (count($chemUsed) === count($amtUsed)) {
+            $chemSql = "INSERT INTO transaction_chemicals (trans_id, chem_id, chem_brand, amt_used) VALUES (?, ?, ?, ?) 
                 ON DUPLICATE KEY UPDATE chem_brand = VALUES(chem_brand), amt_used = VALUES(amt_used);";
-                $chemStmt = mysqli_stmt_init($conn);
-                if (!mysqli_stmt_prepare($chemStmt, $chemSql)) {
-                    throw new Exception("chem stmt failed");
-                }
-                for ($i = 0; $i < count($chemUsed); $i++) {
-                    $oamt = prev_trans_amt($conn, $chemUsed[$i], $transData['transId']);
-                    if ($amtUsed[$i] == $oamt) {
+            $chemStmt = mysqli_stmt_init($conn);
+            if (!mysqli_stmt_prepare($chemStmt, $chemSql)) {
+                throw new Exception("chem stmt failed");
+            }
+            for ($i = 0; $i < count($chemUsed); $i++) {
+                $oamt = prev_trans_amt($conn, $chemUsed[$i], $transData['transId']);
+                // throw new Exception(var_dump($oamt));
+                if ($oamt) {
+                    if ((int) $amtUsed[$i] === $oamt) {
                         continue;
                     }
-                    $chemNames = get_chemical_name($conn, $chemUsed[$i]);
-                    if (!$chemNames) {
-                        throw new Exception('failed to fetch chemical name');
-                    }
-                    mysqli_stmt_bind_param($chemStmt, 'iisi', $transData['transId'], $chemUsed[$i], $chemNames, $amtUsed[$i]);
-                    mysqli_stmt_execute($chemStmt);
-                    $chemAR += mysqli_stmt_affected_rows($chemStmt);
-                    if (!mysqli_stmt_affected_rows($chemStmt) > 0) {
-                        throw new Exception("Update failed. $chemNames " . $amtUsed[$i] . mysqli_stmt_error($chemStmt));
-                    }
                 }
-            } else {
-                throw new Exception('chemical count error.');
+                $chemNames = get_chemical_name($conn, $chemUsed[$i]);
+                if (!$chemNames) {
+                    throw new Exception('failed to fetch chemical name');
+                }
+                mysqli_stmt_bind_param($chemStmt, 'iisi', $transData['transId'], $chemUsed[$i], $chemNames, $amtUsed[$i]);
+                mysqli_stmt_execute($chemStmt);
+                $chemAR += mysqli_stmt_affected_rows($chemStmt);
+                if (!mysqli_stmt_affected_rows($chemStmt) > 0) {
+                    throw new Exception("Update failed. $chemNames " . $amtUsed[$i] . mysqli_stmt_error($chemStmt));
+                }
             }
+        } else {
+            throw new Exception('chemical count error.');
         }
 
         $pestAR = 0;
@@ -1218,6 +1297,20 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
             mysqli_stmt_execute($pestStmt);
             $pestAR += mysqli_stmt_affected_rows($pestStmt);
         }
+
+        // log dispatched and completed -- for chemical movement\
+        // planning for some changes
+        // dispatched -> logtype = out
+        // finalizing -> logtype = used
+        // completed -> logtype = return
+        // if completed, check for logtypes with same transaction
+        if ($transData['status'] === 'Dispatched' || $transData['status'] === 'Completed' || $transData['status'] === 'Finalizing') {
+            $log = log_transaction($conn, $transData['transId'], $chemUsed, $amtUsed, $transData['branch'], $transData['userid'], $transData['role'], $transData['note'], $transData['status']);
+            if (isset($log['error'])) {
+                throw new Exception($log['error']);
+            }
+        }
+
 
         // mysqli_rollback($conn);
         mysqli_commit($conn);
@@ -1425,7 +1518,7 @@ function approve_transaction($conn, $id, $author)
 {
 
     mysqli_begin_transaction($conn);
-    try{
+    try {
 
         $checkTrans = check_approve($conn, $id);
         if (isset($checkTrans['error'])) {
@@ -1433,22 +1526,22 @@ function approve_transaction($conn, $id, $author)
         } elseif (!$checkTrans) {
             throw new Exception('Missing data. Make sure that all transaction fields are filled in.');
         }
-    
+
         $checkNormalized = check_normalized_data($conn, $id);
         if (isset($checkNormalized['error'])) {
             throw new Exception($checkNormalized['error']);
         } elseif (!$checkNormalized) {
             throw new Exception("Missing data. Make sure that all transaction fields are filled in.");
         }
-    
+
         $sql = "UPDATE transactions SET transaction_status = 'Accepted', updated_by = ? WHERE id = ?;";
         $stmt = mysqli_stmt_init($conn);
-    
+
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             echo 'STMT FAILED.';
             exit();
         }
-    
+
         mysqli_stmt_bind_param($stmt, 'si', $author, $id);
         mysqli_stmt_execute($stmt);
         if (!mysqli_affected_rows($conn) > 0) {
@@ -1595,6 +1688,7 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             $_SESSION["lastName"] = $userExists['lastName'];
             $_SESSION['empId'] = $userExists['techEmpId'];
             $_SESSION['branch'] = $userExists['user_branch'];
+            $_SESSION['user_role'] = "technician";
             header("location: ../technician/index.php?tech_login=success");
             exit();
         } else {
@@ -1626,6 +1720,7 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             $_SESSION['empId'] = $userExists['baEmpId'];
             $_SESSION['baEmail'] = $userExists['baEmail'];
             $_SESSION['branch'] = $userExists['user_branch'];
+            $_SESSION['user_role'] = "branchadmin";
             header("location: ../os/index.php?os_login=success");
             exit();
         } else {
@@ -1649,6 +1744,7 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             $_SESSION['empId'] = $userExists['saEmpId'];
             $_SESSION['saEmail'] = $userExists['saEmail'];
             $_SESSION['branch'] = $userExists['user_branch'];
+            $_SESSION['user_role'] = "superadmin";
             header("location: ../superadmin/index.php?sa_login=success");
             exit();
         } else {
@@ -1690,11 +1786,11 @@ function check_request($conn, $id)
     }
 }
 
-function editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes, $branch, $upBy, $contsize, $contcount, $request = 0)
+function editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contsize, $unit, $request = 0)
 {
     mysqli_begin_transaction($conn);
     try {
-        $sql = "UPDATE chemicals SET name = ?, brand = ?, chemLevel = ?, expiryDate = ?, notes = ?, branch = ?, updated_by = ?, date_received = ?, container_size = ?, unop_cont = ?";
+        $sql = "UPDATE chemicals SET name = ?, brand = ?, expiryDate = ?, notes = ?, branch = ?, updated_by = ?, date_received = ?, container_size = ?, quantity_unit = ?";
         $request == 0 ? $sql .= " WHERE id = ?;" : $sql .= ", request = ? WHERE id = ?";
 
         $stmt = mysqli_stmt_init($conn);
@@ -1703,9 +1799,9 @@ function editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes,
         }
 
         if ($request != 0) {
-            mysqli_stmt_bind_param($stmt, "sssssissiiii", $name, $brand, $level, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $contcount, $request, $id);
+            mysqli_stmt_bind_param($stmt, "sssssssisii", $name, $brand, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $unit, $request, $id);
         } else {
-            mysqli_stmt_bind_param($stmt, "sssssissiii", $name, $brand, $level, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $contcount, $id);
+            mysqli_stmt_bind_param($stmt, "sssssssisi", $name, $brand, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $unit, $id);
         }
 
         mysqli_stmt_execute($stmt);
@@ -2618,6 +2714,455 @@ function cancel_transaction($conn, $id, $author)
             'error' => $e->getMessage(),
             'line' => $e->getLine(),
             'file' => $e->getFile()
+        ];
+    }
+}
+
+function get_chem_capacity($conn, $id)
+{
+    $sql = "SELECT container_size FROM chemicals WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'stmt failed.'];
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if ($row = mysqli_fetch_assoc($result)) {
+        return $row['container_size'];
+    } else {
+        return ['error' => 'Chemical not found.'];
+    }
+}
+function get_chem_containercount($conn, $id)
+{
+    $sql = "SELECT unop_cont FROM chemicals WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'stmt failed.'];
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if ($row = mysqli_fetch_assoc($result)) {
+        return $row['unop_cont'];
+    } else {
+        return ['error' => 'Chemical not found.'];
+    }
+}
+
+function reflect_chem_log($conn, $chemid, $qty, $containercount)
+{
+
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "UPDATE chemicals SET chemLevel = chemLevel + ?";
+        $datatypes = "di";
+        $data[] = $qty;
+
+        $current = get_chem_level($conn, $chemid);
+        if ($containercount !== 0) {
+            if ($qty > $current) {
+                $qty = 0;
+            }
+            $sql .= ", unop_cont = unop_cont + ?";
+            $datatypes .= "i";
+            $data[] = $containercount;
+        } else {
+            if ($qty > $current) {
+                throw new Exception("You cannot add a chemical more than its full capacity.");
+            }
+        }
+        $data[] = $chemid;
+        $sql .= " WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("Reflecting chemical log stmt failed.");
+        }
+
+        mysqli_stmt_bind_param($stmt, $datatypes, ...$data);
+        mysqli_stmt_execute($stmt);
+
+        if (!mysqli_affected_rows($conn) > 0) {
+            throw new Exception("Chemical reflection failed.");
+        }
+
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' on file ' . $e->getFile()
+        ];
+    }
+}
+
+
+
+function adjust_chemical($conn, $chemid, $logtype, $containerCount, $qty, $notes, $user_id, $user_role, $branch)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $qtytoreflect = $containerCount != 0 ? 0 : $qty;
+
+        $reflect = reflect_chem_log($conn, $chemid, $qtytoreflect, $containerCount);
+        if (isset($reflect['error'])) {
+            throw new Exception($reflect['error']);
+        }
+
+
+        $sql = "INSERT INTO inventory_log (chem_id, log_type, quantity, log_date, user_id, user_role, notes, branch) 
+    VALUES (?, ?, ?, NOW(), ?, ?, ?, ?);";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            return ['error' => 'stmt failed.'];
+        }
+
+        mysqli_stmt_bind_param($stmt, "ssdssss", $chemid, $logtype, $qty, $user_id, $user_role, $notes, $branch);
+
+        if (!mysqli_stmt_execute($stmt)) {
+            throw new Exception("Failed to insert log");
+        }
+
+        mysqli_commit($conn);
+        mysqli_stmt_close($stmt);
+
+        return ['success' => true];
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' on file ' . $e->getFile()
+        ];
+    }
+}
+
+
+function get_user($conn, $userid, $role)
+{
+    // $datacol = [];   
+    $usertypes = $GLOBALS['userTypes'];
+    foreach ($usertypes as $roles => $columns) {
+        if ($columns['table'] === $role) {
+            $datacol = $columns;
+            break;
+        }
+    }
+    $idcol = $datacol['id'];
+    $table = $datacol['table'];
+    $usn = $datacol['usn'];
+    $sql = "SELECT $usn FROM $table WHERE $idcol = $userid;";
+    $res = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($res) > 0) {
+        $row = mysqli_fetch_assoc($res);
+        $usnn = $row[$usn];
+        return $usnn;
+    } else {
+        return false;
+    }
+}
+
+function get_chemical($conn, $id)
+{
+    $sql = "SELECT * FROM chemicals WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'stmt failed.'];
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if ($row = mysqli_fetch_assoc($result)) {
+        return $row;
+    } else {
+        return ['error' => 'Chemical not found.'];
+    }
+}
+
+function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $note, $role)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $status = check_status($conn, $transid);
+        if ($status !== "Dispatched") {
+            throw new Exception("Finalizing Error. Status should be dispatched.");
+        }
+
+        // set new status
+        $status = "Finalizing";
+
+        $sql = "UPDATE transactions SET transaction_status = ?, notes = ? WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("stmt failed.");
+        }
+        mysqli_stmt_bind_param($stmt, 'ssi', $status, $note, $transid);
+        mysqli_stmt_execute($stmt);
+
+        if (!mysqli_stmt_affected_rows($stmt) > 0) {
+            throw new Exception("Failed to update transaction. Please try again later.");
+        }
+
+        $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transid);
+        $delChems = array_diff($existingChems, $chemUsed);
+
+        if (!empty($delChems)) {
+            $logtype = 'Not Used (Returned from Dispatch)';
+            $delChems = array_values($delChems);
+            // throw new Exception(var_dump($delChems));
+            foreach ($delChems as $chem) {
+                $qty[] = get_amt_used($conn, $chem, $transid);
+                $logdel = log_transaction($conn, $transid, $delChems, $qty, $branch, $user_id, $role, $note, $status, $logtype);
+                if (isset($logdel['error'])) {
+                    throw new Exception($logdel['error']);
+                }
+            }
+            $delete = delete_old_ids($conn, 'transaction_chemicals', $transid, 'chem_id', $delChems);
+            if (isset($delete['error'])) {
+                throw new Exception('Error: ' . $delete['error']);
+            }
+
+            $revert = revert_v2($conn, $delChems, $transid);
+            if (isset($revert['error'])) {
+                throw new Exception("Error: " . $revert['error'] . " 864: Current Del Chem ID: $delChems | Transaction ID: " . $transid);
+            }
+
+        }
+
+        // throw new Exception(var_dump($chemUsed) . var_dump($existingChems));
+        for ($i = 0; $i < count($chemUsed); $i++) {
+            // $amt_used = $amtUsed[$i];
+            if ($amtUsed[$i] === '' || $amtUsed[$i] === 0) {
+                throw new Exception("Amount used should not be empty or zero.");
+            }
+
+            if (in_array((int) $chemUsed[$i], $existingChems)) {
+                $prevtransamt = prev_trans_amt($conn, $chemUsed[$i], $transid);
+                if (isset($prevtransamt['error'])) {
+                    throw new Exception("Error: " . $prevtransamt['error'] . $chemUsed[$i] . json_encode($existingChems));
+                }
+                if ((int) $amtUsed[$i] === $prevtransamt) {
+                    continue;
+                }
+            }
+            // new chemicals
+            $chemlevel = get_chem_level($conn, $chemUsed[$i]);
+            // check if chemical stock is sufficiaent 
+            if ((int) $amtUsed[$i] > $chemlevel) {
+                $chemname = get_chemical_name($conn, $chemUsed[$i]);
+                throw new Exception("Insufficient Chemical: " . $chemname);
+            }
+            $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], $amtUsed[$i]);
+            if (!$recordchem) {
+                throw new Exception("Failed to record a chemical. Please try again later.");
+            }
+        }
+
+
+        // log transaction
+        $logchems = log_transaction($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $role, $note, $status);
+        if (isset($logchems['error'])) {
+            throw new Exception($logchems['error']);
+        }
+
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at line ' . $e->getFile()
+        ];
+    }
+}
+function complete_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $note, $role)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $status = check_status($conn, $transid);
+        if ($status !== "Finalizing") {
+            throw new Exception("Completion Error. Status should be set to Finalizing first.");
+        }
+
+        $status = "Completed";
+
+        $sql = "UPDATE transactions SET transaction_status = ?, notes = ? WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("stmt failed.");
+        }
+        mysqli_stmt_bind_param($stmt, 'ssi', $status, $note, $transid);
+        mysqli_stmt_execute($stmt);
+
+        if (!mysqli_stmt_affected_rows($stmt) > 0) {
+            throw new Exception("Failed to update transaction. Please try again later.");
+        }
+
+        // delete not existing chemicals at the new set
+        $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transid);
+        $delChems = array_diff($existingChems, $chemUsed);
+
+        if (!empty($delChems)) {
+            $logtype = 'Not Used (Returned from report)';
+            $delChems = array_values($delChems);
+            // throw new Exception(var_dump($delChems));
+            foreach ($delChems as $chem) {
+                $qty[] = get_amt_used($conn, $chem, $transid);
+                $logdel = log_transaction($conn, $transid, $delChems, $qty, $branch, $user_id, $role, $note, $status, $logtype);
+                if (isset($logdel['error'])) {
+                    throw new Exception($logdel['error']);
+                }
+            }
+            $delete = delete_old_ids($conn, 'transaction_chemicals', $transid, 'chem_id', $delChems);
+            if (isset($delete['error'])) {
+                throw new Exception('Error: ' . $delete['error']);
+            }
+
+            $revert = revert_v2($conn, $delChems, $transid);
+            if (isset($revert['error'])) {
+                throw new Exception("Error: " . $revert['error'] . " 864: Current Del Chem ID: $delChems | Transaction ID: " . $transid);
+            }
+        }
+
+        // throw new Exception(var_dump($chemUsed) . var_dump($existingChems));
+        // check -> record -> reflect
+        for ($i = 0; $i < count($chemUsed); $i++) {
+            // $amt_used = $amtUsed[$i];
+            if ($amtUsed[$i] === '' || (int) $amtUsed[$i] === 0) {
+                throw new Exception("Amount used should not be empty or zero.");
+            }
+
+            if (in_array((int) $chemUsed[$i], $existingChems)) {
+                $prevtransamt = prev_trans_amt($conn, $chemUsed[$i], $transid);
+                if (isset($prevtransamt['error'])) {
+                    throw new Exception("Error: " . $prevtransamt['error'] . $chemUsed[$i] . json_encode($existingChems));
+                }
+                if ((int) $amtUsed[$i] === $prevtransamt) {
+                    continue;
+                }
+            }
+            // new chemicals
+            $chemlevel = get_chem_level($conn, $chemUsed[$i]);
+            if ((int) $amtUsed[$i] > $chemlevel) {
+                $chemname = get_chemical_name($conn, $chemUsed[$i]);
+                throw new Exception("Insufficient Chemical: " . $chemname);
+            } else {
+                $amount = (int) $amtUsed[$i];
+                $amount = !in_array($amtUsed[$i], $existingChems) ? $amount * -1 : $amount;
+                $reflect = reflect_trans_chem($conn, $amount, $chemUsed[$i]);
+                if (isset($reflect['error'])) {
+                    throw new Exception($reflect['error']);
+                }
+            }
+            $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], $amtUsed[$i]);
+            if (!$recordchem) {
+                throw new Exception("Failed to record a chemical. Please try again later.");
+            }
+        }
+
+        // log transaction
+        $logchems = log_transaction($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $role, $note, $status);
+        if (isset($logchems['error'])) {
+            throw new Exception($logchems['error']);
+        }
+
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at line ' . $e->getFile()
+        ];
+    }
+}
+function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $note, $role)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $status = check_status($conn, $transid);
+        if ($status !== "Accepted") {
+            throw new Exception("Completion Error. Status should be set to Finalizing first.");
+        }
+
+        $status = "Dispatched";
+
+        $sql = "UPDATE transactions SET transaction_status = ?, notes = ? WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("stmt failed.");
+        }
+        mysqli_stmt_bind_param($stmt, 'ssi', $status, $note, $transid);
+        mysqli_stmt_execute($stmt);
+
+        if (!mysqli_stmt_affected_rows($stmt) > 0) {
+            throw new Exception("Failed to update transaction. Please try again later.");
+        }
+
+        // delete not existing chemicals at the new set
+        $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transid);
+        $delChems = array_diff($existingChems, $chemUsed);
+        $delChems = array_values($delChems);
+
+        if (!empty($delChems)) {
+            $delete = delete_old_ids($conn, 'transaction_chemicals', $transid, 'chem_id', $delChems);
+            if (isset($delete['error'])) {
+                throw new Exception('Error: ' . $delete['error']);
+            }
+
+            $revert = revert_v2($conn, $delChems, $transid);
+            if (isset($revert['error'])) {
+                throw new Exception("Error: " . $revert['error'] . " 864: Current Del Chem ID: $delChems | Transaction ID: " . $transid);
+            }
+        }
+
+        // throw new Exception(var_dump($chemUsed) . var_dump($existingChems));
+        // check -> record -> reflect
+        for ($i = 0; $i < count($chemUsed); $i++) {
+            // $amt_used = $amtUsed[$i];
+            if ($amtUsed[$i] === '' || (int) $amtUsed[$i] === 0) {
+                throw new Exception("Amount used should not be empty or zero.");
+            }
+
+            if (in_array((int) $chemUsed[$i], $existingChems)) {
+                $prevtransamt = prev_trans_amt($conn, $chemUsed[$i], $transid);
+                if (isset($prevtransamt['error'])) {
+                    throw new Exception("Error: " . $prevtransamt['error'] . $chemUsed[$i] . json_encode($existingChems));
+                }
+                if ((int) $amtUsed[$i] === $prevtransamt) {
+                    continue;
+                }
+            }
+            // new chemicals
+            $chemlevel = get_chem_level($conn, $chemUsed[$i]);
+            if ((int) $amtUsed[$i] > $chemlevel) {
+                $chemname = get_chemical_name($conn, $chemUsed[$i]);
+                throw new Exception("Insufficient Chemical: " . $chemname);
+            } else {
+                $amount = (int) $amtUsed[$i];
+                $amount = !in_array($amtUsed[$i], $existingChems) ? $amount * -1 : $amount;
+                $reflect = reflect_trans_chem($conn, $amount, $chemUsed[$i]);
+                if (isset($reflect['error'])) {
+                    throw new Exception($reflect['error']);
+                }
+            }
+            $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], $amtUsed[$i]);
+            if (!$recordchem) {
+                throw new Exception("Failed to record a chemical. Please try again later.");
+            }
+        }
+
+        // log transaction
+        $logchems = log_transaction($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $role, $note, $status);
+        if (isset($logchems['error'])) {
+            throw new Exception($logchems['error']);
+        }
+
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at line ' . $e->getFile()
         ];
     }
 }
