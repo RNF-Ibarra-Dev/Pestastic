@@ -113,21 +113,19 @@ require("startsession.php");
             <div class="hstack gap-3 my-3 mx-3">
                 <button type="button" id="hideentries"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 w-25 px-2 text-light"
-                    title="Hide Entries"><i class="bi bi-eye-slash me-2"></i><span id="hideEnText">Hide
+                    title="Hide Entries"><i class="bi bi-eye-slash me-2"></i>Hide
                         Entries</span></button>
                 <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light"
                     placeholder="Search . . ." id="searchbar" name="search" autocomplete="one-time-code">
                 <button type="button" id="inventorylogbtn"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 px-4 text-light"
-                    title="Inventory Logs"><i class="bi bi-file-earmark-text"></i><span id="hideEnText"></button>
+                    title="Inventory Logs"><i class="bi bi-file-earmark-text"></i></button>
                 <button type="button" id="loadChem"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded text-light py-2 px-4" data-bs-toggle="modal"
                     data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
                         class="bi bi-plus-square"></i></button>
 
             </div>
-
-
             <!-- inventory log modal -->
             <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="inventorylogmodal"
                 tabindex="0">
