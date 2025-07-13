@@ -107,7 +107,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     }
 
     if (empty($expDate)) {
-        $expDate = '2025-01-01';
+        $usualexp = strtotime("+2years");
+        $expDate = date('Y-m-d', $usualexp);
     }
 
     if (strtotime($expDate) < strtotime($dateRec)) {
@@ -256,17 +257,18 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
             </div>
             <div class="col-lg-3 mb-2">
                 <label for="chemBrand-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Chemical Brand</label>
-                <input type="text" name="chemBrand[]" id="chemBrand-<?= htmlspecialchars($uid) ?>" class="form-control form-add"
-                    autocomplete="one-time-code">
+                <input type="text" name="chemBrand[]" id="chemBrand-<?= htmlspecialchars($uid) ?>"
+                    class="form-control form-add" autocomplete="one-time-code">
             </div>
             <div class="col-lg-2 mb-2">
                 <label for="containerSize-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Container Size</label>
-                <input type="text" name="containerSize[]" id="containerSize-<?= htmlspecialchars($uid) ?>" class="form-control form-add"
-                    autocomplete="one-time-code">
+                <input type="text" name="containerSize[]" id="containerSize-<?= htmlspecialchars($uid) ?>"
+                    class="form-control form-add" autocomplete="one-time-code">
             </div>
             <div class="col-lg-2 mb-2">
                 <label for="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Chemical Unit:</label>
-                <select name="chemUnit[]" id="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-select" autocomplete="one-time-code">
+                <select name="chemUnit[]" id="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-select"
+                    autocomplete="one-time-code">
                     <option value="" selected>Choose Chemical Unit</option>
                     <option value="mg">mg</option>
                     <option value="g">g</option>
@@ -276,9 +278,10 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
                 </select>
             </div>
             <div class="col-lg-2 mb-2">
-                <label for="containerCount-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Container Count</label>
-                <input type="text" name="containerCount[]" id="containerCount-<?= htmlspecialchars($uid) ?>" class="form-control form-add"
-                    autocomplete="one-time-code">
+                <label for="containerCount-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Container
+                    Count</label>
+                <input type="text" name="containerCount[]" id="containerCount-<?= htmlspecialchars($uid) ?>"
+                    class="form-control form-add" autocomplete="one-time-code">
             </div>
 
         </div>
@@ -290,7 +293,8 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
             </div>
             <div class="col-lg-4 mb-2">
                 <label for="expDate-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Expiry Date</label>
-                <input type="date" name="expDate[]" id="expDate-<?= htmlspecialchars($uid) ?>" class="form-control form-add form-date-exp">
+                <input type="date" name="expDate[]" id="expDate-<?= htmlspecialchars($uid) ?>"
+                    class="form-control form-add form-date-exp">
             </div>
             <div class="col-4 mb-2">
                 <label for="notes-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Short Note</label>

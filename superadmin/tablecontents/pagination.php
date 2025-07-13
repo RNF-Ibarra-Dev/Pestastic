@@ -225,6 +225,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $exp = date_create($expDate);
             $remcom = $row['unop_cont'];
             $contsize = $row['container_size'];
+            $unit = $row['quantity_unit'];
+
             ?>
             <tr class="text-center">
                 <td scope="row">
@@ -234,7 +236,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
                 <td>
-                    <?= htmlspecialchars("$level ml  / $contsize ml") ?>
+                    <?= htmlspecialchars("$level / $contsize$unit") ?>
                 </td>
                 <td><?= htmlspecialchars($remcom) ?></td>
                 <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
@@ -252,16 +254,20 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                                     class="bi bi-check-circle"></i></button>
                             <button type="button" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                     class="bi bi-info-circle"></i></button>
-                            <button type="button" class="btn btn-sidebar delbtn" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-x-octagon"></i></button>
+                            <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
+                                    class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
+                            <button type="button" class="btn btn-sidebar delbtn" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                data-id="<?= $id ?>"><i class="bi bi-x-octagon"></i></button>
                             <?php
                         } else {
 
                             ?>
+                            <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
+                                    class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
                             <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                     class="bi bi-info-circle"></i></button>
-                            <button type="button" class="btn btn-sidebar delbtn" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
+                            <button type="button" class="btn btn-sidebar delbtn" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
                         <?php } ?>
                     </div>
                 </td>
@@ -316,7 +322,7 @@ if (isset($_GET['search'])) {
     $numrows = mysqli_num_rows($result);
     // echo $numrows;   
     if ($numrows > 0) {
-         while ($row = mysqli_fetch_assoc($result)) {
+        while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
             $name = $row["name"];
             $brand = $row["brand"];
@@ -327,6 +333,8 @@ if (isset($_GET['search'])) {
             $exp = date_create($expDate);
             $remcom = $row['unop_cont'];
             $contsize = $row['container_size'];
+            $unit = $row['quantity_unit'];
+
             ?>
             <tr class="text-center">
                 <td scope="row">
@@ -335,8 +343,8 @@ if (isset($_GET['search'])) {
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
-                <td class="<?= $level <= 10 ? 'text-danger' : ($level <= 50 ? 'text-warning' : '') ?>">
-                    <?= htmlspecialchars("$level ml  / $contsize ml") ?>
+                <td>
+                    <?= htmlspecialchars("$level / $contsize$unit") ?>
                 </td>
                 <td><?= htmlspecialchars($remcom) ?></td>
                 <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
@@ -349,6 +357,8 @@ if (isset($_GET['search'])) {
                         <?php
                         if ($request === 1) {
                             ?>
+                            <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
+                                    class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
                             <button type="button" id="approvebtn" class="btn btn-sidebar" data-bs-toggle="modal"
                                 data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?= $name ?>"><i
                                     class="bi bi-check-circle"></i></button>
@@ -358,8 +368,9 @@ if (isset($_GET['search'])) {
                                 data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-x-octagon"></i></button>
                             <?php
                         } else {
-
                             ?>
+                            <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
+                                    class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
                             <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                     class="bi bi-info-circle"></i></button>
                             <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"

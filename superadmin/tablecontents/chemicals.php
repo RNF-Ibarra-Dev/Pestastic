@@ -9,8 +9,10 @@ require_once('../../includes/functions.inc.php');
 if (isset($_POST["managerId"])) {
     require_once("../../includes/functions.inc.php");
     echo $_SESSION['saID'];
+    exit();
 }
 
+$units = ['mg', 'g', 'kg', 'L', 'mL'];
 
 // edit
 if (isset($_POST['action']) && $_POST['action'] == 'edit') {
@@ -32,7 +34,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 
     $name = $_POST['edit-name'];
     $brand = $_POST['edit-chemBrand'];
-    $level = $_POST['edit-chemLevel'];
+    $unit = $_POST['edit-chemUnit'];
     $ed = $_POST['edit-expDate'] ?? null;
     $dr = $_POST['edit-receivedDate'] ?? null;
     $notes = $_POST['edit-notes'];
@@ -43,14 +45,15 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     $expDate = date("Y-m-d", strtotime($ed));
     $dateRec = date("Y-m-d", strtotime($dr));
 
-    if (empty($name) || empty($brand) || empty($level)) {
+    if (empty($name) || empty($brand) || empty($unit)) {
         http_response_code(400);
         echo 'Make sure to fill up required forms.';
         exit();
     }
 
     if (empty($expDate)) {
-        $expDate = '2025-01-01';
+        $usualexp = strtotime("+2years");
+        $expDate = date('Y-m-d', $usualexp);
     }
 
     if (strtotime($expDate) < strtotime($dateRec)) {
@@ -76,7 +79,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         exit();
     }
 
-    $edit = editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $containerCount);
+    // $edit = editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $containerCount);
+    $edit = editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $unit);
 
     if (isset($edit['error'])) {
         http_response_code(400);
@@ -167,26 +171,26 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete') {
     $chemId = $_POST['chemid'];
     // convert ids to integer
 
-   if (empty($id) || !is_numeric($id) || !is_numeric($chemId) || empty($chemId)) {
+    if (empty($id) || !is_numeric($id) || !is_numeric($chemId) || empty($chemId)) {
         http_response_code(400);
         echo 'Invalid ID.';
         exit();
     }
 
-    if(empty($pwd)){
+    if (empty($pwd)) {
         http_response_code(400);
         echo 'Password verification cannot be empty.';
         exit();
     }
 
-    if(!validate($conn, $pwd)){
+    if (!validate($conn, $pwd)) {
         http_response_code(400);
         echo 'Incorrect Password.';
         exit();
     }
 
     $delete = deleteChem($conn, $chemId);
-    if(!$delete){
+    if (!$delete) {
         http_response_code(400);
         echo 'Error. Deletion Failed.';
         exit();
@@ -404,6 +408,7 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
             $data['id'] = $row['id'];
             $data['unop_cont'] = $row['unop_cont'];
             $data['container_size'] = $row['container_size'];
+            $data['unit'] = $row['quantity_unit'];
         }
     } else {
         echo "Invalid ID. Make sure the chemical exist.";
@@ -452,6 +457,19 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
             break;
         case "entries":
             $sql = "SELECT COUNT(*) FROM chemicals WHERE request = 1";
+            break;
+        case "available":
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel > 0";
+            break;
+        case "dispatched":
+            $sql = "SELECT COUNT(*) FROM inventory_log WHERE log_type = 'Out'";
+            break;
+        case "out-of-stock":
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel = 0 AND unop_cont = 0";
+            break;
+        default:
+            http_response_code(400);
+            echo "Error in fetching counts.";
             break;
     }
 
