@@ -5,9 +5,11 @@ require_once('../../includes/functions.inc.php');
 
 // user information
 
-$role = "branchadmin";
+$role = $_SESSION['user_role'];
 $user = $_SESSION['baID'];
 $branch = $_SESSION['branch'];
+
+$units = ['mg', 'g', 'kg', 'L', 'mL'];
 
 
 if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
@@ -51,6 +53,7 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
             $data['id'] = $row['id'];
             $data['unop_cont'] = $row['unop_cont'];
             $data['container_size'] = $row['container_size'];
+            $data['unit'] = $row['quantity_unit'];
         }
     } else {
         echo "Invalid ID. Make sure the chemical exist.";
@@ -81,20 +84,25 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 
     $name = $_POST['edit-name'];
     $brand = $_POST['edit-chemBrand'];
-    $level = $_POST['edit-chemLevel'];
     $ed = $_POST['edit-expDate'] ?? null;
     $dr = $_POST['edit-receivedDate'] ?? null;
+    $unit = $_POST['edit-chemUnit'];
     $notes = $_POST['edit-notes'];
-    $containerCount = $_POST['edit-containerCount'];
     $contSize = $_POST['edit-containerSize'];
     $pwd = $_POST['baPwd'];
 
     $expDate = date("Y-m-d", strtotime($ed));
     $dateRec = date("Y-m-d", strtotime($dr));
 
-    if (empty($name) || empty($brand) || empty($level)) {
+    if (empty($name) || empty($brand) || empty($unit)) {
         http_response_code(400);
         echo 'Make sure to fill up required forms.';
+        exit();
+    }
+
+    if (!in_array($unit, $units)) {
+        http_response_code(400);
+        echo "Error. Invalid Unit.";
         exit();
     }
 
@@ -126,7 +134,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         exit();
     }
 
-    $edit = editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $containerCount, 1);
+    $edit = editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $unit, 1);
     if (isset($edit['error'])) {
         http_response_code(400);
         echo $edit['error'];
@@ -147,7 +155,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
     $name = $_POST['name'] ?? [];
     $receivedDate = $_POST['receivedDate'] ?? [];
     $brand = $_POST['chemBrand'] ?? [];
-    $level = $_POST['chemLevel'] ?? [];
+    $unit = $_POST['chemUnit'] ?? [];
     $expDate = $_POST['expDate'] ?? [];
     $containerSize = $_POST['containerSize'] ?? [];
     $containerCount = $_POST['containerCount'] ?? [];
@@ -155,18 +163,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
 
     $addedBy = "[$loggedId] - $loggedUsn";
 
-    if (empty($name) || empty($brand) || empty($level)) {
+    if (empty($name) || empty($brand) || empty($unit) || empty($containerCount) || empty($containerSize)) {
         http_response_code(400);
         echo 'Fields cannot be empty.';
         exit;
-    }
-
-    for ($i = 0; $i < count($level); $i++) {
-        if ($level[$i] > $containerSize[$i]) {
-            http_response_code(400);
-            echo 'Chemical Level cannot be greater than Container Size.';
-            exit;
-        }
     }
 
     if (empty($baPwd)) {
@@ -183,7 +183,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
 
     $data = [
         'brand' => $brand,
-        'level' => $level,
+        'unit' => $unit,
+        'level' => $containerSize,
         'notes' => $notes,
         'name' => $name,
         'rDate' => $receivedDate,
@@ -195,7 +196,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
     $a = addChemv2($conn, $data, $branch, $addedBy, 1);
     if (isset($a['errorMessage'])) {
         http_response_code(400);
-        echo $a['errorMessage'] . ' at line ' . $a['line'] . ' data: ' . json_encode($a['dataPassed']);
+        echo $a['errorMessage'];
         exit;
     } else {
         http_response_code(200);
@@ -243,48 +244,57 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete') {
 
 
 if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
+    $uid = uniqid();
     ?>
     <div class="add-row-container">
         <hr class="my-2">
         <div class="row mb-2 pe-2">
             <div class="col-lg-3 mb-2">
-                <label for="name" class="form-label fw-light">Chemical Name</label>
-                <input type="text" name="name[]" id="add-name" class="form-control form-add" autocomplete="one-time-code">
+                <label for="name-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Chemical Name</label>
+                <input type="text" name="name[]" id="name-<?= htmlspecialchars($uid) ?>" class="form-control form-add"
+                    autocomplete="one-time-code">
             </div>
             <div class="col-lg-3 mb-2">
-                <label for="chemBrand" class="form-label fw-light">Chemical Brand</label>
-                <input type="text" name="chemBrand[]" id="add-chemBrand" class="form-control form-add"
+                <label for="chemBrand-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Chemical Brand</label>
+                <input type="text" name="chemBrand[]" id="chemBrand-<?= htmlspecialchars($uid) ?>" class="form-control form-add"
                     autocomplete="one-time-code">
             </div>
             <div class="col-lg-2 mb-2">
-                <label for="chemLevel" class="form-label fw-light text-nowrap">Current Chemical Level</label>
-                <input type="text" name="chemLevel[]" id="add-chemLevel" class="form-control form-add"
+                <label for="containerSize-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Container Size</label>
+                <input type="text" name="containerSize[]" id="containerSize-<?= htmlspecialchars($uid) ?>" class="form-control form-add"
                     autocomplete="one-time-code">
             </div>
             <div class="col-lg-2 mb-2">
-                <label for="chemLevel" class="form-label fw-light">Container Size</label>
-                <input type="text" name="containerSize[]" id="add-chemLevel" class="form-control form-add"
-                    autocomplete="one-time-code">
+                <label for="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Chemical Unit:</label>
+                <select name="chemUnit[]" id="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-select" autocomplete="one-time-code">
+                    <option value="" selected>Choose Chemical Unit</option>
+                    <option value="mg">mg</option>
+                    <option value="g">g</option>
+                    <option value="kg">kg</option>
+                    <option value="L">L</option>
+                    <option value="mL">mL</option>
+                </select>
             </div>
             <div class="col-lg-2 mb-2">
-                <label for="chemLevel" class="form-label fw-light">Container Count</label>
-                <input type="text" name="containerCount[]" id="add-chemLevel" class="form-control form-add"
+                <label for="containerCount-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Container Count</label>
+                <input type="text" name="containerCount[]" id="containerCount-<?= htmlspecialchars($uid) ?>" class="form-control form-add"
                     autocomplete="one-time-code">
             </div>
 
         </div>
         <div class="row mb-2">
             <div class="col-lg-4 mb-2">
-                <label for="expDate" class="form-label fw-light">Date Received</label>
-                <input type="date" name="receivedDate[]" id="add-dateReceived" class="form-control form-add form-date-rec">
+                <label for="recDate-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Date Received</label>
+                <input type="date" name="receivedDate[]" id="recDate-<?= htmlspecialchars($uid) ?>"
+                    class="form-control form-add form-date-rec">
             </div>
             <div class="col-lg-4 mb-2">
-                <label for="expDate" class="form-label fw-light">Expiry Date</label>
-                <input type="date" name="expDate[]" id="add-expDate" class="form-control form-add form-date-exp">
+                <label for="expDate-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Expiry Date</label>
+                <input type="date" name="expDate[]" id="expDate-<?= htmlspecialchars($uid) ?>" class="form-control form-add form-date-exp">
             </div>
             <div class="col-4 mb-2">
-                <label for="notes" class="form-label fw-light">Short Note</label>
-                <textarea name="notes[]" id="notes" class="form-control"
+                <label for="notes-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Short Note</label>
+                <textarea name="notes[]" id="notes-<?= htmlspecialchars($uid) ?>" class="form-control"
                     placeholder="Optional short note . . . "></textarea>
             </div>
         </div>
@@ -490,7 +500,6 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
         echo "Invalid Chemical ID.";
         exit();
     }
-
 
     if ($wcontainer) {
         if ($ccontainer <= 0) {

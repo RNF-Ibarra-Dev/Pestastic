@@ -492,7 +492,7 @@ function addChemv2($conn, $dataArr, $branch, $addby, $request)
 {
     mysqli_begin_transaction($conn);
     try {
-        $sql = "INSERT INTO chemicals (name, brand, chemLevel, expiryDate, date_received, notes, branch, request, added_by, container_size, unop_cont) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        $sql = "INSERT INTO chemicals (name, brand, quantity_unit, expiryDate, date_received, notes, branch, request, added_by, container_size, unop_cont, chemLevel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         $stmt = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             echo "stmt failed";
@@ -502,7 +502,7 @@ function addChemv2($conn, $dataArr, $branch, $addby, $request)
         for ($i = 0; $i < count($dataArr['name']); $i++) {
             $cnote = $dataArr['notes'][$i] ?? '';
             $notes = $cnote === '' ? null : $cnote;
-            mysqli_stmt_bind_param($stmt, 'ssissssisii', $dataArr['name'][$i], $dataArr['brand'][$i], $dataArr['level'][$i], $dataArr['eDate'][$i], $dataArr['rDate'][$i], $notes, $branch, $request, $addby, $dataArr['csize'][$i], $dataArr['ccount'][$i]);
+            mysqli_stmt_bind_param($stmt, 'sssssssisiii', $dataArr['name'][$i], $dataArr['brand'][$i], $dataArr['unit'][$i], $dataArr['eDate'][$i], $dataArr['rDate'][$i], $notes, $branch, $request, $addby, $dataArr['csize'][$i], $dataArr['ccount'][$i], $dataArr['level'][$i]);
             if (!mysqli_stmt_execute($stmt)) {
                 throw new Exception("Error at " . $dataArr['name'] . ' ' . $dataArr['brand']);
             }
@@ -1786,11 +1786,11 @@ function check_request($conn, $id)
     }
 }
 
-function editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes, $branch, $upBy, $contsize, $contcount, $request = 0)
+function editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contsize, $unit, $request = 0)
 {
     mysqli_begin_transaction($conn);
     try {
-        $sql = "UPDATE chemicals SET name = ?, brand = ?, chemLevel = ?, expiryDate = ?, notes = ?, branch = ?, updated_by = ?, date_received = ?, container_size = ?, unop_cont = ?";
+        $sql = "UPDATE chemicals SET name = ?, brand = ?, expiryDate = ?, notes = ?, branch = ?, updated_by = ?, date_received = ?, container_size = ?, quantity_unit = ?";
         $request == 0 ? $sql .= " WHERE id = ?;" : $sql .= ", request = ? WHERE id = ?";
 
         $stmt = mysqli_stmt_init($conn);
@@ -1799,9 +1799,9 @@ function editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes,
         }
 
         if ($request != 0) {
-            mysqli_stmt_bind_param($stmt, "sssssissiiii", $name, $brand, $level, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $contcount, $request, $id);
+            mysqli_stmt_bind_param($stmt, "sssssssisii", $name, $brand, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $unit, $request, $id);
         } else {
-            mysqli_stmt_bind_param($stmt, "sssssissiii", $name, $brand, $level, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $contcount, $id);
+            mysqli_stmt_bind_param($stmt, "sssssssisi", $name, $brand, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $unit, $id);
         }
 
         mysqli_stmt_execute($stmt);
@@ -2906,7 +2906,7 @@ function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
 
         $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transid);
         $delChems = array_diff($existingChems, $chemUsed);
-        
+
         if (!empty($delChems)) {
             $logtype = 'Not Used (Returned from Dispatch)';
             $delChems = array_values($delChems);
@@ -3001,7 +3001,7 @@ function complete_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
         // delete not existing chemicals at the new set
         $existingChems = get_existing($conn, 'chem_id', 'transaction_chemicals', $transid);
         $delChems = array_diff($existingChems, $chemUsed);
-        
+
         if (!empty($delChems)) {
             $logtype = 'Not Used (Returned from report)';
             $delChems = array_values($delChems);
