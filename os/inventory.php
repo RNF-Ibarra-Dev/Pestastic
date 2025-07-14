@@ -113,21 +113,19 @@ require("startsession.php");
             <div class="hstack gap-3 my-3 mx-3">
                 <button type="button" id="hideentries"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 w-25 px-2 text-light"
-                    title="Hide Entries"><i class="bi bi-eye-slash me-2"></i><span id="hideEnText">Hide
+                    title="Hide Entries"><i class="bi bi-eye-slash me-2"></i>Hide
                         Entries</span></button>
                 <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light"
                     placeholder="Search . . ." id="searchbar" name="search" autocomplete="one-time-code">
                 <button type="button" id="inventorylogbtn"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 px-4 text-light"
-                    title="Inventory Logs"><i class="bi bi-file-earmark-text"></i><span id="hideEnText"></button>
+                    title="Inventory Logs"><i class="bi bi-file-earmark-text"></i></button>
                 <button type="button" id="loadChem"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded text-light py-2 px-4" data-bs-toggle="modal"
                     data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
                         class="bi bi-plus-square"></i></button>
 
             </div>
-
-
             <!-- inventory log modal -->
             <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="inventorylogmodal"
                 tabindex="0">
@@ -369,22 +367,24 @@ require("startsession.php");
                                                 class="ps-2 form-control-plaintext" readonly autocomplete="off">
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="edit-chemLevel" class="form-label fw-light">Chemical Level:
-                                            </label>
-                                            <input type="number" name="edit-chemLevel" id="edit-chemLevel"
-                                                class="ps-2 form-control-plaintext" readonly>
-                                        </div>
-                                        <div class="col-lg-2 mb-2">
                                             <label for="edit-contSize" class="form-label fw-light">Container
-                                                Size</label>
+                                                Size:</label>
                                             <input type="number" name="edit-containerSize" id="edit-contSize"
                                                 class="form-control-plaintext" readonly autocomplete="one-time-code">
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="edit-containerCount"
-                                                class="form-label fw-light">Containers</label>
-                                            <input type="number" name="edit-containerCount" id="edit-containerCount"
-                                                class="form-control-plaintext" readonly autocomplete="one-time-code">
+                                            <label for="view-chemUnit" class="form-label fw-light">Chemical
+                                                Unit:</label>
+                                            <p id="view-chemUnit"></p>
+                                            <select name="edit-chemUnit" id="edit-chemUnit" class="form-select d-none"
+                                                disabled autocomplete="one-time-code">
+                                                <option value="" selected>Choose Chemical Unit</option>
+                                                <option value="mg">mg</option>
+                                                <option value="g">g</option>
+                                                <option value="kg">kg</option>
+                                                <option value="L">L</option>
+                                                <option value="mL">mL</option>
+                                            </select>
                                         </div>
                                     </div>
 
@@ -487,16 +487,24 @@ require("startsession.php");
                                             <input type="text" name="chemBrand[]" id="add-chemBrand"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="chemLevel" class="form-label fw-light text-nowrap">Current
-                                                Chemical Level</label>
-                                            <input type="text" name="chemLevel[]" id="add-chemLevel"
-                                                class="form-control form-add" autocomplete="one-time-code">
-                                        </div>
+
                                         <div class="col-lg-2 mb-2">
                                             <label for="chemLevel" class="form-label fw-light">Container Size</label>
                                             <input type="text" name="containerSize[]" id="add-chemLevel"
                                                 class="form-control form-add" autocomplete="one-time-code">
+                                        </div>
+                                        <div class="col-lg-2 mb-2">
+                                            <label for="add-chemUnit" class="form-label fw-light">Chemical
+                                                Unit:</label>
+                                            <select name="chemUnit[]" id="add-chemUnit" class="form-select"
+                                                 autocomplete="one-time-code">
+                                                <option value="" selected>Chemical Unit</option>
+                                                <option value="mg">mg</option>
+                                                <option value="g">g</option>
+                                                <option value="kg">kg</option>
+                                                <option value="L">L</option>
+                                                <option value="mL">mL</option>
+                                            </select>
                                         </div>
                                         <div class="col-lg-2 mb-2">
                                             <label for="chemLevel" class="form-label fw-light">Container Count</label>
@@ -754,6 +762,7 @@ require("startsession.php");
         async function loadpage(page, entryHidden = false) {
             await loadtable(page, entryHidden);
             await loadpagination(page, entryHidden);
+            overview_display();
         }
 
         let entryHidden = false;
@@ -1010,10 +1019,11 @@ require("startsession.php");
 
         function toggle() {
             $('#submitEdit').toggleClass('d-none');
+            $('#view-chemUnit, #edit-chemUnit').toggleClass('d-none');
             $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount').attr('readonly', function (i, a) {
                 return a ? false : true;
             });
-            $("#edit-expDate, #edit-dateReceived").attr('disabled', function (i, a) {
+            $("#edit-expDate, #edit-dateReceived, #edit-chemUnit").attr('disabled', function (i, a) {
                 return a ? false : true;
             });
 
@@ -1054,6 +1064,8 @@ require("startsession.php");
             $('#edit-dateReceived').val(details.daterec);
             $('#edit-expDate').val(details.expDate);
             $('#edit-notes').val(details.notes);
+            $('#edit-chemUnit').val(details.unit);
+            $('#view-chemUnit').text(details.unit);
             $('#addinfo').html(function () {
                 return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
             });
@@ -1085,7 +1097,7 @@ require("startsession.php");
                 branch: branch
             })
                 .done(function (d) {
-                    console.log(d);
+                    // console.log(d);
                     $(`#count_${container}`).empty();
                     $(`#count_${container}`).append(d);
                 })
@@ -1104,10 +1116,7 @@ require("startsession.php");
             get_overview_count('out-of-stock', branch);
         }
 
-        $(document).ready(function () {
-            overview_display();
-        });
-
+    
 
         $(document).on('click', '#inventorylogbtn', function () {
             $('#inventorylogmodal').modal('show');

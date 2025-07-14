@@ -1,25 +1,29 @@
 :root {
-  --main-bg-color: linear-gradient(135deg,
-      rgba(71, 138, 126, 1) 40%,
-      rgba(112, 89, 18, 1) 84%);
-  --secondary-bg-color: linear-gradient(90deg,
-      rgba(71, 138, 126, 1) 30%,
-      rgba(173, 138, 28, 1) 84%);
+  --main-bg-color: linear-gradient(
+    135deg,
+    rgba(71, 138, 126, 1) 40%,
+    rgba(112, 89, 18, 1) 84%
+  );
+  --secondary-bg-color: linear-gradient(
+    90deg,
+    rgba(71, 138, 126, 1) 30%,
+    rgba(173, 138, 28, 1) 84%
+  );
   --btn-bg-dropdown-color: rgba(87, 154, 146, 0.2);
   --btn-bg-color: rgba(113, 187, 178, 0.2);
   --night-bg-color: #16404d;
 }
 
 #chemicallogmodal input.form-check-input,
-#addTransaction input.form-check-input, 
+#addTransaction input.form-check-input,
 #viewEditForm input.form-check-input {
-    border: 1px solid #16404d !important;
-    background-color: #bababa !important;
+  border: 1px solid #16404d !important;
+  background-color: #bababa !important;
 }
 #chemicallogmodal input.form-check-input:checked,
-#addTransaction input.form-check-input:checked, 
+#addTransaction input.form-check-input:checked,
 #viewEditForm input.form-check-input:checked {
-    background-color: #2f855d !important;
+  background-color: #2f855d !important;
 }
 
 * {
@@ -27,14 +31,14 @@
 }
 
 #inventorylogtable tr td,
-#chemicalhistorylogtable tr td{
+#chemicalhistorylogtable tr td {
   color: #000 !important;
 }
 
-#chemicallogmodal .nav-tabs .nav-link{
+#chemicallogmodal .nav-tabs .nav-link {
   color: #7f7f7f !important;
 }
-#chemicallogmodal .nav-tabs .nav-link.active{
+#chemicallogmodal .nav-tabs .nav-link.active {
   color: #000 !important;
 }
 
@@ -61,7 +65,7 @@ body {
   color: #fff !important;
 }
 
-.active>.page-link,
+.active > .page-link,
 .page-link.active {
   border: none !important;
   background: rgba(113, 187, 178, 0.3) !important;
@@ -74,26 +78,9 @@ body {
   min-height: 100vh !important;
   /* overflow-y: scroll; */
   background-repeat: no-repeat !important;
-  background: #bbc9ad;
-  background: -webkit-linear-gradient(0deg,
-      rgba(187, 201, 173, 1) 0%,
-      rgba(135, 171, 133, 1) 10%,
-      rgba(121, 158, 119, 1) 17%,
-      rgba(9, 75, 92, 1) 79%,
-      rgba(3, 44, 56, 1) 93%);
-  background: -moz-linear-gradient(0deg,
-      rgba(187, 201, 173, 1) 0%,
-      rgba(135, 171, 133, 1) 10%,
-      rgba(121, 158, 119, 1) 17%,
-      rgba(9, 75, 92, 1) 79%,
-      rgba(3, 44, 56, 1) 93%);
-  background: linear-gradient(0deg,
-      rgba(187, 201, 173, 1) 0%,
-      rgba(135, 171, 133, 1) 10%,
-      rgba(121, 158, 119, 1) 17%,
-      rgba(9, 75, 92, 1) 79%,
-      rgba(3, 44, 56, 1) 93%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#BBC9AD", endColorstr="#032C38", GradientType=0);
+  background: #2c3e50;
+  background: -webkit-linear-gradient(to right, #397681, #2c3e50);
+  background: linear-gradient(to right, #397681, #2c3e50);
 }
 
 body {
@@ -164,7 +151,6 @@ select:focus {
   border-color: #bababa !important;
 }
 
-
 .form-control-plaintext {
   border: none !important;
 }
@@ -194,43 +180,15 @@ input:focus {
 }
 
 .bg-dash {
-  background: #2a7b9b;
-  background: -webkit-linear-gradient(308deg,
-      rgba(42, 123, 155, 1) 0%,
-      rgba(87, 199, 133, 1) 79%,
-      rgba(148, 232, 109, 1) 99%);
-  background: -moz-linear-gradient(308deg,
-      rgba(42, 123, 155, 1) 0%,
-      rgba(87, 199, 133, 1) 79%,
-      rgba(148, 232, 109, 1) 99%);
-  background: linear-gradient(308deg,
-      rgba(42, 123, 155, 1) 0%,
-      rgba(87, 199, 133, 1) 79%,
-      rgba(148, 232, 109, 1) 99%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#2A7B9B", endColorstr="#94E86D", GradientType=0);
+  background: #2c3e50;
+  background: -webkit-linear-gradient(to right, #397681, #2c3e50);
+  background: linear-gradient(to right, #397681, #2c3e50);
 }
 
 .bg-official {
-  background: #bbc9ad;
-  background: -webkit-linear-gradient(0deg,
-      rgba(187, 201, 173, 1) 0%,
-      rgba(135, 171, 133, 1) 10%,
-      rgba(121, 158, 119, 1) 17%,
-      rgba(9, 75, 92, 1) 79%,
-      rgba(3, 44, 56, 1) 93%);
-  background: -moz-linear-gradient(0deg,
-      rgba(187, 201, 173, 1) 0%,
-      rgba(135, 171, 133, 1) 10%,
-      rgba(121, 158, 119, 1) 17%,
-      rgba(9, 75, 92, 1) 79%,
-      rgba(3, 44, 56, 1) 93%);
-  background: linear-gradient(0deg,
-      rgba(187, 201, 173, 1) 0%,
-      rgba(135, 171, 133, 1) 10%,
-      rgba(121, 158, 119, 1) 17%,
-      rgba(9, 75, 92, 1) 79%,
-      rgba(3, 44, 56, 1) 93%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#BBC9AD", endColorstr="#032C38", GradientType=0);
+  background: #2c3e50;
+  background: -webkit-linear-gradient(to right, #397681, #2c3e50);
+  background: linear-gradient(to right, #397681, #2c3e50);
 }
 
 .img-round {
@@ -257,40 +215,45 @@ input:focus {
 
 .bg-official-login {
   background: rgb(227, 207, 147);
-  background: -moz-linear-gradient(0deg,
-      #e3cf93 0%,
-      rgb(106, 145, 103) 11%,
-      rgb(13, 73, 91) 58%,
-      rgba(2, 21, 34, 1) 86%,
-      rgb(1, 2, 17) 95%);
-  background: -webkit-linear-gradient(0deg,
-      rgba(227, 207, 147, 1) 0%,
-      rgba(106, 145, 103, 1) 11%,
-      rgba(13, 73, 91, 1) 58%,
-      rgba(2, 21, 34, 1) 86%,
-      rgba(1, 2, 17, 1) 95%);
-  background: linear-gradient(0deg,
-      rgba(227, 207, 147, 1) 0%,
-      rgba(106, 145, 103, 1) 11%,
-      rgba(13, 73, 91, 1) 58%,
-      rgba(2, 21, 34, 1) 86%,
-      rgba(1, 2, 17, 1) 95%);
+  background: -moz-linear-gradient(
+    0deg,
+    #e3cf93 0%,
+    rgb(106, 145, 103) 11%,
+    rgb(13, 73, 91) 58%,
+    rgba(2, 21, 34, 1) 86%,
+    rgb(1, 2, 17) 95%
+  );
+  background: -webkit-linear-gradient(
+    0deg,
+    rgba(227, 207, 147, 1) 0%,
+    rgba(106, 145, 103, 1) 11%,
+    rgba(13, 73, 91, 1) 58%,
+    rgba(2, 21, 34, 1) 86%,
+    rgba(1, 2, 17, 1) 95%
+  );
+  background: linear-gradient(
+    0deg,
+    rgba(227, 207, 147, 1) 0%,
+    rgba(106, 145, 103, 1) 11%,
+    rgba(13, 73, 91, 1) 58%,
+    rgba(2, 21, 34, 1) 86%,
+    rgba(1, 2, 17, 1) 95%
+  );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e3cf93", endColorstr="#010211", GradientType=1);
 }
 
 .bg-modal-title {
-  /* background: #4a7a74 !important; */
-  background: rgb(74, 122, 112);
-  background: -moz-linear-gradient(45deg,
-      rgba(74, 122, 112, 1) 50%,
-      rgba(2, 25, 33, 1) 100%);
-  background: -webkit-linear-gradient(45deg,
-      rgba(74, 122, 112, 1) 50%,
-      rgba(2, 25, 33, 1) 100%);
-  background: linear-gradient(45deg,
-      rgba(74, 122, 112, 1) 50%,
-      rgba(2, 25, 33, 1) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#4a7a70", endColorstr="#021921", GradientType=1);
+  background: #2c3e50; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to left,
+    #4ca1af,
+    #2c3e50
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to left,
+    #4ca1af,
+    #2c3e50
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .text-light.bi.bi-x::before {
@@ -302,10 +265,12 @@ input:focus {
 }
 
 .btn-grad {
-  background-image: linear-gradient(to right,
-      #134e5e 0%,
-      #71b280 51%,
-      #134e5e 100%);
+  background-image: linear-gradient(
+    to right,
+    #134e5e 0%,
+    #71b280 51%,
+    #134e5e 100%
+  );
 }
 
 .btn-grad {
@@ -369,24 +334,30 @@ input[type="number"] {
 
 .bg-modal {
   background: rgb(227, 207, 147);
-  background: -moz-linear-gradient(0deg,
-      rgba(227, 207, 147, 1) 0%,
-      rgba(106, 145, 103, 1) 11%,
-      rgba(13, 73, 91, 1) 58%,
-      rgba(2, 21, 34, 1) 86%,
-      rgba(1, 2, 17, 1) 95%);
-  background: -webkit-linear-gradient(0deg,
-      rgba(227, 207, 147, 1) 0%,
-      rgba(106, 145, 103, 1) 11%,
-      rgba(13, 73, 91, 1) 58%,
-      rgba(2, 21, 34, 1) 86%,
-      rgba(1, 2, 17, 1) 95%);
-  background: linear-gradient(0deg,
-      rgba(227, 207, 147, 1) 0%,
-      rgba(106, 145, 103, 1) 11%,
-      rgba(13, 73, 91, 1) 58%,
-      rgba(2, 21, 34, 1) 86%,
-      rgba(1, 2, 17, 1) 95%);
+  background: -moz-linear-gradient(
+    0deg,
+    rgba(227, 207, 147, 1) 0%,
+    rgba(106, 145, 103, 1) 11%,
+    rgba(13, 73, 91, 1) 58%,
+    rgba(2, 21, 34, 1) 86%,
+    rgba(1, 2, 17, 1) 95%
+  );
+  background: -webkit-linear-gradient(
+    0deg,
+    rgba(227, 207, 147, 1) 0%,
+    rgba(106, 145, 103, 1) 11%,
+    rgba(13, 73, 91, 1) 58%,
+    rgba(2, 21, 34, 1) 86%,
+    rgba(1, 2, 17, 1) 95%
+  );
+  background: linear-gradient(
+    0deg,
+    rgba(227, 207, 147, 1) 0%,
+    rgba(106, 145, 103, 1) 11%,
+    rgba(13, 73, 91, 1) 58%,
+    rgba(2, 21, 34, 1) 86%,
+    rgba(1, 2, 17, 1) 95%
+  );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e3cf93", endColorstr="#010211", GradientType=1);
   /* opacity: 0.5; */
 }
@@ -399,12 +370,12 @@ input[type="number"] {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.form-floating.form-custom>.form-control {
+.form-floating.form-custom > .form-control {
   background: transparent !important;
 }
 
-.form-floating.form-custom>label,
-.form-floating.form-custom>input {
+.form-floating.form-custom > label,
+.form-floating.form-custom > input {
   color: #fff !important;
 }
 
@@ -421,7 +392,7 @@ input[type="number"] {
   color: rgba(255, 255, 255, 0.6) !important;
 }
 
-.form-floating.form-custom>label::after {
+.form-floating.form-custom > label::after {
   background-color: transparent !important;
   color: #fff !important;
 }
@@ -567,7 +538,7 @@ table.os-table {
   border-bottom-right-radius: 0.5rem;
 }
 
-#activecontainer>.flatpickr-calendar.animate.inline {
+#activecontainer > .flatpickr-calendar.animate.inline {
   height: 90% !important;
   margin: auto auto;
 }
@@ -605,7 +576,7 @@ table.os-table {
   background-color: #9f9f9f;
 }
 
-.fc .fc-button-group>.fc-button,
+.fc .fc-button-group > .fc-button,
 .fc .fc-button-primary,
 .fc .fc-button-primary:disabled,
 .fc .fc-button-primary {
@@ -618,7 +589,7 @@ table.os-table {
   border: none !important;
 }
 
-.fc .fc-button-group>.fc-button:hover,
+.fc .fc-button-group > .fc-button:hover,
 .fc .fc-button:not(:disabled):hover {
   background: #ffffff87;
   border: 1px solid white;

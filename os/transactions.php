@@ -1060,6 +1060,7 @@
                 </div>
             </form>
 
+            <!-- finalizing shortcut -->
             <form id="finalizeForm">
                 <input type="hidden" name="finalizeid" id="finalizeid">
                 <div class="modal fade text-dark modal-edit" id="finalizeModal" tabindex="-1" aria-labelledby="create"
@@ -1080,7 +1081,8 @@
                                 </button>
 
                                 <label for="finalizenotes" class="fw-light my-2">Note:</label>
-                                <textarea name="note" class="form-control w-50" id="finalizeNotes" cols="1" placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
+                                <textarea name="note" class="form-control w-50" id="finalizeNotes" cols="1"
+                                    placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
@@ -1091,7 +1093,75 @@
                     </div>
                 </div>
 
-                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="finalconfirm"
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="finalconfirm" tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Finalize Transaction Confirmation</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="finalizing-inputpwd" class="form-label fw-light">Confirm Finalizing
+                                        this transaction?
+                                        Enter Operation Supervisor
+                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="baPwd" class="form-control w-75"
+                                            id="finalizing-inputpwd">
+                                    </div>
+                                </div>
+                                <p class="text-body-secondary fw-light">Note. This will only be set to finalizing status
+                                    and is
+                                    up for review yet.</p>
+                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                    id="finalizingAlert">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#finalizeModal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Finalize</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form id="completeForm">
+                <input type="hidden" name="completeid" id="completeid">
+                <div class="modal fade text-dark modal-edit" id="completeModal" tabindex="-1" aria-labelledby="create"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Finalize Transaction</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                        class="bi text-light bi-x"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="p-0 m-0 mb-2" id="complete-chemBrandUsed"></div>
+                                <button type="button" id="complete-addMoreChem"
+                                    class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
+                                    <p class="fw-light m-0 me-2">Add Chemical</p><i
+                                        class="bi bi-plus-circle text-light"></i>
+                                </button>
+
+                                <label for="completenotes" class="fw-light my-2">Note:</label>
+                                <textarea name="note" class="form-control w-50" id="completenotes" cols="1"
+                                    placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
+                                <button type="button" data-bs-target="#completeconfirm" data-bs-toggle="modal"
+                                    class="btn btn-grad">Proceed</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="completeconfirm"
                     tabindex="0">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -1102,25 +1172,91 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Confirm Finalizing
-                                        this transaction?
+                                    <label for="complete-inputpwd" class="form-label fw-light">Mark
+                                        this transaction as Completed?
                                         Enter Operation Supervisor
                                         <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control w-75"
-                                            id="confirmapprove-inputpwd">
+                                            id="complete-inputpwd">
                                     </div>
                                 </div>
-                                <p class="text-body-secondary fw-light">Note. This will only be set to finalizing status and is
-                                    up for review yet.</p>
+                                <p class="text-body-secondary fw-light">Note. You cannot revert this once marked as
+                                    Complete. It is recommended to double check.</p>
                                 <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
-                                    id="finalizingAlert">
+                                    id="completeAlert">
                                 </p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                    data-bs-target="#finalizeModal">Go back</button>
-                                <button type="submit" class="btn btn-grad">Finalize</button>
+                                    data-bs-target="#completeModal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Complete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form id="dispatchForm">
+                <input type="hidden" name="dispatchid" id="dispatchid">
+                <div class="modal fade text-dark modal-edit" id="dispatchModal" tabindex="-1" aria-labelledby="create"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Dispatch Transaction</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                        class="bi text-light bi-x"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="p-0 m-0 mb-2" id="dispatch-chemBrandUsed"></div>
+                                <button type="button" id="dispatch-addMoreChem"
+                                    class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
+                                    <p class="fw-light m-0 me-2">Add Chemical</p><i
+                                        class="bi bi-plus-circle text-light"></i>
+                                </button>
+
+                                <label for="dispatchnotes" class="fw-light my-2">Note:</label>
+                                <textarea name="note" class="form-control w-50" id="dispatchnotes" cols="1"
+                                    placeholder="e.g. Chemicals and equipment prepared for dispatch. Technician will bring 500ml Termicide and 2 sprayers."></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
+                                <button type="button" data-bs-target="#dispatchconfirm" data-bs-toggle="modal"
+                                    class="btn btn-grad">Proceed</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="dispatchconfirm"
+                    tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Dispatch Transaction Confirmation</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="complete-inputpwd" class="form-label fw-light">Update transaction to Dispatch?
+                                        Enter Operation Supervisor
+                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="baPwd" class="form-control w-75"
+                                            id="complete-inputpwd">
+                                    </div>
+                                </div>
+                                <p class="text-body-secondary fw-light">Note. Make sure the dispatch team is geared and ready.</p>
+                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                    id="dispatchAlert">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#dispatchModal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Dispatch</button>
                             </div>
                         </div>
                     </div>
@@ -1254,31 +1390,83 @@
                 });
         });
 
-        $(document).on('submit', '#finalizeForm', async function(e){
+        $(document).on('submit', '#finalizeForm', async function (e) {
             e.preventDefault();
             let status = $('#sortstatus').val();
-            console.log($(this).serialize());
+            // console.log($(this).serialize());
             $.ajax({
                 method: 'POST',
                 dataType: 'json',
                 data: $(this).serialize() + "&finalsingletransact=true",
                 url: submitUrl
             })
-            .done(function(d){
-                if(d.success){
-                    loadpage(1, status);
-                    show_toast(d.success);
-                    $("#finalizeForm")[0].reset();
-                    $("#finalconfirm").modal('hide');
-                } else{
-                    alert('Unknown error occured');
-                }
+                .done(function (d) {
+                    if (d.success) {
+                        loadpage(1, status);
+                        show_toast(d.success);
+                        $("#finalizeForm")[0].reset();
+                        $("#finalconfirm").modal('hide');
+                    } else {
+                        alert('Unknown error occured');
+                    }
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $("#finalizingAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                })
+        });
+
+        $(document).on('submit', '#completeForm', async function (e) {
+            e.preventDefault();
+            let status = $('#sortstatus').val();
+            // console.log($(this).serialize());
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                data: $(this).serialize() + "&singleconfirm=true",
+                url: submitUrl
             })
-            .fail(function(e){
-                console.log(e);
-                $("#finalizingAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                .done(function (d) {
+                    if (d.success) {
+                        loadpage(1, status);
+                        show_toast(d.success);
+                        $("#completeForm")[0].reset();
+                        $("#completeconfirm").modal('hide');
+                    } else {
+                        alert('Unknown error occured');
+                    }
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $("#completeAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                })
+        });
+
+        $(document).on('submit', '#dispatchForm', async function (e) {
+            e.preventDefault();
+            let status = $('#sortstatus').val();
+            console.log($(this).serialize());
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                data: $(this).serialize() + "&singledispatch=true",
+                url: submitUrl
             })
-        })
+                .done(function (d) {
+                    if (d.success) {
+                        loadpage(1, status);
+                        show_toast(d.success);
+                        $("#dispatchForm")[0].reset();
+                        $("#dispatchconfirm").modal('hide');
+                    } else {
+                        alert('Unknown error occured');
+                    }
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $("#dispatchAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                })
+        });
 
         $("#table").on('click', '.finalize-btn', function () {
             // console.log($(this).data('finalize-id'));
@@ -1997,15 +2185,51 @@
             $.get(transUrl, {
                 notes: true,
                 id: id
-            }, function(d){
+            }, function (d) {
                 // console.log(d);
                 // dd = JSON.parse(d);
                 $("#finalizeNotes").val(d.notes);
             }, 'json')
-            .fail(function(e){
-                console.log(e);
-            })
+                .fail(function (e) {
+                    console.log(e);
+                })
             $("#finalizeModal").modal('show');
+        });
+
+        $("#table").on('click', '.accepted-btn', async function () {
+            let id = $(this).data('accepted');
+            // console.log(id);
+            $("#dispatchid").val(id);
+            await get_chemical_brand('dispatch', id, "Dispatched");
+            $.get(transUrl, {
+                notes: true,
+                id: id
+            }, function (d) {
+                // console.log(d);
+                // dd = JSON.parse(d);
+                $("#dispatchNotes").val(d.notes);
+            }, 'json')
+                .fail(function (e) {
+                    console.log(e);
+                })
+            $("#dispatchModal").modal('show');
+        });
+
+        $("#table").on('click', '.finalizing-btn', async function () {
+            let id = $(this).data('finalize-id');
+
+            $("#completeid").val(id);
+            await get_chemical_brand('complete', id, "Finalizing");
+            $.get(transUrl, {
+                notes: true,
+                id: id
+            }, function (d) {
+                $("#completenotes").val(d.notes);
+            }, 'json')
+                .fail(function (e) {
+                    console.log(e);
+                })
+            $("#completeModal").modal('show');
         });
 
         async function view_transaction(transId) {
@@ -2351,10 +2575,28 @@
         $("#finalizeForm").on('click', "#finalize-addMoreChem", function () {
             $.get(transUrl, {
                 addrow: 'true',
-                status: 'Dispatched'
+                status: 'Finalizing'
             }, function (data) {
                 $("#finalize-chemBrandUsed").append(data);
                 // console.log(data);
+            }, 'html');
+
+        });
+        $("#completeForm").on('click', "#complete-addMoreChem", function () {
+            $.get(transUrl, {
+                addrow: 'true',
+                status: 'Completed'
+            }, function (data) {
+                $("#complete-chemBrandUsed").append(data);
+            }, 'html');
+
+        });
+        $("#dispatchForm").on('click', "#dispatch-addMoreChem", function () {
+            $.get(transUrl, {
+                addrow: 'true',
+                status: 'Dispatched'
+            }, function (data) {
+                $("#dispatch-chemBrandUsed").append(data);
             }, 'html');
 
         });
@@ -2368,7 +2610,26 @@
             } else {
                 row.remove();
             }
-        })
+        });
+        $("#completeForm").on('click', '#complete-chemBrandUsed button', async function () {
+            let row = $(this).closest('div.row');
+            let length = $('#complete-chemBrandUsed').children('.row').length;
+            if (length === 1) {
+                alert('One or more chemicals are required in order to proceed.');
+            } else {
+                row.remove();
+            }
+        });
+
+        $("#dispatchForm").on('click', '#dispatch-chemBrandUsed button', async function () {
+            let row = $(this).closest('div.row');
+            let length = $('#dispatch-chemBrandUsed').children('.row').length;
+            if (length === 1) {
+                alert('One or more chemicals are required in order to proceed.');
+            } else {
+                row.remove();
+            }
+        });
 
 
         $(document).on('click', '#deleteChem, .delete-chem-row', function () {

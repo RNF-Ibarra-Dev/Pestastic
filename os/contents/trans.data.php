@@ -536,7 +536,7 @@ if (isset($_GET['edit']) && $_GET['edit'] == 'probCheckbox') {
     }
 }
 
-if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] === 'finalize')) {
+if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] === 'finalize' || $_GET['getChem'] === 'complete' || $_GET['getChem'] === 'dispatch')) {
     $transId = $_GET['transId'];
     $status = $_GET['status'];
 
@@ -576,7 +576,7 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
                         <input type="number" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $id ?>"
                             class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
                     </div>
-                    <span class="form-text mt-auto mb-2">
+                    <span class="form-text mt-auto mx-3 mb-2">
                         <?= $unit ?>
                     </span>
                     <button type="button" data-row-id="<?= $id ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
@@ -591,6 +591,7 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
     } else {
         $idd = uniqid();
         ?>
+        <p class="alert alert-warning py-2 text-center fw-light w-75 mx-auto">This transaction has no chemicals set. Chemical might be deleted.</p>
         <div class="row" id="row-<?= $idd ?>">
             <div class="col-lg-4 mb-2">
                 <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
@@ -607,7 +608,7 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
                     <input type="number" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $idd ?>"
                         class="form-control form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
                 </div>
-                <span class="form-text mt-auto ms-2 mb-2">
+                <span class="form-text mt-auto mx-3 mb-2">
                     -
                 </span>
                 <button type="button" data-row-id="<? $idd ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
@@ -898,7 +899,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
 }
 
 if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
-    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Dispatched' ORDER BY updated_at DESC LIMIT 5;";
+    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing' ORDER BY updated_at DESC LIMIT 5;";
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
 
@@ -937,7 +938,7 @@ if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='5' class='text-center'>No finalizing transactions.</td></tr>";
+        echo "<tr><td scope='row' colspan='6' class='text-center text-dark'>No finalizing transactions.</td></tr>";
     }
 }
 if (isset($_GET['voidrequest']) && $_GET['voidrequest'] === 'true') {

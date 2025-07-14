@@ -3,7 +3,7 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 8;
-$rowCount = 'SELECT * FROM transactions';
+$rowCount = 'SELECT * FROM transactions WHERE void_request = 0;';
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
