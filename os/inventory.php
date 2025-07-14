@@ -1165,7 +1165,7 @@ require("startsession.php");
                     $(".qty-unit").text(' - ' + d.quantity_unit);
 
                     $("#adjust-curlevel").text(d.chemLevel + '/' + d.container_size + d.quantity_unit + ' (' + d.unop_cont + ' container/s left.)');
-                    $("#adjust-dispatched").text(d.log_type === 'Dispatched' ? d.quantity + d.quantity_unit : "Chemical currently not dispatched.");
+                    $("#adjust-dispatched").text(d.log_type === 'Out' ? d.quantity + d.quantity_unit : "Chemical currently not dispatched.");
 
                     if (!$("#wholecontainercheck").prop('checked')) {
                         $("#adjust-containerinput").hide();

@@ -322,7 +322,8 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
             $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel > 0";
             break;
         case "dispatched":
-            $sql = "SELECT COUNT(*) FROM inventory_log WHERE log_type = 'Out'";
+            $sql = "SELECT COUNT(il.*) FROM inventory_log il WHERE il.log_type = 'Out' AND 
+            NOT IN (SELECT 1 FROM transactions t WHERE t.id = il.trans_id AND t.transaction_status = 'Completed')";
             break;
         case "out-of-stock":
             $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel = 0 AND unop_cont = 0;";
@@ -335,7 +336,11 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
 
     if ($branchquery !== '') {
         if (str_contains($sql, "WHERE")) {
-            $sql .= " AND $branchquery";
+            if($_GET['status'] === 'Dispatched'){  
+                $sql .= " AND il.branch = ?";
+            } else{
+                $sql .= " AND $branchquery";
+            }
         } else {
             $sql .= " WHERE $branchquery";
         }
