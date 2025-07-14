@@ -333,11 +333,11 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
             $sql = "SELECT COUNT(*) FROM chemicals WHERE request = 1";
             break;
         case "available":
-            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel > 0";
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel > 0 AND request = 0";
             break;
         case "dispatched":
-            $sql = "SELECT COUNT(il.*) FROM inventory_log il WHERE il.log_type = 'Out' AND 
-            NOT IN (SELECT 1 FROM transactions t WHERE t.id = il.trans_id AND t.transaction_status = 'Completed')";
+            $sql = "SELECT COUNT(*) FROM inventory_log il WHERE il.log_type = 'Out' AND 
+            NOT EXISTS (SELECT 1 FROM transactions t WHERE t.id = il.trans_id AND t.transaction_status = 'Completed')";
             break;
         case "out-of-stock":
             $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel = 0 AND unop_cont = 0;";
