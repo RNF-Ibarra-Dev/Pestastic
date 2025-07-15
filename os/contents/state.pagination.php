@@ -166,8 +166,9 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $request = $row['request'];
             $now = date("Y-m-d");
             $exp = date_create($expDate);
-            $remcom = $row['unop_cont'];
-            $contsize = $row['container_size'];
+            $container_count = (int) $row['unop_cont'];
+            $contsize = (int) $row['container_size'];
+            $total_stored = $level + ($container_count * $contsize);
             $unit = $row['quantity_unit'];
             ?>
             <tr class="text-center">
@@ -176,13 +177,14 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
                 <td><?= htmlspecialchars("$contsize $unit") ?></td>
                 <td>
-                    <?= htmlspecialchars($remcom) ?>
+                    <?= htmlspecialchars("$total_stored $unit") ?>
                 </td>
-                <td><?= htmlspecialchars($remcom) ?></td>
-                <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
-                    <?= htmlspecialchars(date_format($exp, "F j, Y")) ?>
+                <td><?= htmlspecialchars(" $unit") ?></td>
+                <td>
+                    <?= htmlspecialchars(" $unit")?>
                 </td>
-                <td><?= $level === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : ($level <= $contsize * 0.2 ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Low Stock</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
+                <td>
+                    <?=htmlspecialchars(" $unit")?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
