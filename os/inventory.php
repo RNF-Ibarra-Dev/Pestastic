@@ -314,11 +314,11 @@ require("startsession.php");
                                                     placeholder="state reason of adjustment . . ."
                                                     autocomplete="off"></textarea>
                                             </div>
-                                            <div class="col-lg-3 mb-2">
-                                                <label for="transaction" class="form-label fw-medium">Transaction:</label>
+                                            <!-- <div class="col-lg-3 mb-2">
+                                                <label for="adjust_transaction" class="form-label fw-medium">Transaction:</label>
                                                 <select name="transaction" class="form-select" id="adjust_transaction">
                                                 </select>
-                                            </div>
+                                            </div> -->
                                         </div>
                                         <p class="alert alert-info py-2 text-center w-75 mx-auto" id="adjustalert"
                                             style="display: none;"></p>

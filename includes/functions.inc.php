@@ -3181,3 +3181,8 @@ function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
         ];
     }
 }
+
+
+function get_used_open_chem($conn, $chemid){
+    $sql = "SELECT * FROM inventory_log WHERE usage_source IN('PARTIAL_ADDITION', )";
+}

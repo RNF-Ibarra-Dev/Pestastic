@@ -31,8 +31,8 @@ function row_status($conn, $entries = false)
 
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
-        $GLOBALS['totalPages'];
-    
+    $GLOBALS['totalPages'];
+
     ?>
 
 
@@ -143,12 +143,62 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT DISTINCT c.* FROM chemicals c LEFT JOIN inventory_log il ON c.id = il.chem_id
-    WHERE c.request = 0 
-    AND c.chemLevel > 0 
-    AND c.expiryDate > NOW()
-    ORDER BY c.request DESC, c.id DESC LIMIT " . $limitstart
-        . ", " . $pageRows . ";";
+    // $sql = "SELECT  
+    //             c.id AS chem_id,
+    //             c.name,
+    //             c.brand,
+    //             c.chemLevel,
+    //             c.container_size,
+    //             c.unop_cont, 
+    //             c.quantity_unit,
+    //             il.log_type, 
+    //             il.quantity, 
+    //             il.containers_affected_count AS ccount, 
+    //             il.log_date
+    //         FROM 
+    //             chemicals c 
+    //         LEFT JOIN 
+    //             inventory_log il ON c.id = il.chem_id
+    //         WHERE 
+    //             c.request = 0 
+    //             AND c.chemLevel > 0 
+    //             AND c.expiryDate > NOW()
+    //         ORDER BY 
+    //         c.request DESC, c.id DESC LIMIT " . $limitstart
+    //             . ", " . $pageRows . ";";
+
+    $sql = "SELECT
+                c.id AS chem_id,
+                c.name,
+                c.brand,
+                c.quantity_unit AS unit,
+                c.container_size,
+                (c.chemLevel + (c.unop_cont * c.container_size)) AS total_stored_quantity,
+                SUM(CASE
+                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
+                    AND il.containers_affected_count = 0
+                    THEN ABS(il.quantity)
+                    ELSE 0
+                END) AS total_used_open,
+                SUM(CASE
+                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
+                    AND il.containers_affected_count < 0
+                    THEN ABS(il.quantity)
+                    ELSE 0
+                END) AS total_used_closed
+            FROM
+                chemicals c
+            LEFT JOIN
+                inventory_log il ON c.id = il.chem_id
+            WHERE
+                c.request = 0
+                AND c.chemLevel > 0
+                AND c.expiryDate > NOW()
+            GROUP BY
+                c.id, c.name, c.brand, c.container_size, c.chemLevel, c.unop_cont
+            ORDER BY
+                c.id
+                DESC LIMIT " . $limitstart. ", " . $pageRows . ";";
 
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
@@ -158,33 +208,34 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
+            $id = $row['chem_id'];
             $name = $row["name"];
             $brand = $row["brand"];
-            $level = $row["chemLevel"];
-            $expDate = $row["expiryDate"];
-            $request = $row['request'];
-            $now = date("Y-m-d");
-            $exp = date_create($expDate);
-            $container_count = (int) $row['unop_cont'];
+            $unit = $row['unit'];
+            $total_stored = $row['total_stored_quantity'];
+            $total_used_open = $row['total_used_open'];
+            $total_used_closed = $row['total_used_closed'];
+            $total_qty = $total_stored + $total_used_open + $total_used_closed;
+            // $level = $row["chemLevel"];
+            // $container_count = (int) $row['unop_cont'];
             $contsize = (int) $row['container_size'];
-            $total_stored = $level + ($container_count * $contsize);
-            $unit = $row['quantity_unit'];
+            // $total_stored = $level + ($container_count * $contsize);
+            // $unit = $row['quantity_unit'];
             ?>
             <tr class="text-center">
                 <td scope="row">
-                    <?= htmlspecialchars("$name ($brand)")?>
+                    <?= htmlspecialchars("$name ($brand)") ?>
                 </td>
                 <td><?= htmlspecialchars("$contsize $unit") ?></td>
                 <td>
                     <?= htmlspecialchars("$total_stored $unit") ?>
                 </td>
-                <td><?= htmlspecialchars(" $unit") ?></td>
+                <td><?= htmlspecialchars("$total_used_open $unit") ?></td>
                 <td>
-                    <?= htmlspecialchars(" $unit")?>
+                    <?= htmlspecialchars("$total_used_closed $unit") ?>
                 </td>
                 <td>
-                    <?=htmlspecialchars(" $unit")?>
+                    <?= htmlspecialchars("$total_qty $unit") ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">

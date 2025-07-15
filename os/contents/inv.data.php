@@ -482,7 +482,8 @@ $logtypes = [
     'in',
     'out',
     'lost',
-    'scrapped'
+    'scrapped',
+    'used'
 ];
 
 if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
