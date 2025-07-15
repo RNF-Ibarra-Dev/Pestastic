@@ -192,7 +192,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
                     <?= htmlspecialchars(date_format($exp, "F j, Y")) ?>
                 </td>
-                <td><?= $level === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : ($level <= $contsize * 0.2 ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Low Stock</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
+                <td><?= $level === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : (($level <= $contsize * 0.35) && ($remcom )  ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Running Out</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">

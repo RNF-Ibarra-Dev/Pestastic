@@ -751,6 +751,7 @@ require("startsession.php");
             // get_id();
             get_sa_id();
             await loadpage(1);
+            await loadstate(1);
         });
 
         async function loadpagination(pageno, entries = false) {
@@ -876,18 +877,17 @@ require("startsession.php");
             e.preventDefault();
 
             let currentpage = $(this).data('page');
-            console.log(currentpage);
+            // console.log(currentpage);
             window.history.pushState(null, "", "?page=" + currentpage);
-            await loadpage(currentpage, entryHidden);
+            await loadtable(currentpage, entryHidden);
+            await loadpagination(currentpage, entryHidden);
         })
 
         $('#table2pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
             let currentpage = $(this).data('page');
-            await loadpage(currentpage, entryHidden);
+            await loadpage(currentpage);
         })
-
-
 
         // search
         $(function () {
@@ -1200,17 +1200,17 @@ require("startsession.php");
             get_overview_count('out-of-stock', branch);
         }
 
-        $("#chemicallogmodal").on('shown.bs.modal', function(){
+        $("#chemicallogmodal").on('shown.bs.modal', function () {
             $.get(urldata, {
                 trans_select: true
-            }, function(d){
+            }, function (d) {
                 $('#chemicallogmodal select#adjust_transaction').empty();
                 $('#chemicallogmodal select#adjust_transaction').append(d);
             }, 'html')
-            .fail(function(e){
-                alert("An error has occured. Please try again later.");
-                console.log(e);
-            })
+                .fail(function (e) {
+                    alert("An error has occured. Please try again later.");
+                    console.log(e);
+                })
         });
 
         $(document).on('click', '#inventorylogbtn', function () {

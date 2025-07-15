@@ -3,7 +3,36 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 10;
-$rowCount = 'SELECT * FROM chemicals WHERE request = 0';
+$rowCount = "SELECT
+                c.id AS chem_id,
+                c.name,
+                c.brand,
+                c.quantity_unit AS unit,
+                c.container_size,
+                (c.chemLevel + (c.unop_cont * c.container_size)) AS total_stored_quantity,
+                SUM(CASE
+                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
+                    AND il.containers_affected_count = 0
+                    THEN ABS(il.quantity)
+                    ELSE 0
+                END) AS total_used_open,
+                SUM(CASE
+                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
+                    AND il.containers_affected_count < 0
+                    THEN ABS(il.quantity)
+                    ELSE 0
+                END) AS total_used_closed
+            FROM
+                chemicals c
+            LEFT JOIN
+                inventory_log il ON c.id = il.chem_id
+            WHERE
+                c.request = 0
+                AND c.expiryDate > NOW()
+            GROUP BY
+                c.id, c.name, c.brand, c.container_size, c.chemLevel, c.unop_cont
+            ORDER BY
+                c.id";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
