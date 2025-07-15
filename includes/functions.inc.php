@@ -2756,25 +2756,42 @@ function reflect_chem_log($conn, $chemid, $qty, $containercount)
 
     mysqli_begin_transaction($conn);
     try {
-        $sql = "UPDATE chemicals SET chemLevel = chemLevel + ?";
-        $datatypes = "di";
-        $data[] = $qty;
+        $sql = "";
+        $datatypes = "";
+        $data = [];
 
-        $current = get_chem_level($conn, $chemid);
+        $current_chem_data = get_chemical($conn, $chemid);
+        $current_chemLevel = $current_chem_data['chemLevel'];
+        $current_unop_cont = $current_chem_data['unop_cont'];
+        $container_size = $current_chem_data['container_size'];
+
         if ($containercount !== 0) {
-            if ($qty > $current) {
-                $qty = 0;
+            if ($containercount < 0) {
+                if (abs($containercount) > $current_unop_cont) {
+                    throw new Exception("Cannot adjust container count below current available unopened containers (" . $current_unop_cont . ").");
+                }
             }
-            $sql .= ", unop_cont = unop_cont + ?";
-            $datatypes .= "i";
+
+            $sql = "UPDATE chemicals SET unop_cont = unop_cont + ?";
+            $datatypes = "i";
             $data[] = $containercount;
         } else {
-            if ($qty > $current) {
-                throw new Exception("You cannot add a chemical more than its full capacity.");
+            if ($qty > 0) {
+                if (($current_chemLevel + $qty) > $container_size) {
+                    throw new Exception("Cannot add " . $qty . "mL. Current: " . $current_chemLevel . "mL. Max: " . $container_size . "mL. Remaining capacity: " . ($container_size - $current_chemLevel) . "mL.");
+                }
+            } else {
+                if (($current_chemLevel + $qty) < 0) {
+                    throw new Exception("Cannot remove " . abs($qty) . "mL. Only " . $current_chemLevel . "mL remaining in opened container.");
+                }
             }
+            $sql = "UPDATE chemicals SET chemLevel = chemLevel + ?";
+            $datatypes = "d";
+            $data[] = $qty;
         }
-        $data[] = $chemid;
         $sql .= " WHERE id = ?;";
+        $datatypes .= "i";
+        $data[] = $chemid;
         $stmt = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             throw new Exception("Reflecting chemical log stmt failed.");
@@ -2799,27 +2816,25 @@ function reflect_chem_log($conn, $chemid, $qty, $containercount)
 
 
 
-function adjust_chemical($conn, $chemid, $logtype, $containerCount, $qty, $notes, $user_id, $user_role, $branch)
+function adjust_chemical($conn, $chemid, $logtype, $signed_cont_count, $qty, $notes, $user_id, $user_role, $branch, $usage_source)
 {
     mysqli_begin_transaction($conn);
     try {
-        $qtytoreflect = $containerCount != 0 ? 0 : $qty;
 
-        $reflect = reflect_chem_log($conn, $chemid, $qtytoreflect, $containerCount);
+        $reflect = reflect_chem_log($conn, $chemid, $qty, $signed_cont_count);
         if (isset($reflect['error'])) {
             throw new Exception($reflect['error']);
         }
 
-
-        $sql = "INSERT INTO inventory_log (chem_id, log_type, quantity, log_date, user_id, user_role, notes, branch) 
-    VALUES (?, ?, ?, NOW(), ?, ?, ?, ?);";
+        $sql = "INSERT INTO inventory_log (chem_id, log_type, quantity, log_date, user_id, user_role, notes, branch, usage_source, containers_affected_count) 
+    VALUES (?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?);";
         $stmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             return ['error' => 'stmt failed.'];
         }
 
-        mysqli_stmt_bind_param($stmt, "ssdssss", $chemid, $logtype, $qty, $user_id, $user_role, $notes, $branch);
+        mysqli_stmt_bind_param($stmt, "isdissisi", $chemid, $logtype, $qty, $user_id, $user_role, $notes, $branch, $usage_source, $signed_cont_count);
 
         if (!mysqli_stmt_execute($stmt)) {
             throw new Exception("Failed to insert log");

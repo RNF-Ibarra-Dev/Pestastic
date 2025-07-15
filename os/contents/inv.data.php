@@ -350,9 +350,9 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
 
     if ($branchquery !== '') {
         if (str_contains($sql, "WHERE")) {
-            if($_GET['status'] === 'Dispatched'){  
+            if ($_GET['status'] === 'Dispatched') {
                 $sql .= " AND il.branch = ?";
-            } else{
+            } else {
                 $sql .= " AND $branchquery";
             }
         } else {
@@ -494,6 +494,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     $notes = $_POST['notes'];
 
     $wcontainer = isset($_POST['containerchk']);
+    // no of container used
     $ccontainer = isset($_POST['containercount']) ? $_POST['containercount'] : (int) 0;
 
     if (!$wcontainer) {
@@ -529,6 +530,8 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
 
     // $valid_logtype = '';
     // $final_qty = 0;
+
+    $usage_source = NULL;
     if (!in_array($logtype, $logtypes)) {
         // if other type is null, logtype should be restricted and only fixed datas are allowed
         if ($ologtype === NULL || empty($ologtype)) {
@@ -551,11 +554,13 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
             if ($wcontainer) {
                 $fccontainer = $ccontainer;
             }
+            $usage_source = "MANUAL_ADDITION";
         } else {
             $final_qty = $qty * -1;
             if ($wcontainer) {
                 $fccontainer = $ccontainer * -1;
             }
+            $usage_source = "MANUAL_SUBTRACTION";
         }
     } else {
         // trigger switch if in select - restrict choices
@@ -565,6 +570,9 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
                 $final_qty = $qty;
                 if ($wcontainer) {
                     $fccontainer = $ccontainer;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_ADDED";
+                } else {
+                    $usage_source = "PARTIAL_ADDITION";
                 }
                 break;
             case 'out':
@@ -572,6 +580,9 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
                 $final_qty = $qty * -1;
                 if ($wcontainer) {
                     $fccontainer = $ccontainer * -1;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_OUT";
+                } else {
+                    $usage_source = "FROM_OPENED_CONTAINER";
                 }
                 break;
             case 'lost':
@@ -579,6 +590,19 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
                 $final_qty = $qty * -1;
                 if ($wcontainer) {
                     $fccontainer = $ccontainer * -1;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_LOST";
+                } else {
+                    $usage_source = "PARTIAL_LOST_FROM_OPENED";
+                }
+                break;
+            case 'used':
+                $valid_logtype = "Used";
+                $final_qty = $qty * -1;
+                if ($wcontainer) {
+                    $fccontainer = $ccontainer * -1;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_USED";
+                } else {
+                    $usage_source = "FROM_OPENED_CONTAINER";
                 }
                 break;
             case 'scrapped':
@@ -586,6 +610,9 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
                 $final_qty = $qty * -1;
                 if ($wcontainer) {
                     $fccontainer = $ccontainer * -1;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_LOST_DAMAGED";
+                } else {
+                    $usage_source = "PARTIAL_SCRAPPED_FROM OPENED";
                 }
                 break;
             default:
@@ -618,7 +645,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     }
     // valid logtype, final qty
 
-    $adjust = adjust_chemical($conn, $chemId, $valid_logtype, $fccontainer, $final_qty, $notes, $user, $role, $branch);
+    $adjust = adjust_chemical($conn, $chemId, $valid_logtype, $fccontainer, $final_qty, $notes, $user, $role, $branch, $usage_source);
     if (isset($adjust['error'])) {
         http_response_code(400);
         echo $adjust['error'];
@@ -632,4 +659,20 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
         echo "An unknown error occured. Please try again later.";
         exit();
     }
+}
+
+if (isset($_GET['trans_select']) && $_GET['trans_select'] === 'true') {
+    $sql = "SELECT id from transactions;";
+    $res = mysqli_query($conn, $sql);
+    echo "<option value='' selected>Select Transaction No.</option>";
+    if (mysqli_num_rows($res) > 0) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            $id = $row['id'];
+            ?>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
+            
+            <?php
+        }
+    } 
+    exit();
 }

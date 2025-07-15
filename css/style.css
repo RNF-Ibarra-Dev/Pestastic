@@ -53,14 +53,16 @@ body {
   border: none !important;
 }
 
-#pagination nav ul li a {
+#pagination nav ul li a,
+#table2pagination nav ul li a {
   background: rgba(0, 0, 0, 0.25);
   color: #fff !important;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
     color 0.15s ease-in-out;
 }
 
-#pagination nav ul li a:hover {
+#pagination nav ul li a:hover,
+#table2pagination nav ul li a:hover {
   background-color: rgba(113, 187, 178, 0.3) !important;
   color: #fff !important;
 }

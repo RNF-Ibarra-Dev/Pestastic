@@ -30,15 +30,9 @@ function row_status($conn, $entries = false)
 
 
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
-    $entries = $_GET['entries'];
 
-    if ($entries === 'true') {
-        $rowstatus = row_status($conn, $entries);
-        $totalRows = $rowstatus['rows'];
-        $totalPages = $rowstatus['pages'];
-    } else {
         $GLOBALS['totalPages'];
-    }
+    
     ?>
 
 
@@ -149,7 +143,11 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT * FROM chemicals WHERE request = 0 ORDER BY request DESC, id DESC LIMIT " . $limitstart
+    $sql = "SELECT DISTINCT c.* FROM chemicals c LEFT JOIN inventory_log il ON c.id = il.chem_id
+    WHERE c.request = 0 
+    AND c.chemLevel > 0 
+    AND c.expiryDate > NOW()
+    ORDER BY c.request DESC, c.id DESC LIMIT " . $limitstart
         . ", " . $pageRows . ";";
 
     $result = mysqli_query($conn, $sql);
@@ -176,7 +174,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td scope="row">
                     <?= htmlspecialchars("$name ($brand)")?>
                 </td>
-                <td><?= htmlspecialchars($contsize) ?></td>
+                <td><?= htmlspecialchars("$contsize $unit") ?></td>
                 <td>
                     <?= htmlspecialchars($remcom) ?>
                 </td>
@@ -193,8 +191,6 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                                 class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
                         <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                 class="bi bi-info-circle"></i></button>
-                        <button type="button" class="btn btn-sidebar delbtn" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                            data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
                     </div>
                 </td>
             </tr>

@@ -117,9 +117,6 @@ require("startsession.php");
                     Entries</span></button>
                 <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light"
                     placeholder="Search . . ." id="searchbar" name="search" autocomplete="one-time-code">
-                <button type="button" id="inventorylogbtn"
-                    class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 px-4 text-light"
-                    title="Inventory Logs"><i class="bi bi-file-earmark-text"></i></button>
                 <button type="button" id="loadChem"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded text-light py-2 px-4" data-bs-toggle="modal"
                     data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
@@ -289,6 +286,7 @@ require("startsession.php");
                                                     <option value="in">Manual Stock Correction (In)</option>
                                                     <option value="out">Manual Stock Correction (Out)</option>
                                                     <option value="lost">Lost/Damaged Stock</option>
+                                                    <option value="used">Used Stock</option>
                                                     <option value="scrapped">Scrapped</option>
                                                     <option value="other">Other (Please Specify)</option>
                                                 </select>
@@ -316,7 +314,11 @@ require("startsession.php");
                                                     placeholder="state reason of adjustment . . ."
                                                     autocomplete="off"></textarea>
                                             </div>
-
+                                            <div class="col-lg-3 mb-2">
+                                                <label for="transaction" class="form-label fw-medium">Transaction:</label>
+                                                <select name="transaction" class="form-select" id="adjust_transaction">
+                                                </select>
+                                            </div>
                                         </div>
                                         <p class="alert alert-info py-2 text-center w-75 mx-auto" id="adjustalert"
                                             style="display: none;"></p>
@@ -652,9 +654,10 @@ require("startsession.php");
                         Manager.</caption>
                     <thead>
                         <tr class="text-center text-nowrap">
-                            <th scope="col">Name</th>
+                            <th scope="col">Chemical ID</th>
+                            <th>Name</th>
                             <th>Brand</th>
-                            <th>Current Level</th>
+                            <th>Opened Container Level</th>
                             <th>Remaining Container/s</th>
                             <th>Expiry Date</th>
                             <th>Status</th>
@@ -681,6 +684,13 @@ require("startsession.php");
 
             <div class="bg-light bg-opacity-25 rounded mx-3 mt-3 py-2">
                 <h1 class="text-center fw-medium">Chemical Inventory State</h1>
+            </div>
+            <div class="hstack gap-3 my-3 mx-3">
+                <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light"
+                    placeholder="Search . . ." id="searchbar" name="search" autocomplete="one-time-code">
+                <button type="button" id="inventorylogbtn"
+                    class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 px-4 text-light"
+                    title="Inventory Logs"><i class="bi bi-file-earmark-text"></i></button>
             </div>
             <div class="table-responsive-sm d-flex justify-content-center">
                 <table class="table align-middle table-hover m-3 mt-2 os-table w-100 text-light">
@@ -736,7 +746,7 @@ require("startsession.php");
             toast.show();
         }
 
-        $(document).ready(async function() {
+        $(document).ready(async function () {
             // get_data();
             // get_id();
             get_sa_id();
@@ -753,10 +763,31 @@ require("startsession.php");
                         active: pageno,
                         entries: entries
                     },
-                    success: async function(res) {
+                    success: async function (res) {
                         $('#pagination').empty();
                         $('#pagination').append(res);
                         window.history.pushState(null, "", "?page=" + pageno);
+                    }
+                });
+
+            } catch (error) {
+                alert(error);
+            }
+        }
+
+        async function loadpagination2(pageno) {
+            try {
+                return $.ajax({
+                    type: 'GET',
+                    url: 'contents/state.pagination.php',
+                    data: {
+                        pagenav: 'true',
+                        active: pageno
+                    },
+                    success: async function (res) {
+                        $('#table2pagination').empty();
+                        $('#table2pagination').append(res);
+                        // window.history.pushState(null, "", "?page=" + pageno);
                     }
                 });
 
@@ -775,11 +806,11 @@ require("startsession.php");
                         currentpage: page,
                         hideentries: hide_entries
                     },
-                    success: function(data) {
+                    success: function (data) {
                         $('#chemicalTable').empty();
                         $('#chemicalTable').append(data);
                     },
-                    error: function(err) {
+                    error: function (err) {
                         alert('There was a problem fetching the data of a table. Please try again later.');
                     }
                 });
@@ -792,19 +823,19 @@ require("startsession.php");
 
         async function loadtable2(page) {
             $.ajax({
-                    method: 'GET',
-                    url: 'contents/state.pagination.php',
-                    data: {
-                        table: 'true',
-                        currentpage: page
-                    },
-                    dataType: 'html'
-                })
-                .done(async function(d) {
+                method: 'GET',
+                url: 'contents/state.pagination.php',
+                data: {
+                    table: 'true',
+                    currentpage: page
+                },
+                dataType: 'html'
+            })
+                .done(async function (d) {
                     $("#chemStateTable").empty();
                     $("#chemStateTable").append(d);
                 })
-                .fail(async function(e) {
+                .fail(async function (e) {
                     alert('There was a problem fetching the data of a table. Please try again later.');
                     console.log(e);
                 })
@@ -813,6 +844,7 @@ require("startsession.php");
         async function loadpage(page, entryHidden = false) {
             await loadtable(page, entryHidden);
             await loadpagination(page, entryHidden);
+            await loadpagination2(page);
             await loadtable2(page);
             overview_display();
         }
@@ -836,39 +868,39 @@ require("startsession.php");
             return entryHidden;
         }
 
-        $(document).on('click', '#hideentries', async function() {
+        $(document).on('click', '#hideentries', async function () {
             await hide_entries();
         });
 
-        $('#pagination').on('click', '.page-link', async function(e) {
+        $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
 
             let currentpage = $(this).data('page');
             console.log(currentpage);
-
-            // $('#chemicalTable').empty();
             window.history.pushState(null, "", "?page=" + currentpage);
-            // await loadtable(currentpage);
+            await loadpage(currentpage, entryHidden);
+        })
 
-            // $('#pagination').empty();
-            // await loadpagination(currentpage);
+        $('#table2pagination').on('click', '.page-link', async function (e) {
+            e.preventDefault();
+            let currentpage = $(this).data('page');
             await loadpage(currentpage, entryHidden);
         })
 
 
 
         // search
-        $(function() {
+        $(function () {
             let timeout = null;
 
-            $('#searchbar').keyup(function() {
+            $('#searchbar').keyup(function () {
                 clearTimeout(timeout);
                 $('#chemicalTable').empty();
                 // $('#chemicalTable').append($('#loader'))
                 // $('#loader').removeClass('visually-hidden');
                 $('#loader').css('display', 'block');
 
-                timeout = setTimeout(async function() {
+                timeout = setTimeout(async function () {
                     var search = $('#searchbar').val();
                     try {
                         const searchChem = await $.ajax({
@@ -879,7 +911,7 @@ require("startsession.php");
                                 search: search,
                                 entries: entryHidden
                             },
-                            success: async function(searchChem, status) {
+                            success: async function (searchChem, status) {
                                 if (!search == '') {
                                     $('#pagination').addClass('d-none');
                                     $('#chemicalTable').empty();
@@ -905,13 +937,13 @@ require("startsession.php");
         function get_sa_id() {
             $.post(urldata, {
                 managerId: true
-            }, function(data, status) {
+            }, function (data, status) {
                 $('#idForDeletion').val(data);
             })
         }
 
         // edit chemical
-        $(document).on('submit', '#editChemForm', async function(e) {
+        $(document).on('submit', '#editChemForm', async function (e) {
             e.preventDefault();
             // console.log($(this).serialize());
             try {
@@ -952,13 +984,13 @@ require("startsession.php");
         });
 
 
-        $(document).on('click', '.remove-btn', function() {
+        $(document).on('click', '.remove-btn', function () {
             $(this).parent().parent().remove();
         })
 
-        $(document).on('click', '#addMoreChemBtn', async function() {
+        $(document).on('click', '#addMoreChemBtn', async function () {
             $.get(urldata, "addrow=true")
-                .done(function(data) {
+                .done(function (data) {
                     $('#addMoreChem').append(data);
                     flatpickr("#addMoreChem input.form-date-exp", {
                         dateFormat: "Y-m-d",
@@ -973,26 +1005,26 @@ require("startsession.php");
                         maxDate: 'today'
                     });
                 })
-                .fail(function(e, s, em) {
+                .fail(function (e, s, em) {
                     console.log(e);
                 });
         });
 
-        $(document).on('click', "#loadChem", function() {
+        $(document).on('click', "#loadChem", function () {
             // flatpickrdate(d);
             $("#addMoreChem").empty();
             $("#addForm")[0].reset();
         });
 
 
-        $(document).on('click', '.delbtn', function() {
+        $(document).on('click', '.delbtn', function () {
             $('#deleteForm')[0].reset();
             $('#delChemId').val($(this).data('id'));
             $('#deleteModal').modal('show');
         });
 
 
-        $(document).on('submit', '#deleteForm', async function(e) {
+        $(document).on('submit', '#deleteForm', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             $.ajax({
@@ -1000,7 +1032,7 @@ require("startsession.php");
                 url: urldata,
                 data: $(this).serialize() + '&action=delete',
                 dataType: 'json'
-            }).done(function(d) {
+            }).done(function (d) {
                 // console.log(d);
                 if (d.success) {
                     $('#chemicalTable').empty();
@@ -1009,7 +1041,7 @@ require("startsession.php");
                     $('#tableAlert').html(d.success).fadeIn(400).delay(2000).fadeOut(1000);
                     $('#deleteForm')[0].reset();
                 }
-            }).fail(function(e) {
+            }).fail(function (e) {
                 // console.log(e);
                 $('#manPass').addClass('border border-warning').fadeIn(400);
                 $('#del-emptyInput').removeClass('visually-hidden').html(e.responseText).hide().fadeIn(400).delay(2000).fadeOut(1000);
@@ -1018,7 +1050,7 @@ require("startsession.php");
 
 
 
-        $(document).on('submit', '#addForm', async function(e) {
+        $(document).on('submit', '#addForm', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             try {
@@ -1045,14 +1077,14 @@ require("startsession.php");
 
         async function get_chem_details(id) {
             return $.get(urldata, {
-                    id: id,
-                    chemDetails: 'true'
-                })
-                .done(function(d, s) {
+                id: id,
+                chemDetails: 'true'
+            })
+                .done(function (d, s) {
                     console.log(d);
                     return d;
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                 })
         }
@@ -1072,14 +1104,14 @@ require("startsession.php");
         function toggle() {
             $('#submitEdit').toggleClass('d-none');
             $('#view-chemUnit, #edit-chemUnit').toggleClass('d-none');
-            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount').attr('readonly', function(i, a) {
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount').attr('readonly', function (i, a) {
                 return a ? false : true;
             });
-            $("#edit-expDate, #edit-dateReceived, #edit-chemUnit").attr('disabled', function(i, a) {
+            $("#edit-expDate, #edit-dateReceived, #edit-chemUnit").attr('disabled', function (i, a) {
                 return a ? false : true;
             });
 
-            $("#toggleEditBtn").html(function(i, a) {
+            $("#toggleEditBtn").html(function (i, a) {
                 return a.includes('Close Edit') ? 'Edit' : 'Close Edit';
             });
             $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived, #edit-contSize, #edit-containerCount').toggleClass('form-control-plaintext form-control');
@@ -1088,14 +1120,14 @@ require("startsession.php");
         }
 
         // get specific chemical information when edit btn is clicked
-        $(document).on('click', '.editbtn', async function() {
+        $(document).on('click', '.editbtn', async function () {
             $('#editChemForm')[0].reset();
             let id = $(this).data('chem');
             let deets = await get_chem_details(id);
             var details = JSON.parse(deets);
             console.log(details);
 
-            $('#submitEdit, #toggleEditBtn').attr('disabled', function() {
+            $('#submitEdit, #toggleEditBtn').attr('disabled', function () {
                 return details.req == 1 ? true : false;
             });
 
@@ -1118,10 +1150,10 @@ require("startsession.php");
             $('#edit-notes').val(details.notes);
             $('#edit-chemUnit').val(details.unit);
             $('#view-chemUnit').text(details.unit);
-            $('#addinfo').html(function() {
+            $('#addinfo').html(function () {
                 return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
             });
-            $('#updateinfo').html(function() {
+            $('#updateinfo').html(function () {
                 return details.upby === 'No Update Record' ? 'Updated at: ' + details.upat : 'Updated at: ' + details.upat + ' by ' + details.upby;
             });
 
@@ -1144,16 +1176,16 @@ require("startsession.php");
 
         function get_overview_count(container, branch) {
             $.get(urldata, {
-                    count: true,
-                    status: container,
-                    branch: branch
-                })
-                .done(function(d) {
+                count: true,
+                status: container,
+                branch: branch
+            })
+                .done(function (d) {
                     // console.log(d);
                     $(`#count_${container}`).empty();
                     $(`#count_${container}`).append(d);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                 })
         }
@@ -1168,18 +1200,29 @@ require("startsession.php");
             get_overview_count('out-of-stock', branch);
         }
 
+        $("#chemicallogmodal").on('shown.bs.modal', function(){
+            $.get(urldata, {
+                trans_select: true
+            }, function(d){
+                $('#chemicallogmodal select#adjust_transaction').empty();
+                $('#chemicallogmodal select#adjust_transaction').append(d);
+            }, 'html')
+            .fail(function(e){
+                alert("An error has occured. Please try again later.");
+                console.log(e);
+            })
+        });
 
-
-        $(document).on('click', '#inventorylogbtn', function() {
+        $(document).on('click', '#inventorylogbtn', function () {
             $('#inventorylogmodal').modal('show');
             $.get('contents/inv.log.pagination.php', {
-                    inventorylog: true
-                })
-                .done(function(data) {
+                inventorylog: true
+            })
+                .done(function (data) {
                     $('#inventorylogmodal .modal-body #inventorylogtable').empty();
                     $('#inventorylogmodal .modal-body #inventorylogtable').append(data);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                     $('#inventorylogmodal .modal-body').html('<p class="text-center text-danger">Error loading inventory log.</p>');
                 });
@@ -1187,21 +1230,21 @@ require("startsession.php");
 
         function load_chem_log_history(id) {
             $.get('contents/inv.log.pagination.php', {
-                    chemloghistory: true,
-                    chemid: id
-                })
-                .done(function(data) {
+                chemloghistory: true,
+                chemid: id
+            })
+                .done(function (data) {
                     $('#chemicallogmodal .modal-body #chemicalhistorylogtable').empty();
                     $('#chemicallogmodal .modal-body #chemicalhistorylogtable').append(data);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     console.log(e);
                     $('#chemicallogmodal .modal-body').html('<p class="text-center text-danger">Error loading inventory log.</p>');
                 });
         }
 
 
-        $("#chemicalTable").on('click', '.log-chem-btn', async function() {
+        $(document).on('click', '.log-chem-btn', async function () {
             let id = $(this).data('chem');
             await load_chem_log_history(id);
         });
@@ -1209,59 +1252,59 @@ require("startsession.php");
         async function get_chem_log(id) {
             console.log(id);
             $.ajax({
-                    method: 'GET',
-                    url: urldata,
-                    data: {
-                        chemLog: true,
-                        id: id
-                    },
-                    dataType: 'json'
-                }).done(function(data) {
-                    console.log(data);
+                method: 'GET',
+                url: urldata,
+                data: {
+                    chemLog: true,
+                    id: id
+                },
+                dataType: 'json'
+            }).done(function (data) {
+                console.log(data);
 
-                    if (data.success) {
-                        let d = JSON.parse(data.success);
-                        $(".log-chem-id").val(d.id);
-                        $(".chem-name").val(d.name);
-                        $(".qty-unit").text(' - ' + d.quantity_unit);
+                if (data.success) {
+                    let d = JSON.parse(data.success);
+                    $(".log-chem-id").val(d.id);
+                    $(".chem-name").val(d.name);
+                    $(".qty-unit").text(' - ' + d.quantity_unit);
 
-                        $("#adjust-curlevel").text(d.chemLevel + '/' + d.container_size + d.quantity_unit + ' (' + d.unop_cont + ' container/s left.)');
-                        $("#adjust-dispatched").text(d.log_type === 'Out' ? d.quantity + d.quantity_unit : "Chemical currently not dispatched.");
+                    $("#adjust-curlevel").text(d.chemLevel + '/' + d.container_size + d.quantity_unit + ' (' + d.unop_cont + ' container/s left.)');
+                    $("#adjust-dispatched").text(d.log_type === 'Out' ? d.quantity + d.quantity_unit : "Chemical currently not dispatched.");
 
-                        if (!$("#wholecontainercheck").prop('checked')) {
+                    if (!$("#wholecontainercheck").prop('checked')) {
+                        $("#adjust-containerinput").hide();
+                        $("#adjust-containerinput input").prop('disabled', true);
+                        $("#adjust-qty").prop('disabled', false);
+                    }
+                    $('#wholecontainercheck').on('change', function () {
+                        if ($(this).prop('checked')) {
+                            $("#adjust-containerinput").show();
+                            $("#adjust-containerinput input").prop('disabled', false);
+                            $("#adjust-qty").prop('disabled', true);
+                        } else {
                             $("#adjust-containerinput").hide();
                             $("#adjust-containerinput input").prop('disabled', true);
                             $("#adjust-qty").prop('disabled', false);
                         }
-                        $('#wholecontainercheck').on('change', function() {
-                            if ($(this).prop('checked')) {
-                                $("#adjust-containerinput").show();
-                                $("#adjust-containerinput input").prop('disabled', false);
-                                $("#adjust-qty").prop('disabled', true);
-                            } else {
-                                $("#adjust-containerinput").hide();
-                                $("#adjust-containerinput input").prop('disabled', true);
-                                $("#adjust-qty").prop('disabled', false);
-                            }
-                        })
+                    })
 
-                        $('#chemicallogmodal').modal('show');
+                    $('#chemicallogmodal').modal('show');
 
-                    } else {
-                        alert('Unknown Error. Please try again later.');
-                    }
-                })
-                .fail(function(e) {
+                } else {
+                    alert('Unknown Error. Please try again later.');
+                }
+            })
+                .fail(function (e) {
                     console.log(e);
                 })
         }
 
-        $("#chemicalTable").on('click', '.log-chem-btn', function() {
+        $("#chemStateTable").on('click', '.log-chem-btn', function () {
             let id = $(this).data('chem');
             get_chem_log(id);
         });
 
-        $('#adjust-logtype').on('change', function() {
+        $('#adjust-logtype').on('change', function () {
             if ($(this).val() === 'other') {
                 $("#ltothers").toggleClass('d-none');
                 $("#ltothers input").prop('disabled', false);
@@ -1274,23 +1317,23 @@ require("startsession.php");
         });
 
 
-        $(document).on('submit', '#adjustform', async function(e) {
+        $(document).on('submit', '#adjustform', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
             $.ajax({
-                    method: "POST",
-                    url: urldata,
-                    dataType: 'json',
-                    data: $(this).serialize() + "&adjust=true"
-                })
-                .done(function(d) {
+                method: "POST",
+                url: urldata,
+                dataType: 'json',
+                data: $(this).serialize() + "&adjust=true"
+            })
+                .done(function (d) {
                     $("#adjustform")[0].reset();
                     // $("#adjustalert").text(d.success).fadeIn(300).delay(2000).fadeOut(1000);
                     $("#chemicallogmodal").modal('hide');
                     show_toast(d.success);
                     loadpage(1, entryHidden);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     $("#adjustalert").text(e.responseText).fadeIn(300).delay(2000).fadeOut(1000);
                     console.log(e);
                 })

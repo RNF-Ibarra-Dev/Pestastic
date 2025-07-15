@@ -178,7 +178,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $unit = $row['quantity_unit'];
             ?>
             <tr class="text-center">
-                <td scope="row">
+                <td scope="row"><?=htmlspecialchars($id)?></td>
+                <td>
                     <?=
                         $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
                     ?>
@@ -195,13 +196,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
-                        <!-- add dispatch/return chem -->
-                        <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
-                                class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
                         <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                 class="bi bi-info-circle"></i></button>
-                        <button type="button" class="btn btn-sidebar delbtn" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                            data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
                     </div>
                 </td>
             </tr>
@@ -249,7 +245,8 @@ if (isset($_GET['search'])) {
             $unit = $row['quantity_unit'];
             ?>
             <tr class="text-center">
-                <td scope="row">
+                <td scope="row"><?=htmlspecialchars($id)?></td>
+                <td>
                     <?=
                         $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
                     ?>
@@ -266,12 +263,8 @@ if (isset($_GET['search'])) {
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
-                        <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
-                                class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
                         <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                 class="bi bi-info-circle"></i></button>
-                        <button type="button" class="btn btn-sidebar delbtn" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                            data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
                     </div>
                 </td>
             </tr>
