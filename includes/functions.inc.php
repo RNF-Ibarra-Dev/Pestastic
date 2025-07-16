@@ -1786,20 +1786,20 @@ function check_request($conn, $id)
     }
 }
 
-function editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contsize, $unit, $request = 0)
+function editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contsize, $unit, $approval = 0)
 {
     mysqli_begin_transaction($conn);
     try {
         $sql = "UPDATE chemicals SET name = ?, brand = ?, expiryDate = ?, notes = ?, branch = ?, updated_by = ?, date_received = ?, container_size = ?, quantity_unit = ?";
-        $request == 0 ? $sql .= " WHERE id = ?;" : $sql .= ", request = ? WHERE id = ?";
+        $approval == 0 ? $sql .= " WHERE id = ?;" : $sql .= ", approval = ? WHERE id = ?";
 
         $stmt = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             throw new Exception("edit chem stmt error");
         }
 
-        if ($request != 0) {
-            mysqli_stmt_bind_param($stmt, "sssssssisii", $name, $brand, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $unit, $request, $id);
+        if ($approval != 0) {
+            mysqli_stmt_bind_param($stmt, "sssssssisii", $name, $brand, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $unit, $approval, $id);
         } else {
             mysqli_stmt_bind_param($stmt, "sssssssisi", $name, $brand, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $unit, $id);
         }

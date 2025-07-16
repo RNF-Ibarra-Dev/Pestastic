@@ -176,23 +176,33 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $remcom = $row['unop_cont'];
             $contsize = $row['container_size'];
             $unit = $row['quantity_unit'];
+            $threshold = $row['restock_threshold'];
+            $opened_container = $level > 0 ? 1 : 0;
             ?>
             <tr class="text-center">
-                <td scope="row"><?=htmlspecialchars($id)?></td>
+                <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td>
                     <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='Pending Entry'></i><span class='fw-bold'>" . htmlspecialchars($name) . "</span><br>(Pending Entry)" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
                 <td>
-                    <?= htmlspecialchars("$level / $contsize$unit") ?>
+                    <?php
+                    if ((int) $level === (int) $contsize) {
+                        echo "Full";
+                    } else {
+                        echo $level <= $contsize * 0.35
+                            ? "<span class='text-warning'>" . htmlspecialchars("$level$unit") . "</span> / " . htmlspecialchars("$contsize$unit")
+                            : htmlspecialchars("$level$unit / $contsize$unit");
+                    }
+                    ?>
                 </td>
                 <td><?= htmlspecialchars($remcom) ?></td>
                 <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
                     <?= htmlspecialchars(date_format($exp, "F j, Y")) ?>
                 </td>
-                <td><?= $level === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : (($level <= $contsize * 0.35) && ($remcom )  ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Running Out</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
+                <td><?= $level === 0 && $remcom === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : (($level <= $contsize * 0.35) && (($opened_container + $remcom) < $threshold) ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Running Out</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
@@ -243,23 +253,33 @@ if (isset($_GET['search'])) {
             $remcom = $row['unop_cont'];
             $contsize = $row['container_size'];
             $unit = $row['quantity_unit'];
+            $threshold = $row['restock_threshold'];
+            $opened_container = $level > 0 ? 1 : 0;
             ?>
             <tr class="text-center">
-                <td scope="row"><?=htmlspecialchars($id)?></td>
+                <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td>
                     <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='Pending Entry'></i><span class='fw-bold'>" . htmlspecialchars($name) . "</span><br>(Pending Entry)" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
                 <td>
-                    <?= htmlspecialchars("$level / $contsize$unit") ?>
+                    <?php
+                    if ((int) $level === (int) $contsize) {
+                        echo "Full";
+                    } else {
+                        echo $level <= $contsize * 0.35
+                            ? "<span class='text-warning'>" . htmlspecialchars("$level$unit") . "</span> / " . htmlspecialchars("$contsize$unit")
+                            : htmlspecialchars("$level$unit / $contsize$unit");
+                    }
+                    ?>
                 </td>
                 <td><?= htmlspecialchars($remcom) ?></td>
                 <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
                     <?= htmlspecialchars(date_format($exp, "F j, Y")) ?>
                 </td>
-                <td><?= $level === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : ($level <= $contsize * 0.2 ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Low Stock</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
+                <td><?= $level === 0 && $remcom === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : (($level <= $contsize * 0.35) && (($opened_container + $remcom) < $threshold) ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Running Out</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">

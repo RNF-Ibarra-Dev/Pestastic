@@ -135,7 +135,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         exit();
     }
 
-    $edit = editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $unit, 1);
+    $edit = editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $unit);
     if (isset($edit['error'])) {
         http_response_code(400);
         echo $edit['error'];
@@ -286,12 +286,18 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
 
         </div>
         <div class="row mb-2">
-            <div class="col-lg-4 mb-2">
+            <div class="col-lg-2 mb-2">
+                <label for="restockThreshold-<?=htmlspecialchars($uid)?>" class="form-label fw-light">Restock
+                    Threshold:</label>
+                <input type="number" name="restockThreshold[]" id="restockThreshold-<?=htmlspecialchars($uid)?>" class="form-control"
+                    autocomplete="one-time-code">
+            </div>
+            <div class="col-lg-3 mb-2">
                 <label for="recDate-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Date Received</label>
                 <input type="date" name="receivedDate[]" id="recDate-<?= htmlspecialchars($uid) ?>"
                     class="form-control form-add form-date-rec">
             </div>
-            <div class="col-lg-4 mb-2">
+            <div class="col-lg-3 mb-2">
                 <label for="expDate-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Expiry Date</label>
                 <input type="date" name="expDate[]" id="expDate-<?= htmlspecialchars($uid) ?>"
                     class="form-control form-add form-date-exp">
@@ -671,9 +677,9 @@ if (isset($_GET['trans_select']) && $_GET['trans_select'] === 'true') {
             $id = $row['id'];
             ?>
             <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
-            
+
             <?php
         }
-    } 
+    }
     exit();
 }
