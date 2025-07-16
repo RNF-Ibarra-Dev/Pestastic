@@ -37,18 +37,18 @@ require("startsession.php");
                             Chemicals
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Total chemical count.</p>
+                    <p class="fw-light mb-2">Official count of approved chemicals.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_total"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
-                            class="bi bi-exclamation-triangle-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
+                            class="bi bi-box-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold w-75 mx-auto align-middle mb-0">
-                            Low Level Chemicals
+                            Restock Chemicals
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Number of chemicals 20% below full capacity.</p>
+                    <p class="fw-light mb-2">Number of chemicals below restock threshold.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_low"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
