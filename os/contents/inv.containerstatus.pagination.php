@@ -37,6 +37,27 @@ $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
+function row_status($conn, $entries = false)
+{
+    $rowCount = "SELECT COUNT(*) FROM chemicals";
+
+    if ($entries) {
+        $rowCount .= "  WHERE request = 0;";
+    } else {
+        $rowCount .= ";";
+    }
+
+    $totalRows = 0;
+    $result = mysqli_query($conn, $rowCount);
+    $row = mysqli_fetch_row($result);
+    $totalRows = $row[0];
+
+    $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
+
+    return ['pages' => $totalPages, 'rows' => $totalRows];
+}
+
+
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
     $GLOBALS['totalPages'];
@@ -152,37 +173,30 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $limitstart = ($current - 1) * $pageRows;
 
     $sql = "SELECT
-                c.id AS chem_id,
-                c.name,
-                c.brand,
-                c.quantity_unit AS unit,
-                c.container_size,
-                (c.chemLevel + (c.unop_cont * c.container_size)) AS total_stored_quantity,
+                id,
+                name,
+                brand,
+                quantity_unit AS unit,
+                container_size,
+                (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
                 SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count = 0
-                    THEN ABS(il.quantity)
+                    WHEN chem_location = 'main_storage' THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
                     ELSE 0
-                END) AS total_used_open,
+                END) AS containers_in_storage,
                 SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count < 0
-                    THEN ABS(il.quantity)
+                    WHEN chem_location IN ('stock_entry', 'dispatched', 'used_outside_site', 'awaiting_pickup') THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
                     ELSE 0
-                END) AS total_used_closed
+                END) AS containers_outside_storage
             FROM
-                chemicals c
-            LEFT JOIN
-                inventory_log il ON c.id = il.chem_id
+                chemicals
             WHERE
-                c.request = 0
-                AND c.chemLevel > 0
-                AND c.expiryDate > NOW()
+                chemLevel > 0
+                AND expiryDate > NOW()
             GROUP BY
-                c.id, c.name, c.brand, c.container_size, c.chemLevel, c.unop_cont
+                id, name, brand, container_size, chemLevel, unop_cont, chem_location
             ORDER BY
-                c.id
-                DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
+                id
+            DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
@@ -192,14 +206,13 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['chem_id'];
+            $id = $row['id'];
             $name = $row["name"];
             $brand = $row["brand"];
             $unit = $row['unit'];
-            $total_stored = $row['total_stored_quantity'];
-            $total_used_open = $row['total_used_open'];
-            $total_used_closed = $row['total_used_closed'];
-            $total_qty = (float) $total_stored + (float) $total_used_open + (float) $total_used_closed;
+            $total_containers = $row['total_container_stock'];
+            $in = $row['containers_in_storage'];
+            $out = $row['containers_outside_storage'];
             // $level = $row["chemLevel"];
             // $container_count = (int) $row['unop_cont'];
             $contsize = (int) $row['container_size'];
@@ -213,14 +226,11 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
                 <td><?= htmlspecialchars("$contsize $unit") ?></td>
                 <td>
-                    <?= htmlspecialchars("$total_stored $unit") ?>
+                    <?= htmlspecialchars($in) ?>
                 </td>
-                <td><?= htmlspecialchars("$total_used_open $unit") ?></td>
+                <td><?= htmlspecialchars($out) ?></td>
                 <td>
-                    <?= htmlspecialchars("$total_used_closed $unit") ?>
-                </td>
-                <td>
-                    <?= htmlspecialchars("$total_qty $unit") ?>
+                    <?= htmlspecialchars($total_containers) ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
@@ -236,52 +246,46 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
         <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='8' class='text-center'>No Summary Found.</td></tr>";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>No chemicals found.</td></tr>";
     }
     mysqli_close($conn);
     exit();
 }
 
 
+
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
 
     $sql = "SELECT
-                c.id AS chem_id,
-                c.name,
-                c.brand,
-                c.quantity_unit AS unit,
-                c.container_size,
-                (c.chemLevel + (c.unop_cont * c.container_size)) AS total_stored_quantity,
+                id,
+                name,
+                brand,
+                quantity_unit AS unit,
+                container_size,
+                (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
                 SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count = 0
-                    THEN ABS(il.quantity)
+                    WHEN chem_location = 'main_storage' THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
                     ELSE 0
-                END) AS total_used_open,
+                END) AS containers_in_storage,
                 SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count < 0
-                    THEN ABS(il.quantity)
+                    WHEN chem_location IN ('stock_entry', 'dispatched', 'used_outside_site', 'awaiting_pickup') THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
                     ELSE 0
-                END) AS total_used_closed
+                END) AS containers_outside_storage
             FROM
-                chemicals c
-            LEFT JOIN
-                inventory_log il ON c.id = il.chem_id
+                chemicals
             WHERE
-                c.request = 0
-                AND c.chemLevel > 0
-                AND c.expiryDate > NOW()    
-                AND (c.name LIKE ? OR c.brand LIKE ? OR c.quantity_unit LIKE ? OR c.container_size LIKE ? OR c.id LIKE ?)
+                chemLevel > 0
+                AND expiryDate > NOW()
+                AND (id LIKE ? OR name LIKE ? OR brand LIKE ? OR quantity_unit LIKE ? OR container_size LIKE ?)
             GROUP BY
-                c.id, c.name, c.brand, c.container_size, c.chemLevel, c.unop_cont, c.quantity_unit
+                id, name, brand, container_size, chemLevel, unop_cont, chem_location, quantity_unit, container_size
             ORDER BY
-                c.id";
+                id";
 
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-        echo "<tr><td scope='row' colspan='8' class='text-center'>Error. Search stmt failed.</td></tr>";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>Error. Search stmt failed.</td></tr>";
         exit();
     }
 
@@ -292,15 +296,18 @@ if (isset($_GET['search'])) {
     $numrows = mysqli_num_rows($result);
     if ($numrows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['chem_id'];
+            $id = $row['id'];
             $name = $row["name"];
             $brand = $row["brand"];
             $unit = $row['unit'];
-            $total_stored = $row['total_stored_quantity'];
-            $total_used_open = $row['total_used_open'];
-            $total_used_closed = $row['total_used_closed'];
-            $total_qty = (float) $total_stored + (float) $total_used_open + (float) $total_used_closed;
+            $total_containers = $row['total_container_stock'];
+            $in = $row['containers_in_storage'];
+            $out = $row['containers_outside_storage'];
+            // $level = $row["chemLevel"];
+            // $container_count = (int) $row['unop_cont'];
             $contsize = (int) $row['container_size'];
+            // $total_stored = $level + ($container_count * $contsize);
+            // $unit = $row['quantity_unit'];
         ?>
             <tr class="text-center">
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
@@ -309,14 +316,11 @@ if (isset($_GET['search'])) {
                 </td>
                 <td><?= htmlspecialchars("$contsize $unit") ?></td>
                 <td>
-                    <?= htmlspecialchars("$total_stored $unit") ?>
+                    <?= htmlspecialchars($in) ?>
                 </td>
-                <td><?= htmlspecialchars("$total_used_open $unit") ?></td>
+                <td><?= htmlspecialchars($out) ?></td>
                 <td>
-                    <?= htmlspecialchars("$total_used_closed $unit") ?>
-                </td>
-                <td>
-                    <?= htmlspecialchars("$total_qty $unit") ?>
+                    <?= htmlspecialchars($total_containers) ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
@@ -331,7 +335,7 @@ if (isset($_GET['search'])) {
 <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='8' class='text-center'>Your search does not exist.</td></tr>";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>Your search does not exist.</td></tr>";
     }
     mysqli_close($conn);
     exit();
