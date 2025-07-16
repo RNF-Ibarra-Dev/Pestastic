@@ -4,35 +4,29 @@ require_once('../../includes/functions.inc.php');
 
 $pageRows = 10;
 $rowCount = "SELECT
-                c.id AS chem_id,
-                c.name,
-                c.brand,
-                c.quantity_unit AS unit,
-                c.container_size,
-                (c.chemLevel + (c.unop_cont * c.container_size)) AS total_stored_quantity,
+                id,
+                name,
+                brand,
+                quantity_unit AS unit,
+                container_size,
+                (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
                 SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count = 0
-                    THEN ABS(il.quantity)
+                    WHEN chem_location = 'main_storage' THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
                     ELSE 0
-                END) AS total_used_open,
+                END) AS containers_in_storage,
                 SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count < 0
-                    THEN ABS(il.quantity)
+                    WHEN chem_location IN ('stock_entry', 'dispatched', 'used_outside_site', 'awaiting_pickup') THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
                     ELSE 0
-                END) AS total_used_closed
+                END) AS containers_outside_storage
             FROM
-                chemicals c
-            LEFT JOIN
-                inventory_log il ON c.id = il.chem_id
+                chemicals
             WHERE
-                c.request = 0
-                AND c.expiryDate > NOW()
+                chemLevel > 0
+                AND expiryDate > NOW()
             GROUP BY
-                c.id, c.name, c.brand, c.container_size, c.chemLevel, c.unop_cont
+                id, name, brand, container_size, chemLevel, unop_cont, chem_location
             ORDER BY
-                c.id";
+                id";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);

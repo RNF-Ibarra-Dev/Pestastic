@@ -405,13 +405,13 @@ require("startsession.php");
                                     </div>
 
                                     <div class="row mb-2">
-                                        <div class="col-lg-4 mb-2">
+                                        <div class="col-3 mb-2">
                                             <label for="edit-dateReceived" class="form-label fw-light">Date
                                                 Received:</label>
                                             <input type="date" name="edit-receivedDate" id="edit-dateReceived"
                                                 class="ps-2 form-control-plaintext form-add form-date" disabled>
                                         </div>
-                                        <div class="col-lg-4 mb-2">
+                                        <div class="col-3 mb-2">
                                             <label for="edit-expDate" class="form-label fw-light">Expiry Date:</label>
                                             <input type="date" name="edit-expDate" id="edit-expDate"
                                                 class="ps-2 form-control-plaintext form-date" autocomplete="off"
@@ -419,10 +419,21 @@ require("startsession.php");
                                             <p class="fw-light text-center alert alert-warning py-1 px-3 d-none"
                                                 id="expdatewarning"></p>
                                         </div>
-                                        <div class="col-4 mb-2">
+                                        <div class="col-3 mb-2">
                                             <label for="edit-notes" class="form-label fw-light">Short Note:</label>
                                             <textarea name="edit-notes" id="edit-notes" style="resize: none !important;"
                                                 class="ps-2 form-control-plaintext" readonly></textarea>
+                                        </div>
+                                        <div class="col-3 mb-2">
+                                            <label for="edit-location" class="form-label fw-light">Chemical
+                                                Location:</label>
+                                            <p id="view-location"></p>
+                                            <select name="location" id="edit-location" class="form-select d-none"
+                                                autocomplete="one-time-code">
+                                                <option value="" selected>Add Location</option>
+                                                <option value="main_storage">Main Storage</option>
+                                                <option value="dispatched">Dispatched</option>
+                                            </select>
                                         </div>
                                     </div>
 
@@ -534,30 +545,40 @@ require("startsession.php");
                                                 Threshold:</label>
                                             <input type="number" name="restockThreshold[]" id="restockThreshold"
                                                 class="form-control" autocomplete="one-time-code">
-                                            <div class="text-body-secondary fw-light text-muted mt-2">
+                                            <!-- <div class="text-body-secondary fw-light text-muted mt-2">
                                                 Note: Set threshold where chemical container count should be restocked immediately.
-                                            </div>
+                                            </div> -->
                                         </div>
-                                        <div class="col-lg-3 mb-2">
+                                        <div class="col-lg-2 mb-2">
                                             <label for="expDate" class="form-label fw-light">Date Received</label>
                                             <input type="date" name="receivedDate[]" id="add-dateReceived"
                                                 class="form-control form-add form-date-rec">
-                                            <div class="text-body-secondary fw-light text-muted mt-2">
+                                            <!-- <div class="text-body-secondary fw-light text-muted mt-2">
                                                 Note: if not specified, date received will set the date today.
-                                            </div>
+                                            </div> -->
                                         </div>
-                                        <div class="col-lg-3 mb-2">
+                                        <div class="col-lg-2 mb-2">
                                             <label for="expDate" class="form-label fw-light">Expiry Date</label>
                                             <input type="date" name="expDate[]" id="add-expDate"
                                                 class="form-control form-add form-date-exp">
-                                            <div class="text-body-secondary fw-light text-muted mt-2">
+                                            <!-- <div class="text-body-secondary fw-light text-muted mt-2">
                                                 Note: specify expiry date or default date will be set.
-                                            </div>
+                                            </div> -->
                                         </div>
-                                        <div class="col-4 mb-2">
+                                        <div class="col-3 mb-2">
                                             <label for="notes" class="form-label fw-light">Short Note</label>
                                             <textarea name="notes[]" id="notes" class="form-control"
                                                 placeholder="Optional short note . . . "></textarea>
+                                        </div>
+                                        <div class="col-lg-2 mb-2">
+                                            <label for="add-location" class="form-label fw-light">Chemical
+                                                Location:</label>
+                                            <select name="location[]" id="add-location" class="form-select"
+                                                autocomplete="one-time-code">
+                                                <option value="" selected>Add Location</option>
+                                                <option value="main_storage">Main Storage</option>
+                                                <option value="dispatched">Dispatched</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div id="addMoreChem"></div>
@@ -567,7 +588,6 @@ require("startsession.php");
                                                 class="bi bi-plus-circle-dotted  me-2"></i> Add More
                                             Chemical</button>
                                     </div>
-
 
                                 </div>
                                 <div class="modal-footer d-flex justify-content-between">
@@ -1176,7 +1196,7 @@ require("startsession.php");
             $(this).parent().parent().remove();
         })
 
-        
+
         $(document).on('click', '#addMoreChemBtn', async function () {
             $.get(urldata, "addrow=true")
                 .done(function (data) {
@@ -1292,7 +1312,7 @@ require("startsession.php");
 
         function toggle() {
             $('#submitEdit').toggleClass('d-none');
-            $('#view-chemUnit, #edit-chemUnit').toggleClass('d-none');
+            $('#view-chemUnit, #edit-chemUnit, #view-location, #edit-location').toggleClass('d-none');
             $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount, #edit-restockThreshold').attr('readonly', function (i, a) {
                 return a ? false : true;
             });
@@ -1338,6 +1358,9 @@ require("startsession.php");
             $('#edit-expDate').val(details.expDate);
             $('#edit-notes').val(details.notes);
             $('#edit-chemUnit').val(details.unit);
+            $('#edit-restockThreshold').val(details.threshold);
+            $('#edit-location').val(details.location);
+            $('#view-location').text(details.location === 'main_storage' ? 'Main Storage' : 'Stock Entry');
             $('#view-chemUnit').text(details.unit);
             $('#addinfo').html(function () {
                 return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;

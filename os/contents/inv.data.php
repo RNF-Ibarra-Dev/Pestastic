@@ -54,6 +54,8 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
             $data['unop_cont'] = $row['unop_cont'];
             $data['container_size'] = $row['container_size'];
             $data['unit'] = $row['quantity_unit'];
+            $data['threshold'] = $row['restock_threshold'];
+            $data['location'] = $row['chem_location'];
         }
     } else {
         echo "Invalid ID. Make sure the chemical exist.";
@@ -65,6 +67,7 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
     exit();
 }
 
+$valid_location = ['main_location', 'dispatched'];
 // edit
 if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 
@@ -89,6 +92,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     $unit = $_POST['edit-chemUnit'];
     $notes = $_POST['edit-notes'];
     $contSize = $_POST['edit-containerSize'];
+    $location = $_POST['location'];
+    $threshold = $_POST['edit-restockThreshold'];
     $pwd = $_POST['baPwd'];
 
     $expDate = date("Y-m-d", strtotime($ed));
@@ -99,6 +104,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         echo 'Make sure to fill up required forms.';
         exit();
     }
+
+    // location and threshold error handling
 
     if (!in_array($unit, $units)) {
         http_response_code(400);
@@ -135,7 +142,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         exit();
     }
 
-    $edit = editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $unit);
+    $edit = editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $unit, $location, $threshold);
     if (isset($edit['error'])) {
         http_response_code(400);
         echo $edit['error'];
@@ -160,6 +167,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
     $expDate = $_POST['expDate'] ?? [];
     $containerSize = $_POST['containerSize'] ?? [];
     $containerCount = $_POST['containerCount'] ?? [];
+    $location = $_POST['location'] ?? [];
+    $threshold = $_POST['restockThreshold'] ?? [];
     $baPwd = $_POST['baPwd'];
 
     $addedBy = "[$loggedId] - $loggedUsn";
@@ -175,6 +184,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         echo 'Empty Password.';
         exit;
     }
+    // error handling threshold and location
 
     if (!validateOS($conn, $baPwd)) {
         http_response_code(400);
@@ -192,6 +202,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         'eDate' => $expDate,
         'csize' => $containerSize,
         'ccount' => $containerCount,
+        'location' => $location,
+        'threshold' => $threshold
     ];
 
     $a = addChemv2($conn, $data, $branch, $addedBy, 1);
@@ -287,25 +299,34 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
         </div>
         <div class="row mb-2">
             <div class="col-lg-2 mb-2">
-                <label for="restockThreshold-<?=htmlspecialchars($uid)?>" class="form-label fw-light">Restock
+                <label for="restockThreshold-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Restock
                     Threshold:</label>
-                <input type="number" name="restockThreshold[]" id="restockThreshold-<?=htmlspecialchars($uid)?>" class="form-control"
-                    autocomplete="one-time-code">
+                <input type="number" name="restockThreshold[]" id="restockThreshold-<?= htmlspecialchars($uid) ?>"
+                    class="form-control" autocomplete="one-time-code">
             </div>
-            <div class="col-lg-3 mb-2">
+            <div class="col-2 mb-2">
                 <label for="recDate-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Date Received</label>
                 <input type="date" name="receivedDate[]" id="recDate-<?= htmlspecialchars($uid) ?>"
                     class="form-control form-add form-date-rec">
             </div>
-            <div class="col-lg-3 mb-2">
+            <div class="col-2 mb-2">
                 <label for="expDate-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Expiry Date</label>
                 <input type="date" name="expDate[]" id="expDate-<?= htmlspecialchars($uid) ?>"
                     class="form-control form-add form-date-exp">
             </div>
-            <div class="col-4 mb-2">
+            <div class="col-3 mb-2">
                 <label for="notes-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Short Note</label>
                 <textarea name="notes[]" id="notes-<?= htmlspecialchars($uid) ?>" class="form-control"
                     placeholder="Optional short note . . . "></textarea>
+            </div>
+            <div class="col-lg-2 mb-2">
+                <label for="add-location" class="form-label fw-light">Chemical
+                    Location:</label>
+                <select name="location[]" id="add-location" class="form-select" autocomplete="one-time-code">
+                    <option value="" selected>Add Location</option>
+                    <option value="main_storage">Main Storage</option>
+                    <option value="dispatched">Dispatched</option>
+                </select>
             </div>
         </div>
         <div class="mb-2 d-flex">
