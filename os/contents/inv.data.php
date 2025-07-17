@@ -258,7 +258,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'delete') {
 
 if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
     $uid = uniqid();
-    ?>
+?>
     <div class="add-row-container">
         <hr class="my-2">
         <div class="row mb-2 pe-2">
@@ -432,11 +432,11 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $exp = date_create($expDate);
             $remcom = $row['unop_cont'];
             $contsize = $row['container_size'];
-            ?>
+    ?>
             <tr class="text-center">
                 <td scope="row">
                     <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                    $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
@@ -462,7 +462,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
             </tr>
 
-            <?php
+        <?php
         }
     } else {
         // echo json_encode(['']);
@@ -696,10 +696,10 @@ if (isset($_GET['trans_select']) && $_GET['trans_select'] === 'true') {
     if (mysqli_num_rows($res) > 0) {
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
-            ?>
+        ?>
             <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
 
-            <?php
+<?php
         }
     }
     exit();
@@ -744,12 +744,6 @@ if (isset($_POST['transfer']) && $_POST['transfer'] === 'true') {
         exit();
     }
 
-    if ($transferAll) {
-        $transfer = transfer_all_chemical($conn, $id, $location);
-    }
-
-    $transfer = transfer_chemical($conn, $id, $location, $transfer_value, $include_opened);
-
     if (!validateOS($conn, $pwd)) {
         http_response_code(400);
         echo "Wrong Password.";
@@ -757,7 +751,23 @@ if (isset($_POST['transfer']) && $_POST['transfer'] === 'true') {
     }
 
 
+    if ($transferAll) {
+        $transfer = transfer_all_chemical($conn, $id, $location);
+    } else {
+        $transfer = transfer_chemical($conn, $id, $location, $transfer_value, $include_opened);
+    }
 
-    http_response_code(200);
-    echo json_encode(['success' => 'Transfer Success!']);
+    if (isset($transfer['error'])) {
+        http_response_code(400);
+        echo $transfer['error'];
+        exit();
+    } else if ($transfer) {
+        http_response_code(200);
+        echo json_encode(['success' => 'Transfer Success!']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo "An unknown error has occured. Please try again later.";
+        exit();
+    }
 }

@@ -1,5 +1,5 @@
 <?php
-session_start();
+// session_start();
 // ini_set('display_errors', 1);
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
@@ -601,7 +601,6 @@ function add_chemical_used($conn, $transactionId, $chemUsedId, $amtUsed = 0)
     }
     mysqli_stmt_close($stmt);
     return true;
-
 }
 
 function add_pest_prob($conn, $transId, $pestProblem)
@@ -2944,7 +2943,6 @@ function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
             if (isset($revert['error'])) {
                 throw new Exception("Error: " . $revert['error'] . " 864: Current Del Chem ID: $delChems | Transaction ID: " . $transid);
             }
-
         }
 
         // throw new Exception(var_dump($chemUsed) . var_dump($existingChems));
@@ -3184,6 +3182,26 @@ function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
     }
 }
 
+function log_chemical($conn, $chem_id, $log_type, $quantity, $containers_affected_count, $usage_source, $user_id, $user_role, $notes, $branch)
+{
+    $sql = "INSERT INTO inventory_log (chem_id, log_type, quantity, containers_affected_count, usage_source, log_date, user_id, user_role, notes, branch)
+            VALUES (?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?);";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'stmt failed.'];
+    }
+    mysqli_stmt_bind_param($stmt, 'isdissiisi', $chem_id, $log_type, $quantity, $containers_affected_count, $usage_source, $user_id, $user_role, $notes, $branch);
+    mysqli_stmt_execute($stmt);
+
+    if (!mysqli_stmt_affected_rows($stmt) > 0) {
+        return ['error' => "Failed to log chemical with id $chem_id."];
+    }
+
+    mysqli_stmt_close($stmt);
+    return true;
+}
+
+
 function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_opened)
 {
     mysqli_begin_transaction($conn);
@@ -3198,6 +3216,15 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
         mysqli_stmt_execute($original_stmt);
         $original_result = mysqli_stmt_get_result($original_stmt);
         $original_data = mysqli_fetch_assoc($original_result);
+        mysqli_stmt_close($original_stmt);
+
+        if (!$original_data) {
+            throw new Exception("ID not found. Please try again.");
+        }
+
+        if ($new_location === $original_data['chem_location']) {
+            throw new Exception("Cannot transfer to its current location.");
+        }
 
         if ($include_opened) {
             if ($original_data['chemLevel'] <= 0) {
@@ -3210,8 +3237,12 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
             $chemLevel = (float) $original_data['container_size'];
             $total_containers = (int) $original_data['unop_cont'];
         }
+
         $new_unop_containers = $transfer_value - 1;
 
+        if ($new_unop_containers < 0) {
+            throw new Exception("Cannot transfer a negative value.");
+        }
 
         if ($transfer_value > $total_containers) {
             throw new Exception("Insufficient container available.");
@@ -3222,22 +3253,25 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
         }
 
         $added_by = isset($_SESSION['baUsn']) ? $_SESSION['baUsn'] . " | Employee no. " . $_SESSION['empId'] : $_SESSION['saUsn'] . " | Employee no. " . $_SESSION['empId'];
+        $user_id = isset($_SESSION['baID']) ? $_SESSION['baID'] : $_SESSION['saID'];
+        $role = $_SESSION['user_role'];
 
-        $transferred_sql = "INSERT INTO chemicals (name, brand, chemLevel, container_size, unop_cont, expiry_date, added_at, updated_at, notes, branch, added_by, date_received, quantity_unit, chem_location, restock_threshold)
+
+        $transferred_sql = "INSERT INTO chemicals (name, brand, chemLevel, container_size, unop_cont, expiryDate, added_at, updated_at, notes, branch, added_by, date_received, quantity_unit, chem_location, restock_threshold)
                 VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?, ?)";
         $transferred_stmt = mysqli_stmt_init($conn);
         mysqli_stmt_prepare($transferred_stmt, $transferred_sql);
         mysqli_stmt_bind_param(
             $transferred_stmt,
-            'ssdiissssissssi',
+            'ssdisssisssi',
             $original_data['name'],
             $original_data['brand'],
             $chemLevel,
             $original_data['container_size'],
             $new_unop_containers,
-            $original_data['expiry_date'],
+            $original_data['expiryDate'],
             $original_data['notes'],
-            $original_data['branch'],
+            (int) $original_data['branch'],
             $added_by,
             $original_data['date_received'],
             $original_data['quantity_unit'],
@@ -3245,7 +3279,35 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
             $original_data['stock_threshold']
         );
         mysqli_stmt_execute($transferred_stmt);
-        mysqli_commit($conn);
+        $transferred_id = mysqli_insert_id($conn);
+        mysqli_stmt_close($transferred_stmt);
+
+        $transfer_log_type = "Transferred from " . $original_data['chem_location'];
+        (float) $total_transferred = $include_opened ? $original_data['chemLevel'] + ($new_unop_containers * $original_data['container_size']) : $new_unop_containers * $original_data['container_size'];
+        $transfer_usage_source = $include_opened ? "PARTIAL_AND_WHOLE_CONTAINER_TRANSFER" : "WHOLE_CONTAINER_TRANSFER";
+
+        $log_transfer = log_chemical($conn, $transferred_id, $transfer_log_type, $total_transferred, $transfer_value, $transfer_usage_source, $user_id, $role, $original_data['notes'], $original_data['branch']);
+        if (isset($log_transfer['error'])) {
+            throw new Exception($log_transfer['error']);
+        }
+
+        $new_chemlevel_for_og = $chemLevel;
+        $new_unopcount_for_og = $original_data['unop_count'] - $transfer_value;
+        $update_old_chem_log_type = "Transferred to $transferred_id.";
+        $reduction_transfer_value = $transfer_value * -1;
+
+        $update_chem = "UPDATE chemicals SET chemLevel = ?, unop_cont = ? WHERE id = ?;";
+        $update_chem_stmt = mysqli_stmt_init($conn);
+        mysqli_stmt_prepare($update_chem_stmt, $update_chem);
+        mysqli_stmt_bind_param($update_chem_stmt, 'di', $new_chemlevel_for_og, $new_unopcount_for_og, $id);
+        mysqli_stmt_execute($update_chem_stmt);
+
+        $log_old_chem_update = log_chemical($conn, $id, $update_old_chem_log_type, $transfer_usage_source, $reduction_transfer_value, $transfer_usage_source, $user_id, $role, $original_data['notes'], $original_data['branch']);
+        if (isset($log_old_chem_update['error'])) {
+            throw new Exception($log_old_chem_update['error']);
+        }
+
+        // mysqli_commit($conn);
         return true;
     } catch (Exception $e) {
         mysqli_rollback($conn);
