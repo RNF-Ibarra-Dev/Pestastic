@@ -1,4 +1,5 @@
 <?php
+session_start();
 // ini_set('display_errors', 1);
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
@@ -1791,7 +1792,7 @@ function editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch
     mysqli_begin_transaction($conn);
     try {
         $sql = "UPDATE chemicals SET name = ?, brand = ?, expiryDate = ?, notes = ?, branch = ?, updated_by = ?, date_received = ?, container_size = ?, quantity_unit = ?, chem_location = ?, restock_threshold = ?";
-        
+
         $approval == 0 ? $sql .= " WHERE id = ?;" : $sql .= ", approval = ? WHERE id = ?";
 
         $stmt = mysqli_stmt_init($conn);
@@ -3183,3 +3184,101 @@ function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
     }
 }
 
+function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_opened)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $original_sql = "SELECT * FROM chemicals WHERE id = ?;";
+        $original_stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($original_stmt, $original_sql)) {
+            throw new Exception("Stmt failed. Please try again later.");
+        }
+        mysqli_stmt_bind_param($original_stmt, 'i', $id);
+        mysqli_stmt_execute($original_stmt);
+        $original_result = mysqli_stmt_get_result($original_stmt);
+        $original_data = mysqli_fetch_assoc($original_result);
+
+        if ($include_opened) {
+            if ($original_data['chemLevel'] <= 0) {
+                throw new Exception("There is no opened container recorded.");
+            } else {
+                $chemLevel = (float) $original_data['chemLevel'];
+                $total_containers = (int) $original_data['unop_cont'] + 1;
+            }
+        } else {
+            $chemLevel = (float) $original_data['container_size'];
+            $total_containers = (int) $original_data['unop_cont'];
+        }
+        $new_unop_containers = $transfer_value - 1;
+
+
+        if ($transfer_value > $total_containers) {
+            throw new Exception("Insufficient container available.");
+        }
+
+        if ($transfer_value <= 0) {
+            throw new Exception("Invalid Transfer Value.");
+        }
+
+        $added_by = isset($_SESSION['baUsn']) ? $_SESSION['baUsn'] . " | Employee no. " . $_SESSION['empId'] : $_SESSION['saUsn'] . " | Employee no. " . $_SESSION['empId'];
+
+        $transferred_sql = "INSERT INTO chemicals (name, brand, chemLevel, container_size, unop_cont, expiry_date, added_at, updated_at, notes, branch, added_by, date_received, quantity_unit, chem_location, restock_threshold)
+                VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?, ?)";
+        $transferred_stmt = mysqli_stmt_init($conn);
+        mysqli_stmt_prepare($transferred_stmt, $transferred_sql);
+        mysqli_stmt_bind_param(
+            $transferred_stmt,
+            'ssdiissssissssi',
+            $original_data['name'],
+            $original_data['brand'],
+            $chemLevel,
+            $original_data['container_size'],
+            $new_unop_containers,
+            $original_data['expiry_date'],
+            $original_data['notes'],
+            $original_data['branch'],
+            $added_by,
+            $original_data['date_received'],
+            $original_data['quantity_unit'],
+            $new_location,
+            $original_data['stock_threshold']
+        );
+        mysqli_stmt_execute($transferred_stmt);
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at line ' . $e->getFile()
+        ];
+    }
+}
+
+function transfer_all_chemical($conn, $id, $new_location)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "UPDATE chemicals SET chem_location = ? WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("stmt failed.");
+        }
+
+        mysqli_stmt_bind_param($stmt, 'si', $new_location, $id);
+        mysqli_stmt_execute($stmt);
+
+        if (!mysqli_stmt_affected_rows($stmt) > 0) {
+            throw new Exception("Update failed.");
+        }
+
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at line ' . $e->getFile()
+        ];
+    }
+}

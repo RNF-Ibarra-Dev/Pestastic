@@ -170,7 +170,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $brand = $row["brand"];
             $level = $row["chemLevel"];
             $expDate = $row["expiryDate"];
-            $request = $row['request'];
+            $request = (int) $row['request'];
             $now = date("Y-m-d");
             $exp = date_create($expDate);
             $remcom = $row['unop_cont'];
@@ -183,7 +183,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td>
                     <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='Pending Entry'></i><span class='fw-bold'>" . htmlspecialchars($name) . "</span><br>(Pending Entry)" : htmlspecialchars($name);
+                        $request === 1 ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='Pending Entry'></i><span class='fw-bold'>" . htmlspecialchars($name) . "</span><br>(Pending Entry)" : htmlspecialchars($name);
                     ?>
                 </td>
                 <td><?= htmlspecialchars($brand) ?></td>
@@ -191,6 +191,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                     <?php
                     if ((int) $level === (int) $contsize) {
                         echo "Full";
+                    } else if ((int) $level === 0 && (int) $contsize) {
+                        echo "Empty";
                     } else {
                         echo $level <= $contsize * 0.35
                             ? "<span class='text-warning'>" . htmlspecialchars("$level$unit") . "</span> / " . htmlspecialchars("$contsize$unit")
@@ -206,6 +208,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-sidebar transferbtn border-0" <?= $request === 1 ? "disabled" : "data-transfer='$id'" ?>><i class="bi bi-arrow-left-right"></i></button>
                         <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                 class="bi bi-info-circle"></i></button>
                     </div>

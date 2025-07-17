@@ -704,3 +704,60 @@ if (isset($_GET['trans_select']) && $_GET['trans_select'] === 'true') {
     }
     exit();
 }
+
+if (isset($_POST['transfer']) && $_POST['transfer'] === 'true') {
+    $id = $_POST['transferChemicalId'];
+    $transferAll = isset($_POST['transferAll']);
+    $location = $_POST['transfer-location'];
+    $clocation = $_POST['currentLocation'];
+    $pwd = $_POST['baPwd'];
+
+    $transfer_value = 0;
+    $include_opened = NULL;
+    if (!$transferAll) {
+        $transfer_value = $_POST['transferValue'];
+        $include_opened = isset($_POST['includeOpened']);
+    }
+
+
+    if (!is_numeric($id) || $id === NULL) {
+        http_response_code(400);
+        echo 'Chemical ID not found. Please try again later.';
+        exit();
+    }
+
+    if (!is_numeric($transfer_value)) {
+        http_response_code(400);
+        echo "Transfer value should be a number.";
+        exit();
+    }
+
+    if ($location === $clocation) {
+        http_response_code(400);
+        echo "New location must be different from previous location.";
+        exit();
+    }
+
+    if (!in_array($location, $valid_location)) {
+        http_response_code(400);
+        echo "Invalid Location.";
+        exit();
+    }
+
+    if ($transferAll) {
+        $transfer = transfer_all_chemical($conn, $id, $location);
+    }
+
+    $transfer = transfer_chemical($conn, $id, $location, $transfer_value, $include_opened);
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo "Wrong Password.";
+        exit();
+    }
+
+
+
+    http_response_code(200);
+    echo json_encode(['success' => 'Transfer Success!']);
+}
