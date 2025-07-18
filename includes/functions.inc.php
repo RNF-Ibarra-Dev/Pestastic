@@ -3201,6 +3201,35 @@ function log_chemical($conn, $chem_id, $log_type, $quantity, $containers_affecte
     return true;
 }
 
+function check_location_exists($conn, $name, $brand, $container_size, $quantity_unit, $location)
+{
+    $sql = "SELECT id FROM chemicals WHERE
+            name = ? AND
+            brand = ? AND
+            container_size = ? AND
+            quantity_unit = ? AND
+            chem_location = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        throw new Exception('Failed at preparing the checking of chemical location and ID. Please try again later.');
+    }
+
+    mysqli_stmt_bind_param($stmt, 'ssiss', $name, $brand, $container_size, $quantity_unit, $location);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+    $num_rows = mysqli_num_rows($result);
+
+    if ($num_rows === 0) {
+        return false;
+    } else if (mysqli_num_rows($result) > 1) {
+        throw new Exception("Multiple records found for chemical $name ($brand) at location $location. Please correct database immediately.");
+    }
+
+    mysqli_stmt_close($stmt);
+    return $row['id'];
+}
 
 function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_opened)
 {
@@ -3210,7 +3239,7 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
         $original_stmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($original_stmt, $original_sql)) {
-            throw new Exception("Prepared statment failed at selecting chemical record query.");
+            throw new Exception("Prepared statment failed at selecting chemical record query. Please try again later.");
         }
         mysqli_stmt_bind_param($original_stmt, 'i', $id);
         mysqli_stmt_execute($original_stmt);
@@ -3272,6 +3301,21 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
 
         $role = $_SESSION['user_role'] ?? 'Unknown Role';
 
+        $existing_location_id = check_location_exists($conn, $original_data['name'], $original_data['brand'], $original_data['container_size'], $original_data['quantity_unit'], $new_location);
+        if ($existing_location_id) {
+            // throw new Exception($existing_location_id);
+            $existing_update_sql = "UPDATE chemicals SET chemLevel = ?, unop_cont = ?, updated_at = NOW(), updated_by = ? WHERE id = ?;";
+            $existing_update_stmt = mysqli_stmt_init($conn);
+
+            if (!mysqli_stmt_prepare($existing_update_stmt, $existing_update_sql)) {
+                throw new Exception("Prepared statement failed. Please try again later.");
+            }
+
+            mysqli_stmt_bind_param($existing_update_stmt, 'dii', $chemLevel, $total_containers, $added_by, $existing_location_id);
+            mysqli_stmt_execute($existing_update_stmt);
+            mysqli_stmt_close($existing_update_stmt);
+        }
+
 
         $transferred_sql = "INSERT INTO chemicals (name, brand, chemLevel, container_size, unop_cont, expiryDate, added_at, updated_at, notes, branch, added_by, date_received, quantity_unit, chem_location, restock_threshold)
                 VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?, ?)";
@@ -3279,7 +3323,7 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
         if (!mysqli_stmt_prepare($transferred_stmt, $transferred_sql)) {
             throw new Exception("Prepared statement failed at transfer query.");
         }
-        $bind_container_size = (int) $original_data['container_size']; 
+        $bind_container_size = (int) $original_data['container_size'];
         $log_branch_id = (int) $original_data['branch'];
         $bind_restock_threshold_new_chem = (int) $original_data['restock_threshold'];
         mysqli_stmt_bind_param(
@@ -3313,12 +3357,14 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
         if (isset($log_transfer['error'])) {
             throw new Exception($log_transfer['error']);
         }
-
+        $new_chemlevel_for_og = 0.0;
+        $new_unopcont_for_og = 0;
         if ($include_opened) {
-            $new_chemlevel_for_og = 0.0;
-            $new_unopcont_for_og = (int) $original_data['unop_cont'] - ($transfer_value - 1);
+            $new_chemlevel_for_og = $original_data['container_size'];
+            $new_unopcont_for_og = ((int) $original_data['unop_cont'] - 1) - $transfer_value;
         } else {
             $new_chemlevel_for_og = (float) $original_data['chemLevel'];
+            // decreased va;ue
             $new_unopcont_for_og = (int) $original_data['unop_cont'] - $transfer_value;
         }
         $update_old_chem_log_type = "Transferred to $transferred_id.";
