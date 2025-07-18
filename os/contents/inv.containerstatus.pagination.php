@@ -56,7 +56,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
     $GLOBALS['totalPages'];
 
-?>
+    ?>
 
 
     <nav aria-label="Page navigation">
@@ -88,7 +88,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
             $lastpages = $totalPages;
             // var_dump($lastpages);
-
+        
             ?>
             <li class="page-item">
                 <a class="page-link" data-page="1" href=""><i class="bi bi-caret-left-fill"></i></a>
@@ -96,12 +96,12 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
             <li class="page-item">
                 <?php
                 if ($prev > 0) {
-                ?>
+                    ?>
                     <a class="page-link" data-page="<?= $prev ?>"><i class="bi bi-caret-left"></i></a>
-                <?php
+                    <?php
                 } else { ?>
                     <a class="page-link" data-page="1"><i class="bi bi-caret-left"></i></a>
-                <?php
+                    <?php
                 }
                 ?>
             </li>
@@ -121,7 +121,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
                     $limitreached = true;
 
                     if ($currentPage != $lastpages && $currentPage <= $lastpages) {
-                ?>
+                        ?>
                         <li class="page-item disabled">
                             <a class="page-link">...</a>
                         </li>
@@ -129,7 +129,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
                         <li class="page-item">
                             <a class="page-link" data-page="<?= $totalPages ?>"><?= $totalPages ?></a>
                         </li>
-            <?php
+                        <?php
                     }
                     break;
                 }
@@ -139,14 +139,14 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
             <li class="page-item">
                 <?php
                 if ($next <= $totalPages) {
-                ?>
+                    ?>
                     <a class="page-link" data-page="<?= $totalPages != 0 ? $next : 1 ?>" href=""><i
                             class="bi bi-caret-right"></i></a>
-                <?php
+                    <?php
                 } else { ?>
                     <a class="page-link" data-page="<?= $totalPages != 0 ? $totalPages : 1 ?>"><i
                             class="bi bi-caret-right"></i></a>
-                <?php
+                    <?php
                 }
                 ?>
             </li>
@@ -172,7 +172,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 brand,
                 quantity_unit AS unit,
                 container_size,
-                (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
+                SUM(unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
                 SUM(CASE
                     WHEN chem_location = 'main_storage' THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
                     ELSE 0
@@ -184,12 +184,12 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             FROM
                 chemicals
             WHERE
-                chemLevel > 0
+                (chemLevel > 0 OR unop_cont > 0) 
                 AND expiryDate > NOW()
             GROUP BY
-                id, name, brand, container_size, chemLevel, unop_cont, chem_location
+                name, brand, quantity_unit, container_size 
             ORDER BY
-                id
+                name, brand
             DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 
     $result = mysqli_query($conn, $sql);
@@ -212,9 +212,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $contsize = (int) $row['container_size'];
             // $total_stored = $level + ($container_count * $contsize);
             // $unit = $row['quantity_unit'];
-    ?>
+            ?>
             <tr class="text-center">
-                <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td>
                     <?= htmlspecialchars("$name ($brand)") ?>
                 </td>
@@ -237,7 +236,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
             </tr>
 
-        <?php
+            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='7' class='text-center'>No chemicals found.</td></tr>";
@@ -302,7 +301,7 @@ if (isset($_GET['search'])) {
             $contsize = (int) $row['container_size'];
             // $total_stored = $level + ($container_count * $contsize);
             // $unit = $row['quantity_unit'];
-        ?>
+            ?>
             <tr class="text-center">
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td>
@@ -326,7 +325,7 @@ if (isset($_GET['search'])) {
                 </td>
             </tr>
 
-<?php
+            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='7' class='text-center'>Your search does not exist.</td></tr>";

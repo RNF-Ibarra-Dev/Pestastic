@@ -67,7 +67,7 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
     exit();
 }
 
-$valid_location = ['main_location', 'dispatched'];
+$valid_location = ['main_storage', 'dispatched'];
 // edit
 if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 

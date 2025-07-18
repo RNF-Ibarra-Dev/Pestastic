@@ -807,7 +807,8 @@ require("startsession.php");
             <!-- tabble -->
             <div class="table-responsive-sm d-flex justify-content-center">
                 <table class="table align-middle table-hover m-3 os-table w-100 text-light">
-                    <caption>Chemicals with <i class="bi bi-exclamation-diamond"></i> are pending for approval by the
+                    <caption class="text-light">Chemicals with <i class="bi bi-exclamation-diamond"></i> are pending for
+                        approval by the
                         Manager.</caption>
                     <thead>
                         <tr class="text-center text-wrap align-middle">
@@ -893,8 +894,8 @@ require("startsession.php");
                 <table class="table align-middle table-hover m-3 mt-2 os-table w-100 text-light">
                     <thead>
                         <tr class="text-center text-wrap align-middle">
-                            <th scope="col">Chemical ID</th>
-                            <th>Chemical Name & Brand</th>
+                            <!-- <th scope="col">Chemical ID</th> -->
+                            <th scope="col">Chemical Name & Brand</th>
                             <th>Container Size</th>
                             <th>In</th>
                             <th>Out</th>
@@ -1503,6 +1504,7 @@ require("startsession.php");
         $(document).on('click', '.transferbtn', async function () {
             let id = $(this).data('transfer');
             $("#transferChemicalForm")[0].reset();
+            $("#transfer-location option").prop('disabled', false);
             // console.log(id);
             let deets = await get_chem_details(id);
             var details = JSON.parse(deets);
@@ -1519,6 +1521,7 @@ require("startsession.php");
             $("#currentLocation").val(details.location);
             $("#transferChemModal").modal('show');
 
+            $("#transferValue, #includeOpened").prop('disabled', false);
             $("#transferAll").on('change', function () {
                 let checked = $(this).is(":checked");
                 $("#transferValue, #includeOpened").prop('disabled', checked);
@@ -1538,6 +1541,8 @@ require("startsession.php");
                 .done(async function (d) {
                     if (d.success) {
                         show_toast(d.success);
+                        $("#transferConfirmationModal").modal('hide');
+                        loadpage(1, entryHidden);
                     } else {
                         alert('An unknown error has occured. Please try again later.');
                     }
