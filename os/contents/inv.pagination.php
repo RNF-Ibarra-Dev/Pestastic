@@ -178,6 +178,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $unit = $row['quantity_unit'];
             $threshold = $row['restock_threshold'];
             $opened_container = $level > 0 ? 1 : 0;
+            $cur_location = $row['chem_location'];
             ?>
             <tr class="text-center">
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
@@ -208,8 +209,9 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
-                        <button type="button" class="btn btn-sidebar transferbtn border-0" <?= $request === 1 ? "disabled" : "data-transfer='$id'" ?>><i class="bi bi-arrow-left-right"></i></button>
-                        <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
+                        <button type="button" class="btn btn-sidebar dispatchbtn border-0" <?= $request === 1 ? "disabled" : "data-dispatch='$id'" ?>><i class="bi bi-truck-flatbed "></i></button>
+                        <button type="button" class="btn btn-sidebar returnbtn border-0" <?= $request === 1 ? "disabled" : "data-return='$id'" ?>><i class="bi bi-box-arrow-in-left"></i></button>
+                        <button type="button" id="editbtn" class="btn btn-sidebar editbtn border-0" data-chem="<?= $id ?>"><i
                                 class="bi bi-info-circle"></i></button>
                     </div>
                 </td>

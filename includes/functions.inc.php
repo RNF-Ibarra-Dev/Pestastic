@@ -3230,8 +3230,7 @@ function check_location_exists($conn, $name, $brand, $container_size, $quantity_
     mysqli_stmt_close($stmt);
     return $row['id'];
 }
-
-function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_opened)
+function dispatch_chemical($conn, $id, $new_location = "Dispatched", $dispatch_value, $include_opened)
 {
     mysqli_begin_transaction($conn);
     try {
@@ -3252,7 +3251,7 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
         }
 
         if ($new_location === $original_data['chem_location']) {
-            throw new Exception("Cannot transfer to its current location.");
+            throw new Exception("Cannot dispatch to its current location.");
         }
 
         if ($include_opened) {
@@ -3267,18 +3266,18 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
             $total_containers = (int) $original_data['unop_cont'];
         }
 
-        $new_unop_containers = $transfer_value - 1;
+        $new_unop_containers = $dispatch_value - 1;
 
         if ($new_unop_containers < 0) {
-            throw new Exception("Cannot transfer a negative value.");
+            throw new Exception("Cannot dispatch a negative value.");
         }
 
-        if ($transfer_value > $total_containers) {
+        if ($dispatch_value > $total_containers) {
             throw new Exception("Insufficient container available.");
         }
 
-        if ($transfer_value <= 0) {
-            throw new Exception("Invalid Transfer Value.");
+        if ($dispatch_value <= 0) {
+            throw new Exception("Invalid dispatch Value.");
         }
 
         $added_by = '';
@@ -3304,7 +3303,7 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
         $existing_location_id = check_location_exists($conn, $original_data['name'], $original_data['brand'], $original_data['container_size'], $original_data['quantity_unit'], $new_location);
         if ($existing_location_id) {
             // throw new Exception($existing_location_id);
-            $existing_update_sql = "UPDATE chemicals SET chemLevel = ?, unop_cont = ?, updated_at = NOW(), updated_by = ? WHERE id = ?;";
+            $existing_update_sql = "UPDATE chemicals SET chemLevel = chemLevel + ?, unop_cont = unop_cont + ?, updated_at = NOW(), updated_by = ? WHERE id = ?;";
             $existing_update_stmt = mysqli_stmt_init($conn);
 
             if (!mysqli_stmt_prepare($existing_update_stmt, $existing_update_sql)) {
@@ -3317,17 +3316,17 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
         }
 
 
-        $transferred_sql = "INSERT INTO chemicals (name, brand, chemLevel, container_size, unop_cont, expiryDate, added_at, updated_at, notes, branch, added_by, date_received, quantity_unit, chem_location, restock_threshold)
-                VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?, ?)";
-        $transferred_stmt = mysqli_stmt_init($conn);
-        if (!mysqli_stmt_prepare($transferred_stmt, $transferred_sql)) {
-            throw new Exception("Prepared statement failed at transfer query.");
+        $dispatched_sql = "INSERT INTO chemicals (name, brand, chemLevel, container_size, unop_cont, expiryDate, added_at, updated_at, notes, branch, added_by, date_received, quantity_unit, chem_location, restock_threshold)
+                                VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?, ?)";
+        $dispatched_stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($dispatched_stmt, $dispatched_sql)) {
+            throw new Exception("Prepared statement failed at dispatch query.");
         }
         $bind_container_size = (int) $original_data['container_size'];
         $log_branch_id = (int) $original_data['branch'];
         $bind_restock_threshold_new_chem = (int) $original_data['restock_threshold'];
         mysqli_stmt_bind_param(
-            $transferred_stmt,
+            $dispatched_stmt,
             'ssdiississssi',
             $original_data['name'],
             $original_data['brand'],
@@ -3343,34 +3342,34 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
             $new_location,
             $bind_restock_threshold_new_chem
         );
-        mysqli_stmt_execute($transferred_stmt);
-        $transferred_id = mysqli_insert_id($conn);
-        mysqli_stmt_close($transferred_stmt);
+        mysqli_stmt_execute($dispatched_stmt);
+        $dispatched_id = mysqli_insert_id($conn);
+        mysqli_stmt_close($dispatched_stmt);
 
-        $transfer_log_type = "Transfer";
+        $dispatch_log_type = "Dispatch";
 
-        (float) $total_transferred = $include_opened ? $original_data['chemLevel'] + ($new_unop_containers * $original_data['container_size']) : $transfer_value * $original_data['container_size'];
-        $transfer_usage_source = $include_opened ? "PARTIAL_AND_WHOLE_CONTAINER_TRANSFER" : "WHOLE_CONTAINER_TRANSFER";
-        $log_notes_in = "Received " . $transfer_value . " containers (incl. opened: " . ($include_opened ? 'Yes' : 'No') . ") from original ID " . $id . " (" . $original_data['chem_location'] . "). Performed by: " . $added_by;
+        (float) $total_dispatched = $include_opened ? $original_data['chemLevel'] + ($new_unop_containers * $original_data['container_size']) : $dispatch_value * $original_data['container_size'];
+        $dispatch_usage_source = $include_opened ? "PARTIAL_AND_WHOLE_CONTAINER_DISPATCH" : "WHOLE_CONTAINER_DISPATCH";
+        $log_notes_in = "Received " . $dispatch_value . " containers (incl. opened: " . ($include_opened ? 'Yes' : 'No') . ") from original ID " . $id . " (" . $original_data['chem_location'] . "). Performed by: " . $added_by;
 
-        $log_transfer = log_chemical($conn, $transferred_id, $transfer_log_type, $total_transferred, $transfer_value, $transfer_usage_source, $user_id, $role, $log_notes_in, $log_branch_id);
-        if (isset($log_transfer['error'])) {
-            throw new Exception($log_transfer['error']);
+        $log_dispatch_result = log_chemical($conn, $dispatched_id, $dispatch_log_type, $total_dispatched, $dispatch_value, $dispatch_usage_source, $user_id, $role, $log_notes_in, $log_branch_id);
+        if (isset($log_dispatch_result['error'])) { // Changed variable name from $log_transfer
+            throw new Exception($log_dispatch_result['error']); // Changed variable name from $log_transfer
         }
         $new_chemlevel_for_og = 0.0;
         $new_unopcont_for_og = 0;
         if ($include_opened) {
             $new_chemlevel_for_og = $original_data['container_size'];
-            $new_unopcont_for_og = ((int) $original_data['unop_cont'] - 1) - $transfer_value;
+            $new_unopcont_for_og = ((int) $original_data['unop_cont'] - 1) - $dispatch_value; // Changed variable name from $transfer_value
         } else {
             $new_chemlevel_for_og = (float) $original_data['chemLevel'];
-            // decreased va;ue
-            $new_unopcont_for_og = (int) $original_data['unop_cont'] - $transfer_value;
+            // decreased value
+            $new_unopcont_for_og = (int) $original_data['unop_cont'] - $dispatch_value; // Changed variable name from $transfer_value
         }
-        $update_old_chem_log_type = "Transferred to $transferred_id.";
-        $total_reduced_qty = $total_transferred * -1;
-        $affected_container_count_og = $transfer_value * -1;
-        $log_notes_out = "Transferred " . $transfer_value . " containers (incl. opened: " . ($include_opened ? 'Yes' : 'No') . ") to " . $new_location . ". Performed by: " . $added_by;
+        $update_old_chem_log_type = "Dispatched to $dispatched_id."; // Changed "Transferred" to "Dispatched"
+        $total_reduced_qty = $total_dispatched * -1;
+        $affected_container_count_og = $dispatch_value * -1; // Changed variable name from $transfer_value
+        $log_notes_out = "Dispatched " . $dispatch_value . " containers (incl. opened: " . ($include_opened ? 'Yes' : 'No') . ") to " . $new_location . ". Performed by: " . $added_by; // Changed "Transferred" to "Dispatched", $transfer_value to $dispatch_value
 
         if ($new_unopcont_for_og < 0) {
             throw new Exception("Error. Remaining unopened containers for original chemical resulted in a negative value.");
@@ -3384,11 +3383,11 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
         if (!mysqli_stmt_prepare($update_chem_stmt, $update_chem)) {
             throw new Exception("Statement prepare failed at chemical update query.");
         }
-        mysqli_stmt_bind_param($update_chem_stmt, 'dii', $new_chemlevel_for_og, $new_unopcount_for_og, $id);
+        mysqli_stmt_bind_param($update_chem_stmt, 'dii', $new_chemlevel_for_og, $new_unopcont_for_og, $id); // Note: typo in original `new_unopcount_for_og` fixed to `new_unopcont_for_og`
         mysqli_stmt_execute($update_chem_stmt);
         mysqli_stmt_close($update_chem_stmt);
 
-        $log_old_chem_update = log_chemical($conn, $id, $update_old_chem_log_type, $total_reduced_qty, $affected_container_count_og, $transfer_usage_source, $user_id, $role, $log_notes_out, $log_branch_id);
+        $log_old_chem_update = log_chemical($conn, $id, $update_old_chem_log_type, $total_reduced_qty, $affected_container_count_og, $dispatch_usage_source, $user_id, $role, $log_notes_out, $log_branch_id); // Changed variable name from $transfer_usage_source
         if (isset($log_old_chem_update['error'])) {
             throw new Exception($log_old_chem_update['error']);
         }
@@ -3402,8 +3401,7 @@ function transfer_chemical($conn, $id, $new_location, $transfer_value, $include_
         ];
     }
 }
-
-function transfer_all_chemical($conn, $id, $new_location)
+function dispatch_all_chemical($conn, $id, $transaction, $new_location = "Dispatched")
 {
     mysqli_begin_transaction($conn);
     try {
@@ -3411,15 +3409,45 @@ function transfer_all_chemical($conn, $id, $new_location)
         $stmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($stmt, $sql)) {
-            throw new Exception("stmt failed.");
+            throw new Exception("Prepared statement failed at updating chemical for dispatch. Please try again later.");
         }
 
         mysqli_stmt_bind_param($stmt, 'si', $new_location, $id);
         mysqli_stmt_execute($stmt);
 
-        if (!mysqli_stmt_affected_rows($stmt) > 0) {
-            throw new Exception("Update failed.");
+        if (mysqli_affected_rows($conn) === 0) {
+            throw new Exception("Update failed. ID not found. Please try again later." . mysqli_error($conn) . $id);
         }
+        mysqli_stmt_close($stmt);
+
+        $chem_amount_sql = "SELECT chemLevel, unop_cont, container_size FROM chemicals WHERE id = ?;";
+        $chem_amount_stmt = mysqli_stmt_init($conn);
+        if(!mysqli_stmt_prepare($chem_amount_stmt, $chem_amount_sql)){
+            throw new Exception("Prepared statement failed at fetching chemical total quantity. Please try again later.");
+        }
+        mysqli_stmt_bind_param($chem_amount_stmt, 'i', $id);
+        mysqli_stmt_execute($chem_amount_stmt);
+        $chem_amt_data = mysqli_stmt_get_result($chem_amount_stmt);
+        if(mysqli_num_rows($chem_amt_data) === 0){
+            throw new Exception("Chemical quantity not found. Please try again later.");
+        }
+
+        $chemLevel = 0.0;
+        $container_count = 0;
+        $container_size = 0;
+        if($row = mysqli_fetch_assoc($chem_amt_data)){  
+            $chemLevel = $row['chemLevel'];
+            $container_count = $row['unop_count'];
+            $container_size = $row['container_size'];
+        }
+
+        (float) $total_quantity = $chemLevel + ($container_count * $container_size);
+        $add_chem_used = add_chemical_used($conn, $transaction, $id, $total_quantity);
+        if(!$add_chem_used){
+            throw new Exception($add_chem_used);
+        }
+
+        // log chemical
 
         mysqli_commit($conn);
         return true;

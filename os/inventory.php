@@ -427,12 +427,12 @@ require("startsession.php");
                                         <div class="col-3 mb-2">
                                             <label for="edit-location" class="form-label fw-light">Chemical
                                                 Location:</label>
-                                            <p id="view-location"></p>
+                                            <p id="view-location" class="text-capitalize"></p>
                                             <select name="location" id="edit-location" class="form-select d-none"
                                                 autocomplete="one-time-code">
                                                 <option value="" selected>Add Location</option>
                                                 <option value="main_storage">Main Storage</option>
-                                                <option value="dispatched">Dispatched</option>
+                                                <option value="Dispatched">Dispatched</option>
                                             </select>
                                         </div>
                                     </div>
@@ -652,50 +652,50 @@ require("startsession.php");
                 </div>
             </form>
 
-            <form id="transferChemicalForm">
-                <input type="hidden" name="transferChemicalId" id="transferChemicalId">
+            <form id="dispatchChemicalForm">
+                <input type="hidden" name="dispatchChemicalId" id="dispatchChemicalId">
                 <input type="hidden" id="currentLocation" name="currentLocation">
                 <div class="row g-2 text-dark">
                     <div class="modal-lg modal fade text-dark modal-edit" data-bs-backdrop="static"
-                        id="transferChemModal" tabindex="-1" aria-labelledby="create" aria-hidden="true">
+                        id="dispatchChemModal" tabindex="-1" aria-labelledby="create" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
-                                    <h1 class="modal-title fs-5">Transfer Chemical</h1>
+                                    <h1 class="modal-title fs-5">Dispatch Chemical</h1>
                                     <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                             class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
                                     <div class="row mb-2">
                                         <div class="col-lg-3 mb-2">
-                                            <label for="transferName" class="form-label fw-medium">Chemical
+                                            <label for="dispatchName" class="form-label fw-medium">Chemical
                                                 Name:</label>
-                                            <p id="transferName" class="fw-light ps-2"></p>
+                                            <p id="dispatchName" class="fw-light ps-2"></p>
                                         </div>
                                         <div class="col-lg-3 mb-2">
-                                            <label for="transfer-chemBrand" class="form-label fw-medium">Chemical
+                                            <label for="dispatch-chemBrand" class="form-label fw-medium">Chemical
                                                 Brand:</label>
-                                            <p id="transfer-chemBrand" class="fw-light ps-2"></p>
+                                            <p id="dispatch-chemBrand" class="fw-light ps-2"></p>
                                         </div>
 
                                         <div class="col-lg-2 mb-2">
-                                            <label for="transfer-contSize" class="form-label fw-medium">Container
+                                            <label for="dispatch-contSize" class="form-label fw-medium">Container
                                                 Size:</label>
-                                            <p id="transfer-contSize" class="fw-light ps-2"></p>
+                                            <p id="dispatch-contSize" class="fw-light ps-2"></p>
                                         </div>
 
                                         <div class="col-lg-4 mb-2">
-                                            <label for="transfer-containerCount" class="form-label fw-medium">Container
+                                            <label for="dispatch-containerCount" class="form-label fw-medium">Container
                                                 Count
                                                 (Including Opened):</label>
-                                            <p id="transfer-containerCount" class="fw-light ps-2"></p>
+                                            <p id="dispatch-containerCount" class="fw-light ps-2"></p>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
                                         <div class="col-lg-4 mb-2">
-                                            <label for="transferValue" class="form-label fw-medium">Number of container
-                                                to transfer:</label>
-                                            <input type="number" name="transferValue" id="transferValue"
+                                            <label for="dispatchValue" class="form-label fw-medium">Number of container
+                                                to dispatch:</label>
+                                            <input type="number" name="dispatchValue" id="dispatchValue"
                                                 class="form-control w-50" autocomplete="one-time-code">
                                             <div class="form-check">
                                                 <input class="form-check-input" name="includeOpened" type="checkbox"
@@ -707,44 +707,40 @@ require("startsession.php");
                                             </div>
                                         </div>
                                         <div class="col-lg-4 mb-2">
-                                            <label for="transfer-location" class="form-label fw-medium">Transfer
-                                                to:</label>
-                                            <select name="transfer-location" id="transfer-location" class="form-select"
-                                                autocomplete="one-time-code">
-                                                <option value="" selected>Choose Location</option>
-                                                <option value="main_storage">Main Storage</option>
-                                                <option value="dispatched">Dispatched</option>
+                                            <label for="dispatch-transaction" class="form-label fw-medium">Select
+                                                Transaction Dispatch:</label>
+                                            <select name="dispatch-transaction" id="dispatch-transaction"
+                                                class="form-select" autocomplete="one-time-code">
                                             </select>
-                                            <p class="text-body-secondary mt-2">Note: The current location of this
-                                                chemical is disabled.</p>
+                                            <p class="text-body-secondary mt-2">Note: You can only dispatch a chemical to prepared and approved/accepted transactions.</p>
                                         </div>
                                     </div>
-                                    <input type="checkbox" class="btn-check" name="transferAll" id="transferAll"
+                                    <input type="checkbox" class="btn-check" name="dispatchAll" id="dispatchAll"
                                         autocomplete="off">
-                                    <label class="btn btn-outline-dark" for="transferAll">Transfer Everything</label>
+                                    <label class="btn btn-outline-dark" for="dispatchAll">Dispatch Everything</label>
                                 </div>
                                 <div class="modal-footer d-flex justify-content-between">
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
                                     <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                        data-bs-target="#transferConfirmationModal">Proceed & Confirm</button>
+                                        data-bs-target="#dispatchConfirmationModal">Proceed & Confirm</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="transferConfirmationModal"
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="dispatchConfirmationModal"
                     tabindex="0" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5" id="verifyAdd">Transfer Chemical</h1>
+                                <h1 class="modal-title fs-5" id="verifyAdd">Dispatch Chemical</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="pass" class="form-label fw-light">Transfer Chemical? Enter Operations
+                                    <label for="pass" class="form-label fw-light">Dispatch Chemical? Enter Operations
                                         Supervisor
                                         <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
@@ -752,14 +748,14 @@ require("startsession.php");
                                     </div>
                                 </div>
                                 <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
-                                    id="transferAlert">
+                                    id="dispatchAlert">
                                 </p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-grad" data-bs-target="#transferChemModal"
+                                <button type="button" class="btn btn-grad" data-bs-target="#dispatchChemModal"
                                     data-bs-toggle="modal">Go
                                     back</button>
-                                <button type="submit" class="btn btn-grad">Transfer Chemical</button>
+                                <button type="submit" class="btn btn-grad">Dispatch Chemical</button>
                             </div>
                         </div>
                     </div>
@@ -1475,7 +1471,7 @@ require("startsession.php");
             $('#edit-chemUnit').val(details.unit);
             $('#edit-restockThreshold').val(details.threshold);
             $('#edit-location').val(details.location);
-            $('#view-location').text(details.location === 'main_storage' ? 'Main Storage' : 'Stock Entry');
+            $('#view-location').text(details.location);
             $('#view-chemUnit').text(details.unit);
             $('#addinfo').html(function () {
                 return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
@@ -1501,54 +1497,71 @@ require("startsession.php");
 
         });
 
-        $(document).on('click', '.transferbtn', async function () {
-            let id = $(this).data('transfer');
-            $("#transferChemicalForm")[0].reset();
-            $("#transfer-location option").prop('disabled', false);
+        async function get_transaction_option() {
+            $.get(urldata,
+                {
+                    transaction_options: true
+                },
+                async function (d) {
+                    $("#dispatch-transaction").empty();
+                    $("#dispatch-transaction").append(d);
+                },
+                'html'
+            )
+            .fail(function(e){
+                alert("Error in loading transaction options. Please refresh the page and try again.");
+            });
+        }
+
+        $(document).on('click', '.dispatchbtn', async function () {
+            let id = $(this).data('dispatch');
+            $("#dispatchChemicalForm")[0].reset();
+            $("#dispatch-location option").prop('disabled', false);
             // console.log(id);
+            await get_transaction_option();
             let deets = await get_chem_details(id);
             var details = JSON.parse(deets);
             console.log(details);
 
-            $('#transferChemicalId').val(details.id);
-            $("#transferName").text(details.name)
-            $('#transfer-chemBrand').text(details.brand);
-            $('#transfer-contSize').text(details.container_size + '' + details.unit);
+            $('#dispatchChemicalId').val(details.id);
+            $("#dispatchName").text(details.name)
+            $('#dispatch-chemBrand').text(details.brand);
+            $('#dispatch-contSize').text(details.container_size + '' + details.unit);
             let opened_container_count = details.level > 0 ? 1 : 0;
             let total_container_count = details.unop_cont + opened_container_count;
-            $('#transfer-containerCount').text(total_container_count + ' Container/s');
-            $(`#transfer-location option[value='${details.location}']`).prop('disabled', true);
+            $('#dispatch-containerCount').text(total_container_count + ' Container/s');
+            // $(`#dispatch-location option[value='${details.location}']`).prop('disabled', true);
             $("#currentLocation").val(details.location);
-            $("#transferChemModal").modal('show');
 
-            $("#transferValue, #includeOpened").prop('disabled', false);
-            $("#transferAll").on('change', function () {
+            $("#dispatchValue, #includeOpened").prop('disabled', false);
+            $("#dispatchAll").on('change', function () {
                 let checked = $(this).is(":checked");
-                $("#transferValue, #includeOpened").prop('disabled', checked);
+                $("#dispatchValue, #includeOpened").prop('disabled', checked);
             })
+            $("#dispatchChemModal").modal('show');
         });
 
-        $(document).on('submit', '#transferChemicalForm', async function (e) {
+        $(document).on('submit', '#dispatchChemicalForm', async function (e) {
             e.preventDefault();
             console.log($(this).serialize());
 
             $.ajax({
                 method: 'POST',
                 url: urldata,
-                data: $(this).serialize() + "&transfer=true",
+                data: $(this).serialize() + "&dispatch=true",
                 dataType: 'json'
             })
                 .done(async function (d) {
                     if (d.success) {
                         show_toast(d.success);
-                        $("#transferConfirmationModal").modal('hide');
+                        $("#dispatchConfirmationModal").modal('hide');
                         loadpage(1, entryHidden);
                     } else {
                         alert('An unknown error has occured. Please try again later.');
                     }
                 })
                 .fail(function (e) {
-                    $("#transferAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                    $("#dispatchAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
                 })
         });
 
