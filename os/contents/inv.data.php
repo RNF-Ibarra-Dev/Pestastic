@@ -749,7 +749,7 @@ if (isset($_POST['dispatch']) && $_POST['dispatch'] === 'true') {
     if ($dispatchAll) {
         $dispatch = dispatch_all_chemical($conn, $id, $transaction);
     } else {
-        $dispatch = dispatch_chemical($conn, $id, "Dispatched", $dispatch_value, $include_opened);
+        $dispatch = dispatch_chemical($conn, $id, $transaction, $dispatch_value, $include_opened);
     }
 
     if (isset($dispatch['error'])) {
