@@ -820,10 +820,10 @@ require("startsession.php");
 
                                     <div class="row mb-2">
                                         <div class="col-lg-4 mb-2">
-                                            <label for="openedContainer" class="form-label fw-medium">Returned quantity
+                                            <label for="opened_container" class="form-label fw-medium">Returned quantity
                                                 of opened container:</label>
                                             <div class="d-flex"> 
-                                                <input type="number" name="openedContainer" id="openedContainer"
+                                                <input type="number" name="opened_container" id="opened_container"
                                                     class="form-control w-50" autocomplete="one-time-code">
                                                 <span id="return_unit"></span>
                                             </div>
@@ -836,9 +836,9 @@ require("startsession.php");
                                                 class="form-control w-50" autocomplete="one-time-code">
                                         </div>
                                         <div class="col-lg-4 mb-2">
-                                            <label for="return-transaction" class="form-label fw-medium">Select
+                                            <label for="return_transaction" class="form-label fw-medium">Select
                                                 Dispatched Transaction:</label>
-                                            <select name="return-transaction" id="return-transaction"
+                                            <select name="return_transaction" id="return_transaction"
                                                 class="form-select" autocomplete="one-time-code">
                                             </select>
                                             <p class="text-body-secondary mt-2">Note: You can only return this

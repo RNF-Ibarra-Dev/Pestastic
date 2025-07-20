@@ -784,3 +784,53 @@ if (isset($_GET['transaction_options']) && $_GET['transaction_options'] === 'tru
     }
     mysqli_close($conn);
 }
+
+// opened and closed quantity should be the total of what will return
+if (isset($_POST['return_chemical']) && $_POST['return_chemical'] === 'true') {
+
+    $chem_id = $_POST['returnChemicalId'];
+    $trans_id = $_POST['return_transaction'];
+    $opened_qty = $_POST['opened_container'];
+    $closed_qty = $_POST['container_count'];
+    $current_location = $_POST['return_currentLocation'];
+    $pwd = $_POST['baPwd'];
+
+    if (!is_numeric($chem_id) || !is_numeric($trans_id)) {
+        http_response_code(400);
+        echo "Invalid ID passed.";
+        exit();
+    }
+
+    if (!is_numeric($opened_qty) || !is_numeric($closed_qty)) {
+        http_response_code(400);
+        echo "Invalid input passed.";
+        exit();
+    }
+
+    if (empty($opened_qty) || empty($closed_qty) || empty($pwd)) {
+        http_response_code(400);
+        echo "Please fill all fields.";
+        exit();
+    }
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo "Invalid password.";
+        exit();
+    }
+
+    $return = return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $closed_qty);
+    if (isset($return['error'])) {
+        http_response_code(400);
+        echo $return['error'];
+        exit();
+    } else if ($return) {
+        http_response_code(200);
+        echo json_encode(['success' => 'Chemicals returned!']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo "An unknown error occurred. Please try again later.";
+        exit();
+    }
+}
