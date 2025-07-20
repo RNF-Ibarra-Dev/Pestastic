@@ -209,8 +209,13 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
-                        <button type="button" class="btn btn-sidebar dispatchbtn border-0" <?= $request === 1 ? "disabled" : "data-dispatch='$id'" ?>><i class="bi bi-truck-flatbed "></i></button>
-                        <button type="button" class="btn btn-sidebar returnbtn border-0" <?= $request === 1 ? "disabled" : "data-return='$id'" ?>><i class="bi bi-box-arrow-in-left"></i></button>
+                        <?php
+                        if ($cur_location === 'main_storage') {
+                            echo '<button type="button" class="btn btn-sidebar dispatchbtn border-0" ' . ($request === 1 ? 'disabled' : "data-dispatch='$id'") . '><i class="bi bi-truck-flatbed text-success"></i></button>';
+                        } else if($cur_location === 'dispatched') {
+                            echo '<button type="button" class="btn btn-sidebar returnbtn border-0" ' . ($request === 1 ? 'disabled' : "data-return='$id'") . '><i class="bi bi-box-arrow-in-left text-info"></i></button>';
+                        }
+                        ?>
                         <button type="button" id="editbtn" class="btn btn-sidebar editbtn border-0" data-chem="<?= $id ?>"><i
                                 class="bi bi-info-circle"></i></button>
                     </div>
