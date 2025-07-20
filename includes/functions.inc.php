@@ -3348,7 +3348,7 @@ function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $includ
         }
 
         // update original chemical based on the usage
-        
+
         (float) $old_chemLevel = (int) $old_qty % $original_data['container_size'];
         (int) $old_unop_cont = (int) $old_qty / $original_data['container_size'];
 
@@ -3371,8 +3371,8 @@ function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $includ
         $total_revert_qty = $chemLevel_to_revert + ($container_to_revert * $original_data['container_size']);
         $unit = $original_data['quantity_unit'];
         $revert_notes = "Reverted/Used $chemLevel_to_revert$unit and $container_to_revert containers to dispatch transaction ID no. $transaction_id.";
-        $revert_chem_log = log_chemical($conn, $id, 'Dispatch', $total_revert_qty, $container_to_revert, "CHEMICAL_DISPATCH_UPDATE", $user_id, $role, $revert_notes, (int)$original_data['branch']);
-        if(isset($revert_chem_log['error'])){
+        $revert_chem_log = log_chemical($conn, $id, 'Dispatch', $total_revert_qty, $container_to_revert, "CHEMICAL_DISPATCH_UPDATE", $user_id, $role, $revert_notes, (int) $original_data['branch']);
+        if (isset($revert_chem_log['error'])) {
             throw new Exception($revert_chem_log['error']);
         }
 
@@ -3430,9 +3430,9 @@ function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $includ
 
         (float) $total_dispatched = $include_opened ? $original_data['chemLevel'] + ($new_unop_containers * $original_data['container_size']) : $dispatch_value * $original_data['container_size'];
         $dispatch_usage_source = $include_opened ? "PARTIAL_AND_WHOLE_CONTAINER_DISPATCH" : "WHOLE_CONTAINER_DISPATCH";
-        if($existing_location_id){
+        if ($existing_location_id) {
             $log_notes_in = "Added $dispatch_value containers (incl. opened: " . ($include_opened ? 'Yes' : 'No') . ") from chemical ID $id for dispatch. Performed by: $added_by";
-        }else{
+        } else {
             $log_notes_in = "$dispatch_value containers (incl. opened: " . ($include_opened ? 'Yes' : 'No') . ") from chemical ID $id to dispatch. Performed by: " . $added_by;
         }
 
@@ -3497,7 +3497,7 @@ function dispatch_all_chemical($conn, $id, $transaction, $new_location = "Dispat
             throw new Exception($add_chem_used);
         }
 
-         // set transaction_chemicals (check if exists, insert if not, else update)
+        // set transaction_chemicals (check if exists, insert if not, else update)
         $check_transaction_chemicals_sql = "SELECT 1 FROM transaction_chemicals WHERE trans_id = ? AND chem_id = ?;";
         $check_transaction_chemicals_stmt = mysqli_stmt_init($conn);
 
@@ -3549,20 +3549,38 @@ function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $cl
 {
     mysqli_begin_transaction($conn);
     try {
+
         // get original dispatched data
         $get_details_sql = "SELECT * FROM chemicals WHERE id = ?;";
         $get_details_stmt = mysqli_stmt_init($conn);
-        if(!mysqli_stmt_prepare($get_details_stmt, $get_details_sql)){
+        if (!mysqli_stmt_prepare($get_details_stmt, $get_details_sql)) {
             throw new Exception("Prepared statement failed at fetching chemical data. Please try again later.");
         }
         mysqli_stmt_bind_param($get_details_stmt, 'i', $chem_id);
         mysqli_stmt_execute($get_details_stmt);
         $details_result = mysqli_stmt_get_result($get_details_stmt);
-        if(mysqli_num_rows($details_result) === 0){
+        if (mysqli_num_rows($details_result) === 0) {
             throw new Exception("Chemical not found. Please try again later.");
-        }        
+        }
         $original_data = mysqli_fetch_assoc($details_result);
         mysqli_stmt_close($get_details_stmt);
+
+        // check if chemical exists at main_storage
+        $check_main_chem_sql = "SELECT * FROM chemicals WHERE name = ? AND brand = ? AND container_size = ? AND quantity_unit = ? AND chem_location = 'main_storage';";
+        $check_main_chem_stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($check_main_chem_stmt, $check_main_chem_sql)) {
+            throw new Exception("Prepared statment failed at finding main chemical. Please try again later.");
+        }
+        mysqli_stmt_bind_param($check_main_chem_stmt, 'ssis', $original_data['name'], $original_data['brand'], $original_data['container_size'], $original_data['quantity_unit']);
+        mysqli_stmt_execute($check_main_chem_stmt);
+        $check_main_chem_res = mysqli_stmt_get_result($check_main_chem_stmt);
+        $main_chemical = mysqli_fetch_assoc($check_main_chem_res);
+        if (!$main_chemical) {
+            throw new Exception("Main chemical doesn't exist. Chemical might be deleted or information must have changed.");
+        }
+        $main_id = $main_chemical['id'];
+        mysqli_stmt_close($check_main_chem_stmt);
+
 
         // get amount
         $select_dispatched_amt_sql = "SELECT * FROM transaction_chemicals WHERE trans_id = ? AND chem_id = ?;";
@@ -3571,7 +3589,7 @@ function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $cl
         if (!mysqli_stmt_prepare($select_dispatched_amt_stmt, $select_dispatched_amt_sql)) {
             throw new Exception("Prepared statment failed at finding transaction chemicals. Please try again later.");
         }
-        mysqli_stmt_bind_param($select_dispatched_amt_stmt, 'ii', $trans_id, $chem_id);
+        mysqli_stmt_bind_param($select_dispatched_amt_stmt, 'ii', $trans_id, $main_id);
         mysqli_stmt_execute($select_dispatched_amt_stmt);
         $select_amt_result = mysqli_stmt_get_result($select_dispatched_amt_stmt);
         if (mysqli_num_rows($select_amt_result) === 0) {
@@ -3583,35 +3601,64 @@ function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $cl
         }
         mysqli_stmt_close($select_dispatched_amt_stmt);
 
-        (float) $total_amt_used = $opened_qty + ($closed_qty * $original_data['container_size']);
+        $closed_container_count = $closed_qty == 1 ? 0 : $closed_qty;
+
+        (float) $total_amt_used = $opened_qty + ($closed_container_count * $original_data['container_size']);
+        // throw new Exception("$total_amt_used = $opened_qty + ($closed_container_count * " . $original_data['container_size'] . ")");
 
         // update transaction_chemical (put amount rdirectly)
-        $trans_chem_update_sql = "UPDATE transaction_chemicals SET amt_used = ?, WHERE trans_id = ? AND chem_id = ?;";
+        $trans_chem_update_sql = "UPDATE transaction_chemicals SET amt_used = ? WHERE trans_id = ? AND chem_id = ?;";
         $trans_chem_update_stmt = mysqli_stmt_init($conn);
-        if(!mysqli_stmt_prepare($trans_chem_update_stmt, $trans_chem_update_sql)){
+        if (!mysqli_stmt_prepare($trans_chem_update_stmt, $trans_chem_update_sql)) {
             throw new Exception("Prepared statement failed at updating transaction chemicals. Please try again later.");
         }
-        mysqli_stmt_bind_param($trans_chem_update_stmt, 'dii', $total_amt_used, $trans_id, $chem_id);
+        mysqli_stmt_bind_param($trans_chem_update_stmt, 'dii', $total_amt_used, $trans_id, $main_id);
         mysqli_stmt_execute($trans_chem_update_stmt);
 
-        if(mysqli_stmt_affected_rows($trans_chem_update_stmt) === 0){
+        if (mysqli_stmt_affected_rows($trans_chem_update_stmt) === 0) {
             throw new Exception('An error occured while updating transaction chemicals. Please try again later.');
         }
         mysqli_stmt_close($trans_chem_update_stmt);
 
         // decrease/calculate chemical to return to original chemical
-        (float) $trans_chem_chemLevel = $recorded_qty_used % $original_data['container_size'];
-        (int) $trans_chem_container = (int) $recorded_qty_used / $original_data['container_size'];
-        (float) $return_chemLevel = $trans_chem_chemLevel - $opened_qty;
-        $return_container_count = $trans_chem_container - $closed_qty;
+        // add unit of measurement conversion
+        // if($original_data['container_size'] > 10){
+        //     if($original_data[''])
+        // }
 
+        $trans_chem_chemLevel = (float) $recorded_qty_used % $original_data['container_size'];
+        $trans_chem_container = (int) $recorded_qty_used / $original_data['container_size'];
+
+        (float) $return_chemLevel = $trans_chem_chemLevel - $opened_qty;
+        $return_container_count = (int) $trans_chem_container - $closed_qty;
+
+        if ($trans_chem_chemLevel === 0) {
+            $return_chemLevel = abs($return_chemLevel);
+        }
+        throw new Exception("$return_chemLevel = $trans_chem_chemLevel - $opened_qty");
+
+
+        if ($return_chemLevel < 0) {
+            throw new Exception("Error, chemical level to return ended up with a negative number -> $return_chemLevel trans chem level: $trans_chem_chemLevel, opened qty: $opened_qty  ");
+        }
+
+        if ($return_container_count < 0) {
+            throw new Exception("Error. Container count resulted with a negative number.");
+        }
+
+        if ($return_container_count === 0) {
+            $return_container = 1;
+        }
+
+        // throw new Exception("$return_container_count = " . (int) $trans_chem_container . " - $closed_qty Recorded qty used: $recorded_qty_used");
+        throw new Exception($return_chemLevel);
         // update chemical
-        $revert_chemical_sql = "UPDATE chemicals SET chemLevel = ?, unop_cont = ? WHERE name = ? AND brand = ? AND chem_location = 'main_storage;";
+        $revert_chemical_sql = "UPDATE chemicals SET chemLevel = chemLevel + ?, unop_cont = unop_cont + ? WHERE id = ? AND chem_location = 'main_storage';";
         $revert_chemical_stmt = mysqli_stmt_init($conn);
-        if(!mysqli_stmt_prepare($revert_chemical_stmt, $revert_chemical_sql)){
+        if (!mysqli_stmt_prepare($revert_chemical_stmt, $revert_chemical_sql)) {
             throw new Exception("Prepared statement failed at updating chemical value.");
-        } 
-        mysqli_stmt_bind_param($revert_chemical_stmt, 'diss', $);
+        }
+        mysqli_stmt_bind_param($revert_chemical_stmt, 'dii', $return_chemLevel, $return_container, $main_id);
 
         mysqli_commit($conn);
         return true;

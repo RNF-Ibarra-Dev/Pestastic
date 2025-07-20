@@ -825,7 +825,7 @@ require("startsession.php");
                                             <div class="d-flex"> 
                                                 <input type="number" name="opened_container" id="opened_container"
                                                     class="form-control w-50" autocomplete="one-time-code">
-                                                <span id="return_unit"></span>
+                                                <span id="return_unit" class="ms-2 align-middle mt-2"></span>
                                             </div>
                                         </div>
                                         <div class="col-lg-4 mb-2">
@@ -879,7 +879,7 @@ require("startsession.php");
                                     </div>
                                 </div>
                                 <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
-                                    id="dispatchAlert">
+                                    id="returnAlert">
                                 </p>
                             </div>
                             <div class="modal-footer">
@@ -1641,18 +1641,23 @@ require("startsession.php");
                     alert("Error in loading transaction options. Please refresh the page and try again.");
                 });
         }
-        async function get_transaction_return() {
+        async function get_transaction_return(name, brand, csize, unit) {
             $.get(urldata, {
-                transaction_options: true
+                dispatched_transactions: true,
+                name: name, 
+                brand: brand,
+                csize: csize,
+                unit: unit
             },
                 async function (d) {
-                    $("#dispatch-transaction").empty();
-                    $("#dispatch-transaction").append(d);
+                    $("#return_transaction").empty();
+                    $("#return_transaction").append(d);
                 },
                 'html'
             )
                 .fail(function (e) {
-                    alert("Error in loading transaction options. Please refresh the page and try again.");
+                    alert("Error in loading dispatched transaction options. Please refresh the page and try again.");
+                    console.log(e);
                 });
         }
 
@@ -1660,7 +1665,6 @@ require("startsession.php");
             let id = $(this).data('return');
             console.log(id);
             $("#returnChemicalForm")[0].reset();
-            await get_transaction_option();
             let deets = await get_chem_details(id);
             var details = JSON.parse(deets);
             console.log(details);
@@ -1681,6 +1685,9 @@ require("startsession.php");
             let total_container_count = details.unop_cont + opened_container_count;
             $('#return-containerCount').text(total_container_count + ' Container/s');
             $("#return-cstatus").text(clocation);
+
+            await get_transaction_return(details.name, details.brand, details.container_size, details.unit);
+
 
             $("#returnChemModal").modal('show');
 
@@ -1718,6 +1725,31 @@ require("startsession.php");
                 $("#dispatchValue, #includeOpened").prop('disabled', checked);
             })
             $("#dispatchChemModal").modal('show');
+        });
+
+
+        $(document).on('submit', '#returnChemicalForm', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            $.ajax({
+                method: 'POST',
+                url: urldata,
+                data: $(this).serialize() + "&return_chemical=true",
+                dataType: 'json'
+            })
+                .done(async function (d) {
+                    if (d.success) {
+                        show_toast(d.success);
+                        $("#returnConfirmationModal").modal('hide');
+                        loadpage(1, entryHidden);
+                    } else {
+                        alert('An unknown error has occured. Please try again later.');
+                    }
+                })
+                .fail(function (e) {
+                    $("#returnAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                    console.log(e);
+                })
         });
 
         $(document).on('submit', '#dispatchChemicalForm', async function (e) {

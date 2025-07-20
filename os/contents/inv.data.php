@@ -785,6 +785,57 @@ if (isset($_GET['transaction_options']) && $_GET['transaction_options'] === 'tru
     mysqli_close($conn);
 }
 
+if (isset($_GET['dispatched_transactions']) && $_GET['dispatched_transactions'] === 'true') {
+    $name = $_GET['name'];
+    $brand = $_GET['brand'];
+    $csize = $_GET['csize'];
+    $unit = $_GET['unit'];
+
+    $get_main_id_sql = "SELECT id FROM chemicals WHERE name = ? AND brand = ? AND container_size = ? AND quantity_unit = ?;";
+    $get_main_id_stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($get_main_id_stmt, $get_main_id_sql)) {
+        http_response_code(400);
+        echo "Prepared statement failed at finding main chemical. Please try again later.";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($get_main_id_stmt, "ssis", $name, $brand, $csize, $unit);
+    mysqli_stmt_execute($get_main_id_stmt);
+    $result = mysqli_stmt_get_result($get_main_id_stmt);
+    if ($row = mysqli_fetch_assoc($result)) {
+        $main_id = $row['id'];
+    } else {
+        http_response_code(400);
+        echo "Error. Main chemical not found.";
+        exit();
+    }
+
+    $sql = "SELECT t.id FROM transactions t WHERE t.transaction_status = 'Dispatched' AND EXISTS (SELECT 1 FROM transaction_chemicals tc WHERE tc.chem_id = ? AND tc.trans_id = t.id);";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "Prepared statement failed at finding dispatched transactions. Please try again later.";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "i", $main_id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($res) > 0) {
+        echo "<option value=''>Select Transaction</option>";
+        while ($row = mysqli_fetch_assoc($res)) {
+            $id = $row['id'];
+            ?>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
+            <?php
+        }
+    } else {
+        echo "<option disabled>No available accepted transactions</option>";
+    }
+    mysqli_close($conn);
+}
+
 // opened and closed quantity should be the total of what will return
 if (isset($_POST['return_chemical']) && $_POST['return_chemical'] === 'true') {
 

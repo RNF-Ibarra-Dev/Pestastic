@@ -200,7 +200,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
+            $id = $row['id'];   
             $name = $row["name"];
             $brand = $row["brand"];
             $unit = $row['unit'];
