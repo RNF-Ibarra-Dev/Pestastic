@@ -3384,7 +3384,7 @@ function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $includ
         if ($existing_location_id) {
             // throw new Exception($existing_location_id);
             // update the existing dispatched chemical record (add )
-            $existing_update_sql = "UPDATE chemicals SET chemLevel = ?, unop_cont = ?, updated_at = NOW(), updated_by = ? WHERE id = ?;";
+            $existing_update_sql = "UPDATE chemicals SET chemLevel = chemLevel + ?, unop_cont = unop_cont + ?, updated_at = NOW(), updated_by = ? WHERE id = ?;";
             $existing_update_stmt = mysqli_stmt_init($conn);
 
             if (!mysqli_stmt_prepare($existing_update_stmt, $existing_update_sql)) {
