@@ -348,7 +348,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
     $stmt = mysqli_stmt_init($conn);
     switch ($_GET['status']) {
         case "total":
-            $sql = "SELECT COUNT(*) FROM chemicals";
+            $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals";
             break;
         case "low":
             $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel <= unop_cont * .20";
@@ -363,8 +363,9 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
             $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel > 0 AND request = 0";
             break;
         case "dispatched":
-            $sql = "SELECT COUNT(*) FROM inventory_log il WHERE il.log_type = 'Out' AND 
-            NOT EXISTS (SELECT 1 FROM transactions t WHERE t.id = il.trans_id AND t.transaction_status = 'Completed')";
+            // $sql = "SELECT COUNT(*) FROM inventory_log il WHERE il.log_type = 'Out' AND 
+            // NOT EXISTS (SELECT 1 FROM transactions t WHERE t.id = il.trans_id AND t.transaction_status = 'Completed')";
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE chem_location = 'dispatched'";
             break;
         case "out-of-stock":
             $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel = 0 AND unop_cont = 0;";
