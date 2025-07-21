@@ -858,7 +858,7 @@ if (isset($_POST['return_chemical']) && $_POST['return_chemical'] === 'true') {
         exit();
     }
 
-    if (empty($opened_qty) || empty($closed_qty) || empty($pwd)) {
+    if ($opened_qty === '' || $closed_qty === '' || empty($pwd)) {
         http_response_code(400);
         echo "Please fill all fields.";
         exit();

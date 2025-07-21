@@ -827,10 +827,11 @@ require("startsession.php");
                                                     class="form-control w-50" autocomplete="one-time-code">
                                                 <span id="return_unit" class="ms-2 align-middle mt-2"></span>
                                             </div>
+                                            <p class="text-body-secondary">Note: This should not exceed the quantity of the container size.</p>
                                         </div>
                                         <div class="col-lg-4 mb-2">
                                             <label for="container_count" class="form-label fw-medium">Returned number of
-                                                container
+                                                closed container (not used)
                                                 to return:</label>
                                             <input type="number" name="container_count" id="container_count"
                                                 class="form-control w-50" autocomplete="one-time-code">

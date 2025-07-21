@@ -3375,6 +3375,8 @@ function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $includ
         if (isset($revert_chem_log['error'])) {
             throw new Exception($revert_chem_log['error']);
         }
+        
+        $log_branch_id = (int) $original_data['branch'];
 
         // next setep. set dispatched chemical or update. Different chemical id from the one at the main_storage
         // checks if there is a dispatched chemical (same name, brand, etc. And location that is "dispatched")
@@ -3402,7 +3404,6 @@ function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $includ
                 throw new Exception("Prepared statement failed at dispatch query.");
             }
             $bind_container_size = (int) $original_data['container_size'];
-            $log_branch_id = (int) $original_data['branch'];
             $bind_restock_threshold_new_chem = (int) $original_data['restock_threshold'];
             mysqli_stmt_bind_param(
                 $dispatched_stmt,
@@ -3606,6 +3607,10 @@ function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $cl
         (float) $total_amt_used = $opened_qty + ($closed_container_count * $original_data['container_size']);
         // throw new Exception("$total_amt_used = $opened_qty + ($closed_container_count * " . $original_data['container_size'] . ")");
 
+        if ($total_amt_used > $recorded_qty_used) {
+            throw new Exception("Return amount should not exceed the dispatched amount.");
+        }
+
         // update transaction_chemical (put amount rdirectly)
         $trans_chem_update_sql = "UPDATE transaction_chemicals SET amt_used = ? WHERE trans_id = ? AND chem_id = ?;";
         $trans_chem_update_stmt = mysqli_stmt_init($conn);
@@ -3620,26 +3625,77 @@ function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $cl
         }
         mysqli_stmt_close($trans_chem_update_stmt);
 
+        $upby = '';
+        if (isset($_SESSION['baUsn']) && isset($_SESSION['empId'])) {
+            $upby = $_SESSION['baUsn'] . " | Employee no. " . $_SESSION['empId'];
+        } elseif (isset($_SESSION['saUsn']) && isset($_SESSION['empId'])) {
+            $upby = $_SESSION['saUsn'] . " | Employee no. " . $_SESSION['empId'];
+        } else {
+            throw new Exception("Session not recognized. Please try again later.");
+        }
+
+        $user_id = 0;
+        if (isset($_SESSION['baID'])) {
+            $user_id = (int) $_SESSION['baID'];
+        } elseif (isset($_SESSION['saID'])) {
+            $user_id = (int) $_SESSION['saID'];
+        } else {
+            throw new Exception("Unknown session ID. Please try again later.");
+        }
+
+        $role = $_SESSION['user_role'] ?? 'Unknown Role';
+
+        $containers_affected_used = $closed_container_count + ($opened_qty > 0 ? 1 : 0);
+        $containers_affected_used *= -1;
+        $unit = $original_data['quantity_unit'];
+        $branch = $original_data['branch'];
+        $used_log_note = "Used $total_amt_used$unit from the dispatched transaction no. $trans_id.";
+        // log used chemical from dispatch.
+        $log_used = log_chemical($conn, $main_id, "Used", $total_amt_used, $containers_affected_used, "DISPATCHED_CHEMICAL_USED", $user_id, $role, $used_log_note, $branch, $trans_id);
+        if (isset($log_used['error'])) {
+            throw new Exception($log_used['error']);
+        }
+
         // decrease/calculate chemical to return to original chemical
         // add unit of measurement conversion
         // if($original_data['container_size'] > 10){
         //     if($original_data[''])
         // }
+        if ($opened_qty > $original_data['container_size']) {
+            throw new Exception("Error! Opened container quantity exceeds the size.");
+        }
 
-        $trans_chem_chemLevel = (float) $recorded_qty_used % $original_data['container_size'];
-        $trans_chem_container = (int) $recorded_qty_used / $original_data['container_size'];
+        if ($original_data['container_size'] == $recorded_qty_used) {
+            $trans_chem_chemLevel = $original_data['container_size'];
+            $trans_chem_container = 0;
+        } else {
+            // returns the opened container level
+            $trans_chem_chemLevel = (float) $recorded_qty_used % $original_data['container_size'];
+            // returns the closed container count without the opened
+            $trans_chem_container = (int) $recorded_qty_used / $original_data['container_size'];
+        }
 
+        $total_returned_quantity = $trans_chem_chemLevel + ($trans_chem_container * $original_data['container_size']);
         (float) $return_chemLevel = $trans_chem_chemLevel - $opened_qty;
         $return_container_count = (int) $trans_chem_container - $closed_qty;
 
-        if ($trans_chem_chemLevel === 0) {
-            $return_chemLevel = abs($return_chemLevel);
+        // get og chem chemLevel and containercount
+        $main_chemLevel = $main_chemical['chemLevel'];
+        $main_unopened = $main_chemical['unop_cont'];
+
+        $total_returned_chemLevel = $main_chemLevel + $return_chemLevel;
+        $total_returned_unop_cont = $main_unopened + $return_container_count;
+        while ($total_returned_chemLevel > $original_data['container_size']) {
+            $total_returned_chemLevel -= $original_data['container_size'];
+            $total_returned_unop_cont++;
         }
-        throw new Exception("$return_chemLevel = $trans_chem_chemLevel - $opened_qty");
 
+        // throw new Exception("$total_returned_chemLevel $total_returned_unop_cont");
+        // throw new Exception("$return_container_count = $trans_chem_container - $closed_qty");
 
+        // throw new Exception($recorded_qty_used);
         if ($return_chemLevel < 0) {
-            throw new Exception("Error, chemical level to return ended up with a negative number -> $return_chemLevel trans chem level: $trans_chem_chemLevel, opened qty: $opened_qty  ");
+            throw new Exception("Error, chemical level to return ended up with a negative number.");
         }
 
         if ($return_container_count < 0) {
@@ -3651,14 +3707,51 @@ function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $cl
         }
 
         // throw new Exception("$return_container_count = " . (int) $trans_chem_container . " - $closed_qty Recorded qty used: $recorded_qty_used");
-        throw new Exception($return_chemLevel);
+        // throw new Exception($return_chemLevel);
         // update chemical
-        $revert_chemical_sql = "UPDATE chemicals SET chemLevel = chemLevel + ?, unop_cont = unop_cont + ? WHERE id = ? AND chem_location = 'main_storage';";
+        $revert_chemical_sql = "UPDATE chemicals SET chemLevel = ?, unop_cont = ?, updated_by = ?, updated_at = NOW() WHERE id = ? AND chem_location = 'main_storage';";
         $revert_chemical_stmt = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($revert_chemical_stmt, $revert_chemical_sql)) {
             throw new Exception("Prepared statement failed at updating chemical value.");
         }
-        mysqli_stmt_bind_param($revert_chemical_stmt, 'dii', $return_chemLevel, $return_container, $main_id);
+        mysqli_stmt_bind_param($revert_chemical_stmt, 'disi', $total_returned_chemLevel, $total_returned_unop_cont, $upby, $main_id);
+        mysqli_stmt_execute($revert_chemical_stmt);
+
+        if (mysqli_stmt_affected_rows($revert_chemical_stmt) === 0) {
+            throw new Exception("Update failed when updating new chemical data. Please try again later.");
+        }
+        mysqli_stmt_close($revert_chemical_stmt);
+
+        $total_containers_affected = $trans_chem_container + ($trans_chem_chemLevel > 0 ? 1 : 0);
+        $return_notes = "Returned $total_returned_quantity$unit from the remaining dispatched chemical.";
+        $log_return = log_chemical($conn, $chem_id, "Return", $total_returned_quantity, $total_containers_affected, "FROM_DISPATCHED_CHEMICAL", $user_id, $role, $return_notes, $branch, $trans_id);
+        if (isset($log_return['error'])) {
+            throw new Exception($log_return['error']);
+        }
+
+        // delete dispatched chemical ID or update
+        $dispatched_chem_total_qty = $original_data['chemLevel'] + ($original_data['unop_cont'] * $original_data['container_size']);
+
+        if ($recorded_qty_used === $dispatched_chem_total_qty) {
+            $delete = deleteChem($conn, $chem_id);
+            if (!$delete) {
+                throw new Exception("Error. System failed at removing dispatched chemical. Please try again later.");
+            }
+        } else {
+            
+            $update_dispatched_chem_sql = "UPDATE chemicals SET chemLevel = chemLevel - ?, unop_cont = unop_cont - ?, updated_at = NOW(), updated_by = ? WHERE id = ?;";
+            $update_dispatched_chem_stmt = mysqli_stmt_init($conn);
+            if(!mysqli_stmt_prepare($update_dispatched_chem_stmt, $update_dispatched_chem_sql)){
+                throw new Exception("Statement failed at preparing a dispatched chemical update. Please try again later.");
+            }
+            mysqli_stmt_bind_param($update_dispatched_chem_stmt, 'disi', $trans_chem_chemLevel, $trans_chem_container, $upby, $chem_id);
+            mysqli_stmt_execute($update_dispatched_chem_stmt);
+            if(mysqli_stmt_affected_rows($update_dispatched_chem_stmt) === 0){
+                throw new Exception("System failed at updating dispatched chemical. Please try again later.");
+            }
+            mysqli_stmt_close($update_dispatched_chem_stmt);
+        }
+
 
         mysqli_commit($conn);
         return true;
