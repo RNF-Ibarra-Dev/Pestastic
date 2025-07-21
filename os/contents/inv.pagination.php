@@ -181,7 +181,13 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $cur_location = $row['chem_location'];
             ?>
             <tr class="text-center">
-                <td scope="row"><?= htmlspecialchars($id) ?></td>
+                <td scope="row"><?php
+                if ($cur_location === 'dispatched') {
+                    echo htmlspecialchars("Dispatched Chemical ID: $id");
+                } else {
+                    echo htmlspecialchars($id); 
+                }
+                ?></td>
                 <td>
                     <?=
                         $request === 1 ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='Pending Entry'></i><span class='fw-bold'>" . htmlspecialchars($name) . "</span><br>(Pending Entry)" : htmlspecialchars($name);
@@ -212,7 +218,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                         <?php
                         if ($cur_location === 'main_storage') {
                             echo '<button type="button" class="btn btn-sidebar dispatchbtn border-0" ' . ($request === 1 ? 'disabled' : "data-dispatch='$id'") . '><i class="bi bi-truck-flatbed text-success"></i></button>';
-                        } else if($cur_location === 'dispatched') {
+                        } else if ($cur_location === 'dispatched') {
                             echo '<button type="button" class="btn btn-sidebar returnbtn border-0" ' . ($request === 1 ? 'disabled' : "data-return='$id'") . '><i class="bi bi-box-arrow-in-left text-info"></i></button>';
                         }
                         ?>

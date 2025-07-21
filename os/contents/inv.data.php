@@ -720,6 +720,18 @@ if (isset($_POST['dispatch']) && $_POST['dispatch'] === 'true') {
         $include_opened = isset($_POST['includeOpened']);
     }
 
+    if(empty($transaction) ||!is_numeric($transaction)){
+        http_response_code(400);
+        echo "Invalid Transaction.";
+        exit();
+    }
+
+    $transaction_status = check_status($conn, $transaction);
+    if($transaction_status != "Accepted"){
+        http_response_code(400);
+        echo "Only approved transactions are allowed to be dispatched. $transaction_status";
+        exit();
+    }
 
     if (!is_numeric($id) || $id === NULL) {
         http_response_code(400);
