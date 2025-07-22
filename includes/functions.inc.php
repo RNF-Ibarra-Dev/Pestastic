@@ -3426,7 +3426,7 @@ function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $includ
             $container_to_update = $dispatched_data['unop_cont'] + abs($container_to_revert);
 
             // throw new Exception("$chemLevel_to_update = " . $dispatched_data['chemLevel'] . " + $chemLevel_to_revert");
-            throw new Exception("$chemLevel_to_update $container_to_update");
+            // throw new Exception("$chemLevel_to_update $container_to_update");
             while ($final_chemLevel < 0) {
                 $final_chemLevel += $original_data['container_size'];
                 $final_container--;
@@ -3436,7 +3436,6 @@ function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $includ
                 $chemLevel_to_update -= $dispatched_data['container_size'];
                 $container_to_update++;
             }
-
 
 
             $existing_update_sql = "UPDATE chemicals SET chemLevel = ?, unop_cont = ?, updated_at = NOW(), updated_by = ? WHERE id = ?;";

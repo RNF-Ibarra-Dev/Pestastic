@@ -9,7 +9,7 @@ $role = $_SESSION['user_role'];
 $user = $_SESSION['baID'];
 $branch = $_SESSION['branch'];
 
-$units = ['mg', 'g', 'kg', 'L', 'mL'];
+$units = ['mg', 'g', 'kg', 'L', 'mL', 'box', 'pc', 'canister'];
 
 
 if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
@@ -300,6 +300,9 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
                     <option value="kg">kg</option>
                     <option value="L">L</option>
                     <option value="mL">mL</option>
+                    <option value="box">Box</option>
+                    <option value="pc">Piece</option>
+                    <option value="canister">Canister</option>
                 </select>
             </div>
             <div class="col-lg-2 mb-2">
@@ -911,3 +914,21 @@ if (isset($_POST['return_chemical']) && $_POST['return_chemical'] === 'true') {
         exit();
     }
 }
+
+// if (isset($_GET['get_qty_unit']) && $_GET['get_qty_unit'] === 'true') {
+//     $sql = "SHOW COLUMNS FROM chemicals LIKE 'quantity_unit';";
+//     $res = mysqli_query($conn, $sql);
+
+//     if ($row = mysqli_fetch_assoc($res)) {
+//         $type = $row['Type'];
+//         preg_match('/^enum\((.*)\)$/', $type, $matches);
+//         if ($matches) {
+//             $enum_string = $matches[1];
+//             $enum_values = array_map(function ($value) {
+//                 return trim($value, "'\"");
+//             }, str_getcsv($enum_string, ',', "'"));
+//             return $enum_values;
+//         }
+//     }
+//     return false;
+// }

@@ -366,24 +366,24 @@ require("startsession.php");
                                     <div class="row mb-2">
 
                                         <div class="col-lg-3 mb-2">
-                                            <label for="edit-name" class="form-label fw-light">Chemical Name:</label>
+                                            <label for="edit-name" class="form-label fw-medium">Chemical Name:</label>
                                             <input type="text" name="edit-name" id="edit-name"
                                                 class="ps-2 form-control-plaintext" readonly autocomplete="off">
                                         </div>
                                         <div class="col-lg-3 mb-2">
-                                            <label for="edit-chemBrand" class="form-label fw-light">Chemical
+                                            <label for="edit-chemBrand" class="form-label fw-medium">Chemical
                                                 Brand:</label>
                                             <input type="text" name="edit-chemBrand" id="edit-chemBrand"
                                                 class="ps-2 form-control-plaintext" readonly autocomplete="off">
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="edit-contSize" class="form-label fw-light">Container
+                                            <label for="edit-contSize" class="form-label fw-medium">Container
                                                 Size:</label>
                                             <input type="number" name="edit-containerSize" id="edit-contSize"
                                                 class="form-control-plaintext" readonly autocomplete="one-time-code">
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="view-chemUnit" class="form-label fw-light">Chemical
+                                            <label for="view-chemUnit" class="form-label fw-medium">Chemical
                                                 Unit:</label>
                                             <p id="view-chemUnit"></p>
                                             <select name="edit-chemUnit" id="edit-chemUnit" class="form-select d-none"
@@ -394,10 +394,13 @@ require("startsession.php");
                                                 <option value="kg">kg</option>
                                                 <option value="L">L</option>
                                                 <option value="mL">mL</option>
+                                                <option value="box">Box</option>
+                                                <option value="pc">Piece</option>
+                                                <option value="canister">Canister</option>
                                             </select>
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="edit-restockThreshold" class="form-label fw-light">Restock
+                                            <label for="edit-restockThreshold" class="form-label fw-medium">Restock
                                                 Threshold:</label>
                                             <input type="number" name="edit-restockThreshold" id="edit-restockThreshold"
                                                 class="form-control-plaintext" readonly autocomplete="one-time-code">
@@ -406,13 +409,13 @@ require("startsession.php");
 
                                     <div class="row mb-2">
                                         <div class="col-3 mb-2">
-                                            <label for="edit-dateReceived" class="form-label fw-light">Date
+                                            <label for="edit-dateReceived" class="form-label fw-medium">Date
                                                 Received:</label>
                                             <input type="date" name="edit-receivedDate" id="edit-dateReceived"
                                                 class="ps-2 form-control-plaintext form-add form-date" disabled>
                                         </div>
                                         <div class="col-3 mb-2">
-                                            <label for="edit-expDate" class="form-label fw-light">Expiry Date:</label>
+                                            <label for="edit-expDate" class="form-label fw-medium">Expiry Date:</label>
                                             <input type="date" name="edit-expDate" id="edit-expDate"
                                                 class="ps-2 form-control-plaintext form-date" autocomplete="off"
                                                 disabled>
@@ -420,12 +423,12 @@ require("startsession.php");
                                                 id="expdatewarning"></p>
                                         </div>
                                         <div class="col-3 mb-2">
-                                            <label for="edit-notes" class="form-label fw-light">Short Note:</label>
+                                            <label for="edit-notes" class="form-label fw-medium">Short Note:</label>
                                             <textarea name="edit-notes" id="edit-notes" style="resize: none !important;"
                                                 class="ps-2 form-control-plaintext" readonly></textarea>
                                         </div>
                                         <div class="col-3 mb-2">
-                                            <label for="edit-location" class="form-label fw-light">Chemical
+                                            <label for="edit-location" class="form-label fw-medium">Chemical
                                                 Location:</label>
                                             <p id="view-location" class="text-capitalize"></p>
                                             <select name="location" id="edit-location" class="form-select d-none"
@@ -434,6 +437,17 @@ require("startsession.php");
                                                 <option value="main_storage">Main Storage</option>
                                                 <option value="Dispatched">Dispatched</option>
                                             </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-2 d-none user-select-none" id="chemState">
+                                        <div class="col-3">
+                                            <p class="fw-medium mb-2">Opened Container Level:</p>
+                                            <p class="ps-2 mb-2" id="openedContainerLevel"></p>
+                                        </div>
+                                        <div class="col-3">
+                                            <p class="fw-medium mb-2">Closed Container Count:</p>
+                                            <p class="ps-2 mb-2" id="closedContainerCount"></p>
                                         </div>
                                     </div>
 
@@ -531,6 +545,9 @@ require("startsession.php");
                                                 <option value="kg">kg</option>
                                                 <option value="L">L</option>
                                                 <option value="mL">mL</option>
+                                                <option value="box">Box</option>
+                                                <option value="pc">Piece</option>
+                                                <option value="canister">Canister</option>
                                             </select>
                                         </div>
                                         <div class="col-lg-2 mb-2">
@@ -822,12 +839,13 @@ require("startsession.php");
                                         <div class="col-lg-4 mb-2">
                                             <label for="opened_container" class="form-label fw-medium">Returned quantity
                                                 of opened container:</label>
-                                            <div class="d-flex"> 
+                                            <div class="d-flex">
                                                 <input type="number" name="opened_container" id="opened_container"
                                                     class="form-control w-50" autocomplete="one-time-code">
                                                 <span id="return_unit" class="ms-2 align-middle mt-2"></span>
                                             </div>
-                                            <p class="text-body-secondary">Note: This should not exceed the quantity of the container size.</p>
+                                            <p class="text-body-secondary">Note: This should not exceed the quantity of
+                                                the container size.</p>
                                         </div>
                                         <div class="col-lg-4 mb-2">
                                             <label for="container_count" class="form-label fw-medium">Returned number of
@@ -1439,6 +1457,18 @@ require("startsession.php");
             $(this).parent().parent().remove();
         })
 
+        // $(document).on("shown.bs.modal", "#addModal", function () {
+        //     $.get(urldata, {
+        //         get_qty_unit: true
+        //     }, function(d){
+        //         $("#add-chemUnit").empty();
+        //         $("#add-chemUnit").append(d);
+        //     }, 'html')
+        //     .fail(function (e) {
+        //         $("#add-chemUnit").append("<option value=''>Error loading units</option>");
+        //         console.log(e);
+        //     });
+        // })
 
         $(document).on('click', '#addMoreChemBtn', async function () {
             $.get(urldata, "addrow=true")
@@ -1611,15 +1641,23 @@ require("startsession.php");
                 return details.upby === 'No Update Record' ? 'Updated at: ' + details.upat : 'Updated at: ' + details.upat + ' by ' + details.upby;
             });
 
+            $("#openedContainerLevel").text(details.level);
+            $("#closedContainerCount").text(details.unop_cont);
+
             if (toggled) {
                 toggle();
             }
             let reqAlertStatus = $('#reqalert').hasClass('d-none');
+            let chemstate = $("#chemState").hasClass('d-none');
             if (details.req == 1) {
                 $('#reqalert').removeClass('d-none').html('This chemical is pending for approval by the Manager. You can only view the details of this chemical.').fadeIn(750);
+                $('#chemState').removeClass('d-none');
             } else {
                 if (!reqAlertStatus) {
                     $('#reqalert').addClass('d-none');
+                }
+                if(chemstate) {
+                    $('#chemState').removeClass('d-none');
                 }
                 $('#reqalert').html('');
             }
@@ -1645,7 +1683,7 @@ require("startsession.php");
         async function get_transaction_return(name, brand, csize, unit) {
             $.get(urldata, {
                 dispatched_transactions: true,
-                name: name, 
+                name: name,
                 brand: brand,
                 csize: csize,
                 unit: unit
