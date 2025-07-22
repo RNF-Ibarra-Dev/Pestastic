@@ -37,31 +37,20 @@ require("startsession.php");
                             Chemicals
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Official count of approved chemicals.</p>
+                    <p class="fw-light mb-2">Total chemical count.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_total"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
-                            class="bi bi-box-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
+                            class="bi bi-exclamation-triangle-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold w-75 mx-auto align-middle mb-0">
-                            Restock Chemicals
+                            Low Level Chemicals
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Number of chemicals below restock threshold.</p>
+                    <p class="fw-light mb-2">Number of chemicals 20% below full capacity.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_low"></p>
                 </div>
-                <!-- <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
-                    <div class="clearfix">
-                        <i
-                            class="bi bi-box-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
-                        <p class="fs-5 fw-bold w-75 mx-auto align-middle mb-0">
-                            Pending Approval Chemicals
-                        </p>
-                    </div>
-                    <p class="fw-light mb-2">Modified chemicals under review for approval.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_low"></p>
-                </div> -->
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
@@ -83,7 +72,7 @@ require("startsession.php");
                             Entries
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Count of new chemicals that are up for approval.</p>
+                    <p class="fw-light mb-2">Number of pending chemical entries.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_entries"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -94,7 +83,7 @@ require("startsession.php");
                             Chemicals
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Number of available and free chemicals inside the storage.</p>
+                    <p class="fw-light mb-2">Number of available chemicals inside the storage.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_available"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -105,7 +94,7 @@ require("startsession.php");
                             Chemicals
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Number of chemicals being used at dispatched transaction places.</p>
+                    <p class="fw-light mb-2">Number of chemicals being used at transactions.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_dispatched"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -116,7 +105,7 @@ require("startsession.php");
                             of Stock Chemicals
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Obsolete chemicals. Zero stock and must be deleted from database.</p>
+                    <p class="fw-light mb-2">Number of chemicals that have zero available stock in the inventory.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_out-of-stock"></p>
                 </div>
             </div>
@@ -124,12 +113,13 @@ require("startsession.php");
             <div class="hstack gap-3 my-3 mx-3">
                 <button type="button" id="hideentries"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 w-25 px-2 text-light"
-                    title="Hide Entries">
-                    <i class="bi bi-eye-slash me-2"></i>
-                    <span id="hideentrytext">Hide Entries</span>
-                </button>
+                    title="Hide Entries"><i class="bi bi-eye-slash me-2"></i>Hide
+                        Entries</span></button>
                 <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light"
                     placeholder="Search . . ." id="searchbar" name="search" autocomplete="one-time-code">
+                <button type="button" id="inventorylogbtn"
+                    class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 px-4 text-light"
+                    title="Inventory Logs"><i class="bi bi-file-earmark-text"></i></button>
                 <button type="button" id="loadChem"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded text-light py-2 px-4" data-bs-toggle="modal"
                     data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
@@ -150,8 +140,8 @@ require("startsession.php");
                         <div class="modal-body text-dark p-3">
                             <div class="table-responsive-sm  d-flex justify-content-center">
                                 <table class="table align-middle table-hover w-100" id="approvechemtable">
-                                    <caption class="fw-light text-muted">Note. Associated transactions are logs that are
-                                        auto deducted by the transaction.
+                                    <caption class="fw-light text-muted">List of recently finished transactions
+                                        marked by technicians. Select the transaction number ID to view transaction.
                                     </caption>
                                     <thead>
                                         <tr class="text-center align-middle">
@@ -160,7 +150,7 @@ require("startsession.php");
                                             <th class="text-dark">Chemical</th>
                                             <th class="text-dark">Amount</th>
                                             <th class="text-dark">Performed By</th>
-                                            <th class="text-dark">Associated Transaction</th>
+                                            <th class="text-dark">Transaction ID</th>
                                             <th class="text-dark">Notes</th>
                                         </tr>
                                     </thead>
@@ -217,7 +207,7 @@ require("startsession.php");
                                                     <th class="text-dark">Activity Type</th>
                                                     <th class="text-dark">Amount</th>
                                                     <th class="text-dark">Performed By</th>
-                                                    <th class="text-dark">Associated Transaction</th>
+                                                    <th class="text-dark">Transaction ID</th>
                                                     <th class="text-dark">Notes</th>
                                                 </tr>
                                             </thead>
@@ -299,7 +289,6 @@ require("startsession.php");
                                                     <option value="in">Manual Stock Correction (In)</option>
                                                     <option value="out">Manual Stock Correction (Out)</option>
                                                     <option value="lost">Lost/Damaged Stock</option>
-                                                    <option value="used">Used Stock</option>
                                                     <option value="scrapped">Scrapped</option>
                                                     <option value="other">Other (Please Specify)</option>
                                                 </select>
@@ -327,6 +316,7 @@ require("startsession.php");
                                                     placeholder="state reason of adjustment . . ."
                                                     autocomplete="off"></textarea>
                                             </div>
+
                                         </div>
                                         <p class="alert alert-info py-2 text-center w-75 mx-auto" id="adjustalert"
                                             style="display: none;"></p>
@@ -396,22 +386,16 @@ require("startsession.php");
                                                 <option value="mL">mL</option>
                                             </select>
                                         </div>
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="edit-restockThreshold" class="form-label fw-light">Restock
-                                                Threshold:</label>
-                                            <input type="number" name="edit-restockThreshold" id="edit-restockThreshold"
-                                                class="form-control-plaintext" readonly autocomplete="one-time-code">
-                                        </div>
                                     </div>
 
                                     <div class="row mb-2">
-                                        <div class="col-3 mb-2">
+                                        <div class="col-lg-4 mb-2">
                                             <label for="edit-dateReceived" class="form-label fw-light">Date
                                                 Received:</label>
                                             <input type="date" name="edit-receivedDate" id="edit-dateReceived"
                                                 class="ps-2 form-control-plaintext form-add form-date" disabled>
                                         </div>
-                                        <div class="col-3 mb-2">
+                                        <div class="col-lg-4 mb-2">
                                             <label for="edit-expDate" class="form-label fw-light">Expiry Date:</label>
                                             <input type="date" name="edit-expDate" id="edit-expDate"
                                                 class="ps-2 form-control-plaintext form-date" autocomplete="off"
@@ -419,21 +403,10 @@ require("startsession.php");
                                             <p class="fw-light text-center alert alert-warning py-1 px-3 d-none"
                                                 id="expdatewarning"></p>
                                         </div>
-                                        <div class="col-3 mb-2">
+                                        <div class="col-4 mb-2">
                                             <label for="edit-notes" class="form-label fw-light">Short Note:</label>
                                             <textarea name="edit-notes" id="edit-notes" style="resize: none !important;"
                                                 class="ps-2 form-control-plaintext" readonly></textarea>
-                                        </div>
-                                        <div class="col-3 mb-2">
-                                            <label for="edit-location" class="form-label fw-light">Chemical
-                                                Location:</label>
-                                            <p id="view-location" class="text-capitalize"></p>
-                                            <select name="location" id="edit-location" class="form-select d-none"
-                                                autocomplete="one-time-code">
-                                                <option value="" selected>Add Location</option>
-                                                <option value="main_storage">Main Storage</option>
-                                                <option value="Dispatched">Dispatched</option>
-                                            </select>
                                         </div>
                                     </div>
 
@@ -524,7 +497,7 @@ require("startsession.php");
                                             <label for="add-chemUnit" class="form-label fw-light">Chemical
                                                 Unit:</label>
                                             <select name="chemUnit[]" id="add-chemUnit" class="form-select"
-                                                autocomplete="one-time-code">
+                                                 autocomplete="one-time-code">
                                                 <option value="" selected>Chemical Unit</option>
                                                 <option value="mg">mg</option>
                                                 <option value="g">g</option>
@@ -540,45 +513,26 @@ require("startsession.php");
                                         </div>
                                     </div>
                                     <div class="row mb-2">
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="restockThreshold" class="form-label fw-light">Restock
-                                                Threshold:</label>
-                                            <input type="number" name="restockThreshold[]" id="restockThreshold"
-                                                class="form-control" autocomplete="one-time-code">
-                                            <!-- <div class="text-body-secondary fw-light text-muted mt-2">
-                                                Note: Set threshold where chemical container count should be restocked immediately.
-                                            </div> -->
-                                        </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-lg-3 mb-2">
                                             <label for="expDate" class="form-label fw-light">Date Received</label>
                                             <input type="date" name="receivedDate[]" id="add-dateReceived"
                                                 class="form-control form-add form-date-rec">
-                                            <!-- <div class="text-body-secondary fw-light text-muted mt-2">
+                                            <div class="text-body-secondary fw-light text-muted mt-2">
                                                 Note: if not specified, date received will set the date today.
-                                            </div> -->
+                                            </div>
                                         </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-lg-3 mb-2">
                                             <label for="expDate" class="form-label fw-light">Expiry Date</label>
                                             <input type="date" name="expDate[]" id="add-expDate"
                                                 class="form-control form-add form-date-exp">
-                                            <!-- <div class="text-body-secondary fw-light text-muted mt-2">
+                                            <div class="text-body-secondary fw-light text-muted mt-2">
                                                 Note: specify expiry date or default date will be set.
-                                            </div> -->
+                                            </div>
                                         </div>
                                         <div class="col-3 mb-2">
                                             <label for="notes" class="form-label fw-light">Short Note</label>
                                             <textarea name="notes[]" id="notes" class="form-control"
                                                 placeholder="Optional short note . . . "></textarea>
-                                        </div>
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="add-location" class="form-label fw-light">Chemical
-                                                Location:</label>
-                                            <select name="location[]" id="add-location" class="form-select"
-                                                autocomplete="one-time-code">
-                                                <option value="" selected>Add Location</option>
-                                                <option value="main_storage">Main Storage</option>
-                                                <option value="dispatched">Dispatched</option>
-                                            </select>
                                         </div>
                                     </div>
                                     <div id="addMoreChem"></div>
@@ -588,6 +542,7 @@ require("startsession.php");
                                                 class="bi bi-plus-circle-dotted  me-2"></i> Add More
                                             Chemical</button>
                                     </div>
+
 
                                 </div>
                                 <div class="modal-footer d-flex justify-content-between">
@@ -652,248 +607,6 @@ require("startsession.php");
                 </div>
             </form>
 
-            <form id="dispatchChemicalForm">
-                <input type="hidden" name="dispatchChemicalId" id="dispatchChemicalId">
-                <input type="hidden" id="currentLocation" name="currentLocation">
-                <div class="row g-2 m-0 p-0 text-dark">
-                    <div class="modal-xl modal fade text-dark modal-edit" data-bs-backdrop="static"
-                        id="dispatchChemModal" tabindex="-1" aria-labelledby="create" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header bg-modal-title text-light">
-                                    <h1 class="modal-title fs-5">Dispatch Chemical</h1>
-                                    <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
-                                            class="bi text-light bi-x"></i></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row mb-2">
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="dispatchName" class="form-label fw-medium">Chemical
-                                                Name:</label>
-                                            <p id="dispatchName" class="fw-light ps-2"></p>
-                                        </div>
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="dispatch-chemBrand" class="form-label fw-medium">Chemical
-                                                Brand:</label>
-                                            <p id="dispatch-chemBrand" class="fw-light ps-2"></p>
-                                        </div>
-
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="dispatch-contSize" class="form-label fw-medium">Container
-                                                Size:</label>
-                                            <p id="dispatch-contSize" class="fw-light ps-2"></p>
-                                        </div>
-
-                                        <div class="col-lg-3 mb-2">
-                                            <label for="dispatch-containerCount" class="form-label fw-medium">Container
-                                                Count
-                                                (Including Opened):</label>
-                                            <p id="dispatch-containerCount" class="fw-light ps-2"></p>
-                                        </div>
-                                        <div class="col-lg-3 mb-2">
-                                            <label for="dispatch-cstatus" class="form-label fw-medium">Container
-                                                Location Status:</label>
-                                            <p id="dispatch-cstatus" class="fw-light ps-2"></p>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-2">
-                                        <div class="col-lg-4 mb-2">
-                                            <label for="dispatchValue" class="form-label fw-medium">Number of container
-                                                to dispatch:</label>
-                                            <input type="number" name="dispatchValue" id="dispatchValue"
-                                                class="form-control w-50" autocomplete="one-time-code">
-                                            <div class="form-check">
-                                                <input class="form-check-input" name="includeOpened" type="checkbox"
-                                                    id="includeOpened">
-                                                <label class="form-check-label text-muted user-select-none"
-                                                    for="includeOpened">
-                                                    Include opened container.
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-4 mb-2">
-                                            <label for="dispatch-transaction" class="form-label fw-medium">Select
-                                                Transaction Dispatch:</label>
-                                            <select name="dispatch-transaction" id="dispatch-transaction"
-                                                class="form-select" autocomplete="one-time-code">
-                                            </select>
-                                            <p class="text-body-secondary mt-2">Note: You can only dispatch a chemical
-                                                to prepared and approved/accepted transactions.</p>
-                                        </div>
-                                    </div>
-                                    <input type="checkbox" class="btn-check" name="dispatchAll" id="dispatchAll"
-                                        autocomplete="off">
-                                    <label class="btn btn-outline-dark" for="dispatchAll">Dispatch Everything</label>
-
-                                    <p class="mb-0 mt-3 text-center alert alert-warning">Please note that this will
-                                        override current chemicals set in the chosen transaction. Proceed with caution.
-                                    </p>
-                                </div>
-                                <div class="modal-footer d-flex justify-content-between">
-                                    <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                        data-bs-target="#dispatchConfirmationModal">Proceed & Confirm</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="dispatchConfirmationModal"
-                    tabindex="0" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5" id="verifyAdd">Dispatch Chemical</h1>
-                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
-                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row mb-2">
-                                    <label for="pass" class="form-label fw-light">Dispatch Chemical? Enter Operations
-                                        Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
-                                    <div class="col-lg-6 mb-2">
-                                        <input type="password" name="baPwd" class="form-control">
-                                    </div>
-                                </div>
-                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
-                                    id="dispatchAlert">
-                                </p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-grad" data-bs-target="#dispatchChemModal"
-                                    data-bs-toggle="modal">Go
-                                    back</button>
-                                <button type="submit" class="btn btn-grad">Dispatch Chemical</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-
-            <form id="returnChemicalForm">
-                <input type="hidden" name="returnChemicalId" id="returnChemicalId">
-                <input type="hidden" id="return_currentLocation" name="return_currentLocation">
-                <div class="row g-2 m-0 p-0 text-dark">
-                    <div class="modal-xl modal fade text-dark modal-edit" data-bs-backdrop="static" id="returnChemModal"
-                        tabindex="-1" aria-labelledby="create" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header bg-modal-title text-light">
-                                    <h1 class="modal-title fs-5">Return Chemical</h1>
-                                    <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
-                                            class="bi text-light bi-x"></i></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row mb-2">
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="returnName" class="form-label fw-medium">Chemical
-                                                Name:</label>
-                                            <p id="returnName" class="fw-light ps-2"></p>
-                                        </div>
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="return-chemBrand" class="form-label fw-medium">Chemical
-                                                Brand:</label>
-                                            <p id="return-chemBrand" class="fw-light ps-2"></p>
-                                        </div>
-
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="return-contSize" class="form-label fw-medium">Container
-                                                Size:</label>
-                                            <p id="return-contSize" class="fw-light ps-2"></p>
-                                        </div>
-
-                                        <div class="col-lg-3 mb-2">
-                                            <label for="return-containerCount" class="form-label fw-medium">Container
-                                                Count
-                                                (Including Opened):</label>
-                                            <p id="return-containerCount" class="fw-light ps-2"></p>
-                                        </div>
-                                        <div class="col-lg-3 mb-2">
-                                            <label for="return-cstatus" class="form-label fw-medium">Container Location
-                                                Status:</label>
-                                            <p id="return-cstatus" class="fw-light ps-2"></p>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-2">
-                                        <div class="col-lg-4 mb-2">
-                                            <label for="opened_container" class="form-label fw-medium">Returned quantity
-                                                of opened container:</label>
-                                            <div class="d-flex"> 
-                                                <input type="number" name="opened_container" id="opened_container"
-                                                    class="form-control w-50" autocomplete="one-time-code">
-                                                <span id="return_unit" class="ms-2 align-middle mt-2"></span>
-                                            </div>
-                                            <p class="text-body-secondary">Note: This should not exceed the quantity of the container size.</p>
-                                        </div>
-                                        <div class="col-lg-4 mb-2">
-                                            <label for="container_count" class="form-label fw-medium">Returned number of
-                                                closed container (not used)
-                                                to return:</label>
-                                            <input type="number" name="container_count" id="container_count"
-                                                class="form-control w-50" autocomplete="one-time-code">
-                                        </div>
-                                        <div class="col-lg-4 mb-2">
-                                            <label for="return_transaction" class="form-label fw-medium">Select
-                                                Dispatched Transaction:</label>
-                                            <select name="return_transaction" id="return_transaction"
-                                                class="form-select" autocomplete="one-time-code">
-                                            </select>
-                                            <p class="text-body-secondary mt-2">Note: You can only return this
-                                                chemical's dispatched transaction.</p>
-                                        </div>
-                                    </div>
-
-                                    <p class="mb-0 mt-3 text-center alert alert-warning">Please note that this will
-                                        override current chemicals set in the chosen transaction. Proceed with caution.
-                                    </p>
-                                </div>
-                                <div class="modal-footer d-flex justify-content-between">
-                                    <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                        data-bs-target="#returnConfirmationModal">Proceed & Confirm</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="returnConfirmationModal"
-                    tabindex="0" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5" id="verifyAdd">Return Chemical</h1>
-                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
-                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row mb-2">
-                                    <label for="pass" class="form-label fw-light">Return Chemical? Enter Operations
-                                        Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
-                                    <div class="col-lg-6 mb-2">
-                                        <input type="password" name="baPwd" class="form-control">
-                                    </div>
-                                </div>
-                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
-                                    id="returnAlert">
-                                </p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-grad" data-bs-target="#returnChemModal"
-                                    data-bs-toggle="modal">Go
-                                    back</button>
-                                <button type="submit" class="btn btn-grad">Return Chemical</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-
             <!-- delete modal -->
             <form id="deleteForm">
                 <input type="hidden" id="delChemId" name="chemid">
@@ -934,16 +647,14 @@ require("startsession.php");
 
             <!-- tabble -->
             <div class="table-responsive-sm d-flex justify-content-center">
-                <table class="table align-middle table-hover m-3 os-table w-100 text-light">
-                    <caption class="text-light">Chemicals with <i class="bi bi-exclamation-diamond"></i> are pending for
-                        approval by the
+                <table class="table align-middle table-hover m-4 os-table w-100 text-light">
+                    <caption>Chemicals with <i class="bi bi-exclamation-diamond"></i> are pending for approval by the
                         Manager.</caption>
                     <thead>
-                        <tr class="text-center text-wrap align-middle">
-                            <th scope="col">Chemical ID</th>
-                            <th>Name</th>
+                        <tr class="text-center text-nowrap">
+                            <th scope="col">Name</th>
                             <th>Brand</th>
-                            <th>Opened Container Level</th>
+                            <th>Current Level</th>
                             <th>Remaining Container/s</th>
                             <th>Expiry Date</th>
                             <th>Status</th>
@@ -967,85 +678,6 @@ require("startsession.php");
 
             <p class='text-center alert alert-success w-25 mx-auto' style="display: none !important;" id="tableAlert">
             </p>
-
-            <div class="bg-light bg-opacity-25 rounded mx-3 mt-3 py-2">
-                <h1 class="text-center fw-medium">Chemical Used Summary</h1>
-            </div>
-            <div class="hstack gap-3 my-3 mx-3">
-                <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light bg-transparent"
-                    placeholder="Search . . ." id="searchChemUsedSummary" name="search" autocomplete="one-time-code">
-                <button type="button" id="inventorylogbtn"
-                    class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 px-4 text-light"
-                    title="Inventory Logs"><i class="bi bi-file-earmark-text"></i></button>
-            </div>
-            <div class="table-responsive-sm d-flex justify-content-center">
-                <table class="table align-middle table-hover m-3 mt-2 os-table w-100 text-light">
-                    <thead>
-                        <tr class="text-center text-wrap align-middle">
-                            <th scope="col">Chemical ID</th>
-                            <th>Chemical Name & Brand</th>
-                            <th>Container Size</th>
-                            <th>Stored</th>
-                            <th>Used Open</th>
-                            <th>Used Close</th>
-                            <th>Total</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="chemStateTable">
-                        <!-- ajax chem table -->
-                    </tbody>
-
-                </table>
-            </div>
-            <div class="d-flex justify-content-center mb-5" style="display: none !important;" id="loader2">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
-
-            <div id="table2pagination"></div>
-
-
-            <div class="bg-light bg-opacity-25 rounded mx-3 mt-3 py-2">
-                <h1 class="text-center fw-medium">Container Status Report</h1>
-            </div>
-            <div class="hstack gap-3 my-3 mx-3">
-                <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light bg-transparent"
-                    placeholder="Search . . ." id="searchContainerStatus" name="search" autocomplete="one-time-code">
-                <button type="button" id="inventorylogbtn"
-                    class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 px-4 text-light"
-                    title="Inventory Logs"><i class="bi bi-file-earmark-text"></i></button>
-            </div>
-            <div class="table-responsive-sm d-flex justify-content-center">
-                <table class="table align-middle table-hover m-3 mt-2 os-table w-100 text-light">
-                    <thead>
-                        <tr class="text-center text-wrap align-middle">
-                            <!-- <th scope="col">Chemical ID</th> -->
-                            <th scope="col">Chemical Name & Brand</th>
-                            <th>Container Size</th>
-                            <th>In</th>
-                            <th>Out</th>
-                            <th>Total</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="containerReportTable">
-                        <!-- ajax chem table -->
-                    </tbody>
-
-                </table>
-            </div>
-            <div class="d-flex justify-content-center mb-5" style="display: none !important;"
-                id="containerReportLoader">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
-
-            <div id="containerReportPagination"></div>
 
         </main>
         <div class="toast-container m-2 me-3 bottom-0 end-0 position-fixed">
@@ -1078,7 +710,6 @@ require("startsession.php");
             // get_id();
             get_sa_id();
             await loadpage(1);
-            // await loadstate(1);
         });
 
         async function loadpagination(pageno, entries = false) {
@@ -1103,47 +734,6 @@ require("startsession.php");
             }
         }
 
-        async function loadpagination2(pageno) {
-            try {
-                return $.ajax({
-                    type: 'GET',
-                    url: 'contents/state.pagination.php',
-                    data: {
-                        pagenav: 'true',
-                        active: pageno
-                    },
-                    success: async function (res) {
-                        $('#table2pagination').empty();
-                        $('#table2pagination').append(res);
-                        // window.history.pushState(null, "", "?page=" + pageno);
-                    }
-                });
-
-            } catch (error) {
-                alert(error);
-            }
-        }
-        async function loadpagination3(pageno) {
-            try {
-                return $.ajax({
-                    type: 'GET',
-                    url: 'contents/inv.containerstatus.pagination.php',
-                    data: {
-                        pagenav: 'true',
-                        active: pageno
-                    },
-                    success: async function (res) {
-                        $('#containerReportPagination').empty();
-                        $('#containerReportPagination').append(res);
-                        // window.history.pushState(null, "", "?page=" + pageno);
-                    }
-                });
-
-            } catch (error) {
-                alert(error);
-            }
-        }
-
         async function loadtable(page, hide_entries = false) {
             try {
                 return $.ajax({
@@ -1159,7 +749,7 @@ require("startsession.php");
                         $('#chemicalTable').append(data);
                     },
                     error: function (err) {
-                        alert('There was a problem fetching the data of a table. Please try again later.');
+                        alert('loadtable func error:' + err);
                     }
                 });
 
@@ -1169,53 +759,9 @@ require("startsession.php");
 
         }
 
-        async function loadtable2(page) {
-            $.ajax({
-                method: 'GET',
-                url: 'contents/state.pagination.php',
-                data: {
-                    table: 'true',
-                    currentpage: page
-                },
-                dataType: 'html'
-            })
-                .done(async function (d) {
-                    $("#chemStateTable").empty();
-                    $("#chemStateTable").append(d);
-                })
-                .fail(async function (e) {
-                    alert('There was a problem fetching the data of a table. Please try again later.');
-                    console.log(e);
-                })
-        }
-
-        async function loadtable3(page) {
-            $.ajax({
-                method: 'GET',
-                url: 'contents/inv.containerstatus.pagination.php',
-                data: {
-                    table: 'true',
-                    currentpage: page
-                },
-                dataType: 'html'
-            })
-                .done(async function (d) {
-                    $("#containerReportTable").empty();
-                    $("#containerReportTable").append(d);
-                })
-                .fail(async function (e) {
-                    alert('There was a problem fetching the data of a table. Please try again later.');
-                    console.log(e);
-                })
-        }
-
         async function loadpage(page, entryHidden = false) {
             await loadtable(page, entryHidden);
             await loadpagination(page, entryHidden);
-            await loadpagination2(page);
-            await loadtable2(page);
-            await loadtable3(page);
-            await loadpagination3(page);
             overview_display();
         }
 
@@ -1230,10 +776,10 @@ require("startsession.php");
 
             if (entryHidden) {
                 $('#hideentries > i').removeClass('bi-eye-slash').addClass('bi-eye');
-                $('#hideentrytext').text('Show Entries');
+                $('#hideEnText').text('Show Entries');
             } else {
                 $('#hideentries > i').removeClass('bi-eye').addClass('bi-eye-slash');
-                $('#hideentrytext').text('Hide Entries');
+                $('#hideEnText').text('Hide Entries');
             }
             return entryHidden;
         }
@@ -1246,25 +792,18 @@ require("startsession.php");
             e.preventDefault();
 
             let currentpage = $(this).data('page');
-            // console.log(currentpage);
+            console.log(currentpage);
+
+            // $('#chemicalTable').empty();
             window.history.pushState(null, "", "?page=" + currentpage);
-            await loadtable(currentpage, entryHidden);
-            await loadpagination(currentpage, entryHidden);
+            // await loadtable(currentpage);
+
+            // $('#pagination').empty();
+            // await loadpagination(currentpage);
+            await loadpage(currentpage, entryHidden);
         })
 
-        $('#table2pagination').on('click', '.page-link', async function (e) {
-            e.preventDefault();
-            let currentpage = $(this).data('page');
-            await loadtable2(currentpage);
-            await loadpagination2(currentpage);
-        })
 
-        $('#containerReportPagination').on('click', '.page-link', async function (e) {
-            e.preventDefault();
-            let currentpage = $(this).data('page');
-            await loadtable3(currentpage);
-            await loadpagination3(currentpage);
-        })
 
         // search
         $(function () {
@@ -1306,80 +845,6 @@ require("startsession.php");
                     } catch (error) {
                         alert('Search Error');
                     }
-                }, 250);
-            });
-        });
-
-        $(function () {
-            let timeout = null;
-
-            $('#searchChemUsedSummary').keyup(function () {
-                clearTimeout(timeout);
-                $('#chemStateTable').empty();
-                $('#loader2').show();
-
-                timeout = setTimeout(async function () {
-                    var search = $('#searchChemUsedSummary').val();
-                    await $.ajax({
-                        url: "contents/state.pagination.php",
-                        type: 'GET',
-                        dataType: 'html',
-                        data: {
-                            search: search,
-                        }
-                    })
-                        .done(async function (searchChem) {
-                            $('#loader2').attr('style', 'display: none !important;');
-                            if (search !== '') {
-                                $('#table2pagination').hide();
-                                $('#chemStateTable').empty();
-                                $('#chemStateTable').append(searchChem);
-                            } else {
-                                await loadtable2(1);
-                                await loadpagination2(1);
-                                $('#table2pagination').show();
-                            }
-                        })
-                        .fail(function (e) {
-                            $("#chemStateTable").html("<tr><td scope='row' colspan='8' class='text-center'>Search Failed. Please Try again later.</td></tr>")
-                        });
-                }, 250);
-            });
-        });
-
-        $(function () {
-            let timeout = null;
-
-            $('#searchContainerStatus').keyup(function () {
-                clearTimeout(timeout);
-                $('#containerReportTable').empty();
-                $('#containerReportLoader').show();
-
-                timeout = setTimeout(async function () {
-                    var search = $('#searchContainerStatus').val();
-                    await $.ajax({
-                        url: "contents/inv.containerstatus.pagination.php",
-                        type: 'GET',
-                        dataType: 'html',
-                        data: {
-                            search: search,
-                        }
-                    })
-                        .done(async function (searchChem) {
-                            $('#containerReportLoader').attr('style', 'display: none !important;');
-                            if (search !== '') {
-                                $('#containerReportPagination').hide();
-                                $('#containerReportTable').empty();
-                                $('#containerReportTable').append(searchChem);
-                            } else {
-                                await loadtable3(1);
-                                await loadpagination3(1);
-                                $('#containerReportPagination').show();
-                            }
-                        })
-                        .fail(function (e) {
-                            $("#containerReportTable").html("<tr><td scope='row' colspan='8' class='text-center'>Search Failed. Please Try again later.</td></tr>")
-                        });
                 }, 250);
             });
         });
@@ -1439,7 +904,6 @@ require("startsession.php");
             $(this).parent().parent().remove();
         })
 
-
         $(document).on('click', '#addMoreChemBtn', async function () {
             $.get(urldata, "addrow=true")
                 .done(function (data) {
@@ -1474,6 +938,7 @@ require("startsession.php");
             $('#delChemId').val($(this).data('id'));
             $('#deleteModal').modal('show');
         });
+
 
         $(document).on('submit', '#deleteForm', async function (e) {
             e.preventDefault();
@@ -1554,8 +1019,8 @@ require("startsession.php");
 
         function toggle() {
             $('#submitEdit').toggleClass('d-none');
-            $('#view-chemUnit, #edit-chemUnit, #view-location, #edit-location').toggleClass('d-none');
-            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount, #edit-restockThreshold').attr('readonly', function (i, a) {
+            $('#view-chemUnit, #edit-chemUnit').toggleClass('d-none');
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount').attr('readonly', function (i, a) {
                 return a ? false : true;
             });
             $("#edit-expDate, #edit-dateReceived, #edit-chemUnit").attr('disabled', function (i, a) {
@@ -1565,7 +1030,7 @@ require("startsession.php");
             $("#toggleEditBtn").html(function (i, a) {
                 return a.includes('Close Edit') ? 'Edit' : 'Close Edit';
             });
-            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived, #edit-contSize, #edit-containerCount, #edit-restockThreshold').toggleClass('form-control-plaintext form-control');
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived, #edit-contSize, #edit-containerCount').toggleClass('form-control-plaintext form-control');
 
             return toggled = toggled ? false : true;
         }
@@ -1600,9 +1065,6 @@ require("startsession.php");
             $('#edit-expDate').val(details.expDate);
             $('#edit-notes').val(details.notes);
             $('#edit-chemUnit').val(details.unit);
-            $('#edit-restockThreshold').val(details.threshold);
-            $('#edit-location').val(details.location);
-            $('#view-location').text(details.location);
             $('#view-chemUnit').text(details.unit);
             $('#addinfo').html(function () {
                 return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
@@ -1626,155 +1088,6 @@ require("startsession.php");
 
             $('#editModal').modal('show');
 
-        });
-
-        async function get_transaction_option() {
-            $.get(urldata, {
-                transaction_options: true
-            },
-                async function (d) {
-                    $("#dispatch-transaction").empty();
-                    $("#dispatch-transaction").append(d);
-                },
-                'html'
-            )
-                .fail(function (e) {
-                    alert("Error in loading transaction options. Please refresh the page and try again.");
-                });
-        }
-        async function get_transaction_return(name, brand, csize, unit) {
-            $.get(urldata, {
-                dispatched_transactions: true,
-                name: name, 
-                brand: brand,
-                csize: csize,
-                unit: unit
-            },
-                async function (d) {
-                    $("#return_transaction").empty();
-                    $("#return_transaction").append(d);
-                },
-                'html'
-            )
-                .fail(function (e) {
-                    alert("Error in loading dispatched transaction options. Please refresh the page and try again.");
-                    console.log(e);
-                });
-        }
-
-        $(document).on('click', '.returnbtn', async function () {
-            let id = $(this).data('return');
-            console.log(id);
-            $("#returnChemicalForm")[0].reset();
-            let deets = await get_chem_details(id);
-            var details = JSON.parse(deets);
-            console.log(details);
-            let clocation = 'Unknown';
-            if (details.location === 'main_storage') {
-                clocation = "Main Storage";
-            } else if (details.location === 'dispatched') {
-                clocation = "Dispatched";
-            }
-
-            $("#returnChemicalId").val(id);
-            $("#return_unit").text(details.unit);
-            $("#return_currentLocation").val(details.location);
-            $('#returnName').text(details.name);
-            $("#return-chemBrand").text(details.brand);
-            $('#return-contSize').text(details.container_size + '' + details.unit);
-            let opened_container_count = details.level > 0 ? 1 : 0;
-            let total_container_count = details.unop_cont + opened_container_count;
-            $('#return-containerCount').text(total_container_count + ' Container/s');
-            $("#return-cstatus").text(clocation);
-
-            await get_transaction_return(details.name, details.brand, details.container_size, details.unit);
-
-
-            $("#returnChemModal").modal('show');
-
-        });
-
-        $(document).on('click', '.dispatchbtn', async function () {
-            let id = $(this).data('dispatch');
-            $("#dispatchChemicalForm")[0].reset();
-            $("#dispatch-location option").prop('disabled', false);
-            // console.log(id);
-            await get_transaction_option();
-            let deets = await get_chem_details(id);
-            var details = JSON.parse(deets);
-            // console.log(details);
-
-            let clocation = 'Unknown';
-            if (details.location === 'main_storage') {
-                clocation = "Main Storage";
-            } else if (details.location === 'dispatched') {
-                clocation = "Dispatched";
-            }
-
-            $('#dispatchChemicalId').val(details.id);
-            $("#dispatchName").text(details.name)
-            $('#dispatch-chemBrand').text(details.brand);
-            $('#dispatch-contSize').text(details.container_size + '' + details.unit);
-            let opened_container_count = details.level > 0 ? 1 : 0;
-            let total_container_count = details.unop_cont + opened_container_count;
-            $('#dispatch-containerCount').text(total_container_count + ' Container/s');
-            $("#dispatch-cstatus").text(clocation);
-
-            $("#dispatchValue, #includeOpened").prop('disabled', false);
-            $("#dispatchAll").on('change', function () {
-                let checked = $(this).is(":checked");
-                $("#dispatchValue, #includeOpened").prop('disabled', checked);
-            })
-            $("#dispatchChemModal").modal('show');
-        });
-
-
-        $(document).on('submit', '#returnChemicalForm', async function (e) {
-            e.preventDefault();
-            console.log($(this).serialize());
-            $.ajax({
-                method: 'POST',
-                url: urldata,
-                data: $(this).serialize() + "&return_chemical=true",
-                dataType: 'json'
-            })
-                .done(async function (d) {
-                    if (d.success) {
-                        show_toast(d.success);
-                        $("#returnConfirmationModal").modal('hide');
-                        loadpage(1, entryHidden);
-                    } else {
-                        alert('An unknown error has occured. Please try again later.');
-                    }
-                })
-                .fail(function (e) {
-                    $("#returnAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
-                    console.log(e);
-                })
-        });
-
-        $(document).on('submit', '#dispatchChemicalForm', async function (e) {
-            e.preventDefault();
-            console.log($(this).serialize());
-
-            $.ajax({
-                method: 'POST',
-                url: urldata,
-                data: $(this).serialize() + "&dispatch=true",
-                dataType: 'json'
-            })
-                .done(async function (d) {
-                    if (d.success) {
-                        show_toast(d.success);
-                        $("#dispatchConfirmationModal").modal('hide');
-                        loadpage(1, entryHidden);
-                    } else {
-                        alert('An unknown error has occured. Please try again later.');
-                    }
-                })
-                .fail(function (e) {
-                    $("#dispatchAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
-                })
         });
 
         function get_overview_count(container, branch) {
@@ -1803,18 +1116,7 @@ require("startsession.php");
             get_overview_count('out-of-stock', branch);
         }
 
-        $("#chemicallogmodal").on('shown.bs.modal', function () {
-            $.get(urldata, {
-                trans_select: true
-            }, function (d) {
-                $('#chemicallogmodal select#adjust_transaction').empty();
-                $('#chemicallogmodal select#adjust_transaction').append(d);
-            }, 'html')
-                .fail(function (e) {
-                    alert("An error has occured. Please try again later.");
-                    console.log(e);
-                })
-        });
+    
 
         $(document).on('click', '#inventorylogbtn', function () {
             $('#inventorylogmodal').modal('show');
@@ -1847,7 +1149,7 @@ require("startsession.php");
         }
 
 
-        $(document).on('click', '.log-chem-btn', async function () {
+        $("#chemicalTable").on('click', '.log-chem-btn', async function () {
             let id = $(this).data('chem');
             await load_chem_log_history(id);
         });
@@ -1902,7 +1204,7 @@ require("startsession.php");
                 })
         }
 
-        $(document).on('click', '.log-chem-btn', function () {
+        $("#chemicalTable").on('click', '.log-chem-btn', function () {
             let id = $(this).data('chem');
             get_chem_log(id);
         });

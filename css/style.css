@@ -14,15 +14,21 @@
   --night-bg-color: #16404d;
 }
 
+.text-success{
+  color: #68fdb9 !important;
+}
+
 #chemicallogmodal input.form-check-input,
 #addTransaction input.form-check-input,
-#viewEditForm input.form-check-input {
+#viewEditForm input.form-check-input,
+#dispatchChemicalForm input.form-check-input{
   border: 1px solid #16404d !important;
   background-color: #bababa !important;
 }
 #chemicallogmodal input.form-check-input:checked,
 #addTransaction input.form-check-input:checked,
-#viewEditForm input.form-check-input:checked {
+#viewEditForm input.form-check-input:checked,
+#dispatchChemicalForm input.form-check-input:checked {
   background-color: #2f855d !important;
 }
 
@@ -53,14 +59,18 @@ body {
   border: none !important;
 }
 
-#pagination nav ul li a {
+#pagination nav ul li a,
+#table2pagination nav ul li a,
+#containerReportPagination nav ul li a {
   background: rgba(0, 0, 0, 0.25);
   color: #fff !important;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
     color 0.15s ease-in-out;
 }
 
-#pagination nav ul li a:hover {
+#pagination nav ul li a:hover,
+#table2pagination nav ul li a:hover,
+#containerReportPagination nav ul li a:hover {
   background-color: rgba(113, 187, 178, 0.3) !important;
   color: #fff !important;
 }
@@ -388,7 +398,9 @@ input[type="number"] {
   color: #fff;
 }
 
-#searchbar::placeholder {
+#searchbar::placeholder,
+#searchChemUsedSummary::placeholder,
+#searchContainerStatus::placeholder {
   color: rgba(255, 255, 255, 0.6) !important;
 }
 

@@ -3,7 +3,30 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 10;
-$rowCount = 'SELECT * FROM chemicals';
+$rowCount = "SELECT
+                id,
+                name,
+                brand,
+                quantity_unit AS unit,
+                container_size,
+                (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
+                SUM(CASE
+                    WHEN chem_location = 'main_storage' THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
+                    ELSE 0
+                END) AS containers_in_storage,
+                SUM(CASE
+                    WHEN chem_location IN ('stock_entry', 'dispatched', 'used_outside_site', 'awaiting_pickup') THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
+                    ELSE 0
+                END) AS containers_outside_storage
+            FROM
+                chemicals
+            WHERE
+                chemLevel > 0
+                AND expiryDate > NOW()
+            GROUP BY
+                id, name, brand, container_size, chemLevel, unop_cont, chem_location
+            ORDER BY
+                id";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
@@ -30,15 +53,9 @@ function row_status($conn, $entries = false)
 
 
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
-    $entries = $_GET['entries'];
 
-    if ($entries === 'true') {
-        $rowstatus = row_status($conn, $entries);
-        $totalRows = $rowstatus['rows'];
-        $totalPages = $rowstatus['pages'];
-    } else {
-        $GLOBALS['totalPages'];
-    }
+    $GLOBALS['totalPages'];
+
     ?>
 
 
@@ -146,16 +163,34 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
-    $entries = $_GET['hideentries'];
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT * FROM chemicals";
-
-    $sql .= $entries === 'true' ? " WHERE request = 0 " : ' ';
-
-    $sql .= "ORDER BY request DESC, id DESC LIMIT " . $limitstart
-        . ", " . $pageRows . ";";
+    $sql = "SELECT
+                id,
+                name,
+                brand,
+                quantity_unit AS unit,
+                container_size,
+                SUM(unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
+                SUM(CASE
+                    WHEN chem_location = 'main_storage' THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
+                    ELSE 0
+                END) AS containers_in_storage,
+                SUM(CASE
+                    WHEN chem_location IN ('stock_entry', 'dispatched', 'used_outside_site', 'awaiting_pickup') THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
+                    ELSE 0
+                END) AS containers_outside_storage
+            FROM
+                chemicals
+            WHERE
+                (chemLevel > 0 OR unop_cont > 0) 
+                AND expiryDate > NOW()
+            GROUP BY
+                name, brand, quantity_unit, container_size 
+            ORDER BY
+                name, brand
+            DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
@@ -165,64 +200,37 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
+            $id = $row['id'];   
             $name = $row["name"];
             $brand = $row["brand"];
-            $level = $row["chemLevel"];
-            $expDate = $row["expiryDate"];
-            $request = (int) $row['request'];
-            $now = date("Y-m-d");
-            $exp = date_create($expDate);
-            $remcom = $row['unop_cont'];
-            $contsize = $row['container_size'];
-            $unit = $row['quantity_unit'];
-            $threshold = $row['restock_threshold'];
-            $opened_container = $level > 0 ? 1 : 0;
-            $cur_location = $row['chem_location'];
+            $unit = $row['unit'];
+            $total_containers = $row['total_container_stock'];
+            $in = $row['containers_in_storage'];
+            $out = $row['containers_outside_storage'];
+            // $level = $row["chemLevel"];
+            // $container_count = (int) $row['unop_cont'];
+            $contsize = (int) $row['container_size'];
+            // $total_stored = $level + ($container_count * $contsize);
+            // $unit = $row['quantity_unit'];
             ?>
             <tr class="text-center">
-                <td scope="row"><?php
-                if ($cur_location === 'dispatched') {
-                    echo htmlspecialchars("Dispatched Chemical ID: $id");
-                } else {
-                    echo htmlspecialchars($id); 
-                }
-                ?></td>
                 <td>
-                    <?=
-                        $request === 1 ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='Pending Entry'></i><span class='fw-bold'>" . htmlspecialchars($name) . "</span><br>(Pending Entry)" : htmlspecialchars($name);
-                    ?>
+                    <?= htmlspecialchars("$name ($brand)") ?>
                 </td>
-                <td><?= htmlspecialchars($brand) ?></td>
+                <td><?= htmlspecialchars("$contsize $unit") ?></td>
                 <td>
-                    <?php
-                    if ((int) $level === (int) $contsize) {
-                        echo "Full";
-                    } else if ((int) $level === 0 && (int) $contsize) {
-                        echo "Empty";
-                    } else {
-                        echo $level <= $contsize * 0.35
-                            ? "<span class='text-warning'>" . htmlspecialchars("$level$unit") . "</span> / " . htmlspecialchars("$contsize$unit")
-                            : htmlspecialchars("$level$unit / $contsize$unit");
-                    }
-                    ?>
+                    <?= htmlspecialchars($in) ?>
                 </td>
-                <td><?= htmlspecialchars($remcom) ?></td>
-                <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
-                    <?= htmlspecialchars(date_format($exp, "F j, Y")) ?>
-                </td>
-                <td><?= $level === 0 && $remcom === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : (($level <= $contsize * 0.35) && (($opened_container + $remcom) < $threshold) ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Running Out</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
+                <td><?= htmlspecialchars($out) ?></td>
+                <td>
+                    <?= htmlspecialchars($total_containers) ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
-                        <?php
-                        if ($cur_location === 'main_storage') {
-                            echo '<button type="button" class="btn btn-sidebar dispatchbtn border-0" ' . ($request === 1 ? 'disabled' : "data-dispatch='$id'") . '><i class="bi bi-truck-flatbed text-success"></i></button>';
-                        } else if ($cur_location === 'dispatched') {
-                            echo '<button type="button" class="btn btn-sidebar returnbtn border-0" ' . ($request === 1 ? 'disabled' : "data-return='$id'") . '><i class="bi bi-box-arrow-in-left text-info"></i></button>';
-                        }
-                        ?>
-                        <button type="button" id="editbtn" class="btn btn-sidebar editbtn border-0" data-chem="<?= $id ?>"><i
+                        <!-- add dispatch/return chem -->
+                        <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
+                                class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
+                        <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                 class="bi bi-info-circle"></i></button>
                     </div>
                 </td>
@@ -231,18 +239,42 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <?php
         }
     } else {
-        // echo json_encode(['']);
         echo "<tr><td scope='row' colspan='7' class='text-center'>No chemicals found.</td></tr>";
     }
+    mysqli_close($conn);
+    exit();
 }
 
 
 
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
-    $entries = $_GET['entries'];
 
-    $sql = "SELECT * FROM chemicals WHERE (name LIKE ? OR brand LIKE ? OR chemLevel LIKE ? OR expiryDate LIKE ?) ";
+    $sql = "SELECT
+                id,
+                name,
+                brand,
+                quantity_unit AS unit,
+                container_size,
+                (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
+                SUM(CASE
+                    WHEN chem_location = 'main_storage' THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
+                    ELSE 0
+                END) AS containers_in_storage,
+                SUM(CASE
+                    WHEN chem_location IN ('stock_entry', 'dispatched', 'used_outside_site', 'awaiting_pickup') THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
+                    ELSE 0
+                END) AS containers_outside_storage
+            FROM
+                chemicals
+            WHERE
+                chemLevel > 0
+                AND expiryDate > NOW()
+                AND (id LIKE ? OR name LIKE ? OR brand LIKE ? OR quantity_unit LIKE ? OR container_size LIKE ?)
+            GROUP BY
+                id, name, brand, container_size, chemLevel, unop_cont, chem_location, quantity_unit, container_size
+            ORDER BY
+                id";
 
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -251,54 +283,42 @@ if (isset($_GET['search'])) {
     }
 
     $search = "%" . $search . "%";
-    mysqli_stmt_bind_param($stmt, "ssss", $search, $search, $search, $search);
+    mysqli_stmt_bind_param($stmt, "sssss", $search, $search, $search, $search, $search);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $numrows = mysqli_num_rows($result);
-    // echo $numrows;   
     if ($numrows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
             $name = $row["name"];
             $brand = $row["brand"];
-            $level = $row["chemLevel"];
-            $expDate = $row["expiryDate"];
-            $request = $row['request'];
-            $now = date("Y-m-d");
-            $exp = date_create($expDate);
-            $remcom = $row['unop_cont'];
-            $contsize = $row['container_size'];
-            $unit = $row['quantity_unit'];
-            $threshold = $row['restock_threshold'];
-            $opened_container = $level > 0 ? 1 : 0;
+            $unit = $row['unit'];
+            $total_containers = $row['total_container_stock'];
+            $in = $row['containers_in_storage'];
+            $out = $row['containers_outside_storage'];
+            // $level = $row["chemLevel"];
+            // $container_count = (int) $row['unop_cont'];
+            $contsize = (int) $row['container_size'];
+            // $total_stored = $level + ($container_count * $contsize);
+            // $unit = $row['quantity_unit'];
             ?>
             <tr class="text-center">
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td>
-                    <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='Pending Entry'></i><span class='fw-bold'>" . htmlspecialchars($name) . "</span><br>(Pending Entry)" : htmlspecialchars($name);
-                    ?>
+                    <?= htmlspecialchars("$name ($brand)") ?>
                 </td>
-                <td><?= htmlspecialchars($brand) ?></td>
+                <td><?= htmlspecialchars("$contsize $unit") ?></td>
                 <td>
-                    <?php
-                    if ((int) $level === (int) $contsize) {
-                        echo "Full";
-                    } else {
-                        echo $level <= $contsize * 0.35
-                            ? "<span class='text-warning'>" . htmlspecialchars("$level$unit") . "</span> / " . htmlspecialchars("$contsize$unit")
-                            : htmlspecialchars("$level$unit / $contsize$unit");
-                    }
-                    ?>
+                    <?= htmlspecialchars($in) ?>
                 </td>
-                <td><?= htmlspecialchars($remcom) ?></td>
-                <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
-                    <?= htmlspecialchars(date_format($exp, "F j, Y")) ?>
-                </td>
-                <td><?= $level === 0 && $remcom === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : (($level <= $contsize * 0.35) && (($opened_container + $remcom) < $threshold) ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Running Out</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
+                <td><?= htmlspecialchars($out) ?></td>
+                <td>
+                    <?= htmlspecialchars($total_containers) ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
+                                class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
                         <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                 class="bi bi-info-circle"></i></button>
                     </div>
@@ -310,5 +330,6 @@ if (isset($_GET['search'])) {
     } else {
         echo "<tr><td scope='row' colspan='7' class='text-center'>Your search does not exist.</td></tr>";
     }
+    mysqli_close($conn);
+    exit();
 }
-

@@ -54,6 +54,8 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
             $data['unop_cont'] = $row['unop_cont'];
             $data['container_size'] = $row['container_size'];
             $data['unit'] = $row['quantity_unit'];
+            $data['threshold'] = $row['restock_threshold'];
+            $data['location'] = $row['chem_location'];
         }
     } else {
         echo "Invalid ID. Make sure the chemical exist.";
@@ -65,6 +67,7 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
     exit();
 }
 
+$valid_location = ['main_storage', 'dispatched'];
 // edit
 if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 
@@ -89,6 +92,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     $unit = $_POST['edit-chemUnit'];
     $notes = $_POST['edit-notes'];
     $contSize = $_POST['edit-containerSize'];
+    $location = $_POST['location'];
+    $threshold = $_POST['edit-restockThreshold'];
     $pwd = $_POST['baPwd'];
 
     $expDate = date("Y-m-d", strtotime($ed));
@@ -99,6 +104,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         echo 'Make sure to fill up required forms.';
         exit();
     }
+
+    // location and threshold error handling
 
     if (!in_array($unit, $units)) {
         http_response_code(400);
@@ -135,7 +142,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         exit();
     }
 
-    $edit = editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $unit, 1);
+    $edit = editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $unit, $location, $threshold);
     if (isset($edit['error'])) {
         http_response_code(400);
         echo $edit['error'];
@@ -160,6 +167,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
     $expDate = $_POST['expDate'] ?? [];
     $containerSize = $_POST['containerSize'] ?? [];
     $containerCount = $_POST['containerCount'] ?? [];
+    $location = $_POST['location'] ?? [];
+    $threshold = $_POST['restockThreshold'] ?? [];
     $baPwd = $_POST['baPwd'];
 
     $addedBy = "[$loggedId] - $loggedUsn";
@@ -170,11 +179,25 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         exit;
     }
 
+    $three_years = strtotime("+3 years");
+    $default_expiry = date("Y-m-d", $three_years);
+
+    for ($i = 0; $i < count($expDate); $i++) {
+        if (empty($expDate[$i]) || $expDate == '') {
+            $expDate[$i] = $default_expiry;
+        }
+    }
+
+    // http_response_code(400);
+    // echo var_dump($expDate);
+    // exit();
+
     if (empty($baPwd)) {
         http_response_code(400);
         echo 'Empty Password.';
         exit;
     }
+    // error handling threshold and location
 
     if (!validateOS($conn, $baPwd)) {
         http_response_code(400);
@@ -192,6 +215,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         'eDate' => $expDate,
         'csize' => $containerSize,
         'ccount' => $containerCount,
+        'location' => $location,
+        'threshold' => $threshold
     ];
 
     $a = addChemv2($conn, $data, $branch, $addedBy, 1);
@@ -286,20 +311,35 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
 
         </div>
         <div class="row mb-2">
-            <div class="col-lg-4 mb-2">
+            <div class="col-lg-2 mb-2">
+                <label for="restockThreshold-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Restock
+                    Threshold:</label>
+                <input type="number" name="restockThreshold[]" id="restockThreshold-<?= htmlspecialchars($uid) ?>"
+                    class="form-control" autocomplete="one-time-code">
+            </div>
+            <div class="col-2 mb-2">
                 <label for="recDate-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Date Received</label>
                 <input type="date" name="receivedDate[]" id="recDate-<?= htmlspecialchars($uid) ?>"
                     class="form-control form-add form-date-rec">
             </div>
-            <div class="col-lg-4 mb-2">
+            <div class="col-2 mb-2">
                 <label for="expDate-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Expiry Date</label>
                 <input type="date" name="expDate[]" id="expDate-<?= htmlspecialchars($uid) ?>"
                     class="form-control form-add form-date-exp">
             </div>
-            <div class="col-4 mb-2">
+            <div class="col-3 mb-2">
                 <label for="notes-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Short Note</label>
                 <textarea name="notes[]" id="notes-<?= htmlspecialchars($uid) ?>" class="form-control"
                     placeholder="Optional short note . . . "></textarea>
+            </div>
+            <div class="col-lg-2 mb-2">
+                <label for="add-location" class="form-label fw-light">Chemical
+                    Location:</label>
+                <select name="location[]" id="add-location" class="form-select" autocomplete="one-time-code">
+                    <option value="" selected>Add Location</option>
+                    <option value="main_storage">Main Storage</option>
+                    <option value="dispatched">Dispatched</option>
+                </select>
             </div>
         </div>
         <div class="mb-2 d-flex">
@@ -321,7 +361,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
     $stmt = mysqli_stmt_init($conn);
     switch ($_GET['status']) {
         case "total":
-            $sql = "SELECT COUNT(*) FROM chemicals";
+            $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals";
             break;
         case "low":
             $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel <= unop_cont * .20";
@@ -333,10 +373,12 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
             $sql = "SELECT COUNT(*) FROM chemicals WHERE request = 1";
             break;
         case "available":
-            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel > 0";
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel > 0 AND request = 0";
             break;
         case "dispatched":
-            $sql = "SELECT COUNT(*) FROM inventory_log WHERE log_type = 'Out'";
+            // $sql = "SELECT COUNT(*) FROM inventory_log il WHERE il.log_type = 'Out' AND 
+            // NOT EXISTS (SELECT 1 FROM transactions t WHERE t.id = il.trans_id AND t.transaction_status = 'Completed')";
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE chem_location = 'dispatched'";
             break;
         case "out-of-stock":
             $sql = "SELECT COUNT(*) FROM chemicals WHERE chemLevel = 0 AND unop_cont = 0;";
@@ -349,7 +391,11 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
 
     if ($branchquery !== '') {
         if (str_contains($sql, "WHERE")) {
-            $sql .= " AND $branchquery";
+            if ($_GET['status'] === 'Dispatched') {
+                $sql .= " AND il.branch = ?";
+            } else {
+                $sql .= " AND $branchquery";
+            }
         } else {
             $sql .= " WHERE $branchquery";
         }
@@ -477,7 +523,8 @@ $logtypes = [
     'in',
     'out',
     'lost',
-    'scrapped'
+    'scrapped',
+    'used'
 ];
 
 if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
@@ -489,6 +536,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     $notes = $_POST['notes'];
 
     $wcontainer = isset($_POST['containerchk']);
+    // no of container used
     $ccontainer = isset($_POST['containercount']) ? $_POST['containercount'] : (int) 0;
 
     if (!$wcontainer) {
@@ -524,6 +572,8 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
 
     // $valid_logtype = '';
     // $final_qty = 0;
+
+    $usage_source = NULL;
     if (!in_array($logtype, $logtypes)) {
         // if other type is null, logtype should be restricted and only fixed datas are allowed
         if ($ologtype === NULL || empty($ologtype)) {
@@ -546,11 +596,13 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
             if ($wcontainer) {
                 $fccontainer = $ccontainer;
             }
+            $usage_source = "MANUAL_ADDITION";
         } else {
             $final_qty = $qty * -1;
             if ($wcontainer) {
                 $fccontainer = $ccontainer * -1;
             }
+            $usage_source = "MANUAL_SUBTRACTION";
         }
     } else {
         // trigger switch if in select - restrict choices
@@ -560,6 +612,9 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
                 $final_qty = $qty;
                 if ($wcontainer) {
                     $fccontainer = $ccontainer;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_ADDED";
+                } else {
+                    $usage_source = "PARTIAL_ADDITION";
                 }
                 break;
             case 'out':
@@ -567,6 +622,9 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
                 $final_qty = $qty * -1;
                 if ($wcontainer) {
                     $fccontainer = $ccontainer * -1;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_OUT";
+                } else {
+                    $usage_source = "FROM_OPENED_CONTAINER";
                 }
                 break;
             case 'lost':
@@ -574,6 +632,19 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
                 $final_qty = $qty * -1;
                 if ($wcontainer) {
                     $fccontainer = $ccontainer * -1;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_LOST";
+                } else {
+                    $usage_source = "PARTIAL_LOST_FROM_OPENED";
+                }
+                break;
+            case 'used':
+                $valid_logtype = "Used";
+                $final_qty = $qty * -1;
+                if ($wcontainer) {
+                    $fccontainer = $ccontainer * -1;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_USED";
+                } else {
+                    $usage_source = "FROM_OPENED_CONTAINER";
                 }
                 break;
             case 'scrapped':
@@ -581,6 +652,9 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
                 $final_qty = $qty * -1;
                 if ($wcontainer) {
                     $fccontainer = $ccontainer * -1;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_LOST_DAMAGED";
+                } else {
+                    $usage_source = "PARTIAL_SCRAPPED_FROM OPENED";
                 }
                 break;
             default:
@@ -613,7 +687,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     }
     // valid logtype, final qty
 
-    $adjust = adjust_chemical($conn, $chemId, $valid_logtype, $fccontainer, $final_qty, $notes, $user, $role, $branch);
+    $adjust = adjust_chemical($conn, $chemId, $valid_logtype, $fccontainer, $final_qty, $notes, $user, $role, $branch, $usage_source);
     if (isset($adjust['error'])) {
         http_response_code(400);
         echo $adjust['error'];
@@ -625,6 +699,215 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     } else {
         http_response_code(400);
         echo "An unknown error occured. Please try again later.";
+        exit();
+    }
+}
+
+if (isset($_GET['trans_select']) && $_GET['trans_select'] === 'true') {
+    $sql = "SELECT id from transactions;";
+    $res = mysqli_query($conn, $sql);
+    echo "<option value='' selected>Select Transaction No.</option>";
+    if (mysqli_num_rows($res) > 0) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            $id = $row['id'];
+            ?>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
+
+            <?php
+        }
+    }
+    exit();
+}
+
+if (isset($_POST['dispatch']) && $_POST['dispatch'] === 'true') {
+    $id = $_POST['dispatchChemicalId'];
+    $dispatchAll = isset($_POST['dispatchAll']);
+    $transaction = $_POST['dispatch-transaction'];
+    $clocation = $_POST['currentLocation'];
+    $pwd = $_POST['baPwd'];
+
+    $dispatch_value = 0;
+    $include_opened = NULL;
+    if (!$dispatchAll) {
+        $dispatch_value = $_POST['dispatchValue'];
+        $include_opened = isset($_POST['includeOpened']);
+    }
+
+    if (empty($transaction) || !is_numeric($transaction)) {
+        http_response_code(400);
+        echo "Invalid Transaction.";
+        exit();
+    }
+
+    $transaction_status = check_status($conn, $transaction);
+    if ($transaction_status != "Accepted") {
+        http_response_code(400);
+        echo "Only approved transactions are allowed to be dispatched. $transaction_status";
+        exit();
+    }
+
+    if (!is_numeric($id) || $id === NULL) {
+        http_response_code(400);
+        echo 'Chemical ID not found. Please try again later.';
+        exit();
+    }
+
+    if (!is_numeric($dispatch_value)) {
+        http_response_code(400);
+        echo "dispatch value should be a number.";
+        exit();
+    }
+
+    if ($clocation === "Dispatched") {
+        http_response_code(400);
+        echo "This chemical is already dispatched. Please select an available chemical.";
+        exit();
+    }
+
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo "Wrong Password.";
+        exit();
+    }
+
+
+    if ($dispatchAll) {
+        $dispatch = dispatch_all_chemical($conn, $id, $transaction);
+    } else {
+        $dispatch = dispatch_chemical($conn, $id, $transaction, $dispatch_value, $include_opened);
+    }
+
+    if (isset($dispatch['error'])) {
+        http_response_code(400);
+        echo $dispatch['error'];
+        exit();
+    } else if ($dispatch) {
+        http_response_code(200);
+        echo json_encode(['success' => 'Dispatch Success!']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo "An unknown error has occured. Please try again later.";
+        exit();
+    }
+}
+
+if (isset($_GET['transaction_options']) && $_GET['transaction_options'] === 'true') {
+    $sql = "SELECT id FROM transactions WHERE transaction_status = 'Accepted';";
+    $res = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($res) > 0) {
+        echo "<option value=''>Select Transaction</option>";
+        while ($row = mysqli_fetch_assoc($res)) {
+            $id = $row['id'];
+            ?>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
+            <?php
+        }
+    } else {
+        echo "<option disabled>No available accepted transactions</option>";
+    }
+    mysqli_close($conn);
+}
+
+if (isset($_GET['dispatched_transactions']) && $_GET['dispatched_transactions'] === 'true') {
+    $name = $_GET['name'];
+    $brand = $_GET['brand'];
+    $csize = $_GET['csize'];
+    $unit = $_GET['unit'];
+
+    $get_main_id_sql = "SELECT id FROM chemicals WHERE name = ? AND brand = ? AND container_size = ? AND quantity_unit = ?;";
+    $get_main_id_stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($get_main_id_stmt, $get_main_id_sql)) {
+        http_response_code(400);
+        echo "Prepared statement failed at finding main chemical. Please try again later.";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($get_main_id_stmt, "ssis", $name, $brand, $csize, $unit);
+    mysqli_stmt_execute($get_main_id_stmt);
+    $result = mysqli_stmt_get_result($get_main_id_stmt);
+    if ($row = mysqli_fetch_assoc($result)) {
+        $main_id = $row['id'];
+    } else {
+        http_response_code(400);
+        echo "Error. Main chemical not found.";
+        exit();
+    }
+
+    $sql = "SELECT t.id FROM transactions t WHERE t.transaction_status = 'Dispatched' AND EXISTS (SELECT 1 FROM transaction_chemicals tc WHERE tc.chem_id = ? AND tc.trans_id = t.id);";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "Prepared statement failed at finding dispatched transactions. Please try again later.";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "i", $main_id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($res) > 0) {
+        echo "<option value=''>Select Transaction</option>";
+        while ($row = mysqli_fetch_assoc($res)) {
+            $id = $row['id'];
+            ?>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
+            <?php
+        }
+    } else {
+        echo "<option disabled>No available accepted transactions</option>";
+    }
+    mysqli_close($conn);
+}
+
+// opened and closed quantity should be the total of what will return
+if (isset($_POST['return_chemical']) && $_POST['return_chemical'] === 'true') {
+
+    $chem_id = $_POST['returnChemicalId'];
+    $trans_id = $_POST['return_transaction'];
+    $opened_qty = $_POST['opened_container'];
+    $closed_qty = $_POST['container_count'];
+    $current_location = $_POST['return_currentLocation'];
+    $pwd = $_POST['baPwd'];
+
+    if (!is_numeric($chem_id) || !is_numeric($trans_id)) {
+        http_response_code(400);
+        echo "Invalid ID passed.";
+        exit();
+    }
+
+    if (!is_numeric($opened_qty) || !is_numeric($closed_qty)) {
+        http_response_code(400);
+        echo "Invalid input passed.";
+        exit();
+    }
+
+    if ($opened_qty === '' || $closed_qty === '' || empty($pwd)) {
+        http_response_code(400);
+        echo "Please fill all fields.";
+        exit();
+    }
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo "Invalid password.";
+        exit();
+    }
+
+    $return = return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $closed_qty);
+    if (isset($return['error'])) {
+        http_response_code(400);
+        echo $return['error'];
+        exit();
+    } else if ($return) {
+        http_response_code(200);
+        echo json_encode(['success' => 'Chemicals returned!']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo "An unknown error occurred. Please try again later.";
         exit();
     }
 }

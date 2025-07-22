@@ -188,14 +188,17 @@ require("startsession.php");
             new Chart(ctx, {
                 type: 'pie',
                 data: {
-                    labels: ['Pending', 'Accepted', 'Voided', 'Completed'],
+                    labels: ['Pending', 'Accepted', 'Voided', 'Completed', 'Cancelled', 'Finalizing', 'Dispatched'],
                     datasets: [{
-                        data: [data[0], data[1], data[2], data[3]],
+                        data: [data[0], data[1], data[2], data[3], data[4], data[5], data[6]],
                         borderWidth: 1,
                         backgroundColor: [
-                            'rgba(255, 255, 255, 0.30)',
-                            'rgba(255, 255, 255, 0.50)',
-                            'rgba(255, 255, 255, 0.75)',
+                            'rgba(255, 255, 255, 0.14)',
+                            'rgba(255, 255, 255, 0.28)',
+                            'rgba(255, 255, 255, 0.42)',
+                            'rgba(255, 255, 255, 0.56)',
+                            'rgba(255, 255, 255, 0.70)',
+                            'rgba(255, 255, 255, 0.84)',
                             'rgba(255, 255, 255, 1)'
                         ]
                     }]
