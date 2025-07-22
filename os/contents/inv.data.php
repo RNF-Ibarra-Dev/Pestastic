@@ -179,6 +179,19 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         exit;
     }
 
+    $three_years = strtotime("+3 years");
+    $default_expiry = date("Y-m-d", $three_years);
+
+    for ($i = 0; $i < count($expDate); $i++) {
+        if (empty($expDate[$i]) || $expDate == '') {
+            $expDate[$i] = $default_expiry;
+        }
+    }
+
+    // http_response_code(400);
+    // echo var_dump($expDate);
+    // exit();
+
     if (empty($baPwd)) {
         http_response_code(400);
         echo 'Empty Password.';
@@ -720,14 +733,14 @@ if (isset($_POST['dispatch']) && $_POST['dispatch'] === 'true') {
         $include_opened = isset($_POST['includeOpened']);
     }
 
-    if(empty($transaction) ||!is_numeric($transaction)){
+    if (empty($transaction) || !is_numeric($transaction)) {
         http_response_code(400);
         echo "Invalid Transaction.";
         exit();
     }
 
     $transaction_status = check_status($conn, $transaction);
-    if($transaction_status != "Accepted"){
+    if ($transaction_status != "Accepted") {
         http_response_code(400);
         echo "Only approved transactions are allowed to be dispatched. $transaction_status";
         exit();
