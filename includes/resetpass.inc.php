@@ -75,7 +75,7 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
         $mail->Subject = "Password Reset";
         $mail->Body = <<<END
 
-        Click <a href = "localhost/Pestastic/resetpassword.php?token=$token">here</a> to reset your password.
+        Click <a href = "Pestastic-inventory.site/resetpassword.php?token=$token">here</a> to reset your password.
 
         END;
 

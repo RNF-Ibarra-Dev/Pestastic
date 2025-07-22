@@ -3231,7 +3231,7 @@ function check_location_exists($conn, $name, $brand, $container_size, $quantity_
     return $row['id'];
 }
 
-function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $include_opened, $new_location = "Dispatched")
+function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $include_opened, $new_location = "dispatched")
 {
     mysqli_begin_transaction($conn);
     try {
