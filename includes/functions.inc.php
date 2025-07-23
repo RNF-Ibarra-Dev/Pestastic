@@ -2884,7 +2884,7 @@ function get_chemical($conn, $id)
     $sql = "SELECT * FROM chemicals WHERE id = ?;";
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-        return ['error' => 'stmt failed.'];
+        return ['error' => 'Statement preparation failed at fetching chemical details.'];
     }
     mysqli_stmt_bind_param($stmt, 'i', $id);
     mysqli_stmt_execute($stmt);
@@ -3821,4 +3821,41 @@ function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $cl
             'error' => $e->getMessage() . " at line " . $e->getLine() . " at file " . $e->getFile()
         ];
     }
+}
+
+
+function get_main_chemical($conn, $dispatched_id)
+{
+    $dispatched_id = get_chemical($conn, $dispatched_id);
+
+    if(isset($dispatched_id['error'])) {
+        return ['error' => $dispatched_id['error']];
+    }
+
+    $sql = "SELECT id FROM chemicals WHERE
+            name = ? AND
+            brand = ? AND
+            container_size = ? AND
+            quantity_unit = ? AND
+            chem_location = 'main_storage';";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error'=>'Failed at preparing the checking of main chemical. Please try again later.'];
+    }
+
+    mysqli_stmt_bind_param($stmt, 'ssds', $dispatched_id['name'], $dispatched_id['brand'], $dispatched_id['container_size'], $dispatched_id['quantity_unit']);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+    $num_rows = mysqli_num_rows($result);
+
+    if ($num_rows === 0) {
+        return false;
+    } else if (mysqli_num_rows($result) > 1) {
+        return ['error'=>"Multiple records found for chemical {$dispatched_id['name']} ({$dispatched_id['brand']}). Please correct database immediately."];
+    }
+
+    mysqli_stmt_close($stmt);
+    return $row['id'];
 }

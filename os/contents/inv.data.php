@@ -970,6 +970,31 @@ if(isset($_GET['qty_unit_options']) && $_GET['qty_unit_options'] === 'true') {
 if(isset($_GET['dispatch_cur_transchem']) && $_GET['dispatch_cur_transchem'] === 'true'){
     $transid = $_GET['transid'];
     $chemid = $_GET['chemId'];
+    $cont_size = $_GET['containerSize'];
+    $return = isset($_GET['return']);
+
+    if(empty($chemid)){
+        http_response_code(400);
+        echo "Chemical ID missing. Please try again later.";
+        exit();
+    }
+
+    if(!is_numeric(trim($transid)) || !is_numeric(trim($chemid))){
+        http_response_code(400);
+        echo "Invalid Transaction ID or Chemical ID.";
+        exit();
+    }
+
+    if($return){
+        $main_chem = get_main_chemical($conn, $chemid);
+        if(isset($main_chem['error'])){
+            http_response_code(400);
+            echo $main_chem['error'];
+            exit();
+        }
+    } else{
+        $main_chem = $chemid;
+    }
 
     $sql = "SELECT amt_used FROM transaction_chemicals WHERE trans_id = ? AND chem_id = ?;";
     $stmt = mysqli_stmt_init($conn);
@@ -980,19 +1005,30 @@ if(isset($_GET['dispatch_cur_transchem']) && $_GET['dispatch_cur_transchem'] ===
         exit();
     }
 
-    mysqli_stmt_bind_param($stmt, 'ii', $transid, $chemid);
+    mysqli_stmt_bind_param($stmt, 'ii', $transid, $main_chem);
     mysqli_stmt_execute($stmt);
 
     $res = mysqli_stmt_get_result($stmt);
 
     if(mysqli_num_rows($res) > 0){
         $row = mysqli_fetch_assoc($res);
+        $amt_used = $row['amt_used'];
         http_response_code(200);
-        echo $row['amt_used'];
+        $openedLevel = $amt_used % $cont_size;
+        $closedContainer = (int) ($amt_used / $cont_size);
+        while($openedLevel > $cont_size){
+            $openedLevel -= $cont_size;
+            $closedContainer++;
+        }
+        echo json_encode([
+            'openedLevel' => $openedLevel,
+            'closedContainer' => $closedContainer
+        ]);
+        
         exit();
     } 
     mysqli_stmt_close($stmt);
     http_response_code(200);
-    echo "No dispatched amount set for transaction ID $transid.";
+    echo json_encode(["error" => "No dispatched amount set for transaction ID $transid."]);
     exit();
 }

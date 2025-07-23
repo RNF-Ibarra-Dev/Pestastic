@@ -687,7 +687,7 @@ require("startsession.php");
                         <div class="modal-dialog modal-xl">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
-                                    <h1 class="modal-title fs-5">Dispatch Chemical</h1>
+                                    <h1 class="modal-title fs-5">Set Transaction Chemical Dispatch</h1>
                                     <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                             class="bi text-light bi-x"></i></button>
                                 </div>
@@ -1823,24 +1823,21 @@ require("startsession.php");
 
 
             $("#returnChemModal").modal('show');
+            $("#returnChemModal").on('shown.bs.modal', function () {
+                $("p#return_current_transaction_info").text("Please select a valid transaction ID.");
+            });
             $("#returnChemicalForm").on('change', "select#return_transaction", function () {
                 let transid = $(this).val();
 
-                $.get(urldata, { dispatch_cur_transchem: true, chemId: id, transid: transid }, function (d) {
-                    let openedLevel = 0.0;
-                    let closedCont = 0;
-                    let cont_size = details.container_size;
-
-                    while(d > cont_size){
-                        openedLevel = d - cont_size;
-                        closedCont++
+                $.get(urldata, { dispatch_cur_transchem: true, chemId: id, transid: transid, return: true, containerSize: details.container_size }, function (d) {
+                    if (d.error) {
+                        $("p#return_current_transaction_info").text(d.error);
+                    } else {
+                        $("p#return_current_transaction_info").text(d.openedLevel + details.unit + " (" + d.closedContainer + " Container/s)");
                     }
-
-                    let amount = openedLevel + details.unit + " (" + closedCont + " Container/s)";
-                    $("p#return_current_transaction_info").text(d + " " + amount);
-                }, 'html')
+                }, 'json')
                     .fail(function (e) {
-                        $("p#return_current_transaction_info").text("Error");
+                        $("p#return_current_transaction_info").text("Please select a valid transaction ID.");
                         console.log(e);
                     });
             });
@@ -1881,15 +1878,22 @@ require("startsession.php");
                 $("#dispatchValue, #includeOpened").prop('disabled', checked);
             })
             $("#dispatchChemModal").modal('show');
-
+            $("#dispatchChemModal").on('shown.bs.modal', function () {
+                $("p#current_transaction_info").text("Please select a valid transaction ID.");
+            });
             $("#dispatchChemicalForm").on('change', "select#dispatch-transaction", function () {
                 let transid = $(this).val();
 
-                $.get(urldata, { dispatch_cur_transchem: true, chemId: id, transid: transid }, function (d) {
-                    $("p#current_transaction_info").text(d);
-                }, 'html')
+                $.get(urldata, { dispatch_cur_transchem: true, chemId: id, transid: transid, containerSize: details.container_size }, function (d) {
+                    if (d.error) {
+                        $("p#current_transaction_info").text(d.error);
+                    } else {
+                        $("p#current_transaction_info").text(d.openedLevel + details.unit + " (" + d.closedContainer + " Container/s)");
+                    }
+                    console.log(d);
+                }, 'json')
                     .fail(function (e) {
-                        $("p#current_transaction_info").text("Error");
+                        $("p#current_transaction_info").text("Please select a transaction.");
                         console.log(e);
                     });
             });
