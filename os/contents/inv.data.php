@@ -932,3 +932,36 @@ if (isset($_POST['return_chemical']) && $_POST['return_chemical'] === 'true') {
 //     }
 //     return false;
 // }
+
+
+if(isset($_GET['qty_unit_options']) && $_GET['qty_unit_options'] === 'true') {
+    $cur_unit = $_GET['current_unit'];
+
+    if(empty($cur_unit) || !is_string($cur_unit)) {
+        http_response_code(400);
+        echo "Invalid unit.";
+        exit();
+    }
+    
+    if(!in_array($cur_unit, $units)){
+        http_response_code(400);
+        echo "Invalid unit.";
+        exit();
+    }
+
+    if($cur_unit === 'mg' || $cur_unit === 'g' || $cur_unit === 'kg') {
+        $unit_option = ['mg', 'g', 'kg'];
+    } elseif ($cur_unit === 'box' || $cur_unit === 'pc' || $cur_unit === 'canister') {
+        $unit_option = ['box', 'pc', 'canister'];
+    } elseif ($cur_unit === 'mL' || $cur_unit === 'L') {
+        $unit_option = ['mL', 'L'];
+    } else {
+        $unit_option = [$cur_unit];
+    }   
+
+    echo "<option value='' selected>Choose Unit</option>";
+    foreach ($unit_option as $option) {
+        echo "<option value='$option'>$option</option>";
+    }
+    exit();
+}

@@ -363,6 +363,10 @@ require("startsession.php");
                                 <div class="modal-body">
                                     <!-- <input type="hidden" name="edit" value="edit-chemical"> -->
                                     <input type="hidden" name="edit-id" id="edit-id" class="form-control">
+                                    <p
+                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                        Main Chemical Information</p>
+
                                     <div class="row mb-2">
 
                                         <div class="col-lg-3 mb-2">
@@ -380,12 +384,13 @@ require("startsession.php");
                                             <label for="edit-contSize" class="form-label fw-medium">Container
                                                 Size:</label>
                                             <input type="number" name="edit-containerSize" id="edit-contSize"
-                                                class="form-control-plaintext" readonly autocomplete="one-time-code">
+                                                class="form-control-plaintext ps-2" readonly
+                                                autocomplete="one-time-code">
                                         </div>
                                         <div class="col-lg-2 mb-2">
                                             <label for="view-chemUnit" class="form-label fw-medium">Chemical
                                                 Unit:</label>
-                                            <p id="view-chemUnit"></p>
+                                            <p id="view-chemUnit" class=" ps-2"></p>
                                             <select name="edit-chemUnit" id="edit-chemUnit" class="form-select d-none"
                                                 disabled autocomplete="one-time-code">
                                                 <option value="" selected>Choose Chemical Unit</option>
@@ -403,11 +408,12 @@ require("startsession.php");
                                             <label for="edit-restockThreshold" class="form-label fw-medium">Restock
                                                 Threshold:</label>
                                             <input type="number" name="edit-restockThreshold" id="edit-restockThreshold"
-                                                class="form-control-plaintext" readonly autocomplete="one-time-code">
+                                                class="form-control-plaintext ps-2" readonly
+                                                autocomplete="one-time-code">
                                         </div>
                                     </div>
 
-                                    <div class="row mb-2">
+                                    <div class="row">
                                         <div class="col-3 mb-2">
                                             <label for="edit-dateReceived" class="form-label fw-medium">Date
                                                 Received:</label>
@@ -430,7 +436,7 @@ require("startsession.php");
                                         <div class="col-3 mb-2">
                                             <label for="edit-location" class="form-label fw-medium">Chemical
                                                 Location:</label>
-                                            <p id="view-location" class="text-capitalize"></p>
+                                            <p id="view-location" class="text-capitalize ps-2"></p>
                                             <select name="location" id="edit-location" class="form-select d-none"
                                                 autocomplete="one-time-code">
                                                 <option value="" selected>Add Location</option>
@@ -440,6 +446,9 @@ require("startsession.php");
                                         </div>
                                     </div>
 
+                                    <p
+                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                        Container Count Information</p>
                                     <div class="row mb-2 d-none user-select-none" id="chemState">
                                         <div class="col-3">
                                             <p class="fw-medium mb-2">Opened Container Level:</p>
@@ -673,9 +682,9 @@ require("startsession.php");
                 <input type="hidden" name="dispatchChemicalId" id="dispatchChemicalId">
                 <input type="hidden" id="currentLocation" name="currentLocation">
                 <div class="row g-2 m-0 p-0 text-dark">
-                    <div class="modal-xl modal fade text-dark modal-edit" data-bs-backdrop="static"
-                        id="dispatchChemModal" tabindex="-1" aria-labelledby="create" aria-hidden="true">
-                        <div class="modal-dialog">
+                    <div class=" modal fade text-dark modal-edit" data-bs-backdrop="static" id="dispatchChemModal"
+                        tabindex="-1" aria-labelledby="create" aria-hidden="true">
+                        <div class="modal-dialog modal-xl">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
                                     <h1 class="modal-title fs-5">Dispatch Chemical</h1>
@@ -683,6 +692,9 @@ require("startsession.php");
                                             class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
+                                    <p
+                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto user-select-none">
+                                        Chemical Information</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-2 mb-2">
                                             <label for="dispatchName" class="form-label fw-medium">Chemical
@@ -720,7 +732,7 @@ require("startsession.php");
                                                 to dispatch:</label>
                                             <input type="number" name="dispatchValue" id="dispatchValue"
                                                 class="form-control w-50" autocomplete="one-time-code">
-                                            <div class="form-check">
+                                            <div class="form-check my-2">
                                                 <input class="form-check-input" name="includeOpened" type="checkbox"
                                                     id="includeOpened">
                                                 <label class="form-check-label text-muted user-select-none"
@@ -728,20 +740,35 @@ require("startsession.php");
                                                     Include opened container.
                                                 </label>
                                             </div>
+                                            <input type="checkbox" class="btn-check" name="dispatchAll" id="dispatchAll"
+                                                autocomplete="off">
+                                            <label class="btn btn-outline-dark" for="dispatchAll">Dispatch
+                                                Everything</label>
                                         </div>
-                                        <div class="col-lg-4 mb-2">
+                                        <div class="col-lg-8 mb-2">
                                             <label for="dispatch-transaction" class="form-label fw-medium">Select
                                                 Transaction Dispatch:</label>
                                             <select name="dispatch-transaction" id="dispatch-transaction"
-                                                class="form-select" autocomplete="one-time-code">
+                                                class="form-select w-50" autocomplete="one-time-code">
                                             </select>
                                             <p class="text-body-secondary mt-2">Note: You can only dispatch a chemical
                                                 to prepared and approved/accepted transactions.</p>
                                         </div>
                                     </div>
-                                    <input type="checkbox" class="btn-check" name="dispatchAll" id="dispatchAll"
-                                        autocomplete="off">
-                                    <label class="btn btn-outline-dark" for="dispatchAll">Dispatch Everything</label>
+                                    <p
+                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                        Container Count Information</p>
+
+                                    <div class="row mb-2 user-select-none">
+                                        <div class="col-3">
+                                            <p class="fw-medium mb-2">Opened Container Level:</p>
+                                            <p class="ps-2 mb-2" id="dispatch_openedContainerLevel"></p>
+                                        </div>
+                                        <div class="col-3">
+                                            <p class="fw-medium mb-2">Closed Container Count:</p>
+                                            <p class="ps-2 mb-2" id="dispatch_closedContainerCount"></p>
+                                        </div>
+                                    </div>
 
                                     <p class="mb-0 mt-3 text-center alert alert-warning">Please note that this will
                                         override current chemicals set in the chosen transaction. Proceed with caution.
@@ -794,12 +821,12 @@ require("startsession.php");
                 <input type="hidden" name="returnChemicalId" id="returnChemicalId">
                 <input type="hidden" id="return_currentLocation" name="return_currentLocation">
                 <div class="row g-2 m-0 p-0 text-dark">
-                    <div class="modal-xl modal fade text-dark modal-edit" data-bs-backdrop="static" id="returnChemModal"
+                    <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="returnChemModal"
                         tabindex="-1" aria-labelledby="create" aria-hidden="true">
-                        <div class="modal-dialog">
+                        <div class="modal-dialog modal-xl ">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
-                                    <h1 class="modal-title fs-5">Return Chemical</h1>
+                                    <h1 class="modal-title fs-5">Return Dispatched Chemical</h1>
                                     <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                             class="bi text-light bi-x"></i></button>
                                 </div>
@@ -822,13 +849,19 @@ require("startsession.php");
                                             <p id="return-contSize" class="fw-light ps-2"></p>
                                         </div>
 
-                                        <div class="col-lg-3 mb-2">
+                                        <div class="col-lg-2 mb-2">
+                                            <label for="return-openedLevel" class="form-label fw-medium">Opened
+                                                Container Level:</label>
+                                            <p id="return-openedLevel" class="fw-light ps-2"></p>
+                                        </div>
+
+                                        <div class="col-lg-2 mb-2">
                                             <label for="return-containerCount" class="form-label fw-medium">Container
                                                 Count
                                                 (Including Opened):</label>
                                             <p id="return-containerCount" class="fw-light ps-2"></p>
                                         </div>
-                                        <div class="col-lg-3 mb-2">
+                                        <div class="col-lg-2 mb-2">
                                             <label for="return-cstatus" class="form-label fw-medium">Container Location
                                                 Status:</label>
                                             <p id="return-cstatus" class="fw-light ps-2"></p>
@@ -836,24 +869,20 @@ require("startsession.php");
                                     </div>
 
                                     <div class="row mb-2">
-                                        <div class="col-lg-4 mb-2">
+                                        <div class="col-5 mb-2">
                                             <label for="opened_container" class="form-label fw-medium">Returned quantity
                                                 of opened container:</label>
-                                            <div class="d-flex">
-                                                <input type="number" name="opened_container" id="opened_container"
-                                                    class="form-control w-50" autocomplete="one-time-code">
-                                                <span id="return_unit" class="ms-2 align-middle mt-2"></span>
-                                            </div>
-                                            <p class="text-body-secondary">Note: This should not exceed the quantity of
-                                                the container size.</p>
-                                        </div>
-                                        <div class="col-lg-4 mb-2">
-                                            <label for="container_count" class="form-label fw-medium">Returned number of
-                                                closed container (not used)
-                                                to return:</label>
-                                            <input type="number" name="container_count" id="container_count"
+                                            <input type="number" name="opened_container" id="opened_container"
                                                 class="form-control w-50" autocomplete="one-time-code">
+                                            <p class="text-body-secondary mt-1">Note: This should not exceed the
+                                                quantity of
+                                                the container size and the quantity of dispatched chemicals.</p>
                                         </div>
+                                        <div class="col-2 mb-2">
+                                            <label for="return_unit" class="form-label fw-medium">Unit:</label>
+                                            <select id="return_unit" class="form-select"></select>
+                                        </div>
+
                                         <div class="col-lg-4 mb-2">
                                             <label for="return_transaction" class="form-label fw-medium">Select
                                                 Dispatched Transaction:</label>
@@ -863,10 +892,39 @@ require("startsession.php");
                                             <p class="text-body-secondary mt-2">Note: You can only return this
                                                 chemical's dispatched transaction.</p>
                                         </div>
+
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-5 mb-2">
+                                            <label for="container_count" class="form-label fw-medium">Returned number of
+                                                closed container (not used)
+                                                to return:</label>
+                                            <input type="number" name="container_count" id="container_count"
+                                                class="form-control w-50" autocomplete="one-time-code">
+                                        </div>
+                                        <div class="col-4 mb-2">
+
+                                        </div>
+                                    </div>
+                                    <p
+                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                        Total Container Count Information</p>
+
+                                    <div class="row mb-2 user-select-none">
+                                        <div class="col-3">
+                                            <p class="fw-medium mb-2">Opened Container Level:</p>
+                                            <p class="ps-2 mb-2" id="return_openedContainerLevel"></p>
+                                        </div>
+                                        <div class="col-3">
+                                            <p class="fw-medium mb-2">Closed Container Count:</p>
+                                            <p class="ps-2 mb-2" id="return_closedContainerCount"></p>
+                                        </div>
                                     </div>
 
-                                    <p class="mb-0 mt-3 text-center alert alert-warning">Please note that this will
-                                        override current chemicals set in the chosen transaction. Proceed with caution.
+                                    <p class="mb-0 mt-3 text-center alert alert-warning">Note: This is a summary of
+                                        multiple dispatched chemicals. This will
+                                        also override existing chemicals set in the chosen transaction. Proceed with
+                                        caution.
                                     </p>
                                 </div>
                                 <div class="modal-footer d-flex justify-content-between">
@@ -1641,7 +1699,7 @@ require("startsession.php");
                 return details.upby === 'No Update Record' ? 'Updated at: ' + details.upat : 'Updated at: ' + details.upat + ' by ' + details.upby;
             });
 
-            $("#openedContainerLevel").text(details.level);
+            $("#openedContainerLevel").text(details.level + details.unit);
             $("#closedContainerCount").text(details.unop_cont);
 
             if (toggled) {
@@ -1656,7 +1714,7 @@ require("startsession.php");
                 if (!reqAlertStatus) {
                     $('#reqalert').addClass('d-none');
                 }
-                if(chemstate) {
+                if (chemstate) {
                     $('#chemState').removeClass('d-none');
                 }
                 $('#reqalert').html('');
@@ -1700,6 +1758,23 @@ require("startsession.php");
                 });
         }
 
+        async function qty_unit_options(current_unit, select_id) {
+            $.get(urldata, {
+                qty_unit_options: true,
+                current_unit: current_unit
+            },
+                async function (d) {
+                    $(`select#${select_id}`).empty();
+                    $(`select#${select_id}`).append(d);
+                },
+                'html'
+            )
+                .fail(function (e) {
+                    alert("Error in loading quantity unit options. Please refresh the page and try again.");
+                    console.log(e);
+                });
+        }
+
         $(document).on('click', '.returnbtn', async function () {
             let id = $(this).data('return');
             console.log(id);
@@ -1714,9 +1789,11 @@ require("startsession.php");
                 clocation = "Dispatched";
             }
 
+            await qty_unit_options(details.unit, "return_unit");
+
             $("#returnChemicalId").val(id);
-            $("#return_unit").text(details.unit);
             $("#return_currentLocation").val(details.location);
+            $("#return-openedLevel").text(details.level + details.unit);
             $('#returnName').text(details.name);
             $("#return-chemBrand").text(details.brand);
             $('#return-contSize').text(details.container_size + '' + details.unit);
@@ -1748,6 +1825,9 @@ require("startsession.php");
             } else if (details.location === 'dispatched') {
                 clocation = "Dispatched";
             }
+
+            $("#dispatch_openedContainerLevel").text(details.level + details.unit);
+            $('#dispatch_closedContainerCount').text(details.unop_cont + ' Container/s');
 
             $('#dispatchChemicalId').val(details.id);
             $("#dispatchName").text(details.name)
