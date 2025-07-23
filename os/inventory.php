@@ -351,9 +351,9 @@ require("startsession.php");
             <!-- edit chemical -->
             <form id="editChemForm">
                 <div class="row g-2 text-dark">
-                    <div class="modal-lg modal fade text-dark modal-edit" id="editModal" tabindex="-1"
-                        aria-labelledby="edit" aria-hidden="true">
-                        <div class="modal-dialog">
+                    <div class="modal fade text-dark modal-edit" id="editModal" tabindex="-1" aria-labelledby="edit"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
                                     <h1 class="modal-title fs-5">Edit Chemical Details</h1>
@@ -745,7 +745,7 @@ require("startsession.php");
                                             <label class="btn btn-outline-dark" for="dispatchAll">Dispatch
                                                 Everything</label>
                                         </div>
-                                        <div class="col-lg-8 mb-2">
+                                        <div class="col-lg-4 mb-2">
                                             <label for="dispatch-transaction" class="form-label fw-medium">Select
                                                 Transaction Dispatch:</label>
                                             <select name="dispatch-transaction" id="dispatch-transaction"
@@ -753,6 +753,11 @@ require("startsession.php");
                                             </select>
                                             <p class="text-body-secondary mt-2">Note: You can only dispatch a chemical
                                                 to prepared and approved/accepted transactions.</p>
+                                        </div>
+                                        <div class="col-4 mb-2">
+                                            <p class="fw-medium">Current Transaction Dispatch Information:</p>
+                                            <p id="current_transaction_info" class="fw-light ms-2">Please select a
+                                                transaction.</p>
                                         </div>
                                     </div>
                                     <p
@@ -896,28 +901,30 @@ require("startsession.php");
                                     </div>
                                     <div class="row mb-2">
                                         <div class="col-5 mb-2">
-                                            <label for="container_count" class="form-label fw-medium">Returned number of
+                                            <label for="container_count" class="form-label fw-medium">Number of
                                                 closed container (not used)
                                                 to return:</label>
                                             <input type="number" name="container_count" id="container_count"
                                                 class="form-control w-50" autocomplete="one-time-code">
                                         </div>
                                         <div class="col-4 mb-2">
-
+                                            <p class="fw-medium">Current Transaction Dispatch Information:</p>
+                                            <p id="return_current_transaction_info" class="fw-light ms-2">Please select
+                                                a transaction.</p>
                                         </div>
                                     </div>
                                     <p
                                         class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
-                                        Total Container Count Information</p>
+                                        Dispatched Container Summary</p>
 
                                     <div class="row mb-2 user-select-none">
                                         <div class="col-3">
                                             <p class="fw-medium mb-2">Opened Container Level:</p>
-                                            <p class="ps-2 mb-2" id="return_openedContainerLevel"></p>
+                                            <p class="ps-2 mb-2 fw-light" id="return_openedContainerLevel"></p>
                                         </div>
                                         <div class="col-3">
                                             <p class="fw-medium mb-2">Closed Container Count:</p>
-                                            <p class="ps-2 mb-2" id="return_closedContainerCount"></p>
+                                            <p class="ps-2 mb-2 fw-light" id="return_closedContainerCount"></p>
                                         </div>
                                     </div>
 
@@ -1678,6 +1685,13 @@ require("startsession.php");
                 $('#expdatewarning').html('').addClass('d-none');
             }
 
+            let clocation = 'Not defined';
+            if (details.location == 'main_storage') {
+                clocation = "Main Storage";
+            } else if (details.location == 'dispatched') {
+                clocation = "Dispatched";
+            }
+
             $("#edit-id").val(details.id);
             $('#edit-name').val(details.name);
             $('#edit-chemBrand').val(details.brand);
@@ -1690,7 +1704,7 @@ require("startsession.php");
             $('#edit-chemUnit').val(details.unit);
             $('#edit-restockThreshold').val(details.threshold);
             $('#edit-location').val(details.location);
-            $('#view-location').text(details.location);
+            $('#view-location').text(clocation);
             $('#view-chemUnit').text(details.unit);
             $('#addinfo').html(function () {
                 return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
@@ -1700,7 +1714,7 @@ require("startsession.php");
             });
 
             $("#openedContainerLevel").text(details.level + details.unit);
-            $("#closedContainerCount").text(details.unop_cont);
+            $("#closedContainerCount").text(details.unop_cont + " Container/s");
 
             if (toggled) {
                 toggle();
@@ -1802,11 +1816,34 @@ require("startsession.php");
             $('#return-containerCount').text(total_container_count + ' Container/s');
             $("#return-cstatus").text(clocation);
 
+            $("#return_openedContainerLevel").text(details.level + details.unit);
+            $("#return_closedContainerCount").text(details.unop_cont + " Container/s")
+
             await get_transaction_return(details.name, details.brand, details.container_size, details.unit);
 
 
             $("#returnChemModal").modal('show');
+            $("#returnChemicalForm").on('change', "select#return_transaction", function () {
+                let transid = $(this).val();
 
+                $.get(urldata, { dispatch_cur_transchem: true, chemId: id, transid: transid }, function (d) {
+                    let openedLevel = 0.0;
+                    let closedCont = 0;
+                    let cont_size = details.container_size;
+
+                    while(d > cont_size){
+                        openedLevel = d - cont_size;
+                        closedCont++
+                    }
+
+                    let amount = openedLevel + details.unit + " (" + closedCont + " Container/s)";
+                    $("p#return_current_transaction_info").text(d + " " + amount);
+                }, 'html')
+                    .fail(function (e) {
+                        $("p#return_current_transaction_info").text("Error");
+                        console.log(e);
+                    });
+            });
         });
 
         $(document).on('click', '.dispatchbtn', async function () {
@@ -1844,6 +1881,18 @@ require("startsession.php");
                 $("#dispatchValue, #includeOpened").prop('disabled', checked);
             })
             $("#dispatchChemModal").modal('show');
+
+            $("#dispatchChemicalForm").on('change', "select#dispatch-transaction", function () {
+                let transid = $(this).val();
+
+                $.get(urldata, { dispatch_cur_transchem: true, chemId: id, transid: transid }, function (d) {
+                    $("p#current_transaction_info").text(d);
+                }, 'html')
+                    .fail(function (e) {
+                        $("p#current_transaction_info").text("Error");
+                        console.log(e);
+                    });
+            });
         });
 
 

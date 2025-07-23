@@ -800,8 +800,8 @@ if (isset($_GET['transaction_options']) && $_GET['transaction_options'] === 'tru
     $sql = "SELECT id FROM transactions WHERE transaction_status = 'Accepted';";
     $res = mysqli_query($conn, $sql);
 
+    echo "<option selected>Select Transaction</option>";
     if (mysqli_num_rows($res) > 0) {
-        echo "<option value=''>Select Transaction</option>";
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             ?>
@@ -851,8 +851,8 @@ if (isset($_GET['dispatched_transactions']) && $_GET['dispatched_transactions'] 
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
+    echo "<option value=''>Select Transaction</option>";
     if (mysqli_num_rows($res) > 0) {
-        echo "<option value=''>Select Transaction</option>";
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             ?>
@@ -963,5 +963,36 @@ if(isset($_GET['qty_unit_options']) && $_GET['qty_unit_options'] === 'true') {
     foreach ($unit_option as $option) {
         echo "<option value='$option'>$option</option>";
     }
+    exit();
+}
+
+
+if(isset($_GET['dispatch_cur_transchem']) && $_GET['dispatch_cur_transchem'] === 'true'){
+    $transid = $_GET['transid'];
+    $chemid = $_GET['chemId'];
+
+    $sql = "SELECT amt_used FROM transaction_chemicals WHERE trans_id = ? AND chem_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt, $sql)){
+        http_response_code(400);
+        echo "There seems to be an issue. Please try again later.";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 'ii', $transid, $chemid);
+    mysqli_stmt_execute($stmt);
+
+    $res = mysqli_stmt_get_result($stmt);
+
+    if(mysqli_num_rows($res) > 0){
+        $row = mysqli_fetch_assoc($res);
+        http_response_code(200);
+        echo $row['amt_used'];
+        exit();
+    } 
+    mysqli_stmt_close($stmt);
+    http_response_code(200);
+    echo "No dispatched amount set for transaction ID $transid.";
     exit();
 }

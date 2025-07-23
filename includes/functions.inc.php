@@ -3378,6 +3378,11 @@ function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $includ
             $final_container++;
         }
 
+        if($final_chemLevel == 0){
+            $final_chemLevel = $original_data['container_size'];
+            $final_container--;
+        }
+
         // throw new Exception("$old_chemLevel $oldunop $chemLevel $new_unop_containers");
         // throw new Exception("$chemLevel_to_revert $container_to_revert");
 
