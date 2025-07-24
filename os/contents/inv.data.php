@@ -522,10 +522,28 @@ $logtypes = [
     'used'
 ];
 
+$unit_values = [
+    'mass' => [
+        'mg' => 0.001,
+        'g' => 1,
+        'kg' => 1000
+    ],
+    'volume' => [
+        'mL' => 0.001,
+        'L' => 1,
+        'gal' => 3.78541 // US gallon
+    ],
+    'box' => 1, // assuming box is a unit of count
+    'pc' => 1, // piece
+    'canister' => 1 // canister
+];
+
 if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
-    $chemId = $_POST['chemid'];
+    $chemId = $_POST['chemid'] ?? NULL;
     $qty = isset($_POST['qty']) ? $_POST['qty'] : (float) 0;
     $logtype = $_POST['logtype'];
+    $main_unit = $_POST['main_unit'] ?? NULL;
+    $unit = isset($_POST['qty_unit']) ? $_POST['qty_unit'] : NULL;
     $ologtype = isset($_POST['other_logtype']) ? $_POST['other_logtype'] : NULL;
     $op = isset($_POST['operator']) ? $_POST['operator'] : NULL;
     $notes = $_POST['notes'];
@@ -534,6 +552,12 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     // no of container used
     $ccontainer = isset($_POST['containercount']) ? $_POST['containercount'] : (int) 0;
 
+    if ($chemId === NULL || $main_unit === NULL) {
+        http_response_code(400);
+        echo "There seems to be a problem loading the chemical data. Please try again later.";
+        exit();
+    }
+
     if (!$wcontainer) {
         if (empty($qty) || !is_numeric($qty)) {
             http_response_code(400);
@@ -541,6 +565,30 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
             exit();
         }
     }
+
+    if ($main_unit === 'mg' || $main_unit === 'g' || $main_unit === 'kg') {
+        $unit_option = ['mg', 'g', 'kg'];
+    } elseif ($main_unit === 'box' || $main_unit === 'pc' || $unit === 'canister') {
+        $unit_option = ['box', 'pc', 'canister'];
+    } elseif ($main_unit === 'mL' || $main_unit === 'L') {
+        $unit_option = ['mL', 'L', 'gal'];
+    } else {
+        $unit_option = [];
+    }
+
+    if ($unit === NULL || !is_string($unit)) {
+        http_response_code(400);
+        echo "Invalid or missing quantity unit.";
+        exit();
+    }
+
+    if (!in_array($unit, $unit_option)) {
+        http_response_code(400);
+        echo "Invalid quantity unit.";
+        exit();
+    }
+
+    // unit conversion
 
     if (!is_numeric($chemId) || empty($chemId)) {
         http_response_code(400);
@@ -947,7 +995,7 @@ if (isset($_GET['qty_unit_options']) && $_GET['qty_unit_options'] === 'true') {
     } elseif ($cur_unit === 'box' || $cur_unit === 'pc' || $cur_unit === 'canister') {
         $unit_option = ['box', 'pc', 'canister'];
     } elseif ($cur_unit === 'mL' || $cur_unit === 'L') {
-        $unit_option = ['mL', 'L'];
+        $unit_option = ['mL', 'L', 'gal'];
     } else {
         $unit_option = [$cur_unit];
     }

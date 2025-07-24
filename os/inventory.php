@@ -142,7 +142,10 @@ require("startsession.php");
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title">
-                            <h1 class="modal-title fs-5 text-light">Item Logs</h1>
+                            <h1 class="modal-title fs-5 text-light">
+                                <i class="bi bi-journal-text me-2"></i>
+                                Item Logs
+                            </h1>
                             <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
                                 aria-label="Close"><i class="bi bi-x"></i></button>
                         </div>
@@ -188,7 +191,10 @@ require("startsession.php");
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title">
-                            <h1 class="modal-title fs-5 text-light">Item Log</h1>
+                            <h1 class="modal-title fs-5 text-light">
+                                <i class="bi bi-journal-text me-2"></i>
+                                Item Log<span class="text-secondary mx-2">|</span>Adjust Item
+                            </h1>
                             <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
                                 aria-label="Close"><i class="bi bi-x"></i></button>
                         </div>
@@ -233,6 +239,7 @@ require("startsession.php");
                                 <div class="tab-pane fade" id="adjust" role="tabpanel" tabindex="0">
 
                                     <form id="adjustform">
+                                        <input type="hidden" name="main_qty_unit" id="main_qty_unit">
                                         <input type="hidden" name="chemid" class="log-chem-id">
                                         <h3 class="fw-medium text-center mt-2">Adjust Item</h3>
                                         <p class="text-body-secondary text-center fw-light">Adjust item levels
@@ -242,7 +249,7 @@ require("startsession.php");
                                                 <label for="adjust-name" class="form-label fw-medium">Item
                                                     Name:</label>
                                                 <input type="text" id="adjust-name"
-                                                    class="ps-2 form-control-plaintext chem-name" readonly>
+                                                    class="form-control-plaintext chem-name" readonly>
                                             </div>
                                             <div class="col-lg-3 mb-2">
                                                 <label for="adjust-curlevel" class="form-label fw-medium">Currently
@@ -263,30 +270,38 @@ require("startsession.php");
                                                 </p>
                                             </div>
                                             <div class="col-lg-3 mb-2">
-                                                <label for="adjust-qty" class="form-label fw-medium">Quantity</label>
+                                                <label for="adjust-qty" class="form-label fw-medium">Quantity:</label>
                                                 <div class="d-flex">
-                                                    <input type="number" class="form-control ps-2 w-50" id="adjust-qty"
+                                                    <input type="number" class="form-control ps-2" id="adjust-qty"
                                                         name="qty">
-                                                    <span class="qty-unit ms-2 my-auto"></span>
+                                                    <!-- <span class="qty-unit ms-2 my-auto"></span> -->
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" name="containerchk" type="checkbox"
                                                         id="wholecontainercheck">
-                                                    <label class="form-check-label text-muted"
+                                                    <label class="form-check-label text-muted user-select-none"
                                                         for="wholecontainercheck">
-                                                        Whole Container
+                                                        Whole Item
                                                     </label>
                                                 </div>
+                                            </div>
+                                            <div class="col-3 mb-2">
+                                                <label for="adjust_qty_unit" class="form-label fw-medium">Unit to
+                                                    use:</label>
+                                                <select name="qty_unit" id="adjust_qty_unit"
+                                                    class="form-select"></select>
+                                                <p class="text-body-secondary">Note: This is only for adjustment. The
+                                                    original unit will remain unchanged.</p>
                                             </div>
                                             <div class="col-lg-3 mb-2" style="display: none;"
                                                 id="adjust-containerinput">
                                                 <label class="form-label fw-medium" for="adjust-container">
-                                                    Container Count
+                                                    Item Count:
                                                 </label>
                                                 <div class="d-flex">
                                                     <input type="number" class="form-control ps-2 w-50"
                                                         id="adjust-container" name="containercount" disabled>
-                                                    <span class="fw-light ms-2 my-auto">Container/s</span>
+                                                    <span class="fw-light ms-2 my-auto">Item/s</span>
                                                 </div>
                                                 <p class="fw-light">Note. Containers with different capacity should be
                                                     added as a separate item.</p>
@@ -356,7 +371,10 @@ require("startsession.php");
                         <div class="modal-dialog modal-xl modal-dialog-scrollable">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
-                                    <h1 class="modal-title fs-5">Edit Item</h1>
+                                    <h1 class="modal-title fs-5">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        Item Details<span class="text-secondary mx-2">|</span>Edit Item
+                                    </h1>
                                     <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                             class="bi text-light bi-x"></i></button>
                                 </div>
@@ -510,6 +528,7 @@ require("startsession.php");
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
+                                    <i class="bi bi-plus-square me-2"></i>
                                     <h1 class="modal-title fs-5">Add New Item</h1>
                                     <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                             class="bi text-light bi-x"></i></button>
@@ -1806,7 +1825,7 @@ require("startsession.php");
             $("#return_closedContainerCount").text(details.unop_cont + " Container/s")
 
             let transreturn = await get_transaction_return(details.name, details.brand, details.container_size, details.unit);
-            if(!transreturn) {
+            if (!transreturn) {
                 $("#returnChemicalForm button.return-proceed-btn, #returnChemicalForm button[type='submit']").prop('disabled', true);
             } else {
                 $("#returnChemicalForm button.return-proceed-btn, #returnChemicalForm button[type='submit']").prop('disabled', false);
@@ -2023,17 +2042,20 @@ require("startsession.php");
                     id: id
                 },
                 dataType: 'json'
-            }).done(function (data) {
+            }).done(async function (data) {
                 console.log(data);
 
                 if (data.success) {
                     let d = JSON.parse(data.success);
                     $(".log-chem-id").val(d.id);
                     $(".chem-name").val(d.name);
-                    $(".qty-unit").text(' - ' + d.quantity_unit);
+                    // $(".qty-unit").text(' - ' + d.quantity_unit);
+                    $("#main_qty_unit").val(d.quantity_unit);
+
+                    await qty_unit_options(d.quantity_unit, "adjust_qty_unit");
 
                     $("#adjust-curlevel").text(d.chemLevel + '/' + d.container_size + d.quantity_unit + ' (' + d.unop_cont + ' container/s left.)');
-                    $("#adjust-dispatched").text(d.log_type === 'Out' ? d.quantity + d.quantity_unit : "Item currently not dispatched.");
+                    $("#adjust-dispatched").text(d.chem_location === 'dispatched' ? "Item dispatched." : "Item available.");
 
                     if (!$("#wholecontainercheck").prop('checked')) {
                         $("#adjust-containerinput").hide();
@@ -2045,10 +2067,12 @@ require("startsession.php");
                             $("#adjust-containerinput").show();
                             $("#adjust-containerinput input").prop('disabled', false);
                             $("#adjust-qty").prop('disabled', true);
+                            $("#adjust_qty_unit").prop('disabled', true);
                         } else {
                             $("#adjust-containerinput").hide();
                             $("#adjust-containerinput input").prop('disabled', true);
                             $("#adjust-qty").prop('disabled', false);
+                            $("#adjust_qty_unit").prop('disabled', false);
                         }
                     })
 
