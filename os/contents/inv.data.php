@@ -9,7 +9,7 @@ $role = $_SESSION['user_role'];
 $user = $_SESSION['baID'];
 $branch = $_SESSION['branch'];
 
-$units = ['mg', 'g', 'kg', 'L', 'mL', 'box', 'pc', 'canister'];
+$units = ['mg', 'g', 'kg', 'L', 'mL', 'gal', 'box', 'pc', 'canister'];
 
 
 if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
@@ -92,7 +92,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     $unit = $_POST['edit-chemUnit'];
     $notes = $_POST['edit-notes'];
     $contSize = $_POST['edit-containerSize'];
-    $location = $_POST['location'];
+    // $location = $_POST['location'];
     $threshold = $_POST['edit-restockThreshold'];
     $pwd = $_POST['baPwd'];
 
@@ -142,7 +142,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         exit();
     }
 
-    $edit = editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $unit, $location, $threshold);
+    $edit = editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $unit, $threshold);
     if (isset($edit['error'])) {
         http_response_code(400);
         echo $edit['error'];
@@ -167,7 +167,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
     $expDate = $_POST['expDate'] ?? [];
     $containerSize = $_POST['containerSize'] ?? [];
     $containerCount = $_POST['containerCount'] ?? [];
-    $location = $_POST['location'] ?? [];
+    // $location = $_POST['location'] ?? [];
     $threshold = $_POST['restockThreshold'] ?? [];
     $baPwd = $_POST['baPwd'];
 
@@ -215,7 +215,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         'eDate' => $expDate,
         'csize' => $containerSize,
         'ccount' => $containerCount,
-        'location' => $location,
+        // 'location' => $location,
         'threshold' => $threshold
     ];
 
@@ -276,37 +276,38 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
         <hr class="my-2">
         <div class="row mb-2 pe-2">
             <div class="col-lg-3 mb-2">
-                <label for="name-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Chemical Name</label>
+                <label for="name-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Name</label>
                 <input type="text" name="name[]" id="name-<?= htmlspecialchars($uid) ?>" class="form-control form-add"
                     autocomplete="one-time-code">
             </div>
             <div class="col-lg-3 mb-2">
-                <label for="chemBrand-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Chemical Brand</label>
+                <label for="chemBrand-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Brand</label>
                 <input type="text" name="chemBrand[]" id="chemBrand-<?= htmlspecialchars($uid) ?>"
                     class="form-control form-add" autocomplete="one-time-code">
             </div>
             <div class="col-lg-2 mb-2">
-                <label for="containerSize-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Container Size</label>
+                <label for="containerSize-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Size</label>
                 <input type="text" name="containerSize[]" id="containerSize-<?= htmlspecialchars($uid) ?>"
                     class="form-control form-add" autocomplete="one-time-code">
             </div>
             <div class="col-lg-2 mb-2">
-                <label for="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Chemical Unit:</label>
+                <label for="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Unit:</label>
                 <select name="chemUnit[]" id="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-select"
                     autocomplete="one-time-code">
-                    <option value="" selected>Choose Chemical Unit</option>
+                    <option value="" selected>Choose Item Unit</option>
                     <option value="mg">mg</option>
                     <option value="g">g</option>
                     <option value="kg">kg</option>
-                    <option value="L">L</option>
                     <option value="mL">mL</option>
+                    <option value="L">L</option>
+                    <option value="gal">gal</option>
                     <option value="box">Box</option>
                     <option value="pc">Piece</option>
                     <option value="canister">Canister</option>
                 </select>
             </div>
             <div class="col-lg-2 mb-2">
-                <label for="containerCount-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Container
+                <label for="containerCount-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item
                     Count</label>
                 <input type="text" name="containerCount[]" id="containerCount-<?= htmlspecialchars($uid) ?>"
                     class="form-control form-add" autocomplete="one-time-code">
@@ -334,15 +335,6 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
                 <label for="notes-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Short Note</label>
                 <textarea name="notes[]" id="notes-<?= htmlspecialchars($uid) ?>" class="form-control"
                     placeholder="Optional short note . . . "></textarea>
-            </div>
-            <div class="col-lg-2 mb-2">
-                <label for="add-location" class="form-label fw-light">Chemical
-                    Location:</label>
-                <select name="location[]" id="add-location" class="form-select" autocomplete="one-time-code">
-                    <option value="" selected>Add Location</option>
-                    <option value="main_storage">Main Storage</option>
-                    <option value="dispatched">Dispatched</option>
-                </select>
             </div>
         </div>
         <div class="mb-2 d-flex">
@@ -859,10 +851,11 @@ if (isset($_GET['dispatched_transactions']) && $_GET['dispatched_transactions'] 
             <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
             <?php
         }
-    } else {
-        echo "<option disabled>No available accepted transactions</option>";
+        return true;
     }
+    echo "<option disabled>No available accepted transactions</option>";
     mysqli_close($conn);
+    return false;
 }
 
 // opened and closed quantity should be the total of what will return
@@ -934,22 +927,22 @@ if (isset($_POST['return_chemical']) && $_POST['return_chemical'] === 'true') {
 // }
 
 
-if(isset($_GET['qty_unit_options']) && $_GET['qty_unit_options'] === 'true') {
+if (isset($_GET['qty_unit_options']) && $_GET['qty_unit_options'] === 'true') {
     $cur_unit = $_GET['current_unit'];
 
-    if(empty($cur_unit) || !is_string($cur_unit)) {
-        http_response_code(400);
-        echo "Invalid unit.";
-        exit();
-    }
-    
-    if(!in_array($cur_unit, $units)){
+    if (empty($cur_unit) || !is_string($cur_unit)) {
         http_response_code(400);
         echo "Invalid unit.";
         exit();
     }
 
-    if($cur_unit === 'mg' || $cur_unit === 'g' || $cur_unit === 'kg') {
+    if (!in_array($cur_unit, $units)) {
+        http_response_code(400);
+        echo "Invalid unit.";
+        exit();
+    }
+
+    if ($cur_unit === 'mg' || $cur_unit === 'g' || $cur_unit === 'kg') {
         $unit_option = ['mg', 'g', 'kg'];
     } elseif ($cur_unit === 'box' || $cur_unit === 'pc' || $cur_unit === 'canister') {
         $unit_option = ['box', 'pc', 'canister'];
@@ -957,7 +950,7 @@ if(isset($_GET['qty_unit_options']) && $_GET['qty_unit_options'] === 'true') {
         $unit_option = ['mL', 'L'];
     } else {
         $unit_option = [$cur_unit];
-    }   
+    }
 
     echo "<option value='' selected>Choose Unit</option>";
     foreach ($unit_option as $option) {
@@ -967,39 +960,39 @@ if(isset($_GET['qty_unit_options']) && $_GET['qty_unit_options'] === 'true') {
 }
 
 
-if(isset($_GET['dispatch_cur_transchem']) && $_GET['dispatch_cur_transchem'] === 'true'){
+if (isset($_GET['dispatch_cur_transchem']) && $_GET['dispatch_cur_transchem'] === 'true') {
     $transid = $_GET['transid'];
     $chemid = $_GET['chemId'];
     $cont_size = $_GET['containerSize'];
     $return = isset($_GET['return']);
 
-    if(empty($chemid)){
+    if (empty($chemid)) {
         http_response_code(400);
         echo "Chemical ID missing. Please try again later.";
         exit();
     }
 
-    if(!is_numeric(trim($transid)) || !is_numeric(trim($chemid))){
+    if (!is_numeric(trim($transid)) || !is_numeric(trim($chemid))) {
         http_response_code(400);
         echo "Invalid Transaction ID or Chemical ID.";
         exit();
     }
 
-    if($return){
+    if ($return) {
         $main_chem = get_main_chemical($conn, $chemid);
-        if(isset($main_chem['error'])){
+        if (isset($main_chem['error'])) {
             http_response_code(400);
             echo $main_chem['error'];
             exit();
         }
-    } else{
+    } else {
         $main_chem = $chemid;
     }
 
     $sql = "SELECT amt_used FROM transaction_chemicals WHERE trans_id = ? AND chem_id = ?;";
     $stmt = mysqli_stmt_init($conn);
 
-    if(!mysqli_stmt_prepare($stmt, $sql)){
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
         http_response_code(400);
         echo "There seems to be an issue. Please try again later.";
         exit();
@@ -1010,13 +1003,13 @@ if(isset($_GET['dispatch_cur_transchem']) && $_GET['dispatch_cur_transchem'] ===
 
     $res = mysqli_stmt_get_result($stmt);
 
-    if(mysqli_num_rows($res) > 0){
+    if (mysqli_num_rows($res) > 0) {
         $row = mysqli_fetch_assoc($res);
         $amt_used = $row['amt_used'];
         http_response_code(200);
         $openedLevel = $amt_used % $cont_size;
         $closedContainer = (int) ($amt_used / $cont_size);
-        while($openedLevel > $cont_size){
+        while ($openedLevel > $cont_size) {
             $openedLevel -= $cont_size;
             $closedContainer++;
         }
@@ -1024,11 +1017,11 @@ if(isset($_GET['dispatch_cur_transchem']) && $_GET['dispatch_cur_transchem'] ===
             'openedLevel' => $openedLevel,
             'closedContainer' => $closedContainer
         ]);
-        
+
         exit();
-    } 
+    }
     mysqli_stmt_close($stmt);
     http_response_code(200);
-    echo json_encode(["error" => "No dispatched amount set for transaction ID $transid."]);
+    echo json_encode(["error" => "This item has no recorded amount set for transaction ID $transid."]);
     exit();
 }

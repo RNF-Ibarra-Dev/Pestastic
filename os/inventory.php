@@ -9,7 +9,7 @@ require("startsession.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operations Supervisor | Chemicals</title>
+    <title>Operations Supervisor | Inventory</title>
     <!-- <link rel="stylesheet" href="../../css/style.css"> -->
     <?php include('header.links.php'); ?>
 
@@ -26,7 +26,7 @@ require("startsession.php");
             <?php include('navbar.php'); ?>
             <!-- content -->
             <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2">
-                <h1 class="display-6 text-light mb-0 fw-medium text-center">Chemical Inventory</h1>
+                <h1 class="display-6 text-light mb-0 fw-bold text-center">Inventory Items</h1>
             </div>
             <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -34,10 +34,10 @@ require("startsession.php");
                         <i
                             class="bi bi-archive-fill me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold w-75 mx-auto align-middle mb-0">Total
-                            Chemicals
+                            Items
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Official count of approved chemicals.</p>
+                    <p class="fw-light mb-2">Official count of approved items.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_total"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -45,10 +45,10 @@ require("startsession.php");
                         <i
                             class="bi bi-box-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold w-75 mx-auto align-middle mb-0">
-                            Restock Chemicals
+                            Restock Items
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Number of chemicals below restock threshold.</p>
+                    <p class="fw-light mb-2">Number of items below restock threshold.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_low"></p>
                 </div>
                 <!-- <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -67,10 +67,10 @@ require("startsession.php");
                         <i
                             class="bi bi-calendar-x-fill me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold w-75 mx-auto align-middle mb-0">Expired
-                            Chemicals
+                            Items
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Number of chemicals past their expiration date.</p>
+                    <p class="fw-light mb-2">Number of items past their expiration date.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_expired"></p>
                 </div>
             </div>
@@ -83,7 +83,7 @@ require("startsession.php");
                             Entries
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Count of new chemicals that are up for approval.</p>
+                    <p class="fw-light mb-2">Count of new items that are up for approval.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_entries"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -91,10 +91,10 @@ require("startsession.php");
                         <i
                             class="bi bi-check-circle-fill me-2 bg-success bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold w-75 mx-auto align-middle mb-0">Available
-                            Chemicals
+                            Items
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Number of available and free chemicals inside the storage.</p>
+                    <p class="fw-light mb-2">Number of available and free items inside the storage.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_available"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -102,10 +102,10 @@ require("startsession.php");
                         <i
                             class="bi bi-truck-flatbed me-2 bg-secondary bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold mb-0 mx-auto">Dispatched
-                            Chemicals
+                            Items
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Number of chemicals being used at dispatched transaction places.</p>
+                    <p class="fw-light mb-2">Number of items being used at dispatched transaction places.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_dispatched"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -113,10 +113,10 @@ require("startsession.php");
                         <i
                             class="bi bi-x-octagon me-2 bg-danger bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold mb-0 mx-auto">Out
-                            of Stock Chemicals
+                            of Stock Items
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Obsolete chemicals. Zero stock and must be deleted from database.</p>
+                    <p class="fw-light mb-2">Obsolete items. Zero stock and must be deleted from database.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_out-of-stock"></p>
                 </div>
             </div>
@@ -142,7 +142,7 @@ require("startsession.php");
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title">
-                            <h1 class="modal-title fs-5 text-light">Chemical Logs</h1>
+                            <h1 class="modal-title fs-5 text-light">Item Logs</h1>
                             <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
                                 aria-label="Close"><i class="bi bi-x"></i></button>
                         </div>
@@ -157,7 +157,7 @@ require("startsession.php");
                                         <tr class="text-center align-middle">
                                             <th class="text-dark" scope="col">Date & Time</th>
                                             <th class="text-dark">Activity Type</th>
-                                            <th class="text-dark">Chemical</th>
+                                            <th class="text-dark">Item</th>
                                             <th class="text-dark">Amount</th>
                                             <th class="text-dark">Performed By</th>
                                             <th class="text-dark">Associated Transaction</th>
@@ -188,7 +188,7 @@ require("startsession.php");
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title">
-                            <h1 class="modal-title fs-5 text-light">Chemical Log</h1>
+                            <h1 class="modal-title fs-5 text-light">Item Log</h1>
                             <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
                                 aria-label="Close"><i class="bi bi-x"></i></button>
                         </div>
@@ -197,8 +197,8 @@ require("startsession.php");
                             <ul class="nav nav-tabs" id="myTab" role="tablist">
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
-                                        data-bs-target="#loghistory" type="button" role="tab"
-                                        aria-selected="true">Chemical Log History</button>
+                                        data-bs-target="#loghistory" type="button" role="tab" aria-selected="true">Item
+                                        Log History</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
@@ -234,12 +234,12 @@ require("startsession.php");
 
                                     <form id="adjustform">
                                         <input type="hidden" name="chemid" class="log-chem-id">
-                                        <h3 class="fw-medium text-center mt-2">Adjust Chemical</h3>
-                                        <p class="text-body-secondary text-center fw-light">Adjust chemical levels
+                                        <h3 class="fw-medium text-center mt-2">Adjust Item</h3>
+                                        <p class="text-body-secondary text-center fw-light">Adjust item levels
                                             accordingly.</p>
                                         <div class="row mb-2 px-2">
                                             <div class="col-lg-3 mb-2">
-                                                <label for="adjust-name" class="form-label fw-medium">Chemical
+                                                <label for="adjust-name" class="form-label fw-medium">Item
                                                     Name:</label>
                                                 <input type="text" id="adjust-name"
                                                     class="ps-2 form-control-plaintext chem-name" readonly>
@@ -289,7 +289,7 @@ require("startsession.php");
                                                     <span class="fw-light ms-2 my-auto">Container/s</span>
                                                 </div>
                                                 <p class="fw-light">Note. Containers with different capacity should be
-                                                    added as a separate chemical.</p>
+                                                    added as a separate item.</p>
                                             </div>
                                             <div class="col-lg-3 mb-2">
                                                 <label for="adjust-logtype" class="form-label fw-medium">Adjustment
@@ -330,7 +330,7 @@ require("startsession.php");
                                         </div>
                                         <p class="alert alert-info py-2 text-center w-75 mx-auto" id="adjustalert"
                                             style="display: none;"></p>
-                                        <button type="submit" class="btn btn-grad mx-auto">Adjust Chemical</button>
+                                        <button type="submit" class="btn btn-grad mx-auto">Adjust Item</button>
                                     </form>
 
                                 </div>
@@ -356,7 +356,7 @@ require("startsession.php");
                         <div class="modal-dialog modal-xl modal-dialog-scrollable">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
-                                    <h1 class="modal-title fs-5">Edit Chemical Details</h1>
+                                    <h1 class="modal-title fs-5">Edit Item</h1>
                                     <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                             class="bi text-light bi-x"></i></button>
                                 </div>
@@ -365,40 +365,41 @@ require("startsession.php");
                                     <input type="hidden" name="edit-id" id="edit-id" class="form-control">
                                     <p
                                         class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
-                                        Main Chemical Information</p>
+                                        Main Item Information</p>
 
                                     <div class="row mb-2">
 
                                         <div class="col-lg-3 mb-2">
-                                            <label for="edit-name" class="form-label fw-medium">Chemical Name:</label>
+                                            <label for="edit-name" class="form-label fw-medium">Item Name:</label>
                                             <input type="text" name="edit-name" id="edit-name"
                                                 class="ps-2 form-control-plaintext" readonly autocomplete="off">
                                         </div>
                                         <div class="col-lg-3 mb-2">
-                                            <label for="edit-chemBrand" class="form-label fw-medium">Chemical
+                                            <label for="edit-chemBrand" class="form-label fw-medium">Item
                                                 Brand:</label>
                                             <input type="text" name="edit-chemBrand" id="edit-chemBrand"
                                                 class="ps-2 form-control-plaintext" readonly autocomplete="off">
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="edit-contSize" class="form-label fw-medium">Container
+                                            <label for="edit-contSize" class="form-label fw-medium">Item
                                                 Size:</label>
                                             <input type="number" name="edit-containerSize" id="edit-contSize"
                                                 class="form-control-plaintext ps-2" readonly
                                                 autocomplete="one-time-code">
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="view-chemUnit" class="form-label fw-medium">Chemical
+                                            <label for="view-chemUnit" class="form-label fw-medium">Item
                                                 Unit:</label>
                                             <p id="view-chemUnit" class=" ps-2"></p>
                                             <select name="edit-chemUnit" id="edit-chemUnit" class="form-select d-none"
                                                 disabled autocomplete="one-time-code">
-                                                <option value="" selected>Choose Chemical Unit</option>
+                                                <option value="" selected>Choose Item Unit</option>
                                                 <option value="mg">mg</option>
                                                 <option value="g">g</option>
                                                 <option value="kg">kg</option>
-                                                <option value="L">L</option>
                                                 <option value="mL">mL</option>
+                                                <option value="L">L</option>
+                                                <option value="gal">gal</option>
                                                 <option value="box">Box</option>
                                                 <option value="pc">Piece</option>
                                                 <option value="canister">Canister</option>
@@ -433,29 +434,18 @@ require("startsession.php");
                                             <textarea name="edit-notes" id="edit-notes" style="resize: none !important;"
                                                 class="ps-2 form-control-plaintext" readonly></textarea>
                                         </div>
-                                        <div class="col-3 mb-2">
-                                            <label for="edit-location" class="form-label fw-medium">Chemical
-                                                Location:</label>
-                                            <p id="view-location" class="text-capitalize ps-2"></p>
-                                            <select name="location" id="edit-location" class="form-select d-none"
-                                                autocomplete="one-time-code">
-                                                <option value="" selected>Add Location</option>
-                                                <option value="main_storage">Main Storage</option>
-                                                <option value="Dispatched">Dispatched</option>
-                                            </select>
-                                        </div>
                                     </div>
 
                                     <p
                                         class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
-                                        Container Count Information</p>
+                                        Item Count Information</p>
                                     <div class="row mb-2 d-none user-select-none" id="chemState">
                                         <div class="col-3">
-                                            <p class="fw-medium mb-2">Opened Container Level:</p>
+                                            <p class="fw-medium mb-2">Opened Item Level:</p>
                                             <p class="ps-2 mb-2" id="openedContainerLevel"></p>
                                         </div>
                                         <div class="col-3">
-                                            <p class="fw-medium mb-2">Closed Container Count:</p>
+                                            <p class="fw-medium mb-2">Closed Item Count:</p>
                                             <p class="ps-2 mb-2" id="closedContainerCount"></p>
                                         </div>
                                     </div>
@@ -492,7 +482,7 @@ require("startsession.php");
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="pass" class="form-label fw-light">Change information? Enter manager
+                                    <label for="pass" class="form-label fw-light">Change item information? Enter manager
                                         <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control" id="pwd">
@@ -505,7 +495,7 @@ require("startsession.php");
                                 <button type="button" class="btn btn-grad" data-bs-target="#editModal"
                                     data-bs-toggle="modal">Go back</button>
                                 <button type="submit" class="btn btn-grad" id="saveChanges" disabled-id="edit-confirm"
-                                    disabled-name="delete">Edit Chemical</button>
+                                    disabled-name="delete">Edit Item</button>
                             </div>
                         </div>
                     </div>
@@ -520,7 +510,7 @@ require("startsession.php");
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
-                                    <h1 class="modal-title fs-5">Add New Chemical</h1>
+                                    <h1 class="modal-title fs-5">Add New Item</h1>
                                     <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                             class="bi text-light bi-x"></i></button>
                                 </div>
@@ -528,39 +518,40 @@ require("startsession.php");
                                     <!-- <input type="hidden" name="id" id="id" class="form-control"> -->
                                     <div class="row mb-2">
                                         <div class="col-lg-3 mb-2">
-                                            <label for="name" class="form-label fw-light">Chemical Name</label>
+                                            <label for="name" class="form-label fw-light">Item Name</label>
                                             <input type="text" name="name[]" id="add-name" class="form-control form-add"
                                                 autocomplete="one-time-code">
                                         </div>
                                         <div class="col-lg-3 mb-2">
-                                            <label for="chemBrand" class="form-label fw-light">Chemical Brand</label>
+                                            <label for="chemBrand" class="form-label fw-light">Item Brand</label>
                                             <input type="text" name="chemBrand[]" id="add-chemBrand"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
 
                                         <div class="col-lg-2 mb-2">
-                                            <label for="chemLevel" class="form-label fw-light">Container Size</label>
+                                            <label for="chemLevel" class="form-label fw-light">Item Size</label>
                                             <input type="text" name="containerSize[]" id="add-chemLevel"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="add-chemUnit" class="form-label fw-light">Chemical
+                                            <label for="add-chemUnit" class="form-label fw-light">Item
                                                 Unit:</label>
                                             <select name="chemUnit[]" id="add-chemUnit" class="form-select"
                                                 autocomplete="one-time-code">
-                                                <option value="" selected>Chemical Unit</option>
+                                                <option value="" selected>Item Unit</option>
                                                 <option value="mg">mg</option>
                                                 <option value="g">g</option>
                                                 <option value="kg">kg</option>
-                                                <option value="L">L</option>
                                                 <option value="mL">mL</option>
+                                                <option value="L">L</option>
+                                                <option value="gal">gal</option>
                                                 <option value="box">Box</option>
                                                 <option value="pc">Piece</option>
                                                 <option value="canister">Canister</option>
                                             </select>
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="chemLevel" class="form-label fw-light">Container Count</label>
+                                            <label for="chemLevel" class="form-label fw-light">Item Count</label>
                                             <input type="text" name="containerCount[]" id="add-chemLevel"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
@@ -596,23 +587,13 @@ require("startsession.php");
                                             <textarea name="notes[]" id="notes" class="form-control"
                                                 placeholder="Optional short note . . . "></textarea>
                                         </div>
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="add-location" class="form-label fw-light">Chemical
-                                                Location:</label>
-                                            <select name="location[]" id="add-location" class="form-select"
-                                                autocomplete="one-time-code">
-                                                <option value="" selected>Add Location</option>
-                                                <option value="main_storage">Main Storage</option>
-                                                <option value="dispatched">Dispatched</option>
-                                            </select>
-                                        </div>
                                     </div>
                                     <div id="addMoreChem"></div>
                                     <hr class="mt-2 mb-3">
                                     <div class="d-flex justify-content-between">
                                         <button type="button" class="btn btn-grad" id="addMoreChemBtn"><i
                                                 class="bi bi-plus-circle-dotted  me-2"></i> Add More
-                                            Chemical</button>
+                                            Item</button>
                                     </div>
 
                                 </div>
@@ -630,10 +611,10 @@ require("startsession.php");
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title">
-                                <h1 class="modal-title fs-5 text-light">Cancel New Chemical Stock Entry?</h1>
+                                <h1 class="modal-title fs-5 text-light">Cancel New Item Stock Entry?</h1>
                             </div>
                             <div class="modal-body">
-                                Are you sure you want to stop this chemical entry?
+                                Are you sure you want to stop this item entry?
                             </div>
                             <div class="modal-footer d-flex justify-content-between">
                                 <button type="button" class="btn btn-grad" data-bs-target="#addModal"
@@ -651,13 +632,13 @@ require("startsession.php");
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5" id="verifyAdd">Add New Chemical</h1>
+                                <h1 class="modal-title fs-5" id="verifyAdd">Add New Item</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="pass" class="form-label fw-light">Add Chemical? Enter manager
+                                    <label for="pass" class="form-label fw-light">Add Item? Enter manager
                                         <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control" id="addPwd">
@@ -671,7 +652,7 @@ require("startsession.php");
                                     data-bs-toggle="modal">Go
                                     back</button>
                                 <button type="submit" class="btn btn-grad" id="submitAdd" disabled-id="edit-confirm"
-                                    disabled-name="delete">Add New Chemical</button>
+                                    disabled-name="delete">Add New Item</button>
                             </div>
                         </div>
                     </div>
@@ -687,40 +668,40 @@ require("startsession.php");
                         <div class="modal-dialog modal-xl">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
-                                    <h1 class="modal-title fs-5">Set Transaction Chemical Dispatch</h1>
+                                    <h1 class="modal-title fs-5">Set Transaction Item Dispatch</h1>
                                     <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                             class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
                                     <p
                                         class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto user-select-none">
-                                        Chemical Information</p>
+                                        Item Information</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-2 mb-2">
-                                            <label for="dispatchName" class="form-label fw-medium">Chemical
+                                            <label for="dispatchName" class="form-label fw-medium">Item
                                                 Name:</label>
                                             <p id="dispatchName" class="fw-light ps-2"></p>
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="dispatch-chemBrand" class="form-label fw-medium">Chemical
+                                            <label for="dispatch-chemBrand" class="form-label fw-medium">Item
                                                 Brand:</label>
                                             <p id="dispatch-chemBrand" class="fw-light ps-2"></p>
                                         </div>
 
                                         <div class="col-lg-2 mb-2">
-                                            <label for="dispatch-contSize" class="form-label fw-medium">Container
+                                            <label for="dispatch-contSize" class="form-label fw-medium">Item
                                                 Size:</label>
                                             <p id="dispatch-contSize" class="fw-light ps-2"></p>
                                         </div>
 
                                         <div class="col-lg-3 mb-2">
-                                            <label for="dispatch-containerCount" class="form-label fw-medium">Container
+                                            <label for="dispatch-containerCount" class="form-label fw-medium">Item
                                                 Count
                                                 (Including Opened):</label>
                                             <p id="dispatch-containerCount" class="fw-light ps-2"></p>
                                         </div>
                                         <div class="col-lg-3 mb-2">
-                                            <label for="dispatch-cstatus" class="form-label fw-medium">Container
+                                            <label for="dispatch-cstatus" class="form-label fw-medium">Item
                                                 Location Status:</label>
                                             <p id="dispatch-cstatus" class="fw-light ps-2"></p>
                                         </div>
@@ -728,7 +709,7 @@ require("startsession.php");
 
                                     <div class="row mb-2">
                                         <div class="col-lg-4 mb-2">
-                                            <label for="dispatchValue" class="form-label fw-medium">Number of container
+                                            <label for="dispatchValue" class="form-label fw-medium">Number of items
                                                 to dispatch:</label>
                                             <input type="number" name="dispatchValue" id="dispatchValue"
                                                 class="form-control w-50" autocomplete="one-time-code">
@@ -737,7 +718,7 @@ require("startsession.php");
                                                     id="includeOpened">
                                                 <label class="form-check-label text-muted user-select-none"
                                                     for="includeOpened">
-                                                    Include opened container.
+                                                    Include opened items.
                                                 </label>
                                             </div>
                                             <input type="checkbox" class="btn-check" name="dispatchAll" id="dispatchAll"
@@ -751,7 +732,7 @@ require("startsession.php");
                                             <select name="dispatch-transaction" id="dispatch-transaction"
                                                 class="form-select w-50" autocomplete="one-time-code">
                                             </select>
-                                            <p class="text-body-secondary mt-2">Note: You can only dispatch a chemical
+                                            <p class="text-body-secondary mt-2">Note: You can only dispatch an item
                                                 to prepared and approved/accepted transactions.</p>
                                         </div>
                                         <div class="col-4 mb-2">
@@ -762,21 +743,21 @@ require("startsession.php");
                                     </div>
                                     <p
                                         class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
-                                        Container Count Information</p>
+                                        Item Count Information</p>
 
                                     <div class="row mb-2 user-select-none">
                                         <div class="col-3">
-                                            <p class="fw-medium mb-2">Opened Container Level:</p>
+                                            <p class="fw-medium mb-2">Opened Item Level:</p>
                                             <p class="ps-2 mb-2" id="dispatch_openedContainerLevel"></p>
                                         </div>
                                         <div class="col-3">
-                                            <p class="fw-medium mb-2">Closed Container Count:</p>
+                                            <p class="fw-medium mb-2">Closed Item Count:</p>
                                             <p class="ps-2 mb-2" id="dispatch_closedContainerCount"></p>
                                         </div>
                                     </div>
 
                                     <p class="mb-0 mt-3 text-center alert alert-warning">Please note that this will
-                                        override current chemicals set in the chosen transaction. Proceed with caution.
+                                        override current items set in the chosen transaction. Proceed with caution.
                                     </p>
                                 </div>
                                 <div class="modal-footer d-flex justify-content-between">
@@ -794,13 +775,13 @@ require("startsession.php");
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5" id="verifyAdd">Dispatch Chemical</h1>
+                                <h1 class="modal-title fs-5" id="verifyAdd">Dispatch Item</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="pass" class="form-label fw-light">Dispatch Chemical? Enter Operations
+                                    <label for="pass" class="form-label fw-light">Dispatch Item? Enter Operations
                                         Supervisor
                                         <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
@@ -815,7 +796,7 @@ require("startsession.php");
                                 <button type="button" class="btn btn-grad" data-bs-target="#dispatchChemModal"
                                     data-bs-toggle="modal">Go
                                     back</button>
-                                <button type="submit" class="btn btn-grad">Dispatch Chemical</button>
+                                <button type="submit" class="btn btn-grad">Dispatch Item</button>
                             </div>
                         </div>
                     </div>
@@ -831,43 +812,43 @@ require("startsession.php");
                         <div class="modal-dialog modal-xl ">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
-                                    <h1 class="modal-title fs-5">Return Dispatched Chemical</h1>
+                                    <h1 class="modal-title fs-5">Return Dispatched Item</h1>
                                     <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                             class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
                                     <div class="row mb-2">
                                         <div class="col-lg-2 mb-2">
-                                            <label for="returnName" class="form-label fw-medium">Chemical
+                                            <label for="returnName" class="form-label fw-medium">Item
                                                 Name:</label>
                                             <p id="returnName" class="fw-light ps-2"></p>
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="return-chemBrand" class="form-label fw-medium">Chemical
+                                            <label for="return-chemBrand" class="form-label fw-medium">Item
                                                 Brand:</label>
                                             <p id="return-chemBrand" class="fw-light ps-2"></p>
                                         </div>
 
                                         <div class="col-lg-2 mb-2">
-                                            <label for="return-contSize" class="form-label fw-medium">Container
+                                            <label for="return-contSize" class="form-label fw-medium">Item
                                                 Size:</label>
                                             <p id="return-contSize" class="fw-light ps-2"></p>
                                         </div>
 
                                         <div class="col-lg-2 mb-2">
                                             <label for="return-openedLevel" class="form-label fw-medium">Opened
-                                                Container Level:</label>
+                                                Item Level:</label>
                                             <p id="return-openedLevel" class="fw-light ps-2"></p>
                                         </div>
 
                                         <div class="col-lg-2 mb-2">
-                                            <label for="return-containerCount" class="form-label fw-medium">Container
+                                            <label for="return-containerCount" class="form-label fw-medium">Item
                                                 Count
                                                 (Including Opened):</label>
                                             <p id="return-containerCount" class="fw-light ps-2"></p>
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="return-cstatus" class="form-label fw-medium">Container Location
+                                            <label for="return-cstatus" class="form-label fw-medium">Item Location
                                                 Status:</label>
                                             <p id="return-cstatus" class="fw-light ps-2"></p>
                                         </div>
@@ -876,12 +857,12 @@ require("startsession.php");
                                     <div class="row mb-2">
                                         <div class="col-5 mb-2">
                                             <label for="opened_container" class="form-label fw-medium">Returned quantity
-                                                of opened container:</label>
+                                                of opened items:</label>
                                             <input type="number" name="opened_container" id="opened_container"
                                                 class="form-control w-50" autocomplete="one-time-code">
                                             <p class="text-body-secondary mt-1">Note: This should not exceed the
                                                 quantity of
-                                                the container size and the quantity of dispatched chemicals.</p>
+                                                the item size and the quantity of dispatched items.</p>
                                         </div>
                                         <div class="col-2 mb-2">
                                             <label for="return_unit" class="form-label fw-medium">Unit:</label>
@@ -895,14 +876,14 @@ require("startsession.php");
                                                 class="form-select" autocomplete="one-time-code">
                                             </select>
                                             <p class="text-body-secondary mt-2">Note: You can only return this
-                                                chemical's dispatched transaction.</p>
+                                                item's dispatched transaction.</p>
                                         </div>
 
                                     </div>
                                     <div class="row mb-2">
                                         <div class="col-5 mb-2">
                                             <label for="container_count" class="form-label fw-medium">Number of
-                                                closed container (not used)
+                                                closed items (not used)
                                                 to return:</label>
                                             <input type="number" name="container_count" id="container_count"
                                                 class="form-control w-50" autocomplete="one-time-code">
@@ -915,28 +896,28 @@ require("startsession.php");
                                     </div>
                                     <p
                                         class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
-                                        Dispatched Container Summary</p>
+                                        Dispatched Item Summary</p>
 
                                     <div class="row mb-2 user-select-none">
                                         <div class="col-3">
-                                            <p class="fw-medium mb-2">Opened Container Level:</p>
+                                            <p class="fw-medium mb-2">Opened Item Level:</p>
                                             <p class="ps-2 mb-2 fw-light" id="return_openedContainerLevel"></p>
                                         </div>
                                         <div class="col-3">
-                                            <p class="fw-medium mb-2">Closed Container Count:</p>
+                                            <p class="fw-medium mb-2">Closed Item Count:</p>
                                             <p class="ps-2 mb-2 fw-light" id="return_closedContainerCount"></p>
                                         </div>
                                     </div>
 
                                     <p class="mb-0 mt-3 text-center alert alert-warning">Note: This is a summary of
-                                        multiple dispatched chemicals. This will
-                                        also override existing chemicals set in the chosen transaction. Proceed with
+                                        multiple dispatched items. This will
+                                        also override existing items set in the chosen transaction. Proceed with
                                         caution.
                                     </p>
                                 </div>
                                 <div class="modal-footer d-flex justify-content-between">
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    <button type="button" class="btn btn-grad return-proceed-btn" data-bs-toggle="modal"
                                         data-bs-target="#returnConfirmationModal">Proceed & Confirm</button>
                                 </div>
                             </div>
@@ -949,13 +930,13 @@ require("startsession.php");
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5" id="verifyAdd">Return Chemical</h1>
+                                <h1 class="modal-title fs-5" id="verifyAdd">Return Item</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="pass" class="form-label fw-light">Return Chemical? Enter Operations
+                                    <label for="pass" class="form-label fw-light">Return Item? Enter Operations
                                         Supervisor
                                         <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
@@ -970,7 +951,7 @@ require("startsession.php");
                                 <button type="button" class="btn btn-grad" data-bs-target="#returnChemModal"
                                     data-bs-toggle="modal">Go
                                     back</button>
-                                <button type="submit" class="btn btn-grad">Return Chemical</button>
+                                <button type="submit" class="btn btn-grad">Return Item</button>
                             </div>
                         </div>
                     </div>
@@ -985,7 +966,7 @@ require("startsession.php");
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5" id="verifyChanges">Chemical Deletion</h1>
+                                <h1 class="modal-title fs-5" id="verifyChanges">Item Deletion</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
@@ -999,7 +980,7 @@ require("startsession.php");
                                     </div>
                                 </div>
                                 <div id="passwordHelpBlock" class="form-text">
-                                    Note: deletion of chemicals are irreversible.
+                                    Note: deletion of items are irreversible.
                                 </div>
                                 <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
                                     id="del-emptyInput">
@@ -1008,7 +989,7 @@ require("startsession.php");
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
                                 <button type="submit" class="btn btn-grad" id="delsub">Delete
-                                    Chemical</button>
+                                    Item</button>
                             </div>
                         </div>
                     </div>
@@ -1018,12 +999,12 @@ require("startsession.php");
             <!-- tabble -->
             <div class="table-responsive-sm d-flex justify-content-center">
                 <table class="table align-middle table-hover m-3 os-table w-100 text-light">
-                    <caption class="text-light">Chemicals with <i class="bi bi-exclamation-diamond"></i> are pending for
+                    <caption class="text-light">Items with <i class="bi bi-exclamation-diamond"></i> are pending for
                         approval by the
                         Manager.</caption>
                     <thead>
                         <tr class="text-center text-wrap align-middle">
-                            <th scope="col">Chemical ID</th>
+                            <th scope="col">Item ID</th>
                             <th>Name</th>
                             <th>Brand</th>
                             <th>Opened Container Level</th>
@@ -1052,7 +1033,7 @@ require("startsession.php");
             </p>
 
             <div class="bg-light bg-opacity-25 rounded mx-3 mt-3 py-2">
-                <h1 class="text-center fw-medium">Chemical Used Summary</h1>
+                <h1 class="text-center fw-medium">Item Used Summary</h1>
             </div>
             <div class="hstack gap-3 my-3 mx-3">
                 <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light bg-transparent"
@@ -1065,8 +1046,8 @@ require("startsession.php");
                 <table class="table align-middle table-hover m-3 mt-2 os-table w-100 text-light">
                     <thead>
                         <tr class="text-center text-wrap align-middle">
-                            <th scope="col">Chemical ID</th>
-                            <th>Chemical Name & Brand</th>
+                            <th scope="col">Item ID</th>
+                            <th>Item Name & Brand</th>
                             <th>Container Size</th>
                             <th>Stored</th>
                             <th>Used Open</th>
@@ -1106,7 +1087,7 @@ require("startsession.php");
                     <thead>
                         <tr class="text-center text-wrap align-middle">
                             <!-- <th scope="col">Chemical ID</th> -->
-                            <th scope="col">Chemical Name & Brand</th>
+                            <th scope="col">Item Name & Brand</th>
                             <th>Container Size</th>
                             <th>In</th>
                             <th>Out</th>
@@ -1680,7 +1661,7 @@ require("startsession.php");
             var today = new Date();
             var exp = new Date(details.expDate);
             if (exp <= today) {
-                $("#expdatewarning").html('Caution. Chemical Expired.').toggleClass('d-none');
+                $("#expdatewarning").html('Caution. Item Expired.').toggleClass('d-none');
             } else {
                 $('#expdatewarning').html('').addClass('d-none');
             }
@@ -1722,7 +1703,7 @@ require("startsession.php");
             let reqAlertStatus = $('#reqalert').hasClass('d-none');
             let chemstate = $("#chemState").hasClass('d-none');
             if (details.req == 1) {
-                $('#reqalert').removeClass('d-none').html('This chemical is pending for approval by the Manager. You can only view the details of this chemical.').fadeIn(750);
+                $('#reqalert').removeClass('d-none').html('This item is pending for approval by the Manager. You can only view the details of this item.').fadeIn(750);
                 $('#chemState').removeClass('d-none');
             } else {
                 if (!reqAlertStatus) {
@@ -1763,6 +1744,11 @@ require("startsession.php");
                 async function (d) {
                     $("#return_transaction").empty();
                     $("#return_transaction").append(d);
+                    if (d) {
+                        return true;
+                    } else {
+                        return false;
+                    }
                 },
                 'html'
             )
@@ -1819,8 +1805,12 @@ require("startsession.php");
             $("#return_openedContainerLevel").text(details.level + details.unit);
             $("#return_closedContainerCount").text(details.unop_cont + " Container/s")
 
-            await get_transaction_return(details.name, details.brand, details.container_size, details.unit);
-
+            let transreturn = await get_transaction_return(details.name, details.brand, details.container_size, details.unit);
+            if(!transreturn) {
+                $("#returnChemicalForm button.return-proceed-btn, #returnChemicalForm button[type='submit']").prop('disabled', true);
+            } else {
+                $("#returnChemicalForm button.return-proceed-btn, #returnChemicalForm button[type='submit']").prop('disabled', false);
+            }
 
             $("#returnChemModal").modal('show');
             $("#returnChemModal").on('shown.bs.modal', function () {
@@ -2043,7 +2033,7 @@ require("startsession.php");
                     $(".qty-unit").text(' - ' + d.quantity_unit);
 
                     $("#adjust-curlevel").text(d.chemLevel + '/' + d.container_size + d.quantity_unit + ' (' + d.unop_cont + ' container/s left.)');
-                    $("#adjust-dispatched").text(d.log_type === 'Out' ? d.quantity + d.quantity_unit : "Chemical currently not dispatched.");
+                    $("#adjust-dispatched").text(d.log_type === 'Out' ? d.quantity + d.quantity_unit : "Item currently not dispatched.");
 
                     if (!$("#wholecontainercheck").prop('checked')) {
                         $("#adjust-containerinput").hide();

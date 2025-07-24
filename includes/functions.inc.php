@@ -493,7 +493,7 @@ function addChemv2($conn, $dataArr, $branch, $addby, $request)
 {
     mysqli_begin_transaction($conn);
     try {
-        $sql = "INSERT INTO chemicals (name, brand, quantity_unit, expiryDate, date_received, notes, branch, request, added_by, container_size, unop_cont, chemLevel, chem_location, restock_threshold) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        $sql = "INSERT INTO chemicals (name, brand, quantity_unit, expiryDate, date_received, notes, branch, request, added_by, container_size, unop_cont, chemLevel, restock_threshold, added_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW());";
         $stmt = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             echo "stmt failed";
@@ -503,7 +503,7 @@ function addChemv2($conn, $dataArr, $branch, $addby, $request)
         for ($i = 0; $i < count($dataArr['name']); $i++) {
             $cnote = $dataArr['notes'][$i] ?? '';
             $notes = $cnote === '' ? null : $cnote;
-            mysqli_stmt_bind_param($stmt, 'sssssssisiii', $dataArr['name'][$i], $dataArr['brand'][$i], $dataArr['unit'][$i], $dataArr['eDate'][$i], $dataArr['rDate'][$i], $notes, $branch, $request, $addby, $dataArr['csize'][$i], $dataArr['ccount'][$i], $dataArr['level'][$i], $dataArr['location'][$i], $dataArr['threshold'][$i]);
+            mysqli_stmt_bind_param($stmt, 'ssssssiisiiii', $dataArr['name'][$i], $dataArr['brand'][$i], $dataArr['unit'][$i], $dataArr['eDate'][$i], $dataArr['rDate'][$i], $notes, $branch, $request, $addby, $dataArr['csize'][$i], $dataArr['ccount'][$i], $dataArr['level'][$i], $dataArr['threshold'][$i]);
             if (!mysqli_stmt_execute($stmt)) {
                 throw new Exception("Error at " . $dataArr['name'] . ' ' . $dataArr['brand']);
             }
@@ -1786,11 +1786,11 @@ function check_request($conn, $id)
     }
 }
 
-function editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contsize, $unit, $location, $threshold, $approval = 0)
+function editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contsize, $unit, $threshold, $approval = 0)
 {
     mysqli_begin_transaction($conn);
     try {
-        $sql = "UPDATE chemicals SET name = ?, brand = ?, expiryDate = ?, notes = ?, branch = ?, updated_by = ?, date_received = ?, container_size = ?, quantity_unit = ?, chem_location = ?, restock_threshold = ?";
+        $sql = "UPDATE chemicals SET name = ?, brand = ?, expiryDate = ?, notes = ?, branch = ?, updated_by = ?, date_received = ?, container_size = ?, quantity_unit = ?, restock_threshold = ?";
 
         $approval == 0 ? $sql .= " WHERE id = ?;" : $sql .= ", approval = ? WHERE id = ?";
 
@@ -1800,9 +1800,9 @@ function editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch
         }
 
         if ($approval != 0) {
-            mysqli_stmt_bind_param($stmt, "sssssssissiii", $name, $brand, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $unit, $location, $threshold, $approval, $id);
+            mysqli_stmt_bind_param($stmt, "sssssssisiii", $name, $brand, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $unit, $threshold, $approval, $id);
         } else {
-            mysqli_stmt_bind_param($stmt, "sssssssissii", $name, $brand, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $unit, $location, $threshold, $id);
+            mysqli_stmt_bind_param($stmt, "sssssssisii", $name, $brand, $expDate, $notes, $branch, $upBy, $dateRec, $contsize, $unit, $threshold, $id);
         }
 
         mysqli_stmt_execute($stmt);
