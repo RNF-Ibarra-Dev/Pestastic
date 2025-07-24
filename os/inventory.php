@@ -37,8 +37,8 @@ require("startsession.php");
                             Items
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Official count of approved items.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_total"></p>
+                    <p class="fw-light mb-2 mt-auto">Official count of approved items.</p>
+                    <p class="fs-4 fw-bold mb-0" id="count_total"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
@@ -48,8 +48,8 @@ require("startsession.php");
                             Restock Items
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Number of items below restock threshold.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_low"></p>
+                    <p class="fw-light mb-2 mt-auto">Number of items below restock threshold.</p>
+                    <p class="fs-4 fw-bold mb-0" id="count_low"></p>
                 </div>
                 <!-- <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
@@ -70,8 +70,8 @@ require("startsession.php");
                             Items
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Number of items past their expiration date.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_expired"></p>
+                    <p class="fw-light mb-2 mt-auto">Number of items past their expiration date.</p>
+                    <p class="fs-4 fw-bold mb-0" id="count_expired"></p>
                 </div>
             </div>
             <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
@@ -83,8 +83,8 @@ require("startsession.php");
                             Entries
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Count of new items that are up for approval.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_entries"></p>
+                    <p class="fw-light mb-2 mt-auto">Count of new items that are up for approval.</p>
+                    <p class="fs-4 fw-bold mb-0" id="count_entries"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
@@ -94,30 +94,30 @@ require("startsession.php");
                             Items
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Number of available and free items inside the storage.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_available"></p>
+                    <p class="fw-light mb-2 mt-auto">Number of available and free items inside the storage.</p>
+                    <p class="fs-4 fw-bold mb-0" id="count_available"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
                             class="bi bi-truck-flatbed me-2 bg-secondary bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
-                        <p class="fs-5 fw-bold mb-0 mx-auto">Dispatched
+                        <p class="fs-5 fw-bold mb-0 w-75 mx-auto">Dispatched
                             Items
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Number of items being used at dispatched transaction places.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_dispatched"></p>
+                    <p class="fw-light mb-2 mt-auto">Number of items being used at dispatched transaction places.</p>
+                    <p class="fs-4 fw-bold mb-0" id="count_dispatched"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
                             class="bi bi-x-octagon me-2 bg-danger bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
-                        <p class="fs-5 fw-bold mb-0 mx-auto">Out
+                        <p class="fs-5 fw-bold mb-0 w-75 mx-auto">Out
                             of Stock Items
                         </p>
                     </div>
-                    <p class="fw-light mb-2">Obsolete items. Zero stock and must be deleted from database.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_out-of-stock"></p>
+                    <p class="fw-light mb-2 mt-auto">Obsolete items. Zero stock and must be deleted from database.</p>
+                    <p class="fs-4 fw-bold mb-0" id="count_out-of-stock"></p>
                 </div>
             </div>
 
@@ -214,7 +214,8 @@ require("startsession.php");
                             </ul>
                             <div class="tab-content" id="myTabContent">
                                 <div class="tab-pane fade show active" id="loghistory" role="tabpanel" tabindex="0">
-
+                                    <h3 class="fw-medium text-center mt-2">Item Log</h3>
+                                    <p class="text-secondary text-center fw-light">Recent log history from item changes.</p>
                                     <div class="table-responsive-sm  d-flex justify-content-center">
                                         <table class="table align-middle table-hover w-100" id="chemicalhistorylog">
                                             <thead>
