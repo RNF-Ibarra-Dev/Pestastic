@@ -531,11 +531,13 @@ $unit_values = [
     'volume' => [
         'mL' => 0.001,
         'L' => 1,
-        'gal' => 3.78541 // US gallon
+        'gal' => 3.78541
     ],
-    'box' => 1, // assuming box is a unit of count
-    'pc' => 1, // piece
-    'canister' => 1 // canister
+    'others' => [
+        'box' => 1,
+        'pc' => 1, 
+        'canister' => 1 
+    ]
 ];
 
 if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
@@ -543,7 +545,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     $qty = isset($_POST['qty']) ? $_POST['qty'] : (float) 0;
     $logtype = $_POST['logtype'];
     $main_unit = $_POST['main_unit'] ?? NULL;
-    $unit = isset($_POST['qty_unit']) ? $_POST['qty_unit'] : NULL;
+    $entered_unit = isset($_POST['qty_unit']) ? $_POST['qty_unit'] : NULL;
     $ologtype = isset($_POST['other_logtype']) ? $_POST['other_logtype'] : NULL;
     $op = isset($_POST['operator']) ? $_POST['operator'] : NULL;
     $notes = $_POST['notes'];
@@ -568,7 +570,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
 
     if ($main_unit === 'mg' || $main_unit === 'g' || $main_unit === 'kg') {
         $unit_option = ['mg', 'g', 'kg'];
-    } elseif ($main_unit === 'box' || $main_unit === 'pc' || $unit === 'canister') {
+    } elseif ($main_unit === 'box' || $main_unit === 'pc' || $main_unit === 'canister') {
         $unit_option = ['box', 'pc', 'canister'];
     } elseif ($main_unit === 'mL' || $main_unit === 'L') {
         $unit_option = ['mL', 'L', 'gal'];
@@ -576,19 +578,18 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
         $unit_option = [];
     }
 
-    if ($unit === NULL || !is_string($unit)) {
+    if ($entered_unit === NULL || !is_string($entered_unit)) {
         http_response_code(400);
         echo "Invalid or missing quantity unit.";
         exit();
     }
 
-    if (!in_array($unit, $unit_option)) {
+    if (!in_array($entered_unit, $unit_option)) {
         http_response_code(400);
         echo "Invalid quantity unit.";
         exit();
     }
 
-    // unit conversion
 
     if (!is_numeric($chemId) || empty($chemId)) {
         http_response_code(400);

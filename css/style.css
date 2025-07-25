@@ -14,14 +14,18 @@
   --night-bg-color: #16404d;
 }
 
-.text-success{
+.text-success {
   color: #68fdb9 !important;
+}
+
+.bg-custom-success {
+  background-color: rgba(104, 253, 185, 0.25);
 }
 
 #chemicallogmodal input.form-check-input,
 #addTransaction input.form-check-input,
 #viewEditForm input.form-check-input,
-#dispatchChemicalForm input.form-check-input{
+#dispatchChemicalForm input.form-check-input {
   border: 1px solid #16404d !important;
   background-color: #bababa !important;
 }

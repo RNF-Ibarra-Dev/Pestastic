@@ -1024,13 +1024,12 @@ require("startsession.php");
                         Manager.</caption>
                     <thead>
                         <tr class="text-center text-wrap align-middle">
-                            <th scope="col">Item ID</th>
-                            <th>Name</th>
-                            <th>Brand</th>
-                            <th>Opened Container Level</th>
-                            <th>Remaining Container/s</th>
-                            <th>Expiry Date</th>
-                            <th>Status</th>
+                            <th scope="col">Item No.</th>
+                            <th class="w-25">Item Name</th>
+                            <th>Stock Quantity</th>
+                            <th>Date Received</th>
+                            <th>Stock Status</th>
+                            <th>Location Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -1066,7 +1065,7 @@ require("startsession.php");
                 <table class="table align-middle table-hover m-3 mt-2 os-table w-100 text-light">
                     <thead>
                         <tr class="text-center text-wrap align-middle">
-                            <th scope="col">Item ID</th>
+                            <th scope="col">Item No.</th>
                             <th>Item Name & Brand</th>
                             <th>Container Size</th>
                             <th>Stored</th>

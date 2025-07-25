@@ -174,45 +174,62 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $now = date("Y-m-d");
             $exp = date_create($expDate);
             $remcom = $row['unop_cont'];
+            $dr = $row['date_received'];
+            $date_received = date_create($dr);
             $contsize = $row['container_size'];
             $unit = $row['quantity_unit'];
             $threshold = $row['restock_threshold'];
             $opened_container = $level > 0 ? 1 : 0;
             $cur_location = $row['chem_location'];
+            if($request === 1){
+                $location = "Stock Entry";
+            } else if($cur_location === 'main_storage'){
+                $location = "Main Storage";
+            } else if($cur_location === 'dispatched'){
+                $location = "Dispatched";
+            } else{
+                $location = "Unknown";
+            }
+            $stock_qty = $remcom + ($level > 0 ? 1 : 0);
             ?>
             <tr class="text-center">
                 <td scope="row"><?php
                 if ($cur_location === 'dispatched') {
                     echo htmlspecialchars("Dispatched Chemical ID: $id");
                 } else {
-                    echo htmlspecialchars($id); 
+                    echo htmlspecialchars($id);
                 }
                 ?></td>
                 <td>
-                    <?=
-                        $request === 1 ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='Pending Entry'></i><span class='fw-bold'>" . htmlspecialchars($name) . "</span><br>(Pending Entry)" : htmlspecialchars($name);
-                    ?>
-                </td>
-                <td><?= htmlspecialchars($brand) ?></td>
-                <td>
                     <?php
-                    if ((int) $level === (int) $contsize) {
-                        echo "Full";
-                    } else if ((int) $level === 0 && (int) $contsize) {
-                        echo "Empty";
+                    if ($request === 1) {
+                        ?>
+                        <i class="bi bi-exclamation-diamond text-warning" data-bs-toggle="tooltip" title="Pending Entry"></i><br>
+                        <span class="fw-bold"><?= htmlspecialchars("Item pending for entry: $name ($brand)") ?></span>
+                        <?php
                     } else {
-                        echo $level <= $contsize * 0.35
-                            ? "<span class='text-warning'>" . htmlspecialchars("$level$unit") . "</span> / " . htmlspecialchars("$contsize$unit")
-                            : htmlspecialchars("$level$unit / $contsize$unit");
+                        echo htmlspecialchars("$name ($brand)");
                     }
                     ?>
                 </td>
-                <td><?= htmlspecialchars($remcom) ?></td>
-                <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
-                    <?= htmlspecialchars(date_format($exp, "F j, Y")) ?>
+                <td><?= htmlspecialchars($stock_qty) ?></td>
+                <td>
+                    <?= htmlspecialchars(date_format($date_received, "F j, Y")) ?>
                 </td>
-                <td><?= $level === 0 && $remcom === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : (($level <= $contsize * 0.35) && (($opened_container + $remcom) < $threshold) ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Running Out</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
+                <td>
+                    <?php
+                    if ($request === 0) {
+                        if ($stock_qty <= $threshold) {
+                            echo "<span class='bg-warning px-2 py-1 bg-opacity-25 badge rounded-pill'>Running Out</span>";
+                        } else {
+                            echo "<span class='bg-custom-success px-2 py-1 badge rounded-pill'>Good</span>";
+                        }
+                    } else {
+                        echo "<span class='bg-info px-2 py-1 bg-opacity-25 badge rounded-pill'>Pending Entry</span>";
+                    }
+                    ?>
                 </td>
+                <td><?= htmlspecialchars($location) ?></td>
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
