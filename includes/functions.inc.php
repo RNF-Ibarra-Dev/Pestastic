@@ -3378,7 +3378,7 @@ function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $includ
             $final_container++;
         }
 
-        if($final_chemLevel == 0){
+        if ($final_chemLevel == 0) {
             $final_chemLevel = $original_data['container_size'];
             $final_container--;
         }
@@ -3660,7 +3660,7 @@ function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $cl
             $recorded_qty_used = $row['amt_used'];
         }
         mysqli_stmt_close($select_dispatched_amt_stmt);
-        
+
         $unit = $original_data['quantity_unit'];
         $closed_container_count = $closed_qty == 1 ? 0 : $closed_qty;
 
@@ -3828,7 +3828,7 @@ function get_main_chemical($conn, $dispatched_id)
 {
     $dispatched_id = get_chemical($conn, $dispatched_id);
 
-    if(isset($dispatched_id['error'])) {
+    if (isset($dispatched_id['error'])) {
         return ['error' => $dispatched_id['error']];
     }
 
@@ -3841,7 +3841,7 @@ function get_main_chemical($conn, $dispatched_id)
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-        return ['error'=>'Failed at preparing the checking of main chemical. Please try again later.'];
+        return ['error' => 'Failed at preparing the checking of main chemical. Please try again later.'];
     }
 
     mysqli_stmt_bind_param($stmt, 'ssds', $dispatched_id['name'], $dispatched_id['brand'], $dispatched_id['container_size'], $dispatched_id['quantity_unit']);
@@ -3853,16 +3853,47 @@ function get_main_chemical($conn, $dispatched_id)
     if ($num_rows === 0) {
         return false;
     } else if (mysqli_num_rows($result) > 1) {
-        return ['error'=>"Multiple records found for chemical {$dispatched_id['name']} ({$dispatched_id['brand']}). Please correct database immediately."];
+        return ['error' => "Multiple records found for chemical {$dispatched_id['name']} ({$dispatched_id['brand']}). Please correct database immediately."];
     }
 
     mysqli_stmt_close($stmt);
     return $row['id'];
 }
 
-function convert_to_main_unit($conn, $selected_unit, $main_unit){
+function get_unit_values($qty_unit)
+{
+    $unit_values = [
+        'mass' => [
+            'mg' => 0.001,
+            'g' => 1,
+            'kg' => 1000
+        ],
+        'volume' => [
+            'mL' => 0.001,
+            'L' => 1,
+            'gal' => 3.78541
+        ],
+        'others' => [
+            'box' => 1,
+            'pc' => 1,
+            'canister' => 1
+        ]
+    ];
+
+    foreach ($unit_values as $types => $units) {
+        foreach ($units as $unit => $values) {
+            if ($qty_unit === $unit) {
+                return $values;
+            }
+        }
+    }
+}
+
+
+function convert_to_main_unit($conn, $selected_unit, $main_unit)
+{
     $s_unit = strtolower($selected_unit);
     $m_unit = strtolower($main_unit);
 
-    
+
 }

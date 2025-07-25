@@ -567,6 +567,15 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
             exit();
         }
     }
+    http_response_code(400);
+    $chemical_details = get_chemical($conn, $chemId);
+    $actual_value = $qty * $chemical_details['container_size'];
+    $to_value = get_unit_values($entered_unit);
+    $converted_value = $actual_value * $to_value;
+    echo "$actual_value * $to_value = $converted_value$main_unit";
+
+    // echo json_encode($array);
+    exit();
 
     if (array_key_exists($main_unit, array_values($unit_values))) {
         http_response_code(400);
