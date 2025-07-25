@@ -215,7 +215,8 @@ require("startsession.php");
                             <div class="tab-content" id="myTabContent">
                                 <div class="tab-pane fade show active" id="loghistory" role="tabpanel" tabindex="0">
                                     <h3 class="fw-medium text-center mt-2">Item Log</h3>
-                                    <p class="text-secondary text-center fw-light">Recent log history from item changes.</p>
+                                    <p class="text-secondary text-center fw-light">Recent log history from item changes.
+                                    </p>
                                     <div class="table-responsive-sm  d-flex justify-content-center">
                                         <table class="table align-middle table-hover w-100" id="chemicalhistorylog">
                                             <thead>
@@ -1763,11 +1764,6 @@ require("startsession.php");
                 async function (d) {
                     $("#return_transaction").empty();
                     $("#return_transaction").append(d);
-                    if (d) {
-                        return true;
-                    } else {
-                        return false;
-                    }
                 },
                 'html'
             )
@@ -1825,11 +1821,12 @@ require("startsession.php");
             $("#return_closedContainerCount").text(details.unop_cont + " Container/s")
 
             let transreturn = await get_transaction_return(details.name, details.brand, details.container_size, details.unit);
-            if (!transreturn) {
-                $("#returnChemicalForm button.return-proceed-btn, #returnChemicalForm button[type='submit']").prop('disabled', true);
-            } else {
-                $("#returnChemicalForm button.return-proceed-btn, #returnChemicalForm button[type='submit']").prop('disabled', false);
-            }
+            // if (!transreturn) {
+            //     $("#returnChemicalForm button.return-proceed-btn, #returnChemicalForm button[type='submit']").prop('disabled', true);
+            // } else {
+            //     $("#returnChemicalForm button.return-proceed-btn, #returnChemicalForm button[type='submit']").prop('disabled', false);
+            // }
+            // console.log(transreturn);
 
             $("#returnChemModal").modal('show');
             $("#returnChemModal").on('shown.bs.modal', function () {
@@ -1842,7 +1839,11 @@ require("startsession.php");
                     if (d.error) {
                         $("p#return_current_transaction_info").text(d.error);
                     } else {
-                        $("p#return_current_transaction_info").text(d.openedLevel + details.unit + " (" + d.closedContainer + " Container/s)");
+                        if (d.openedLevel === 0) {
+                            $("p#return_current_transaction_info").text(d.closedContainer + " Container/s (" + details.container_size + details.unit + ")");
+                        } else {
+                            $("p#return_current_transaction_info").text(d.openedLevel + details.unit + " (" + d.closedContainer + " Container/s)");
+                        }
                     }
                 }, 'json')
                     .fail(function (e) {

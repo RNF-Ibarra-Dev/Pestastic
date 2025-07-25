@@ -535,8 +535,8 @@ $unit_values = [
     ],
     'others' => [
         'box' => 1,
-        'pc' => 1, 
-        'canister' => 1 
+        'pc' => 1,
+        'canister' => 1
     ]
 ];
 
@@ -544,7 +544,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     $chemId = $_POST['chemid'] ?? NULL;
     $qty = isset($_POST['qty']) ? $_POST['qty'] : (float) 0;
     $logtype = $_POST['logtype'];
-    $main_unit = $_POST['main_unit'] ?? NULL;
+    $main_unit = $_POST['main_qty_unit'] ?? NULL;
     $entered_unit = isset($_POST['qty_unit']) ? $_POST['qty_unit'] : NULL;
     $ologtype = isset($_POST['other_logtype']) ? $_POST['other_logtype'] : NULL;
     $op = isset($_POST['operator']) ? $_POST['operator'] : NULL;
@@ -556,7 +556,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
 
     if ($chemId === NULL || $main_unit === NULL) {
         http_response_code(400);
-        echo "There seems to be a problem loading the chemical data. Please try again later.";
+        echo "There seems to be a problem loading the chemical data. Please try again later. $chemId | $main_unit";
         exit();
     }
 
@@ -568,7 +568,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
         }
     }
 
-    if(array_key_exists($main_unit, array_values($unit_values))){
+    if (array_key_exists($main_unit, array_values($unit_values))) {
         http_response_code(400);
         echo var_dump($unit_values[$main_unit]);
         exit();
@@ -897,19 +897,19 @@ if (isset($_GET['dispatched_transactions']) && $_GET['dispatched_transactions'] 
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
-    echo "<option value=''>Select Transaction</option>";
     if (mysqli_num_rows($res) > 0) {
+        echo "<option value=''>Select Transaction</option>";
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             ?>
             <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
             <?php
         }
-        return true;
+    } else {
+        echo "<option selected disabled>No available accepted transactions</option>";
     }
-    echo "<option disabled>No available accepted transactions</option>";
     mysqli_close($conn);
-    return false;
+    exit();
 }
 
 // opened and closed quantity should be the total of what will return
