@@ -568,6 +568,12 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
         }
     }
 
+    if(array_key_exists($main_unit, array_values($unit_values))){
+        http_response_code(400);
+        echo var_dump($unit_values[$main_unit]);
+        exit();
+    }
+
     if ($main_unit === 'mg' || $main_unit === 'g' || $main_unit === 'kg') {
         $unit_option = ['mg', 'g', 'kg'];
     } elseif ($main_unit === 'box' || $main_unit === 'pc' || $main_unit === 'canister') {
@@ -729,7 +735,6 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
         echo "Please explain the reason for adjustment at the notes section.";
         exit();
     }
-    // valid logtype, final qty
 
     $adjust = adjust_chemical($conn, $chemId, $valid_logtype, $fccontainer, $final_qty, $notes, $user, $role, $branch, $usage_source);
     if (isset($adjust['error'])) {

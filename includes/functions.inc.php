@@ -3859,3 +3859,10 @@ function get_main_chemical($conn, $dispatched_id)
     mysqli_stmt_close($stmt);
     return $row['id'];
 }
+
+function convert_to_main_unit($conn, $selected_unit, $main_unit){
+    $s_unit = strtolower($selected_unit);
+    $m_unit = strtolower($main_unit);
+
+    
+}
