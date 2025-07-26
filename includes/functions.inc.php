@@ -3887,13 +3887,23 @@ function get_unit_values($qty_unit)
             }
         }
     }
+    return NULL;
 }
 
 
-function convert_to_main_unit($conn, $selected_unit, $main_unit)
+function convert_to_main_unit($input_unit, $main_unit, $value_to_convert)
 {
-    $s_unit = strtolower($selected_unit);
-    $m_unit = strtolower($main_unit);
+    $input_unit_factor = get_unit_values($input_unit);
+    if ($input_unit_factor === NULL) {
+        return ['error' => "Input unit '$input_unit' invalid."];
+        // return ['error' => var_dump($input_unit_factor)];
+    }
+    $main_unit_factor = get_unit_values($main_unit);
+    if ($main_unit_factor === NULL) {
+        return ['error' => "Invalid main unit '$main_unit'."];
+    }
 
-
+    $base_value = $value_to_convert * $input_unit_factor;
+    $converted_value = $base_value / $main_unit_factor;
+    return $converted_value;
 }

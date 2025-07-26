@@ -549,6 +549,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     $ologtype = isset($_POST['other_logtype']) ? $_POST['other_logtype'] : NULL;
     $op = isset($_POST['operator']) ? $_POST['operator'] : NULL;
     $notes = $_POST['notes'];
+    $chemical_details = get_chemical($conn, $chemId);
 
     $wcontainer = isset($_POST['containerchk']);
     // no of container used
@@ -568,13 +569,34 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
         }
     }
     http_response_code(400);
-    $chemical_details = get_chemical($conn, $chemId);
-    $actual_value = $qty * $chemical_details['container_size'];
-    $to_value = get_unit_values($entered_unit);
-    $converted_value = $actual_value * $to_value;
-    echo "$actual_value * $to_value = $converted_value$main_unit";
 
-    // echo json_encode($array);
+    if ($main_unit !== $entered_unit) {
+        $convert = convert_to_main_unit($entered_unit, $main_unit, $qty);
+        if (isset($convert['error'])) {
+            http_response_code(400);
+            echo $convert['error'];
+            exit();
+        }
+        $qty = $convert;
+    } else {
+        $qty = (float) $qty;
+    }
+
+    if ($qty <= 0) {
+        http_response_code(400);
+        echo "Quantity must be greater than 0.";
+        exit();
+    }
+
+    if (!$wcontainer) {
+        if ($qty > $chemical_details['container_size']) {
+            http_response_code(400);
+            echo "The quantity entered should not exceed the container size.";
+            exit();
+        }
+    }
+
+    echo var_dump($qty);
     exit();
 
     if (array_key_exists($main_unit, array_values($unit_values))) {
@@ -601,7 +623,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
 
     if (!in_array($entered_unit, $unit_option)) {
         http_response_code(400);
-        echo "Invalid quantity unit.";
+        echo "Invalid quantity unit '$entered_unit'.";
         exit();
     }
 
