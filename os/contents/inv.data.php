@@ -568,7 +568,7 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
             exit();
         }
     }
-    http_response_code(400);
+    // http_response_code(400);
 
     if ($main_unit !== $entered_unit) {
         $convert = convert_to_main_unit($entered_unit, $main_unit, $qty);
@@ -596,8 +596,8 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
         }
     }
 
-    echo var_dump($qty);
-    exit();
+    // echo var_dump($qty);
+    // exit();
 
     if (array_key_exists($main_unit, array_values($unit_values))) {
         http_response_code(400);
