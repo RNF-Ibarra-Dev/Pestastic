@@ -2765,6 +2765,7 @@ function reflect_chem_log($conn, $chemid, $qty, $containercount)
         $current_chemLevel = $current_chem_data['chemLevel'];
         $current_unop_cont = $current_chem_data['unop_cont'];
         $container_size = $current_chem_data['container_size'];
+        $unit = $current_chem_data['quantity_unit'];
 
         if ($containercount !== 0) {
             if ($containercount < 0) {
@@ -2777,18 +2778,35 @@ function reflect_chem_log($conn, $chemid, $qty, $containercount)
             $datatypes = "i";
             $data[] = $containercount;
         } else {
+
             if ($qty > 0) {
-                if (($current_chemLevel + $qty) > $container_size) {
-                    throw new Exception("Cannot add " . $qty . "mL. Current: " . $current_chemLevel . "mL. Max: " . $container_size . "mL. Remaining capacity: " . ($container_size - $current_chemLevel) . "mL.");
+                if ($current_chemLevel == $container_size) {
+                    $current_unop_cont++;
+                    $current_chemLevel = 0;
                 }
-            } else {
-                if (($current_chemLevel + $qty) < 0) {
-                    throw new Exception("Cannot remove " . abs($qty) . "mL. Only " . $current_chemLevel . "mL remaining in opened container.");
+                $total_chemLevel = $current_chemLevel + $qty;
+                while ($total_chemLevel > $container_size) {
+                    $total_chemLevel -= $container_size;
+                    $current_unop_cont++;
                 }
             }
-            $sql = "UPDATE chemicals SET chemLevel = chemLevel + ?";
-            $datatypes = "d";
-            $data[] = $qty;
+            $sql = "UPDATE chemicals SET chemLevel = ?, unop_cont = ?";
+            $datatypes = "di";
+            $data[] = $total_chemLevel;
+            $data[] = $current_unop_cont;
+
+            // if ($qty > 0) {
+            //     if (($current_chemLevel + $qty) > $container_size) {
+            //         throw new Exception("Cannot add " . $qty . ". Current: " . $current_chemLevel . "mL. Max: " . $container_size . "mL. Remaining capacity: " . ($container_size - $current_chemLevel) . "mL.");
+            //     }
+            // } else {
+            //     if (($current_chemLevel + $qty) < 0) {
+            //         throw new Exception("Cannot remove " . abs($qty) . "mL. Only " . $current_chemLevel . "mL remaining in opened container.");
+            //     }
+            // }
+            // $sql = "UPDATE chemicals SET chemLevel = chemLevel + ?";
+            // $datatypes = "d";
+            // $data[] = $qty;
         }
         $sql .= " WHERE id = ?;";
         $datatypes .= "i";
