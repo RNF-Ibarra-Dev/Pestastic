@@ -561,7 +561,7 @@ require("startsession.php");
                                             </select>
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="chemLevel" class="form-label fw-light">Item Count</label>
+                                            <label for="chemLevel" class="form-label fw-light">Item Count:</label>
                                             <input type="text" name="containerCount[]" id="add-chemLevel"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
@@ -580,9 +580,6 @@ require("startsession.php");
                                             <label for="expDate" class="form-label fw-light">Date Received</label>
                                             <input type="date" name="receivedDate[]" id="add-dateReceived"
                                                 class="form-control form-add form-date-rec">
-                                            <!-- <div class="text-body-secondary fw-light text-muted mt-2">
-                                                Note: if not specified, date received will set the date today.
-                                            </div> -->
                                         </div>
                                         <div class="col-lg-2 mb-2">
                                             <label for="expDate" class="form-label fw-light">Expiry Date</label>

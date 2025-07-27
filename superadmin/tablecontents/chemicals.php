@@ -11,8 +11,11 @@ if (isset($_POST["managerId"])) {
     echo $_SESSION['saID'];
     exit();
 }
+$role = $_SESSION['user_role'];
+$user = $_SESSION['saID'];
+$branch = $_SESSION['branch'];
 
-$units = ['mg', 'g', 'kg', 'L', 'mL'];
+$units = ['mg', 'g', 'kg', 'L', 'mL', 'gal', 'box', 'pc', 'canister'];
 
 // edit
 if (isset($_POST['action']) && $_POST['action'] == 'edit') {
@@ -409,6 +412,8 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
             $data['unop_cont'] = $row['unop_cont'];
             $data['container_size'] = $row['container_size'];
             $data['unit'] = $row['quantity_unit'];
+            $data['threshold'] = $row['restock_threshold'];
+            $data['location'] = $row['chem_location'];
         }
     } else {
         echo "Invalid ID. Make sure the chemical exist.";
@@ -492,5 +497,75 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
     echo mysqli_fetch_row($res)[0];
+    exit();
+}
+
+
+if (isset($_GET['chemLog']) && $_GET['chemLog'] === 'true') {
+    $id = $_GET['id'];
+
+    if (!is_numeric($id) || $id === NULL) {
+        http_response_code(400);
+        echo 'Invalid ID.';
+        exit();
+    }
+
+    // $sql = "SELECT * FROM inventory_log JOIN chemicals ON inventory_log.chem_id = chemicals.id WHERE chemicals.id = ?;";
+    $sql = "SELECT * FROM chemicals LEFT JOIN inventory_log ON chemicals.id = inventory_log.chem_id WHERE chemicals.id = ?";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo 'stmt failed.';
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+
+    $res = mysqli_stmt_get_result($stmt);
+    $data = [];
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
+            echo json_encode(['success' => json_encode($row)]);
+        }
+        // echo json_encode(['success' => json_encode($data)]);
+        mysqli_stmt_close($stmt);
+        exit();
+    } else {
+        http_response_code(400);
+        echo 'Chemical not found.';
+        exit();
+    }
+}
+
+
+if (isset($_GET['qty_unit_options']) && $_GET['qty_unit_options'] === 'true') {
+    $cur_unit = $_GET['current_unit'];
+
+    if (empty($cur_unit) || !is_string($cur_unit)) {
+        http_response_code(400);
+        echo "Invalid unit.";
+        exit();
+    }
+
+    if (!in_array($cur_unit, $units)) {
+        http_response_code(400);
+        echo "Invalid unit.";
+        exit();
+    }
+
+    if ($cur_unit === 'mg' || $cur_unit === 'g' || $cur_unit === 'kg') {
+        $unit_option = ['mg', 'g', 'kg'];
+    } elseif ($cur_unit === 'box' || $cur_unit === 'pc' || $cur_unit === 'canister') {
+        $unit_option = ['box', 'pc', 'canister'];
+    } elseif ($cur_unit === 'mL' || $cur_unit === 'L') {
+        $unit_option = ['mL', 'L', 'gal'];
+    } else {
+        $unit_option = [$cur_unit];
+    }
+
+    echo "<option value='' selected>Choose Unit</option>";
+    foreach ($unit_option as $option) {
+        echo "<option value='$option'>$option</option>";
+    }
     exit();
 }

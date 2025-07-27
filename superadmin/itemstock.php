@@ -584,7 +584,7 @@ include('tablecontents/tables.php');
                                             </select>
                                         </div>
                                         <div class="col-lg-2 mb-2">
-                                            <label for="chemLevel" class="form-label fw-light">Item Count</label>
+                                            <label for="chemLevel" class="form-label fw-light">Item Count:</label>
                                             <input type="text" name="containerCount[]" id="add-chemLevel"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
@@ -611,11 +611,11 @@ include('tablecontents/tables.php');
                                             <div class="text-body-secondary fw-light text-muted mt-2">
                                                 Note: specify expiry date or default date will be set.
                                             </div>
-                                            <div class="col-3 mb-2">
-                                                <label for="notes" class="form-label fw-light">Short Note</label>
-                                                <textarea name="notes[]" id="notes" class="form-control"
-                                                    placeholder="Optional short note . . . "></textarea>
-                                            </div>
+                                        </div>
+                                        <div class="col-3 mb-2">
+                                            <label for="notes" class="form-label fw-light">Short Note</label>
+                                            <textarea name="notes[]" id="notes" class="form-control"
+                                                placeholder="Optional short note . . . "></textarea>
                                         </div>
                                         <div id="addMoreChem"></div>
                                         <hr class="mt-2 mb-3">
@@ -1000,9 +1000,9 @@ include('tablecontents/tables.php');
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5" id="verifyChanges">Chemical Deletion</h1>
                                 <h1 class="modal-title fs-5" id="verifyChanges">Item Deletion</h1>
-                                aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
@@ -1289,6 +1289,12 @@ include('tablecontents/tables.php');
         const pageurl = 'tablecontents/pagination.php';
         const dataurl = 'tablecontents/chemicals.php';
 
+        function show_toast(message) {
+            $('#toastmsg').html(message);
+            var toastid = $('#toast');
+            var toast = new bootstrap.Toast(toastid);
+            toast.show();
+        }
 
         flatpickr("#addMoreChem input.form-date-exp", {
             dateFormat: "Y-m-d",
@@ -1476,10 +1482,46 @@ include('tablecontents/tables.php');
             }
         });
 
-        async function loadpage(page, entryHidden = false, branch = null) {
-            await loadtable(page, entryHidden, branch);
-            await loadpagination(page, entryHidden, branch);
-            overview_display(branch);
+
+        async function loadpagination2(pageno) {
+            try {
+                return $.ajax({
+                    type: 'GET',
+                    url: 'tablecontents/state.pagination.php',
+                    data: {
+                        pagenav: 'true',
+                        active: pageno
+                    },
+                    success: async function (res) {
+                        $('#table2pagination').empty();
+                        $('#table2pagination').append(res);
+                        // window.history.pushState(null, "", "?page=" + pageno);
+                    }
+                });
+
+            } catch (error) {
+                alert(error);
+            }
+        }
+        async function loadpagination3(pageno) {
+            try {
+                return $.ajax({
+                    type: 'GET',
+                    url: 'tablecontents/inv.containerstatus.pagination.php',
+                    data: {
+                        pagenav: 'true',
+                        active: pageno
+                    },
+                    success: async function (res) {
+                        $('#containerReportPagination').empty();
+                        $('#containerReportPagination').append(res);
+                        // window.history.pushState(null, "", "?page=" + pageno);
+                    }
+                });
+
+            } catch (error) {
+                alert(error);
+            }
         }
 
 
@@ -1569,6 +1611,56 @@ include('tablecontents/tables.php');
                 }
             });
 
+        }
+
+        async function loadtable2(page) {
+            $.ajax({
+                method: 'GET',
+                url: 'tablecontents/state.pagination.php',
+                data: {
+                    table: 'true',
+                    currentpage: page
+                },
+                dataType: 'html'
+            })
+                .done(async function (d) {
+                    $("#chemStateTable").empty();
+                    $("#chemStateTable").append(d);
+                })
+                .fail(async function (e) {
+                    alert('There was a problem fetching the data of a table. Please try again later.');
+                    console.log(e);
+                })
+        }
+
+        async function loadtable3(page) {
+            $.ajax({
+                method: 'GET',
+                url: 'tablecontents/inv.containerstatus.pagination.php',
+                data: {
+                    table: 'true',
+                    currentpage: page
+                },
+                dataType: 'html'
+            })
+                .done(async function (d) {
+                    $("#containerReportTable").empty();
+                    $("#containerReportTable").append(d);
+                })
+                .fail(async function (e) {
+                    alert('There was a problem fetching the data of a table. Please try again later.');
+                    console.log(e);
+                })
+        }
+
+        async function loadpage(page, entryHidden = false, branch = null) {
+            await loadtable(page, entryHidden, branch);
+            await loadpagination(page, entryHidden, branch);
+            await loadpagination2(page);
+            await loadtable2(page);
+            await loadtable3(page);
+            await loadpagination3(page);
+            overview_display(branch);
         }
 
         let entryHidden = false;
@@ -1832,7 +1924,23 @@ include('tablecontents/tables.php');
             return toggled = toggled ? false : true;
         }
 
-        // get specific chemical information when edit btn is clicked
+        async function qty_unit_options(current_unit, select_id) {
+            $.get(dataurl, {
+                qty_unit_options: true,
+                current_unit: current_unit
+            },
+                async function (d) {
+                    $(`select#${select_id}`).empty();
+                    $(`select#${select_id}`).append(d);
+                },
+                'html'
+            )
+                .fail(function (e) {
+                    alert("Error in loading quantity unit options. Please refresh the page and try again.");
+                    console.log(e);
+                });
+        }
+
         $(document).on('click', '.editbtn', async function () {
             $('#editChemForm')[0].reset();
             let id = $(this).data('chem');
@@ -1888,10 +1996,209 @@ include('tablecontents/tables.php');
 
         });
 
+        function load_chem_log_history(id) {
+            $.get('tablecontents/inv.log.pagination.php', {
+                chemloghistory: true,
+                chemid: id
+            })
+                .done(function (data) {
+                    $('#chemicallogmodal .modal-body #chemicalhistorylogtable').empty();
+                    $('#chemicallogmodal .modal-body #chemicalhistorylogtable').append(data);
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $('#chemicallogmodal .modal-body').html('<p class="text-center text-danger">Error loading inventory log.</p>');
+                });
+        }
 
-        // $(document).on('click', '#toggleEditBtn', function () {
-        //     toggle();
-        // });
+
+        $(document).on('click', '.log-chem-btn', async function () {
+            let id = $(this).data('chem');
+            await load_chem_log_history(id);
+        });
+
+        async function get_chem_log(id) {
+            console.log(id);
+            $.ajax({
+                method: 'GET',
+                url: dataurl,
+                data: {
+                    chemLog: true,
+                    id: id
+                },
+                dataType: 'json'
+            }).done(async function (data) {
+                console.log(data);
+
+                if (data.success) {
+                    let d = JSON.parse(data.success);
+                    $(".log-chem-id").val(d.id);
+                    $(".chem-name").val(d.name);
+                    // $(".qty-unit").text(' - ' + d.quantity_unit);
+                    $("#main_qty_unit").val(d.quantity_unit);
+
+                    await qty_unit_options(d.quantity_unit, "adjust_qty_unit");
+
+                    $("#adjust-curlevel").text(d.chemLevel + '/' + d.container_size + d.quantity_unit + ' (' + d.unop_cont + ' container/s left.)');
+                    $("#adjust-dispatched").text(d.chem_location === 'dispatched' ? "Item dispatched." : "Item available.");
+
+                    if (!$("#wholecontainercheck").prop('checked')) {
+                        $("#adjust-containerinput").hide();
+                        $("#adjust-containerinput input").prop('disabled', true);
+                        $("#adjust-qty").prop('disabled', false);
+                    }
+                    $('#wholecontainercheck').on('change', function () {
+                        if ($(this).prop('checked')) {
+                            $("#adjust-containerinput").show();
+                            $("#adjust-containerinput input").prop('disabled', false);
+                            $("#adjust-qty").prop('disabled', true);
+                            $("#adjust_qty_unit").prop('disabled', true);
+                        } else {
+                            $("#adjust-containerinput").hide();
+                            $("#adjust-containerinput input").prop('disabled', true);
+                            $("#adjust-qty").prop('disabled', false);
+                            $("#adjust_qty_unit").prop('disabled', false);
+                        }
+                    })
+
+                    $('#chemicallogmodal').modal('show');
+
+                } else {
+                    alert('Unknown Error. Please try again later.');
+                }
+            })
+                .fail(function (e) {
+                    console.log(e);
+                })
+        }
+
+        $(document).on('click', '.log-chem-btn', function () {
+            let id = $(this).data('chem');
+            get_chem_log(id);
+        });
+
+        $('#adjust-logtype').on('change', function () {
+            if ($(this).val() === 'other') {
+                $("#ltothers").toggleClass('d-none');
+                $("#ltothers input").prop('disabled', false);
+            } else {
+                if (!$("#ltothers").hasClass('d-none')) {
+                    $("#ltothers").addClass('d-none');
+                    $("#ltothers input").prop('disabled', true);
+                }
+            }
+        });
+
+
+        $(document).on('submit', '#adjustform', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            $.ajax({
+                method: "POST",
+                url: dataurl,
+                dataType: 'json',
+                data: $(this).serialize() + "&adjust=true"
+            })
+                .done(function (d) {
+                    $("#adjustform")[0].reset();
+                    // $("#adjustalert").text(d.success).fadeIn(300).delay(2000).fadeOut(1000);
+                    $("#chemicallogmodal").modal('hide');
+                    show_toast(d.success);
+                    loadpage(1, entryHidden);
+                })
+                .fail(function (e) {
+                    $("#adjustalert").text(e.responseText).fadeIn(300).delay(2000).fadeOut(1000);
+                    console.log(e);
+                })
+        })
+
+         $(function () {
+            let timeout = null;
+
+            $('#searchChemUsedSummary').keyup(function () {
+                clearTimeout(timeout);
+                $('#chemStateTable').empty();
+                $('#loader2').show();
+
+                timeout = setTimeout(async function () {
+                    var search = $('#searchChemUsedSummary').val();
+                    await $.ajax({
+                        url: "tablecontents/state.pagination.php",
+                        type: 'GET',
+                        dataType: 'html',
+                        data: {
+                            search: search,
+                        }
+                    })
+                        .done(async function (searchChem) {
+                            $('#loader2').attr('style', 'display: none !important;');
+                            if (search !== '') {
+                                $('#table2pagination').hide();
+                                $('#chemStateTable').empty();
+                                $('#chemStateTable').append(searchChem);
+                            } else {
+                                await loadtable2(1);
+                                await loadpagination2(1);
+                                $('#table2pagination').show();
+                            }
+                        })
+                        .fail(function (e) {
+                            $("#chemStateTable").html("<tr><td scope='row' colspan='8' class='text-center'>Search Failed. Please Try again later.</td></tr>")
+                        });
+                }, 250);
+            });
+        });
+
+        $(function () {
+            let timeout = null;
+
+            $('#searchContainerStatus').keyup(function () {
+                clearTimeout(timeout);
+                $('#containerReportTable').empty();
+                $('#containerReportLoader').show();
+
+                timeout = setTimeout(async function () {
+                    var search = $('#searchContainerStatus').val();
+                    await $.ajax({
+                        url: "tablecontents/inv.containerstatus.pagination.php",
+                        type: 'GET',
+                        dataType: 'html',
+                        data: {
+                            search: search,
+                        }
+                    })
+                        .done(async function (searchChem) {
+                            $('#containerReportLoader').attr('style', 'display: none !important;');
+                            if (search !== '') {
+                                $('#containerReportPagination').hide();
+                                $('#containerReportTable').empty();
+                                $('#containerReportTable').append(searchChem);
+                            } else {
+                                await loadtable3(1);
+                                await loadpagination3(1);
+                                $('#containerReportPagination').show();
+                            }
+                        })
+                        .fail(function (e) {
+                            $("#containerReportTable").html("<tr><td scope='row' colspan='8' class='text-center'>Search Failed. Please Try again later.</td></tr>")
+                        });
+                }, 250);
+            });
+        });
+
+        $('#table2pagination').on('click', '.page-link', async function (e) {
+            e.preventDefault();
+            let currentpage = $(this).data('page');
+            await loadtable2(currentpage);
+            await loadpagination2(currentpage);
+        })
+
+        $('#containerReportPagination').on('click', '.page-link', async function (e) {
+            e.preventDefault();
+            let currentpage = $(this).data('page');
+            await loadtable3(currentpage);
+            await loadpagination3(currentpage);
+        })
     </script>
 </body>
 
