@@ -18,6 +18,11 @@
   color: #68fdb9 !important;
 }
 
+form {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .bg-custom-success {
   background-color: rgba(104, 253, 185, 0.25);
 }

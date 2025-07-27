@@ -51,17 +51,6 @@ require("startsession.php");
                     <p class="fw-light mb-2 mt-auto">Number of items below restock threshold.</p>
                     <p class="fs-4 fw-bold mb-0" id="count_low"></p>
                 </div>
-                <!-- <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
-                    <div class="clearfix">
-                        <i
-                            class="bi bi-box-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
-                        <p class="fs-5 fw-bold w-75 mx-auto align-middle mb-0">
-                            Pending Approval Chemicals
-                        </p>
-                    </div>
-                    <p class="fw-light mb-2">Modified chemicals under review for approval.</p>
-                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_low"></p>
-                </div> -->
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
@@ -1052,6 +1041,7 @@ require("startsession.php");
             <p class='text-center alert alert-success w-25 mx-auto' style="display: none !important;" id="tableAlert">
             </p>
 
+            
             <div class="bg-light bg-opacity-25 rounded mx-3 mt-3 py-2">
                 <h1 class="text-center fw-medium">Item Used Summary</h1>
             </div>
