@@ -295,10 +295,12 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                                 data-id="<?= $id ?>"><i class="bi bi-x-octagon"></i></button>
                             <?php
                         } else {
-
+                            if ($cur_location === 'main_storage') {
+                                echo '<button type="button" class="btn btn-sidebar dispatchbtn border-0" ' . ($request === 1 ? 'disabled' : "data-dispatch='$id'") . '><i class="bi bi-truck-flatbed text-success"></i></button>';
+                            } else if ($cur_location === 'dispatched') {
+                                echo '<button type="button" class="btn btn-sidebar returnbtn border-0" ' . ($request === 1 ? 'disabled' : "data-return='$id'") . '><i class="bi bi-box-arrow-in-left text-info"></i></button>';
+                            }
                             ?>
-                            <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
-                                    class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
                             <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                     class="bi bi-info-circle"></i></button>
                             <button type="button" class="btn btn-sidebar delbtn" data-bs-toggle="modal" data-bs-target="#deleteModal"

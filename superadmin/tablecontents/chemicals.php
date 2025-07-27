@@ -569,3 +569,141 @@ if (isset($_GET['qty_unit_options']) && $_GET['qty_unit_options'] === 'true') {
     }
     exit();
 }
+
+if (isset($_GET['dispatched_transactions']) && $_GET['dispatched_transactions'] === 'true') {
+    $name = $_GET['name'];
+    $brand = $_GET['brand'];
+    $csize = $_GET['csize'];
+    $unit = $_GET['unit'];
+
+    $get_main_id_sql = "SELECT id FROM chemicals WHERE name = ? AND brand = ? AND container_size = ? AND quantity_unit = ?;";
+    $get_main_id_stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($get_main_id_stmt, $get_main_id_sql)) {
+        http_response_code(400);
+        echo "Prepared statement failed at finding main chemical. Please try again later.";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($get_main_id_stmt, "ssis", $name, $brand, $csize, $unit);
+    mysqli_stmt_execute($get_main_id_stmt);
+    $result = mysqli_stmt_get_result($get_main_id_stmt);
+    if ($row = mysqli_fetch_assoc($result)) {
+        $main_id = $row['id'];
+    } else {
+        http_response_code(400);
+        echo "Error. Main chemical not found.";
+        exit();
+    }
+
+    $sql = "SELECT t.id FROM transactions t WHERE t.transaction_status = 'Dispatched' AND EXISTS (SELECT 1 FROM transaction_chemicals tc WHERE tc.chem_id = ? AND tc.trans_id = t.id);";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "Prepared statement failed at finding dispatched transactions. Please try again later.";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "i", $main_id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($res) > 0) {
+        echo "<option value=''>Select Transaction</option>";
+        while ($row = mysqli_fetch_assoc($res)) {
+            $id = $row['id'];
+            ?>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
+            <?php
+        }
+    } else {
+        echo "<option selected disabled>No available accepted transactions</option>";
+    }
+    mysqli_close($conn);
+    exit();
+}
+
+
+if (isset($_GET['dispatch_cur_transchem']) && $_GET['dispatch_cur_transchem'] === 'true') {
+    $transid = $_GET['transid'];
+    $chemid = $_GET['chemId'];
+    $cont_size = $_GET['containerSize'];
+    $return = isset($_GET['return']);
+
+    if (empty($chemid)) {
+        http_response_code(400);
+        echo "Chemical ID missing. Please try again later.";
+        exit();
+    }
+
+    if (!is_numeric(trim($transid)) || !is_numeric(trim($chemid))) {
+        http_response_code(400);
+        echo "Invalid Transaction ID or Chemical ID.";
+        exit();
+    }
+
+    if ($return) {
+        $main_chem = get_main_chemical($conn, $chemid);
+        if (isset($main_chem['error'])) {
+            http_response_code(400);
+            echo $main_chem['error'];
+            exit();
+        }
+    } else {
+        $main_chem = $chemid;
+    }
+
+    $sql = "SELECT amt_used FROM transaction_chemicals WHERE trans_id = ? AND chem_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "There seems to be an issue. Please try again later.";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 'ii', $transid, $main_chem);
+    mysqli_stmt_execute($stmt);
+
+    $res = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($res) > 0) {
+        $row = mysqli_fetch_assoc($res);
+        $amt_used = $row['amt_used'];
+        http_response_code(200);
+        $openedLevel = $amt_used % $cont_size;
+        $closedContainer = (int) ($amt_used / $cont_size);
+        while ($openedLevel > $cont_size) {
+            $openedLevel -= $cont_size;
+            $closedContainer++;
+        }
+        echo json_encode([
+            'openedLevel' => $openedLevel,
+            'closedContainer' => $closedContainer
+        ]);
+
+        exit();
+    }
+    mysqli_stmt_close($stmt);
+    http_response_code(200);
+    echo json_encode(["error" => "This item has no recorded amount set for transaction ID $transid."]);
+    exit();
+}
+
+
+if (isset($_GET['transaction_options']) && $_GET['transaction_options'] === 'true') {
+    $sql = "SELECT id FROM transactions WHERE transaction_status = 'Accepted';";
+    $res = mysqli_query($conn, $sql);
+
+    echo "<option selected>Select Transaction</option>";
+    if (mysqli_num_rows($res) > 0) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            $id = $row['id'];
+            ?>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
+            <?php
+        }
+    } else {
+        echo "<option disabled>No available accepted transactions</option>";
+    }
+    mysqli_close($conn);
+}

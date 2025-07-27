@@ -599,11 +599,11 @@ if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
     // echo var_dump($qty);
     // exit();
 
-    if (array_key_exists($main_unit, array_values($unit_values))) {
-        http_response_code(400);
-        echo var_dump($unit_values[$main_unit]);
-        exit();
-    }
+    // if (array_key_exists($main_unit, array_values($unit_values))) {
+    //     http_response_code(400);
+    //     echo var_dump($unit_values[$main_unit]);
+    //     exit();
+    // }
 
     if ($main_unit === 'mg' || $main_unit === 'g' || $main_unit === 'kg') {
         $unit_option = ['mg', 'g', 'kg'];
@@ -950,8 +950,11 @@ if (isset($_POST['return_chemical']) && $_POST['return_chemical'] === 'true') {
     $trans_id = $_POST['return_transaction'];
     $opened_qty = $_POST['opened_container'];
     $closed_qty = $_POST['container_count'];
+    $entered_unit = $_POST['return_unit'];
     $current_location = $_POST['return_currentLocation'];
     $pwd = $_POST['baPwd'];
+
+    // exit();
 
     if (!is_numeric($chem_id) || !is_numeric($trans_id)) {
         http_response_code(400);
@@ -970,6 +973,27 @@ if (isset($_POST['return_chemical']) && $_POST['return_chemical'] === 'true') {
         echo "Please fill all fields.";
         exit();
     }
+
+    if (empty($entered_unit) || $entered_unit === NULL || !is_string($entered_unit)) {
+        http_response_code(400);
+        echo "Invalid quantity unit.";
+        exit();
+    }
+
+
+    // convert unit
+    $original_data = get_chemical($conn, $chem_id);
+    $original_unit = $original_data['quantity_unit'];
+    if ($entered_unit !== $original_unit) {
+        $convert = convert_to_main_unit($entered_unit, $original_unit, $opened_qty);
+        if (isset($convert['error'])) {
+            http_response_code(400);
+            echo $convert['error'];
+            exit();
+        }
+        $opened_qty = $convert;
+    } 
+
 
     if (!validateOS($conn, $pwd)) {
         http_response_code(400);

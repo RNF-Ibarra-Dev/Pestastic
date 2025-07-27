@@ -851,6 +851,9 @@ include('tablecontents/tables.php');
                                             class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
+                                    <p
+                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                        Item Information</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-2 mb-2">
                                             <label for="returnName" class="form-label fw-medium">Item
@@ -868,25 +871,36 @@ include('tablecontents/tables.php');
                                                 Size:</label>
                                             <p id="return-contSize" class="fw-light ps-2"></p>
                                         </div>
-
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="return-openedLevel" class="form-label fw-medium">Opened
-                                                Item Level:</label>
-                                            <p id="return-openedLevel" class="fw-light ps-2"></p>
-                                        </div>
-
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="return-containerCount" class="form-label fw-medium">Item
-                                                Count
-                                                (Including Opened):</label>
-                                            <p id="return-containerCount" class="fw-light ps-2"></p>
-                                        </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-lg-4 mb-2">
                                             <label for="return-cstatus" class="form-label fw-medium">Item Location
                                                 Status:</label>
                                             <p id="return-cstatus" class="fw-light ps-2"></p>
                                         </div>
                                     </div>
+
+                                    <p
+                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                        Dispatched Item Summary</p>
+
+                                    <div class="row mb-2 user-select-none">
+                                        <div class="col-3">
+                                            <p class="fw-medium mb-2">Opened Item Level:</p>
+                                            <p class="ps-2 mb-2 fw-light" id="return_openedContainerLevel"></p>
+                                        </div>
+                                        <div class="col-3">
+                                            <p class="fw-medium mb-2">Closed Item Count:</p>
+                                            <p class="ps-2 mb-2 fw-light" id="return_closedContainerCount"></p>
+                                        </div>
+                                        <div class="col-lg-2 mb-2">
+                                            <label for="return-containerCount" class="form-label fw-medium">Total
+                                                Items:</label>
+                                            <p id="return-containerCount" class="fw-light ps-2"></p>
+                                        </div>
+                                    </div>
+
+                                    <p
+                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                        Return Information</p>
 
                                     <div class="row mb-2">
                                         <div class="col-5 mb-2">
@@ -900,9 +914,21 @@ include('tablecontents/tables.php');
                                         </div>
                                         <div class="col-2 mb-2">
                                             <label for="return_unit" class="form-label fw-medium">Unit:</label>
-                                            <select id="return_unit" class="form-select"></select>
+                                            <select id="return_unit" class="form-select" name="return_unit"></select>
                                         </div>
+                                        <div class="col-5 mb-2">
+                                            <label for="container_count" class="form-label fw-medium">Number of
+                                                closed items (not used)
+                                                to return:</label>
+                                            <div class="d-flex">
+                                                <input type="number" name="container_count" id="container_count"
+                                                    class="form-control w-50" autocomplete="one-time-code">
+                                                <span class="fw-light align-middle ms-2 my-auto">Container/s</span>
+                                            </div>
+                                        </div>
+                                    </div>
 
+                                    <div class="row mb-2">
                                         <div class="col-lg-4 mb-2">
                                             <label for="return_transaction" class="form-label fw-medium">Select
                                                 Dispatched Transaction:</label>
@@ -912,34 +938,10 @@ include('tablecontents/tables.php');
                                             <p class="text-body-secondary mt-2">Note: You can only return this
                                                 item's dispatched transaction.</p>
                                         </div>
-
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-5 mb-2">
-                                            <label for="container_count" class="form-label fw-medium">Number of
-                                                closed items (not used)
-                                                to return:</label>
-                                            <input type="number" name="container_count" id="container_count"
-                                                class="form-control w-50" autocomplete="one-time-code">
-                                        </div>
                                         <div class="col-4 mb-2">
                                             <p class="fw-medium">Current Transaction Dispatch Information:</p>
                                             <p id="return_current_transaction_info" class="fw-light ms-2">Please select
                                                 a transaction.</p>
-                                        </div>
-                                    </div>
-                                    <p
-                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
-                                        Dispatched Item Summary</p>
-
-                                    <div class="row mb-2 user-select-none">
-                                        <div class="col-3">
-                                            <p class="fw-medium mb-2">Opened Item Level:</p>
-                                            <p class="ps-2 mb-2 fw-light" id="return_openedContainerLevel"></p>
-                                        </div>
-                                        <div class="col-3">
-                                            <p class="fw-medium mb-2">Closed Item Count:</p>
-                                            <p class="ps-2 mb-2 fw-light" id="return_closedContainerCount"></p>
                                         </div>
                                     </div>
 
@@ -1089,7 +1091,7 @@ include('tablecontents/tables.php');
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Approve all
+                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Approve selected
                                         entries?
                                         Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
@@ -2112,7 +2114,7 @@ include('tablecontents/tables.php');
                 })
         })
 
-         $(function () {
+        $(function () {
             let timeout = null;
 
             $('#searchChemUsedSummary').keyup(function () {
@@ -2198,7 +2200,213 @@ include('tablecontents/tables.php');
             let currentpage = $(this).data('page');
             await loadtable3(currentpage);
             await loadpagination3(currentpage);
-        })
+        });
+
+
+
+        async function get_transaction_return(name, brand, csize, unit) {
+            $.get(dataurl, {
+                dispatched_transactions: true,
+                name: name,
+                brand: brand,
+                csize: csize,
+                unit: unit
+            },
+                async function (d) {
+                    $("#return_transaction").empty();
+                    $("#return_transaction").append(d);
+                },
+                'html'
+            )
+                .fail(function (e) {
+                    alert("Error in loading dispatched transaction options. Please refresh the page and try again.");
+                    console.log(e);
+                });
+        }
+
+
+        $(document).on('click', '.returnbtn', async function () {
+            let id = $(this).data('return');
+            console.log(id);
+            $("#returnChemicalForm")[0].reset();
+            let deets = await get_chem_details(id);
+            var details = JSON.parse(deets);
+            console.log(details);
+            let clocation = 'Unknown';
+            if (details.location === 'main_storage') {
+                clocation = "Main Storage";
+            } else if (details.location === 'dispatched') {
+                clocation = "Dispatched";
+            }
+
+            await qty_unit_options(details.unit, "return_unit");
+
+            $("#returnChemicalId").val(id);
+            $("#return_currentLocation").val(details.location);
+            $("#return-openedLevel").text(details.level + details.unit);
+            $('#returnName').text(details.name);
+            $("#return-chemBrand").text(details.brand);
+            $('#return-contSize').text(details.container_size + '' + details.unit);
+            let opened_container_count = details.level > 0 ? 1 : 0;
+            let total_container_count = details.unop_cont + opened_container_count;
+            $('#return-containerCount').text(total_container_count + ' Container/s');
+            $("#return-cstatus").text(clocation);
+
+            $("#return_openedContainerLevel").text(details.level + details.unit);
+            $("#return_closedContainerCount").text(details.unop_cont + " Container/s")
+
+            let transreturn = await get_transaction_return(details.name, details.brand, details.container_size, details.unit);
+            // if (!transreturn) {
+            //     $("#returnChemicalForm button.return-proceed-btn, #returnChemicalForm button[type='submit']").prop('disabled', true);
+            // } else {
+            //     $("#returnChemicalForm button.return-proceed-btn, #returnChemicalForm button[type='submit']").prop('disabled', false);
+            // }
+            // console.log(transreturn);
+
+            $("#returnChemModal").modal('show');
+            $("#returnChemModal").on('shown.bs.modal', function () {
+                $("p#return_current_transaction_info").text("Please select a valid transaction ID.");
+            });
+            $("#returnChemicalForm").on('change', "select#return_transaction", function () {
+                let transid = $(this).val();
+
+                $.get(dataurl, { dispatch_cur_transchem: true, chemId: id, transid: transid, return: true, containerSize: details.container_size }, function (d) {
+                    if (d.error) {
+                        $("p#return_current_transaction_info").text(d.error);
+                    } else {
+                        if (d.openedLevel === 0) {
+                            $("p#return_current_transaction_info").text(d.closedContainer + " Container/s (" + details.container_size + details.unit + ")");
+                        } else {
+                            $("p#return_current_transaction_info").text(d.openedLevel + details.unit + " (" + d.closedContainer + " Container/s)");
+                        }
+                    }
+                }, 'json')
+                    .fail(function (e) {
+                        $("p#return_current_transaction_info").text("Please select a valid transaction ID.");
+                        console.log(e);
+                    });
+            });
+        });
+
+        async function get_transaction_option() {
+            $.get(dataurl, {
+                transaction_options: true
+            },
+                async function (d) {
+                    $("#dispatch-transaction").empty();
+                    $("#dispatch-transaction").append(d);
+                },
+                'html'
+            )
+                .fail(function (e) {
+                    alert("Error in loading transaction options. Please refresh the page and try again.");
+                });
+        }
+
+        $(document).on('click', '.dispatchbtn', async function () {
+            let id = $(this).data('dispatch');
+            $("#dispatchChemicalForm")[0].reset();
+            $("#dispatch-location option").prop('disabled', false);
+            // console.log(id);
+            await get_transaction_option();
+            let deets = await get_chem_details(id);
+            var details = JSON.parse(deets);
+            // console.log(details);
+
+            let clocation = 'Unknown';
+            if (details.location === 'main_storage') {
+                clocation = "Main Storage";
+            } else if (details.location === 'dispatched') {
+                clocation = "Dispatched";
+            }
+
+            $("#dispatch_openedContainerLevel").text(details.level + details.unit);
+            $('#dispatch_closedContainerCount').text(details.unop_cont + ' Container/s');
+
+            $('#dispatchChemicalId').val(details.id);
+            $("#dispatchName").text(details.name)
+            $('#dispatch-chemBrand').text(details.brand);
+            $('#dispatch-contSize').text(details.container_size + '' + details.unit);
+            let opened_container_count = details.level > 0 ? 1 : 0;
+            let total_container_count = details.unop_cont + opened_container_count;
+            $('#dispatch-containerCount').text(total_container_count + ' Container/s');
+            $("#dispatch-cstatus").text(clocation);
+
+            $("#dispatchValue, #includeOpened").prop('disabled', false);
+            $("#dispatchAll").on('change', function () {
+                let checked = $(this).is(":checked");
+                $("#dispatchValue, #includeOpened").prop('disabled', checked);
+            })
+            $("#dispatchChemModal").modal('show');
+            $("#dispatchChemModal").on('shown.bs.modal', function () {
+                $("p#current_transaction_info").text("Please select a valid transaction ID.");
+            });
+            $("#dispatchChemicalForm").on('change', "select#dispatch-transaction", function () {
+                let transid = $(this).val();
+
+                $.get(dataurl, { dispatch_cur_transchem: true, chemId: id, transid: transid, containerSize: details.container_size }, function (d) {
+                    if (d.error) {
+                        $("p#current_transaction_info").text(d.error);
+                    } else {
+                        $("p#current_transaction_info").text(d.openedLevel + details.unit + " (" + d.closedContainer + " Container/s)");
+                    }
+                    console.log(d);
+                }, 'json')
+                    .fail(function (e) {
+                        $("p#current_transaction_info").text("Please select a transaction.");
+                        console.log(e);
+                    });
+            });
+        });
+
+
+        $(document).on('submit', '#returnChemicalForm', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            $.ajax({
+                method: 'POST',
+                url: dataurl,
+                data: $(this).serialize() + "&return_chemical=true",
+                dataType: 'json'
+            })
+                .done(async function (d) {
+                    if (d.success) {
+                        show_toast(d.success);
+                        $("#returnConfirmationModal").modal('hide');
+                        loadpage(1, entryHidden);
+                    } else {
+                        alert('An unknown error has occured. Please try again later.');
+                    }
+                })
+                .fail(function (e) {
+                    $("#returnAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                    console.log(e);
+                })
+        });
+
+        $(document).on('submit', '#dispatchChemicalForm', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+
+            $.ajax({
+                method: 'POST',
+                url: dataurl,
+                data: $(this).serialize() + "&dispatch=true",
+                dataType: 'json'
+            })
+                .done(async function (d) {
+                    if (d.success) {
+                        show_toast(d.success);
+                        $("#dispatchConfirmationModal").modal('hide');
+                        loadpage(1, entryHidden);
+                    } else {
+                        alert('An unknown error has occured. Please try again later.');
+                    }
+                })
+                .fail(function (e) {
+                    $("#dispatchAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                })
+        });
     </script>
 </body>
 

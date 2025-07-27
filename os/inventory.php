@@ -824,6 +824,9 @@ require("startsession.php");
                                             class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
+                                    <p
+                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                        Item Information</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-2 mb-2">
                                             <label for="returnName" class="form-label fw-medium">Item
@@ -841,66 +844,13 @@ require("startsession.php");
                                                 Size:</label>
                                             <p id="return-contSize" class="fw-light ps-2"></p>
                                         </div>
-
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="return-openedLevel" class="form-label fw-medium">Opened
-                                                Item Level:</label>
-                                            <p id="return-openedLevel" class="fw-light ps-2"></p>
-                                        </div>
-
-                                        <div class="col-lg-2 mb-2">
-                                            <label for="return-containerCount" class="form-label fw-medium">Item
-                                                Count
-                                                (Including Opened):</label>
-                                            <p id="return-containerCount" class="fw-light ps-2"></p>
-                                        </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-lg-4 mb-2">
                                             <label for="return-cstatus" class="form-label fw-medium">Item Location
                                                 Status:</label>
                                             <p id="return-cstatus" class="fw-light ps-2"></p>
                                         </div>
                                     </div>
 
-                                    <div class="row mb-2">
-                                        <div class="col-5 mb-2">
-                                            <label for="opened_container" class="form-label fw-medium">Returned quantity
-                                                of opened items:</label>
-                                            <input type="number" name="opened_container" id="opened_container"
-                                                class="form-control w-50" autocomplete="one-time-code">
-                                            <p class="text-body-secondary mt-1">Note: This should not exceed the
-                                                quantity of
-                                                the item size and the quantity of dispatched items.</p>
-                                        </div>
-                                        <div class="col-2 mb-2">
-                                            <label for="return_unit" class="form-label fw-medium">Unit:</label>
-                                            <select id="return_unit" class="form-select"></select>
-                                        </div>
-
-                                        <div class="col-lg-4 mb-2">
-                                            <label for="return_transaction" class="form-label fw-medium">Select
-                                                Dispatched Transaction:</label>
-                                            <select name="return_transaction" id="return_transaction"
-                                                class="form-select" autocomplete="one-time-code">
-                                            </select>
-                                            <p class="text-body-secondary mt-2">Note: You can only return this
-                                                item's dispatched transaction.</p>
-                                        </div>
-
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-5 mb-2">
-                                            <label for="container_count" class="form-label fw-medium">Number of
-                                                closed items (not used)
-                                                to return:</label>
-                                            <input type="number" name="container_count" id="container_count"
-                                                class="form-control w-50" autocomplete="one-time-code">
-                                        </div>
-                                        <div class="col-4 mb-2">
-                                            <p class="fw-medium">Current Transaction Dispatch Information:</p>
-                                            <p id="return_current_transaction_info" class="fw-light ms-2">Please select
-                                                a transaction.</p>
-                                        </div>
-                                    </div>
                                     <p
                                         class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
                                         Dispatched Item Summary</p>
@@ -914,7 +864,58 @@ require("startsession.php");
                                             <p class="fw-medium mb-2">Closed Item Count:</p>
                                             <p class="ps-2 mb-2 fw-light" id="return_closedContainerCount"></p>
                                         </div>
+                                        <div class="col-lg-2 mb-2">
+                                            <label for="return-containerCount" class="form-label fw-medium">Total
+                                                Items:</label>
+                                            <p id="return-containerCount" class="fw-light ps-2"></p>
+                                        </div>
                                     </div>
+
+                                    <p
+                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                        Return Information</p>
+                                    <div class="row mb-2">
+                                        <div class="col-5 mb-2">
+                                            <label for="opened_container" class="form-label fw-medium">Returned quantity
+                                                of opened items:</label>
+                                            <input type="number" name="opened_container" id="opened_container"
+                                                class="form-control w-50" autocomplete="one-time-code">
+                                            <p class="text-body-secondary mt-1">Note: This should not exceed the
+                                                quantity of
+                                                the item size and the quantity of dispatched items.</p>
+                                        </div>
+                                        <div class="col-2 mb-2">
+                                            <label for="return_unit" class="form-label fw-medium">Unit:</label>
+                                            <select id="return_unit" class="form-select" name="return_unit"></select>
+                                        </div>
+                                        <div class="col-5 mb-2">
+                                            <label for="container_count" class="form-label fw-medium">Number of
+                                                closed items (not used)
+                                                to return:</label>
+                                            <div class="d-flex">
+                                                <input type="number" name="container_count" id="container_count"
+                                                    class="form-control w-50" autocomplete="one-time-code">
+                                                <span class="fw-light align-middle ms-2 my-auto">Container/s</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-lg-4 mb-2">
+                                            <label for="return_transaction" class="form-label fw-medium">Select
+                                                Dispatched Transaction:</label>
+                                            <select name="return_transaction" id="return_transaction"
+                                                class="form-select" autocomplete="one-time-code">
+                                            </select>
+                                            <p class="text-body-secondary mt-2">Note: You can only return this
+                                                item's dispatched transaction.</p>
+                                        </div>
+                                        <div class="col-4 mb-2">
+                                            <p class="fw-medium">Current Transaction Dispatch Information:</p>
+                                            <p id="return_current_transaction_info" class="fw-light ms-2">Please select
+                                                a transaction.</p>
+                                        </div>
+                                    </div>
+
 
                                     <p class="mb-0 mt-3 text-center alert alert-warning">Note: This is a summary of
                                         multiple dispatched items. This will
@@ -1038,7 +1039,7 @@ require("startsession.php");
             <p class='text-center alert alert-success w-25 mx-auto' style="display: none !important;" id="tableAlert">
             </p>
 
-            
+
             <div class="bg-light bg-opacity-25 rounded mx-3 mt-3 py-2">
                 <h1 class="text-center fw-medium">Item Used Summary</h1>
             </div>
