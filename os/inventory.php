@@ -445,17 +445,19 @@ require("startsession.php");
                                         </div>
                                     </div>
 
-                                    <p
-                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
-                                        Item Count Information</p>
-                                    <div class="row mb-2 d-none user-select-none" id="chemState">
-                                        <div class="col-3">
-                                            <p class="fw-medium mb-2">Opened Item Level:</p>
-                                            <p class="ps-2 mb-2" id="openedContainerLevel"></p>
-                                        </div>
-                                        <div class="col-3">
-                                            <p class="fw-medium mb-2">Closed Item Count:</p>
-                                            <p class="ps-2 mb-2" id="closedContainerCount"></p>
+                                    <div id="chemState">
+                                        <p
+                                            class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                            Item Count Information</p>
+                                        <div class="row mb-2 user-select-none">
+                                            <div class="col-3">
+                                                <p class="fw-medium mb-2">Opened Item Level:</p>
+                                                <p class="ps-2 mb-2" id="openedContainerLevel"></p>
+                                            </div>
+                                            <div class="col-3">
+                                                <p class="fw-medium mb-2">Closed Item Count:</p>
+                                                <p class="ps-2 mb-2" id="closedContainerCount"></p>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -1692,8 +1694,8 @@ require("startsession.php");
             $('#edit-notes').val(details.notes);
             $('#edit-chemUnit').val(details.unit);
             $('#edit-restockThreshold').val(details.threshold);
-            $('#edit-location').val(details.location);
-            $('#view-location').text(clocation);
+            // $('#edit-location').val(details.location);
+            // $('#view-location').text(clocation);
             $('#view-chemUnit').text(details.unit);
             $('#addinfo').html(function () {
                 return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
@@ -1712,7 +1714,7 @@ require("startsession.php");
             let chemstate = $("#chemState").hasClass('d-none');
             if (details.req == 1) {
                 $('#reqalert').removeClass('d-none').html('This item is pending for approval by the Manager. You can only view the details of this item.').fadeIn(750);
-                $('#chemState').removeClass('d-none');
+                $('#chemState').addClass('d-none');
             } else {
                 if (!reqAlertStatus) {
                     $('#reqalert').addClass('d-none');

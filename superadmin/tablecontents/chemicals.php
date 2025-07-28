@@ -43,6 +43,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     $notes = $_POST['edit-notes'];
     $containerCount = $_POST['edit-containerCount'];
     $contSize = $_POST['edit-containerSize'];
+    $threshold = $_POST['edit-restockThreshold'];
     $pwd = $_POST['saPwd'];
 
     $expDate = date("Y-m-d", strtotime($ed));
@@ -83,7 +84,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     }
 
     // $edit = editChem($conn, $id, $name, $brand, $level, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $containerCount);
-    $edit = editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $unit);
+    $edit = editChem($conn, $id, $name, $brand, $expDate, $dateRec, $notes, $branch, $upBy, $contSize, $unit, $threshold);
 
     if (isset($edit['error'])) {
         http_response_code(400);
@@ -282,33 +283,33 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
             $expDate = $row["expiryDate"];
             $request = $row['request'];
             ?>
-            <tr class="text-center">
-                <td scope="row">
-                    <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
-                    ?>
-                </td>
-                <td><?= htmlspecialchars($brand) ?></td>
-                <td><?= htmlspecialchars($level) ?></td>
-                <td><?= htmlspecialchars($expDate) ?></td>
-                <td>
-                    <div class="d-flex justify-content-center">
+                        <tr class="text-center">
+                            <td scope="row">
+                                <?=
+                                    $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
+                                ?>
+                            </td>
+                            <td><?= htmlspecialchars($brand) ?></td>
+                            <td><?= htmlspecialchars($level) ?></td>
+                            <td><?= htmlspecialchars($expDate) ?></td>
+                            <td>
+                                <div class="d-flex justify-content-center">
+                                    <?php
+                                    if ($request === "1") {
+                                        ?>
+                                            <input type="checkbox" class="btn-check" value="<?= $id ?>" name="stocks[]" id="c-<?= $id ?>"
+                                                autocomplete="off">
+                                            <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i
+                                                    class="bi bi-check-circle me-2"></i>Approve</label>
+                                            <?php
+                                    } else {
+                                        ?>
+                                            <p class="text-muted">Approved.</p>
+                                    <?php } ?>
+                                </div>
+                            </td>
+                        </tr>
                         <?php
-                        if ($request === "1") {
-                            ?>
-                            <input type="checkbox" class="btn-check" value="<?= $id ?>" name="stocks[]" id="c-<?= $id ?>"
-                                autocomplete="off">
-                            <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i
-                                    class="bi bi-check-circle me-2"></i>Approve</label>
-                            <?php
-                        } else {
-                            ?>
-                            <p class="text-muted">Approved.</p>
-                        <?php } ?>
-                    </div>
-                </td>
-            </tr>
-            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='5' class='text-center'>No Stock Requests.</td></tr>";
@@ -317,57 +318,57 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
 
 if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
     ?>
-    <div class="add-row-container">
-        <hr class="my-2">
-        <div class="row mb-2 pe-2">
-            <div class="col-lg-3 mb-2">
-                <label for="name" class="form-label fw-light">Chemical Name</label>
-                <input type="text" name="name[]" id="add-name" class="form-control form-add" autocomplete="one-time-code">
-            </div>
-            <div class="col-lg-3 mb-2">
-                <label for="chemBrand" class="form-label fw-light">Chemical Brand</label>
-                <input type="text" name="chemBrand[]" id="add-chemBrand" class="form-control form-add"
-                    autocomplete="one-time-code">
-            </div>
-            <div class="col-lg-2 mb-2">
-                <label for="chemLevel" class="form-label fw-light text-nowrap">Current Chemical Level</label>
-                <input type="text" name="chemLevel[]" id="add-chemLevel" class="form-control form-add"
-                    autocomplete="one-time-code">
-            </div>
-            <div class="col-lg-2 mb-2">
-                <label for="chemLevel" class="form-label fw-light">Container Size</label>
-                <input type="text" name="containerSize[]" id="add-chemLevel" class="form-control form-add"
-                    autocomplete="one-time-code">
-            </div>
-            <div class="col-lg-2 mb-2">
-                <label for="chemLevel" class="form-label fw-light">Container Count</label>
-                <input type="text" name="containerCount[]" id="add-chemLevel" class="form-control form-add"
-                    autocomplete="one-time-code">
-            </div>
+        <div class="add-row-container">
+            <hr class="my-2">
+            <div class="row mb-2 pe-2">
+                <div class="col-lg-3 mb-2">
+                    <label for="name" class="form-label fw-light">Chemical Name</label>
+                    <input type="text" name="name[]" id="add-name" class="form-control form-add" autocomplete="one-time-code">
+                </div>
+                <div class="col-lg-3 mb-2">
+                    <label for="chemBrand" class="form-label fw-light">Chemical Brand</label>
+                    <input type="text" name="chemBrand[]" id="add-chemBrand" class="form-control form-add"
+                        autocomplete="one-time-code">
+                </div>
+                <div class="col-lg-2 mb-2">
+                    <label for="chemLevel" class="form-label fw-light text-nowrap">Current Chemical Level</label>
+                    <input type="text" name="chemLevel[]" id="add-chemLevel" class="form-control form-add"
+                        autocomplete="one-time-code">
+                </div>
+                <div class="col-lg-2 mb-2">
+                    <label for="chemLevel" class="form-label fw-light">Container Size</label>
+                    <input type="text" name="containerSize[]" id="add-chemLevel" class="form-control form-add"
+                        autocomplete="one-time-code">
+                </div>
+                <div class="col-lg-2 mb-2">
+                    <label for="chemLevel" class="form-label fw-light">Container Count</label>
+                    <input type="text" name="containerCount[]" id="add-chemLevel" class="form-control form-add"
+                        autocomplete="one-time-code">
+                </div>
 
-        </div>
-        <div class="row mb-2">
-            <div class="col-lg-4 mb-2">
-                <label for="expDate" class="form-label fw-light">Date Received</label>
-                <input type="date" name="receivedDate[]" id="add-dateReceived" class="form-control form-add form-date-rec">
             </div>
-            <div class="col-lg-4 mb-2">
-                <label for="expDate" class="form-label fw-light">Expiry Date</label>
-                <input type="date" name="expDate[]" id="add-expDate" class="form-control form-add form-date-exp">
+            <div class="row mb-2">
+                <div class="col-lg-4 mb-2">
+                    <label for="expDate" class="form-label fw-light">Date Received</label>
+                    <input type="date" name="receivedDate[]" id="add-dateReceived" class="form-control form-add form-date-rec">
+                </div>
+                <div class="col-lg-4 mb-2">
+                    <label for="expDate" class="form-label fw-light">Expiry Date</label>
+                    <input type="date" name="expDate[]" id="add-expDate" class="form-control form-add form-date-exp">
+                </div>
+                <div class="col-4 mb-2">
+                    <label for="notes" class="form-label fw-light">Short Note</label>
+                    <textarea name="notes[]" id="notes" class="form-control"
+                        placeholder="Optional short note . . . "></textarea>
+                </div>
             </div>
-            <div class="col-4 mb-2">
-                <label for="notes" class="form-label fw-light">Short Note</label>
-                <textarea name="notes[]" id="notes" class="form-control"
-                    placeholder="Optional short note . . . "></textarea>
+            <div class="mb-2 d-flex">
+                <button type="button" class="btn btn-grad remove-btn mx-auto w-50">Remove Row<i
+                        class="bi bi-dash-circle ms-3"></i></button>
             </div>
         </div>
-        <div class="mb-2 d-flex">
-            <button type="button" class="btn btn-grad remove-btn mx-auto w-50">Remove Row<i
-                    class="bi bi-dash-circle ms-3"></i></button>
-        </div>
-    </div>
 
-    <?php
+        <?php
 }
 
 if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
@@ -436,8 +437,8 @@ if (isset($_GET['branchoptions']) && $_GET['branchoptions'] === 'true') {
             $name = $row['name'];
             $loc = $row['location'];
             ?>
-            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars("$name ($loc)") ?></option>
-            <?php
+                        <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars("$name ($loc)") ?></option>
+                        <?php
         }
     }
 }
@@ -612,8 +613,8 @@ if (isset($_GET['dispatched_transactions']) && $_GET['dispatched_transactions'] 
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             ?>
-            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
-            <?php
+                        <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
+                        <?php
         }
     } else {
         echo "<option selected disabled>No available accepted transactions</option>";
@@ -699,11 +700,280 @@ if (isset($_GET['transaction_options']) && $_GET['transaction_options'] === 'tru
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             ?>
-            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
-            <?php
+                        <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
+                        <?php
         }
     } else {
         echo "<option disabled>No available accepted transactions</option>";
     }
     mysqli_close($conn);
+}
+
+$logtypes = [
+    'in',
+    'out',
+    'lost',
+    'scrapped',
+    'used'
+];
+
+$unit_values = [
+    'mass' => [
+        'mg' => 0.001,
+        'g' => 1,
+        'kg' => 1000
+    ],
+    'volume' => [
+        'mL' => 0.001,
+        'L' => 1,
+        'gal' => 3.78541
+    ],
+    'others' => [
+        'box' => 1,
+        'pc' => 1,
+        'canister' => 1
+    ]
+];
+
+if (isset($_POST['adjust']) && $_POST['adjust'] === 'true') {
+    $chemId = $_POST['chemid'] ?? NULL;
+    $qty = isset($_POST['qty']) ? $_POST['qty'] : (float) 0;
+    $logtype = $_POST['logtype'];
+    $main_unit = $_POST['main_qty_unit'] ?? NULL;
+    $entered_unit = isset($_POST['qty_unit']) ? $_POST['qty_unit'] : NULL;
+    $ologtype = isset($_POST['other_logtype']) ? $_POST['other_logtype'] : NULL;
+    $op = isset($_POST['operator']) ? $_POST['operator'] : NULL;
+    $notes = $_POST['notes'];
+    $chemical_details = get_chemical($conn, $chemId);
+
+    $wcontainer = isset($_POST['containerchk']);
+    // no of container used
+    $ccontainer = isset($_POST['containercount']) ? $_POST['containercount'] : (int) 0;
+
+    if ($chemId === NULL || $main_unit === NULL) {
+        http_response_code(400);
+        echo "There seems to be a problem loading the chemical data. Please try again later. $chemId | $main_unit";
+        exit();
+    }
+
+    if (!$wcontainer) {
+        if (empty($qty) || !is_numeric($qty)) {
+            http_response_code(400);
+            echo "Quantity must be a valid number and should not be empty.";
+            exit();
+        }
+    }
+    // http_response_code(400);
+
+    if ($main_unit !== $entered_unit) {
+        $convert = convert_to_main_unit($entered_unit, $main_unit, $qty);
+        if (isset($convert['error'])) {
+            http_response_code(400);
+            echo $convert['error'];
+            exit();
+        }
+        $qty = $convert;
+    } else {
+        $qty = (float) $qty;
+    }
+
+    if ($qty <= 0) {
+        http_response_code(400);
+        echo "Quantity must be greater than 0.";
+        exit();
+    }
+
+    if (!$wcontainer) {
+        if ($qty > $chemical_details['container_size']) {
+            http_response_code(400);
+            echo "The quantity entered should not exceed the container size.";
+            exit();
+        }
+    }
+
+    // echo var_dump($qty);
+    // exit();
+
+    // if (array_key_exists($main_unit, array_values($unit_values))) {
+    //     http_response_code(400);
+    //     echo var_dump($unit_values[$main_unit]);
+    //     exit();
+    // }
+
+    if ($main_unit === 'mg' || $main_unit === 'g' || $main_unit === 'kg') {
+        $unit_option = ['mg', 'g', 'kg'];
+    } elseif ($main_unit === 'box' || $main_unit === 'pc' || $main_unit === 'canister') {
+        $unit_option = ['box', 'pc', 'canister'];
+    } elseif ($main_unit === 'mL' || $main_unit === 'L') {
+        $unit_option = ['mL', 'L', 'gal'];
+    } else {
+        $unit_option = [];
+    }
+
+    if ($entered_unit === NULL || !is_string($entered_unit)) {
+        http_response_code(400);
+        echo "Invalid or missing quantity unit.";
+        exit();
+    }
+
+    if (!in_array($entered_unit, $unit_option)) {
+        http_response_code(400);
+        echo "Invalid quantity unit '$entered_unit'.";
+        exit();
+    }
+
+
+    if (!is_numeric($chemId) || empty($chemId)) {
+        http_response_code(400);
+        echo "Invalid Chemical ID.";
+        exit();
+    }
+
+    if ($wcontainer) {
+        if ($ccontainer <= 0) {
+            http_response_code(400);
+            echo "Invalid container count.";
+            exit();
+        }
+        $chemcapacity = get_chem_capacity($conn, $chemId);
+        if (isset($chemcapacity['error'])) {
+            http_response_code(400);
+            echo $chemcapacity['error'];
+            exit();
+        }
+        $qty = (float) $chemcapacity * $ccontainer;
+    } else {
+        $fccontainer = 0;
+    }
+
+    // $valid_logtype = '';
+    // $final_qty = 0;
+
+    $usage_source = NULL;
+    if (!in_array($logtype, $logtypes)) {
+        // if other type is null, logtype should be restricted and only fixed datas are allowed
+        if ($ologtype === NULL || empty($ologtype)) {
+            http_response_code(400);
+            echo "Please choose a valid adjustment type.";
+            exit();
+        }
+        // if not null pass to final variable
+        $valid_logtype = ucwords($ologtype);
+
+        // check if positive or not
+        if ($op === NULL || ($op !== 'add' && $op !== 'subtract')) {
+            http_response_code(400);
+            echo "Please specify if the quantity should be added or subtracted for the 'Other' type.";
+            exit();
+        }
+
+        if ($op === 'add') {
+            $final_qty = $qty;
+            if ($wcontainer) {
+                $fccontainer = $ccontainer;
+            }
+            $usage_source = "MANUAL_ADDITION";
+        } else {
+            $final_qty = $qty * -1;
+            if ($wcontainer) {
+                $fccontainer = $ccontainer * -1;
+            }
+            $usage_source = "MANUAL_SUBTRACTION";
+        }
+    } else {
+        // trigger switch if in select - restrict choices
+        switch ($logtype) {
+            case 'in':
+                $valid_logtype = "Manual Stock Correction (In)";
+                $final_qty = $qty;
+                if ($wcontainer) {
+                    $fccontainer = $ccontainer;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_ADDED";
+                } else {
+                    $usage_source = "PARTIAL_ADDITION";
+                }
+                break;
+            case 'out':
+                $valid_logtype = "Manual Stock Correction (Out)";
+                $final_qty = $qty * -1;
+                if ($wcontainer) {
+                    $fccontainer = $ccontainer * -1;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_OUT";
+                } else {
+                    $usage_source = "FROM_OPENED_CONTAINER";
+                }
+                break;
+            case 'lost':
+                $valid_logtype = "Lost/Damaged Item";
+                $final_qty = $qty * -1;
+                if ($wcontainer) {
+                    $fccontainer = $ccontainer * -1;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_LOST";
+                } else {
+                    $usage_source = "PARTIAL_LOST_FROM_OPENED";
+                }
+                break;
+            case 'used':
+                $valid_logtype = "Used";
+                $final_qty = $qty * -1;
+                if ($wcontainer) {
+                    $fccontainer = $ccontainer * -1;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_USED";
+                } else {
+                    $usage_source = "FROM_OPENED_CONTAINER";
+                }
+                break;
+            case 'scrapped':
+                $valid_logtype = "Trashed Item";
+                $final_qty = $qty * -1;
+                if ($wcontainer) {
+                    $fccontainer = $ccontainer * -1;
+                    $usage_source = "WHOLE_SEALED_CONTAINER_LOST_DAMAGED";
+                } else {
+                    $usage_source = "PARTIAL_SCRAPPED_FROM OPENED";
+                }
+                break;
+            default:
+                http_response_code(400);
+                echo "Invalid adjustment type.";
+                exit();
+        }
+    }
+
+    // if checked
+    if ($wcontainer && $final_qty < 0) {
+        // get from database
+        $oremainingcont = get_chem_containercount($conn, $chemId);
+        if (isset($chemcapacity['error'])) {
+            http_response_code(400);
+            echo $chemcapacity['error'];
+            exit();
+        }
+        if ($oremainingcont < abs($ccontainer)) {
+            http_response_code(400);
+            echo "Cannot reduce container count below the current available containers.";
+            exit();
+        }
+    }
+
+    if (empty($notes)) {
+        http_response_code(400);
+        echo "Please explain the reason for adjustment at the notes section.";
+        exit();
+    }
+
+    $adjust = adjust_chemical($conn, $chemId, $valid_logtype, $fccontainer, $final_qty, $notes, $user, $role, $branch, $usage_source);
+    if (isset($adjust['error'])) {
+        http_response_code(400);
+        echo $adjust['error'];
+        exit();
+    } elseif ($adjust) {
+        http_response_code(200);
+        echo json_encode(['success' => 'Changes Applied.']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo "An unknown error occured. Please try again later.";
+        exit();
+    }
 }

@@ -470,17 +470,19 @@ include('tablecontents/tables.php');
                                         </div>
                                     </div>
 
-                                    <p
-                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
-                                        Item Count Information</p>
-                                    <div class="row mb-2 d-none user-select-none" id="chemState">
-                                        <div class="col-3">
-                                            <p class="fw-medium mb-2">Opened Item Level:</p>
-                                            <p class="ps-2 mb-2" id="openedContainerLevel"></p>
-                                        </div>
-                                        <div class="col-3">
-                                            <p class="fw-medium mb-2">Closed Item Count:</p>
-                                            <p class="ps-2 mb-2" id="closedContainerCount"></p>
+                                    <div id="chemState">
+                                        <p
+                                            class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                            Item Count Information</p>
+                                        <div class="row mb-2 d-none user-select-none" id="chemState">
+                                            <div class="col-3">
+                                                <p class="fw-medium mb-2">Opened Item Level:</p>
+                                                <p class="ps-2 mb-2" id="openedContainerLevel"></p>
+                                            </div>
+                                            <div class="col-3">
+                                                <p class="fw-medium mb-2">Closed Item Count:</p>
+                                                <p class="ps-2 mb-2" id="closedContainerCount"></p>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -1131,7 +1133,7 @@ include('tablecontents/tables.php');
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="approve-inputpwd" class="form-label fw-light">Approve Entry No.<span
+                                    <label for="approve-inputpwd" class="form-label fw-light">Approve Item <span
                                             id="chemname"></span>? Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
@@ -1911,7 +1913,7 @@ include('tablecontents/tables.php');
         function toggle() {
             $('#submitEdit').toggleClass('d-none');
             $('#view-chemUnit, #edit-chemUnit').toggleClass('d-none');
-            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount').attr('readonly', function (i, a) {
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount, #edit-restockThreshold').attr('readonly', function (i, a) {
                 return a ? false : true;
             });
             $("#edit-expDate, #edit-dateReceived, #edit-chemUnit").attr('disabled', function (i, a) {
@@ -1921,7 +1923,7 @@ include('tablecontents/tables.php');
             $("#toggleEditBtn").html(function (i, a) {
                 return a.includes('Close Edit') ? 'Edit' : 'Close Edit';
             });
-            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived, #edit-contSize, #edit-containerCount').toggleClass('form-control-plaintext form-control');
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived, #edit-contSize, #edit-containerCount, #edit-restockThreshold').toggleClass('form-control-plaintext form-control');
 
             return toggled = toggled ? false : true;
         }
@@ -1972,6 +1974,7 @@ include('tablecontents/tables.php');
             $('#edit-expDate').val(details.expDate);
             $('#edit-notes').val(details.notes);
             $('#edit-chemUnit').val(details.unit);
+            $('#edit-restockThreshold').val(details.threshold);
             $('#view-chemUnit').text(details.unit);
             $('#addinfo').html(function () {
                 return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
@@ -1981,11 +1984,17 @@ include('tablecontents/tables.php');
             });
 
             let reqAlertStatus = $('#reqalert').hasClass('d-none');
+            let chemstate = $("#chemState").hasClass('d-none');
             if (details.req == 1) {
                 $('#reqalert').removeClass('d-none').html('This chemical is pending for approval by the Manager. You can only view the details of this chemical.').fadeIn(750);
+                $('#chemState').removeClass('d-none');
+
             } else {
                 if (!reqAlertStatus) {
                     $('#reqalert').addClass('d-none');
+                }
+                if (chemstate) {
+                    $('#chemState').removeClass('d-none');
                 }
                 $('#reqalert').html('');
             }
