@@ -2789,6 +2789,13 @@ function reflect_chem_log($conn, $chemid, $qty, $containercount)
                     $total_chemLevel -= $container_size;
                     $current_unop_cont++;
                 }
+            } else {
+                // negative value = decrease
+                $total_chemLevel = $current_chemLevel - $qty;
+                while($total_chemLevel < 0){
+                    $total_chemLevel += $container_size;
+                    $current_unop_cont--;
+                }
             }
             $sql = "UPDATE chemicals SET chemLevel = ?, unop_cont = ?";
             $datatypes = "di";

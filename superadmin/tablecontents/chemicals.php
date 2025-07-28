@@ -283,33 +283,33 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
             $expDate = $row["expiryDate"];
             $request = $row['request'];
             ?>
-                        <tr class="text-center">
-                            <td scope="row">
-                                <?=
-                                    $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
-                                ?>
-                            </td>
-                            <td><?= htmlspecialchars($brand) ?></td>
-                            <td><?= htmlspecialchars($level) ?></td>
-                            <td><?= htmlspecialchars($expDate) ?></td>
-                            <td>
-                                <div class="d-flex justify-content-center">
-                                    <?php
-                                    if ($request === "1") {
-                                        ?>
-                                            <input type="checkbox" class="btn-check" value="<?= $id ?>" name="stocks[]" id="c-<?= $id ?>"
-                                                autocomplete="off">
-                                            <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i
-                                                    class="bi bi-check-circle me-2"></i>Approve</label>
-                                            <?php
-                                    } else {
-                                        ?>
-                                            <p class="text-muted">Approved.</p>
-                                    <?php } ?>
-                                </div>
-                            </td>
-                        </tr>
+            <tr class="text-center">
+                <td scope="row">
+                    <?=
+                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
+                    ?>
+                </td>
+                <td><?= htmlspecialchars($brand) ?></td>
+                <td><?= htmlspecialchars($level) ?></td>
+                <td><?= htmlspecialchars($expDate) ?></td>
+                <td>
+                    <div class="d-flex justify-content-center">
                         <?php
+                        if ($request === "1") {
+                            ?>
+                            <input type="checkbox" class="btn-check" value="<?= $id ?>" name="stocks[]" id="c-<?= $id ?>"
+                                autocomplete="off">
+                            <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i
+                                    class="bi bi-check-circle me-2"></i>Approve</label>
+                            <?php
+                        } else {
+                            ?>
+                            <p class="text-muted">Approved.</p>
+                        <?php } ?>
+                    </div>
+                </td>
+            </tr>
+            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='5' class='text-center'>No Stock Requests.</td></tr>";
@@ -318,57 +318,57 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
 
 if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
     ?>
-        <div class="add-row-container">
-            <hr class="my-2">
-            <div class="row mb-2 pe-2">
-                <div class="col-lg-3 mb-2">
-                    <label for="name" class="form-label fw-light">Chemical Name</label>
-                    <input type="text" name="name[]" id="add-name" class="form-control form-add" autocomplete="one-time-code">
-                </div>
-                <div class="col-lg-3 mb-2">
-                    <label for="chemBrand" class="form-label fw-light">Chemical Brand</label>
-                    <input type="text" name="chemBrand[]" id="add-chemBrand" class="form-control form-add"
-                        autocomplete="one-time-code">
-                </div>
-                <div class="col-lg-2 mb-2">
-                    <label for="chemLevel" class="form-label fw-light text-nowrap">Current Chemical Level</label>
-                    <input type="text" name="chemLevel[]" id="add-chemLevel" class="form-control form-add"
-                        autocomplete="one-time-code">
-                </div>
-                <div class="col-lg-2 mb-2">
-                    <label for="chemLevel" class="form-label fw-light">Container Size</label>
-                    <input type="text" name="containerSize[]" id="add-chemLevel" class="form-control form-add"
-                        autocomplete="one-time-code">
-                </div>
-                <div class="col-lg-2 mb-2">
-                    <label for="chemLevel" class="form-label fw-light">Container Count</label>
-                    <input type="text" name="containerCount[]" id="add-chemLevel" class="form-control form-add"
-                        autocomplete="one-time-code">
-                </div>
+    <div class="add-row-container">
+        <hr class="my-2">
+        <div class="row mb-2 pe-2">
+            <div class="col-lg-3 mb-2">
+                <label for="name" class="form-label fw-light">Chemical Name</label>
+                <input type="text" name="name[]" id="add-name" class="form-control form-add" autocomplete="one-time-code">
+            </div>
+            <div class="col-lg-3 mb-2">
+                <label for="chemBrand" class="form-label fw-light">Chemical Brand</label>
+                <input type="text" name="chemBrand[]" id="add-chemBrand" class="form-control form-add"
+                    autocomplete="one-time-code">
+            </div>
+            <div class="col-lg-2 mb-2">
+                <label for="chemLevel" class="form-label fw-light text-nowrap">Current Chemical Level</label>
+                <input type="text" name="chemLevel[]" id="add-chemLevel" class="form-control form-add"
+                    autocomplete="one-time-code">
+            </div>
+            <div class="col-lg-2 mb-2">
+                <label for="chemLevel" class="form-label fw-light">Container Size</label>
+                <input type="text" name="containerSize[]" id="add-chemLevel" class="form-control form-add"
+                    autocomplete="one-time-code">
+            </div>
+            <div class="col-lg-2 mb-2">
+                <label for="chemLevel" class="form-label fw-light">Container Count</label>
+                <input type="text" name="containerCount[]" id="add-chemLevel" class="form-control form-add"
+                    autocomplete="one-time-code">
+            </div>
 
+        </div>
+        <div class="row mb-2">
+            <div class="col-lg-4 mb-2">
+                <label for="expDate" class="form-label fw-light">Date Received</label>
+                <input type="date" name="receivedDate[]" id="add-dateReceived" class="form-control form-add form-date-rec">
             </div>
-            <div class="row mb-2">
-                <div class="col-lg-4 mb-2">
-                    <label for="expDate" class="form-label fw-light">Date Received</label>
-                    <input type="date" name="receivedDate[]" id="add-dateReceived" class="form-control form-add form-date-rec">
-                </div>
-                <div class="col-lg-4 mb-2">
-                    <label for="expDate" class="form-label fw-light">Expiry Date</label>
-                    <input type="date" name="expDate[]" id="add-expDate" class="form-control form-add form-date-exp">
-                </div>
-                <div class="col-4 mb-2">
-                    <label for="notes" class="form-label fw-light">Short Note</label>
-                    <textarea name="notes[]" id="notes" class="form-control"
-                        placeholder="Optional short note . . . "></textarea>
-                </div>
+            <div class="col-lg-4 mb-2">
+                <label for="expDate" class="form-label fw-light">Expiry Date</label>
+                <input type="date" name="expDate[]" id="add-expDate" class="form-control form-add form-date-exp">
             </div>
-            <div class="mb-2 d-flex">
-                <button type="button" class="btn btn-grad remove-btn mx-auto w-50">Remove Row<i
-                        class="bi bi-dash-circle ms-3"></i></button>
+            <div class="col-4 mb-2">
+                <label for="notes" class="form-label fw-light">Short Note</label>
+                <textarea name="notes[]" id="notes" class="form-control"
+                    placeholder="Optional short note . . . "></textarea>
             </div>
         </div>
+        <div class="mb-2 d-flex">
+            <button type="button" class="btn btn-grad remove-btn mx-auto w-50">Remove Row<i
+                    class="bi bi-dash-circle ms-3"></i></button>
+        </div>
+    </div>
 
-        <?php
+    <?php
 }
 
 if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
@@ -437,8 +437,8 @@ if (isset($_GET['branchoptions']) && $_GET['branchoptions'] === 'true') {
             $name = $row['name'];
             $loc = $row['location'];
             ?>
-                        <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars("$name ($loc)") ?></option>
-                        <?php
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars("$name ($loc)") ?></option>
+            <?php
         }
     }
 }
@@ -613,8 +613,8 @@ if (isset($_GET['dispatched_transactions']) && $_GET['dispatched_transactions'] 
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             ?>
-                        <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
-                        <?php
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
+            <?php
         }
     } else {
         echo "<option selected disabled>No available accepted transactions</option>";
@@ -700,8 +700,8 @@ if (isset($_GET['transaction_options']) && $_GET['transaction_options'] === 'tru
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             ?>
-                        <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
-                        <?php
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></option>
+            <?php
         }
     } else {
         echo "<option disabled>No available accepted transactions</option>";
