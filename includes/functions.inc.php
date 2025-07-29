@@ -2802,18 +2802,6 @@ function reflect_chem_log($conn, $chemid, $qty, $containercount)
             $data[] = $total_chemLevel;
             $data[] = $current_unop_cont;
 
-            // if ($qty > 0) {
-            //     if (($current_chemLevel + $qty) > $container_size) {
-            //         throw new Exception("Cannot add " . $qty . ". Current: " . $current_chemLevel . "mL. Max: " . $container_size . "mL. Remaining capacity: " . ($container_size - $current_chemLevel) . "mL.");
-            //     }
-            // } else {
-            //     if (($current_chemLevel + $qty) < 0) {
-            //         throw new Exception("Cannot remove " . abs($qty) . "mL. Only " . $current_chemLevel . "mL remaining in opened container.");
-            //     }
-            // }
-            // $sql = "UPDATE chemicals SET chemLevel = chemLevel + ?";
-            // $datatypes = "d";
-            // $data[] = $qty;
         }
         $sql .= " WHERE id = ?;";
         $datatypes .= "i";
