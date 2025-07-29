@@ -35,7 +35,7 @@ require("startsession.php");
             <div class="row m-2 gap-2">
                 <div class="col-5 bg-light bg-opacity-25 border rounded p-3 shadow">
                     <h1 class=" display-6 mx-auto">Welcome back Manager <strong style="text-transform: capitalize;">
-                            <?= $_SESSION['saUsn'] ?></strong>
+                            <?= $_SESSION['saUsn'] $_SESSION['saID'] ?></strong>
                     </h1>
                 </div>
                 <div class="col bg-light bg-opacity-25 border rounded p-3 pb-0 shadow">
