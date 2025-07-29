@@ -3,6 +3,17 @@
 
 <?php
 
+ini_set("session.use_only_cookies", "1");
+ini_set("session.use_strict_mode", "1");
+
+session_set_cookie_params([
+    'lifetime' => 1800,
+    // use website url when up
+    'domain' => 'pestastic-inventory.site',
+    'path' => '/',
+    'secure' => true,
+    'httponly' => true,
+]);
 session_start();
 
 include("header.php");
@@ -899,7 +910,8 @@ if (!isset($_SESSION["techId"]) && !isset($_SESSION['baID']) && !isset($_SESSION
                     <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
-            <h1 class='display-6 mx-auto text-center justify-self-center h-100 text-light fw-medium d-flex'>Error. Session active.</h1>
+            <h1 class='display-6 mx-auto text-center justify-self-center h-100 text-light fw-medium d-flex'>Error. Session
+                active.</h1>
             <p class="mx-auto fs-3 fw-light text-light">Redirecting you back to dashboard...</p>
         </div>
         <?php
