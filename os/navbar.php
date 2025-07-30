@@ -76,7 +76,7 @@
 <script>
     $(document).ready(async function() {
         $.ajax({
-                url: 'tablecontents/notifications.php',
+                url: 'contents/notifications.php',
                 method: 'GET',
                 dataType: 'json',
                 data: {
