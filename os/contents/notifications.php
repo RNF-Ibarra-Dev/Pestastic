@@ -86,24 +86,24 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
         }
     }
 
-    $up = "SELECT * FROM transactions WHERE transaction_status = 'Accepted' AND treatment_date >= CURDATE();";
-    $upr = mysqli_query($conn, $up);
-    if ($upr) {
-        $num = mysqli_num_rows($upr);
-        if ($num > 0) {
-            $msg = $num == 1 ? 'transaction' : 'transactions';
-            $response['notif'] .= "
-            <li class='list-group-item p-0'>
-                <a href='transactions.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-calendar-event fw-light account-settings-icon'></i>
-                        There are <span class='text-info'>$num</span> upcoming $msg.
-                    </p>
-                </a>
-            </li>";
-            $response['count']++;
-        }
-    }
+    // $up = "SELECT * FROM transactions WHERE transaction_status = 'Accepted' AND treatment_date >= CURDATE();";
+    // $upr = mysqli_query($conn, $up);
+    // if ($upr) {
+    //     $num = mysqli_num_rows($upr);
+    //     if ($num > 0) {
+    //         $msg = $num == 1 ? 'transaction' : 'transactions';
+    //         $response['notif'] .= "
+    //         <li class='list-group-item p-0'>
+    //             <a href='transactions.php'
+    //                 class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
+    //                 <p class='fw-light mb-0'><i class='bi bi-calendar-event fw-light account-settings-icon'></i>
+    //                     There are <span class='text-info'>$num</span> upcoming $msg.
+    //                 </p>
+    //             </a>
+    //         </li>";
+    //         $response['count']++;
+    //     }
+    // }
 
     $response['countbadge'] .= "<span class='position-absolute translate-middle badge rounded-pill bg-danger' style='top: unset !important' id='notifNum'>" . $response['count'];
     echo json_encode($response);

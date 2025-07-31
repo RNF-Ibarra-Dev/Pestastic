@@ -488,6 +488,38 @@ function modify_sa($conn, $fname, $lname, $username, $email, $pwd = '', $bd, $em
         return ['error' => 'Update failed. Please make sure to check for new changes. ' . mysqli_stmt_error($stmt)];
     }
 }
+function modify_ba($conn, $fname, $lname, $username, $address, $email, $pwd = '', $bd, $empid, $id)
+{
+
+    $sql = "UPDATE branchadmin SET baUsn = ?, baFName = ?, baLName = ?, baEmail = ?, baBirthdate = ?, baEmpId = ?, baAddress";
+    $stmt = mysqli_stmt_init($conn);
+
+    $types = "ssssssi";
+    $data = [$username, $fname, $lname, $email, $bd, $empid, $address];
+    if (!empty($pwd)) {
+        $sql .= ", baPwd = ?";
+        $types .= 's';
+        $data[] = $pwd;
+    }
+
+    $sql .= " WHERE baID = ?;";
+    $types .= "i";
+    $data[] = $id;
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ["error" => "modification stmt error"];
+    }
+
+    mysqli_stmt_bind_param($stmt, $types, ...$data);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_affected_rows($conn) > 0) {
+        return true;
+    } else {
+        return ['error' => 'Update failed. Please make sure to check for new changes. ' . mysqli_stmt_error($stmt)];
+    }
+}
 
 function addChemv2($conn, $dataArr, $branch, $addby, $request)
 {
@@ -2792,7 +2824,7 @@ function reflect_chem_log($conn, $chemid, $qty, $containercount)
             } else {
                 // negative value = decrease
                 $total_chemLevel = $current_chemLevel - $qty;
-                while($total_chemLevel < 0){
+                while ($total_chemLevel < 0) {
                     $total_chemLevel += $container_size;
                     $current_unop_cont--;
                 }
