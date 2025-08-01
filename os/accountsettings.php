@@ -49,17 +49,18 @@ require("startsession.php");
                                         name="username" autocomplete="off" readonly>
                                 </div>
                                 <div class="col p-0">
-                                    <label for="empid" class="form-label fw-bold mb-1">Employee ID:</label>
-                                    <input type="text" class="form-control-plaintext text-light ps-2" id="empid"
-                                        name="empid" autocomplete="off" readonly>
+                                    <p class="fw-bold mb-1">Employee ID:</p>
+                                    <p class="text-light ps-2 mt-2 mb-0" id="empid">
                                 </div>
                             </div>
                             <label for="address" class="form-label fw-bold mb-0">Address:</label>
-                            <textarea name="address" id="address" col="1" class="form-control-plaintext text-light ps-2" style="resize: none;" readonly></textarea>
+                            <textarea name="address" id="address" col="1" class="form-control-plaintext text-light ps-2"
+                                style="resize: none;" readonly></textarea>
                             <label for="email" class="form-label fw-bold mb-0">Email:</label>
                             <input type="text" class="form-control-plaintext text-light ps-2" id="email" name="email"
                                 autocomplete="off" readonly>
-                            <label for="oldpassword" class="form-label fw-bold mb-0 d-none pwd-label">Old Password:</label>
+                            <label for="oldpassword" class="form-label fw-bold mb-0 d-none pwd-label">Old
+                                Password:</label>
                             <input type="password" class="form-control d-none" id="oldpassword" name="oldpassword"
                                 autocomplete="new-password">
                             <label for="password" class="form-label fw-bold mb-0 d-none pwd-label">Password:</label>
@@ -69,6 +70,8 @@ require("startsession.php");
                                 Password:</label>
                             <input type="password" class="form-control d-none" id="rpassword" name="rpassword"
                                 autocomplete="new-password">
+                            <p class="fw-light ms-1 d-none notes-toggle">Leave password blank if you want to retain the
+                                same password.</p>
                             <label for="birthdate" class="form-label fw-bold mb-0">Birthdate:</label>
                             <input type="date" class="form-control ps-2 d-none" id="birthdate" name="birthdate">
                             <p class="text-light ms-2" id="displaybd"></p>
@@ -90,16 +93,16 @@ require("startsession.php");
             dateFormat: "F j, Y"
         });
 
-        $(document).ready(async function() {
+        $(document).ready(async function () {
             await load_user();
         });
 
         async function load_user() {
             $.get(dataUrl, {
-                    acc: true,
-                    accountId: <?= $_SESSION['baID'] ?>
-                })
-                .done(function(d) {
+                acc: true,
+                accountId: <?= $_SESSION['baID'] ?>
+            })
+                .done(function (d) {
                     console.log(d);
                     let data = JSON.parse(d);
                     console.log(data);
@@ -107,16 +110,16 @@ require("startsession.php");
                     $('#lname').val(data.lname);
                     $("#username").val(data.usn);
                     $('#email').val(data.email);
-                    $('#empid').val(data.empId);
+                    $('#empid').text(data.empId);
                     birthdate.setDate(data.displaydate);
                     $('#displaybd').html(data.displaydate);
                     $('#id').val(data.id);
                     $("#address").val(data.address);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     alert(e);
                 })
-                .always(function(e) {
+                .always(function (e) {
                     // console.log(e);
                 })
         }
@@ -138,34 +141,34 @@ require("startsession.php");
                 await toggle_input('lname'),
                 await toggle_input('username'),
                 await toggle_input('email'),
-                await toggle_input('empid'),
+                // await toggle_input('empid'),
                 await toggle_input('address')
             ]);
-            $("#displaybd, #password, #rpassword, #oldpassword, #passwordlabel, .pwd-label, #birthdate, #submitbtn").toggleClass('d-none');
-            $("#editbtn").html(function(i, a) {
+            $("#displaybd, #password, #rpassword, #oldpassword, #passwordlabel, .pwd-label, #birthdate, #submitbtn, .notes-toggle").toggleClass('d-none');
+            $("#editbtn").html(function (i, a) {
                 return a.includes('Edit Information') ? 'Close Editor' : 'Edit Information';
             })
         }
 
-        $(document).on('click', "#editbtn", async function() {
+        $(document).on('click', "#editbtn", async function () {
             await toggle();
         });
 
-        $(document).on('submit', '#accountsettings', async function(e) {
+        $(document).on('submit', '#accountsettings', async function (e) {
             console.log($(this).serialize());
             e.preventDefault();
             $.ajax({
-                    url: dataUrl,
-                    method: 'POST',
-                    dataType: 'json',
-                    data: $(this).serialize() + "&editacc=true"
-                })
-                .done(async function(d) {
+                url: dataUrl,
+                method: 'POST',
+                dataType: 'json',
+                data: $(this).serialize() + "&editacc=true"
+            })
+                .done(async function (d) {
                     // alert(d.success);
                     toggle();
                     $("#alert").html(d.success).fadeIn(500).delay(2000).fadeOut(1000);
                 })
-                .fail(async function(e) {
+                .fail(async function (e) {
                     console.log(e);
                     // alert(e);
                     $("#alert").html(e.responseText).fadeIn(500).delay(2000).fadeOut(1000);

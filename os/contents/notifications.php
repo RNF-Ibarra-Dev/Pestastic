@@ -57,27 +57,27 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
         }
     }
 
-    $se = "SELECT * FROM chemicals WHERE request = 1;";
-    $ser = mysqli_query($conn, $se);
-    if ($ser) {
-        $num = mysqli_num_rows($ser);
-        if ($num > 0) {
-            $centry = $num == 1 ? 'entry' : 'entries';
-            $response['notif'] .= "
-            <li class='list-group-item p-0'>
-                <a href='itemstock.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light'>
-                    <div class='clearfix'>
-                    <i class='bi bi-flask-florence fw-light float-end me-2'></i>
-                    <p class='fw-light mb-0 w-75 mx-auto'>
-                        <span class='text-danger'>$num</span> Chemical $centry needs approval.
-                    </p>
-                    </div>
-                </a>
-            </li>";
-            $response['count']++;
-        }
-    }
+    // $se = "SELECT * FROM chemicals WHERE request = 1;";
+    // $ser = mysqli_query($conn, $se);
+    // if ($ser) {
+    //     $num = mysqli_num_rows($ser);
+    //     if ($num > 0) {
+    //         $centry = $num == 1 ? 'entry' : 'entries';
+    //         $response['notif'] .= "
+    //         <li class='list-group-item p-0'>
+    //             <a href='itemstock.php'
+    //                 class='nav-link btn btn-sidebar m-0 py-2 fw-light'>
+    //                 <div class='clearfix'>
+    //                 <i class='bi bi-flask-florence fw-light float-end me-2'></i>
+    //                 <p class='fw-light mb-0 w-75 mx-auto'>
+    //                     <span class='text-danger'>$num</span> Chemical $centry needs approval.
+    //                 </p>
+    //                 </div>
+    //             </a>
+    //         </li>";
+    //         $response['count']++;
+    //     }
+    // }
 
     // $vr = "SELECT * FROM transactions WHERE void_request = 1;";
     // $vrr = mysqli_query($conn, $vr);

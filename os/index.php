@@ -33,11 +33,12 @@ require("startsession.php");
                 </div>
                 <div class="col bg-light bg-opacity-25 border rounded p-3 pb-0 shadow">
                     <div>
-                        <span class="d-flex flex-row justify-content-center">
-                            <i class="bi bi-clipboard-data fs-3 me-3"></i>
-                            <p class="text-center align-text-center fs-3">
+                        <div class="clearfix">
+                            <i
+                                class="bi bi-clipboard-data fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
+                            <p class="text-center align-text-center fs-3 w-75 mx-auto">
                                 Transactions Status</p>
-                        </span>
+                        </div>
                         <canvas id="transPie" width="250" height="
                         250"></canvas>
                         <p class="text-muted mt-3">Check <a href="transactions.php"
@@ -46,8 +47,12 @@ require("startsession.php");
                     </div>
                 </div>
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <p class="text-center align-text-center fs-3 mx-auto"><i class="bi bi-exclamation-circle"></i>
-                        Pending Transactions</p>
+                    <div class="clearfix">
+                        <i
+                            class="bi bi-stopwatch fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
+                        <p class="text-center align-text-center fs-3 w-75 mx-auto">
+                            Pending Transactions</p>
+                    </div>
                     <table class="table-hover rounded overflow-hidden table">
                         <caption class="mt-auto">Check your <a href="transactions.php"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
@@ -68,8 +73,9 @@ require("startsession.php");
             <div class="row m-2 gap-2">
 
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <div class="clearfix align-middle">
-                        <i class="ms-2 fs-3 bi bi-clock float-start"></i>
+                    <div class="clearfix">
+                        <i
+                            class="ms-2 fs-3 bi bi-clock float-start fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
                         <p class="text-center fs-3 mx-auto w-75">Pending Item Entries</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
@@ -87,7 +93,10 @@ require("startsession.php");
                     </table>
                 </div>
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <p class="text-center fs-3 mx-auto">Low Stock Chemicals</p>
+                    <div class="clearfix">
+                        <i class="bi bi-exclamation-circle fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
+                        <p class="text-center fs-3 w-75 mx-auto">Low Stock Chemicals</p>
+                    </div>
                     <table class="table-hover rounded overflow-hidden table">
                         <caption>Check <a href="inventory.php?chem=low"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
@@ -185,7 +194,7 @@ require("startsession.php");
 
         Chart.defaults.color = '#000';
 
-       function create_chart(canvasid, data) {
+        function create_chart(canvasid, data) {
             const ctx = $(`#${canvasid}`);
 
             new Chart(ctx, {
@@ -216,10 +225,10 @@ require("startsession.php");
                         },
                         tooltip: {
                             bodyColor: 'white',
-                            titleColor: 'white', 
+                            titleColor: 'white',
                             yAlign: 'bottom'
                         },
-                       
+
                     }
                 }
             });

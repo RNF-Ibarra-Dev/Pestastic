@@ -65,23 +65,23 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
     $pwd = $_POST['password'];
     $rpwd = $_POST['rpassword'];
     $bd = $_POST['birthdate'];
-    $empid = $_POST['empid'];
+    // $empid = $_POST['empid'];
     $address= $_POST['address'];
 
-    if (empty($fname) || empty($lname) || empty($email) || empty($bd) || empty($empid) || empty($username) || empty($address)) {
+    if (empty($fname) || empty($lname) || empty($email) || empty($bd) || empty($username) || empty($address)) {
         http_response_code(400);
-        echo "Incomplete inputs. Please confirm and submit again.";
+        echo "Required fields must not be empty.";
         exit();
     }
 
     if ($id != $_SESSION['baID']) {
         http_response_code(400);
-        echo "Invalid session ID. Refresh page and try again. " . $id . ' ' . $_SESSION['saID'];
+        echo "Invalid session ID. Refresh page and try again. " . $id . ' ' . $_SESSION['baID'];
         exit();
     }
 
     if (!empty($pwd) || !empty($opwd) || !empty($rpwd)) {
-        if (!validate($conn, $opwd)) {
+        if (!validateOS($conn, $opwd)) {
             http_response_code(400);
             echo "Incorrect old password.";
             exit();
@@ -131,15 +131,7 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
         }
     }
 
-    if ($empfunc = invalid_emp_id($conn, $empid)) {
-        if ($empfunc['baUsn'] != $_SESSION['baUsn'] && $empfunc['baID'] != $_SESSION['baID']) {
-            http_response_code(400);
-            echo "User already exists";
-            exit();
-        }
-    }
-
-    $edit = modify_ba($conn, $fname, $lname, $username, $address, $email, $pwd, $bdd, $empid, $id);
+    $edit = modify_ba($conn, $fname, $lname, $username, $address, $email, $pwd, $bdd, $id);
 
     if (isset($edit['error'])) {
         http_response_code(400);

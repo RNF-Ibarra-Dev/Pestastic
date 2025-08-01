@@ -488,36 +488,48 @@ function modify_sa($conn, $fname, $lname, $username, $email, $pwd = '', $bd, $em
         return ['error' => 'Update failed. Please make sure to check for new changes. ' . mysqli_stmt_error($stmt)];
     }
 }
-function modify_ba($conn, $fname, $lname, $username, $address, $email, $pwd = '', $bd, $empid, $id)
+function modify_ba($conn, $fname, $lname, $username, $address, $email, $pwd = '', $bd, $id)
 {
 
-    $sql = "UPDATE branchadmin SET baUsn = ?, baFName = ?, baLName = ?, baEmail = ?, baBirthdate = ?, baEmpId = ?, baAddress";
-    $stmt = mysqli_stmt_init($conn);
+    mysqli_begin_transaction($conn);
+    try {
 
-    $types = "ssssssi";
-    $data = [$username, $fname, $lname, $email, $bd, $empid, $address];
-    if (!empty($pwd)) {
-        $sql .= ", baPwd = ?";
-        $types .= 's';
-        $data[] = $pwd;
-    }
+        $sql = "UPDATE branchadmin SET baUsn = ?, baFName = ?, baLName = ?, baEmail = ?, baBirthdate = ?, baAddress = ?";
+        $stmt = mysqli_stmt_init($conn);
 
-    $sql .= " WHERE baID = ?;";
-    $types .= "i";
-    $data[] = $id;
+        $types = "ssssss";
+        $data = [$username, $fname, $lname, $email, $bd, $address];
+        if (!empty($pwd)) {
+            $sql .= ", baPwd = ?";
+            $types .= 's';
+            $data[] = $pwd;
+        }
 
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        return ["error" => "modification stmt error"];
-    }
+        $sql .= " WHERE baID = ?;";
+        $types .= "i";
+        $data[] = $id;
 
-    mysqli_stmt_bind_param($stmt, $types, ...$data);
-    mysqli_stmt_execute($stmt);
-    $res = mysqli_stmt_get_result($stmt);
+        // throw new Exception($sql);
 
-    if (mysqli_affected_rows($conn) > 0) {
-        return true;
-    } else {
-        return ['error' => 'Update failed. Please make sure to check for new changes. ' . mysqli_stmt_error($stmt)];
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("Prepared statement have failed.");
+        }
+
+        mysqli_stmt_bind_param($stmt, $types, ...$data);
+        mysqli_stmt_execute($stmt);
+        $res = mysqli_stmt_get_result($stmt);
+
+        if (mysqli_affected_rows($conn) > 0) {
+            mysqli_commit($conn);
+            return true;
+        } else {
+            throw new Exception("No changes made, please make sure to modify information.");
+        }
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . " at line " . $e->getLine() . " at file " . $e->getFile()
+        ];
     }
 }
 
