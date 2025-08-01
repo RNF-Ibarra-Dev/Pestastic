@@ -11,7 +11,7 @@
         <div class="gap-3 d-flex ms-auto border bg-dark bg-opacity-50 rounded-pill px-2 py-1">
             <button type="button" data-bs-target="#notifications" data-bs-toggle="modal"
                 class="navbar-brand btn user-icon rounded-circle m-0 shadow-lg p-0" id="notifbtn"><i alt="notification"
-                    class="rounded-circle bi bi-bell ms-auto">
+                    class="rounded-circle bi bi-app-indicator ms-auto">
                 </i>
                 <!-- <span class="visually-hidden">unread messages</span> -->
             </button>
@@ -60,7 +60,7 @@
     <div class="modal-dialog me-4 w-25 shadow-lg" style="margin-top: 5rem !important;">
         <div class="modal-content text-dark rounded-4 border-0 shadow-lg">
             <div class="modal-header position-relative">
-                <h1 class="modal-title fs-5 mx-auto">Notifications</h1>
+                <h1 class="modal-title fs-5 mx-auto">Alerts</h1>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"
                     style="position: absolute; right: 0.4rem;"></button>
             </div>

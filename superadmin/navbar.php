@@ -11,7 +11,7 @@
         <div class="gap-3 d-flex ms-auto border bg-dark bg-opacity-50 rounded-pill px-2 py-1">
             <button type="button" data-bs-target="#notifications" data-bs-toggle="modal"
                 class="navbar-brand btn user-icon rounded-circle m-0 shadow-lg p-0" id="notifbtn"><i alt="notification"
-                    class="rounded-circle bi bi-bell ms-auto">
+                    class="rounded-circle bi bi-app-indicator ms-auto">
                 </i>
                 <!-- <span class="visually-hidden">unread messages</span> -->
             </button>

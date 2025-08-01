@@ -21,10 +21,15 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
             $response['notif'] .=
                 "<li class='list-group-item p-0'>
             <a href='inventory.php'
-            class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center gap'>
-            <p class='fw-light mb-0'><i class='bi bi-beaker fw-light account-settings-icon'></i><span class='text-danger'>$num</span> $lchems are
+            class='nav-link btn btn-sidebar m-0 py-2 fw-light'>
+            <div class='clearfix'>
+            <i class='bi bi-beaker fw-light me-2 float-end'></i>
+            <p class='fw-light mb-0 w-75 mx-auto'>
+            <span class='text-danger me-auto'>$num</span> $lchems are
             low
-            in level.</p>
+            in level.
+            </p>
+            </div>
             </a>
             </li>";
             $response['count']++;
@@ -39,9 +44,13 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
             $response['notif'] .= "
             <li class='list-group-item p-0'>
                 <a href='transactions.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-clipboard-data fw-light account-settings-icon'></i> <span class='text-danger'>$num</span> Pending
-                        $ttransactions needs attention.</p>
+                    class='nav-link btn btn-sidebar m-0 py-2 fw-light'>
+                    <div class='clearfix'>
+                    <i class='bi bi-clipboard-data fw-light float-end me-2'></i>
+                        <p class='fw-light mb-0 w-75 mx-auto'>
+                            <span class='text-danger me-2'>$num</span>Pending
+                            $ttransactions needs attention.</p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;
@@ -57,34 +66,40 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
             $response['notif'] .= "
             <li class='list-group-item p-0'>
                 <a href='itemstock.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-flask-florence fw-light account-settings-icon'></i>
+                    class='nav-link btn btn-sidebar m-0 py-2 fw-light'>
+                    <div class='clearfix'>
+                    <i class='bi bi-flask-florence fw-light float-end me-2'></i>
+                    <p class='fw-light mb-0 w-75 mx-auto'>
                         <span class='text-danger'>$num</span> Chemical $centry needs approval.
                     </p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;
         }
     }
 
-    $vr = "SELECT * FROM transactions WHERE void_request = 1;";
-    $vrr = mysqli_query($conn, $vr);
-    if ($vrr) {
-        $num = mysqli_num_rows($vrr);
-        if ($num > 0) {
-            $trequest = $num == 1 ? 'request' : 'requests';
-            $response['notif'] .= "
-            <li class='list-group-item p-0'>
-                <a href='transactions.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-clipboard-x fw-light account-settings-icon'></i>
-                        <span class='text-danger'>$num</span> Transaction void $trequest needs attention.
-                    </p>
-                </a>
-            </li>";
-            $response['count']++;
-        }
-    }
+    // $vr = "SELECT * FROM transactions WHERE void_request = 1;";
+    // $vrr = mysqli_query($conn, $vr);
+    // if ($vrr) {
+    //     $num = mysqli_num_rows($vrr);
+    //     if ($num > 0) {
+    //         $trequest = $num == 1 ? 'request' : 'requests';
+    //         $response['notif'] .= "
+    //         <li class='list-group-item p-0'>
+    //             <a href='transactions.php'
+    //                 class='nav-link btn btn-sidebar m-0 py-2 fw-light'>
+    //                 <div class='clearfix'>
+    //                 <i class='bi bi-clipboard-x fw-light float-end me-2'></i>
+    //                 <p class='fw-light mb-0 w-75 mx-auto'>
+    //                     <span class='text-danger'>$num</span> Transaction void $trequest pending.
+    //                 </p>
+    //                 </div>
+    //             </a>
+    //         </li>";
+    //         $response['count']++;
+    //     }
+    // }
 
     // $up = "SELECT * FROM transactions WHERE transaction_status = 'Accepted' AND treatment_date >= CURDATE();";
     // $upr = mysqli_query($conn, $up);

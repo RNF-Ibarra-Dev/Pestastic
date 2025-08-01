@@ -68,7 +68,10 @@ require("startsession.php");
             <div class="row m-2 gap-2">
 
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <p class="text-center fs-3 mx-auto">Pending Chemical Requests</p>
+                    <div class="clearfix align-middle">
+                        <i class="ms-2 fs-3 bi bi-clock float-start"></i>
+                        <p class="text-center fs-3 mx-auto w-75">Pending Item Entries</p>
+                    </div>
                     <table class="table-hover rounded overflow-hidden table">
                         <caption>Recently requested addition of chemicals. Check <a href="inventory.php"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
