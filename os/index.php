@@ -37,7 +37,7 @@ require("startsession.php");
                             <i
                                 class="bi bi-clipboard-data fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
                             <p class="text-center align-text-center fs-3 w-75 mx-auto">
-                                Transactions Status</p>
+                                Transactions Status Summary</p>
                         </div>
                         <canvas id="transPie" width="250" height="
                         250"></canvas>
@@ -54,17 +54,17 @@ require("startsession.php");
                             Pending Transactions</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
-                        <caption class="mt-auto">Check your <a href="transactions.php"
+                        <caption class="mt-auto">Check <a href="transactions.php"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
                             for more.</caption>
                         <thead>
-                            <tr class="text-center">
-                                <th scope="col">ID</th>
-                                <th scope="col">Customer</th>
-                                <th scope="col">Actions</th>
+                            <tr class="text-center align-middle">
+                                <th scope="col">Transaction ID</th>
+                                <th scope="col">Customer Name</th>
+                                <th scope="col"></th>
                             </tr>
                         </thead>
-                        <tbody id="pendingtrans" class=""></tbody>
+                        <tbody id="pendingtrans" class="text-center align-middle"></tbody>
                     </table>
                 </div>
 
@@ -111,18 +111,22 @@ require("startsession.php");
                     </table>
                 </div>
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <p class="text-center fs-3 mx-auto">Available Equipments</p>
+                    <div class="clearfix">
+                        <i class="bi bi-arrow-repeat fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
+                        <p class="text-center fs-3 w-75 mx-auto">Finalizing Transactions</p>
+                    </div>
                     <table class="table-hover rounded overflow-hidden table">
-                        <caption>Check your <a href="equipments.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">equipments</a>
+                        <caption>Check <a href="inventory.php"
+                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
                             for more.</caption>
                         <thead>
                             <tr class="text-center align-middle">
-                                <th scope="col">Equipment</th>
-                                <th scope="col">Status</th>
+                                <th scope="col">Transaction ID</th>
+                                <th scope="col">Customer Name</th>
+                                <th scope="col"></th>
                             </tr>
                         </thead>
-                        <tbody id="eqtable">
+                        <tbody id="finalizing_table">
                         </tbody>
                     </table>
                 </div>
@@ -138,7 +142,7 @@ require("startsession.php");
             await append_table('pendingtrans');
             await append_table('pendingchem');
             await append_table('lowchemicals');
-            await append_table('eqtable');
+            await append_table('finalizing_table');
         })
 
         async function append_table(container) {

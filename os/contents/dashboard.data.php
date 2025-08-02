@@ -36,7 +36,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'pendingtrans') {
           <div class="d-flex justify-content-center">
             <button id="tableDetails" data-trans-id="<?= htmlspecialchars($id) ?>"
               class="btn border border-light btn-sidebar me-2"><a href="transactions.php?openmodal=true&id=<?= $id ?>"
-                class="link-underline text-light link-underline-opacity-0">Approve</a></button>
+                class="link-underline text-light link-underline-opacity-0">View</a></button>
           </div>
         </td>
       </tr>
@@ -47,6 +47,37 @@ if (isset($_GET['append']) && $_GET['append'] === 'pendingtrans') {
     echo "<tr><td scope='row' colspan='3' class='text-center'>No pending requests.</td></tr>";
     exit();
   }
+}
+
+if (isset($_GET['append']) && $_GET['append'] === 'finalizing_table') {
+  $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing' ORDER BY id DESC LIMIT 5;";
+  $result = mysqli_query($conn, $sql);
+  if (mysqli_num_rows($result) > 0) {
+    while ($row = mysqli_fetch_assoc($result)) {
+      $id = $row['id'];
+      $customer = $row['customer_name'];
+      $date = $row['treatment_date'];
+
+      ?>
+      <tr class="text-center align-middle">
+        <td><?= htmlspecialchars($id) ?></td>
+        <td><?= htmlspecialchars($customer) ?></td>
+        <td>
+          <div class="d-flex justify-content-center">
+            <button id="tableDetails" data-trans-id="<?= htmlspecialchars($id) ?>"
+              class="btn border border-light btn-sidebar me-2"><a href="transactions.php?openmodal=true&id=<?= $id ?>"
+                class="link-underline text-light link-underline-opacity-0">View</a></button>
+          </div>
+        </td>
+      </tr>
+
+      <?php
+    }
+  } else {
+    echo "<tr><td scope='row' colspan='3' class='text-center'>No finalizing requests.</td></tr>";
+  }
+  mysqli_close($conn);
+  exit();
 }
 
 if (isset($_GET['append']) && $_GET['append'] == 'pendingchem') {
@@ -85,10 +116,10 @@ if (isset($_GET['append']) && $_GET['append'] == 'lowchemicals') {
       $unopened = $row['unop_cont'];
       $level = $row['chemLevel'];
       $containers = $unopened + ($level > 0 ? 1 : 0);
-        ?>
+      ?>
       <tr class="text-center align-middle">
         <td><?= htmlspecialchars("$name $brand") ?></td>
-        <td class='text-danger'><?= htmlspecialchars($containers) ?></td>
+        <td class='<?= $containers == 0 ? 'text-danger' : 'text-warning' ?>'><?= htmlspecialchars($containers) ?></td>
       </tr>
       <?php
     }
