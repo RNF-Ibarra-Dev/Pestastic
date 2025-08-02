@@ -86,7 +86,7 @@ require("startsession.php");
                             <tr class="text-center">
                                 <th scope="col">Name</th>
                                 <th scope="col">Brand</th>
-                                <th scope="col">Status</th>
+                                <th scope="col">Date Received</th>
                             </tr>
                         </thead>
                         <tbody id="pendingchem" class=""></tbody>
@@ -95,17 +95,16 @@ require("startsession.php");
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
                     <div class="clearfix">
                         <i class="bi bi-exclamation-circle fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
-                        <p class="text-center fs-3 w-75 mx-auto">Low Stock Chemicals</p>
+                        <p class="text-center fs-3 w-75 mx-auto">Running Out Items</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
                         <caption>Check <a href="inventory.php?chem=low"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
-                            to see all chemicals low in stock.</caption>
+                            to see all low stock items.</caption>
                         <thead>
-                            <tr class="text-center">
-                                <th scope="col">Name</th>
-                                <th scope="col">Brand</th>
-                                <th scope="col">Level</th>
+                            <tr class="text-center align-middle">
+                                <th scope="col">Item</th>
+                                <th scope="col">Container Count</th>
                             </tr>
                         </thead>
                         <tbody id="lowchemicals"></tbody>

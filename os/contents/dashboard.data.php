@@ -58,11 +58,13 @@ if (isset($_GET['append']) && $_GET['append'] == 'pendingchem') {
     while ($row = mysqli_fetch_assoc($results)) {
       $name = $row['name'];
       $brand = $row['brand'];
+      $dr = $row['date_received'];
+      $date_received = date("F j, Y", strtotime($dr));
       ?>
       <tr class="text-center align-middle">
         <td><?= htmlspecialchars($name) ?></td>
         <td><?= htmlspecialchars($brand) ?></td>
-        <td>Under Review</td>
+        <td><?= htmlspecialchars($date_received) ?></td>
       </tr>
       <?php
     }
@@ -72,7 +74,7 @@ if (isset($_GET['append']) && $_GET['append'] == 'pendingchem') {
   }
 }
 if (isset($_GET['append']) && $_GET['append'] == 'lowchemicals') {
-  $sql = "SELECT * FROM chemicals WHERE chemLevel <= 5 ORDER BY chemLevel ASC LIMIT 5;";
+  $sql = "SELECT * FROM chemicals WHERE unop_cont < restock_threshold ORDER BY chemLevel ASC LIMIT 5;";
   $results = mysqli_query($conn, $sql);
   $rows = mysqli_num_rows($results);
 
@@ -80,12 +82,13 @@ if (isset($_GET['append']) && $_GET['append'] == 'lowchemicals') {
     while ($row = mysqli_fetch_assoc($results)) {
       $name = $row['name'];
       $brand = $row['brand'];
-      $level = $row['chemLevel']
+      $unopened = $row['unop_cont'];
+      $level = $row['chemLevel'];
+      $containers = $unopened + ($level > 0 ? 1 : 0);
         ?>
       <tr class="text-center align-middle">
-        <td><?= htmlspecialchars($name) ?></td>
-        <td><?= htmlspecialchars($brand) ?></td>
-        <td class='text-danger'><?= htmlspecialchars($level) ?></td>
+        <td><?= htmlspecialchars("$name $brand") ?></td>
+        <td class='text-danger'><?= htmlspecialchars($containers) ?></td>
       </tr>
       <?php
     }
