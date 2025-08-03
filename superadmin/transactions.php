@@ -9,7 +9,6 @@
     <title>Manager | Transactions</title>
     <?php include('header.links.php'); ?>
     <style>
-
         #sortstatus option {
             color: black;
         }
@@ -50,21 +49,24 @@
                     <p class="fs-5 fw-bold align-middle"><i
                             class="bi bi-alarm-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Pending
                     </p>
-                    <p class="fw-light mb-0 mt-4">Pending transactions that needs to be approved by either Operations Supervisor or Manager.</p>
+                    <p class="fw-light mb-0 mt-4">Pending transactions that needs to be approved by either Operations
+                        Supervisor or Manager.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_pending"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-clipboard-check-fill me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Accepted
                     </p>
-                    <p class="fw-light mb-0 mt-4">Accepted transactions that is at standby until dispatched at a specific date.</p>
+                    <p class="fw-light mb-0 mt-4">Accepted transactions that is at standby until dispatched at a
+                        specific date.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_accepted"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <p class="fs-5 fw-bold"><i
                             class="bi bi-calendar2-check-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle"></i>Completed
                     </p>
-                    <p class="fw-light mb-0 mt-4">Completed transactions marked done by Technicians and approved by Operations Supervisors.</p>
+                    <p class="fw-light mb-0 mt-4">Completed transactions marked done by Technicians and approved by
+                        Operations Supervisors.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_completed"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
@@ -89,7 +91,10 @@
                     <option value='' selected>Show All Status</option>
                     <option value="Pending">Pending</option>
                     <option value="Accepted">Accepted</option>
-                    <option value="Completed">Completed</option>
+                    <option value="Dispatched">Dispatched </option>
+                    <option value="Finalizing">Finalizing </option>
+                    <option value="Completed">Completed </option>
+                    <option value="Cancelled">Cancelled </option>
                     <option value="Voided">Voided</option>
                 </select>
                 <input class="form-control form-custom me-auto py-2 align-middle px-3 rounded-pill text-light"
@@ -132,9 +137,9 @@
             <!-- modals -->
             <form id="addTransaction">
                 <div class="row g-2 text-dark m-0">
-                    <div class="modal modal-lg fade text-dark modal-edit" id="addModal" tabindex="-1"
-                        aria-labelledby="create" aria-hidden="true">
-                        <div class="modal-dialog">
+                    <div class="modal fade text-dark modal-edit" id="addModal" tabindex="-1" aria-labelledby="create"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
                                     <h1 class="modal-title fs-5">Add New Transaction</h1>
@@ -1160,8 +1165,36 @@
             }
         }
 
+        $(document).on('change', "#add-status", function () {
+            let sts = $(this).val();
+
+            $('#addMoreChem').data('status', sts);
+
+            if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched') {
+                $('input.form-control.amt-used-input').prop('disabled', false);
+                $('input.form-control.amt-used-input').attr('name', 'add-amountUsed[]');
+            } else {
+                $('input.form-control.amt-used-input').val('-').prop('disabled', true);
+                $('input.form-control.amt-used-input').removeAttr('name');
+            }
+
+        })
+
+        $(document).on('change', '#edit-status', function () {
+            let sts = $(this).val();
+            $('#edit-addMoreChem').data('status', sts);
+
+            if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched') {
+                $('#edit-chemBrandUsed input.form-control').prop('disabled', false);
+                $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
+            } else {
+                $('#edit-chemBrandUsed input.form-control').val('-').prop('disabled', true);
+                $('#edit-chemBrandUsed input.form-control').removeAttr('name');
+            }
+        });
+
         // append chem row function
-        async function add_used_chem(num) {
+        async function add_used_chem(status = '') {
             // let rowNum = num;
             try {
                 const addMoreUsed = await $.ajax({
@@ -1170,7 +1203,7 @@
                     dataType: 'html',
                     data: {
                         getMoreChem: 'true',
-                        rowNum: num
+                        status: status
                     }
                 });
 

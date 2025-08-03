@@ -45,8 +45,8 @@
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 p-2 <?= $page == 'itemstock.php' ? 'btn-active' : ''; ?>"
                 href="itemstock.php">
-                <i class="bi bi-flask me-3"></i>
-                <div class="text-light fw-lighter fs-7">Item Stock</div>
+                <i class="bi bi-boxes me-3"></i>
+                <div class="text-light fw-lighter fs-7">Inventory</div>
             </a>
         </li>
         <!-- <li class="nav-item">

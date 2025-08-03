@@ -5,6 +5,11 @@ require_once '../../includes/functions.inc.php';
 // var_dump($_POST);
 require_once 'arrays.php';
 
+$author = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
+$role = "superadmin";
+$user = $_SESSION['saID'];
+$branch = $_SESSION['branch'];
+
 if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     // echo 'success';
     $customerName = $_POST['add-customerName'];
@@ -59,7 +64,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-    if ($package != null) {
+    if ($package != 'none') {
         if (empty($session)) {
             http_response_code(400);
             echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Session count is required."]);
@@ -84,6 +89,29 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
+    if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
+        if (empty($amtUsed)) {
+            http_response_code(400);
+            echo "Amount Used is required for the current Status.";
+            exit();
+        }
+        for ($i = 0; $i < count($amtUsed); $i++) {
+            if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
+                http_response_code(400);
+                echo "Error. Invalid Amount Used.";
+                exit();
+            }
+        }
+    }
+
+    if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
+        if (count($amtUsed) !== count($chemUsed)) {
+            http_response_code(400);
+            echo "Chemical used and amount used count mismatched. Please refresh the page and try again.";
+            exit();
+        }
+    }
+
     if (empty($saPwd)) {
         // header('Content-Type: application/json');
         http_response_code(400);
@@ -98,15 +126,19 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-    $transaction = newTransaction($conn, $customerName, $address, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp, $addedBy);
+    $transaction = newTransaction($conn, $customerName, $address, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp, $addedBy, $amtUsed, $user, $role, $branch);
 
-    if (!isset($transaction['success'])) {
+    if (isset($transaction['error'])) {
         http_response_code(400);
-        echo json_encode(['type' => 'function', 'errorMessage' => $transaction['errorMessage'], 'line' => $transaction['line'], 'file' => $transaction['file'], 'trace' => $transaction['stringTrace']]);
+        echo $transaction['error'];
         exit();
-    } else {
+    } else if ($transaction) {
         http_response_code(200);
         echo json_encode(['success' => 'Transaction added.']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo "An unknown error has occured. Please try again later. " . $transaction['error'];
         exit();
     }
 }
@@ -155,8 +187,10 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $status = $_POST['edit-status'];
     $note = $_POST['edit-note'] ?? null;
     $saPwd = $_POST['edit-saPwd'];
+    $upby = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
-    $allowedUpdateStatus = ['Pending', 'Accepted'];
+
+    $allowedUpdateStatus = ['Pending', 'Accepted', 'Finalizing', 'Cancelled', 'Dispatched'];
 
     if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatmentTime) || empty($problems) || empty($chemUsed) || empty($status) || empty($ttype) || empty($address)) {
         http_response_code(400);
@@ -165,6 +199,33 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     }
 
     $oStatus = check_status($conn, $transId);
+    if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
+        if ($oStatus === 'Finalizing' && $status === 'Dispatched') {
+            http_response_code(400);
+            echo "Error. You cannot go back once finalizing phase is set.";
+            exit();
+        }
+
+        if ($oStatus === 'Dispatched' && ($status === 'Pending' || $status === 'Accepted')) {
+            http_response_code(400);
+            echo "Error. You cannot go back once the technicians are dispatched. Please cancel the transaction first.";
+            exit();
+        }
+
+        if (empty($amtUsed)) {
+            http_response_code(400);
+            echo "Amount Used is required for the current Status.";
+            exit();
+        }
+        for ($i = 0; $i < count($amtUsed); $i++) {
+            if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
+                http_response_code(400);
+                echo "Error. Invalid Amount Used.";
+                exit();
+            }
+        }
+    }
+
     // no transId
     if (!$oStatus) {
         http_response_code(400);
@@ -194,6 +255,8 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
             echo json_encode(['type' => 'invalid_id', 'errorMessage' => $treatment['error']]);
             exit();
         }
+    } else {
+        $package = null;
     }
 
     $data = [
@@ -213,7 +276,11 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         'session' => $session,
         'pstart' => $pstart,
         'pexp' => $pexp,
-        'note' => $note
+        'note' => $note,
+        'upby' => $upby,
+        'branch' => $_SESSION['branch'],
+        'userid' => $_SESSION['saID'],
+        'role' => 'superadmin'
     ];
 
     if (!validate($conn, $saPwd)) {
@@ -229,11 +296,11 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     } else {
         echo json_encode([
             'success' => 'Transaction Updated.',
-            'techs' => $update['ids'],
-            'diffs' => $update['diffs'],
-            'ftech' => $update['ftech'],
-            'fchems' => $update['fchems'],
-            'fprob' => $update['fprob']
+            // 'techs' => $update['ids'],
+            // 'diffs' => $update['diffs'],
+            // 'ftech' => $update['ftech'],
+            // 'fchems' => $update['fchems'],
+            // 'fprob' => $update['fprob']
         ]);
     }
 }
@@ -248,14 +315,18 @@ if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
         exit();
     }
 
-    $approve = approve_transaction($conn, $transId);
-    if ($approve === true) {
+    $approve = approve_transaction($conn, $transId, $author);
+    if (isset($approve['error'])) {
+        http_response_code(400);
+        echo $approve['error'];
+        exit();
+    } else if ($approve) {
         http_response_code(200);
-        echo json_encode(['success' => 'Transaction Accepted!']);
+        echo json_encode(['success' => 'Transaction Accepted.']);
         exit();
     } else {
         http_response_code(400);
-        echo json_encode(['type' => 'function', 'error' => $approve]);
+        echo 'Unknown Error Occurred.';
         exit();
     }
 }
@@ -267,6 +338,12 @@ if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
     if (empty($trans) || empty($pwd)) {
         http_response_code(400);
         echo json_encode(['error' => 'Empty Inputs.']);
+        exit();
+    }
+
+    if ($status === 'Voided' || $status === 'Finalizing' || $status === 'Completed') {
+        http_response_code(400);
+        echo 'Invalid Status. Transaction already voided or completed.';
         exit();
     }
 
@@ -287,4 +364,265 @@ if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
     http_response_code(200);
     echo json_encode(['success' => $voidreq['success']]);
     exit();
+}
+
+
+
+
+if (isset($_POST['finalize']) && $_POST['finalize'] === 'true') {
+    $ids = $_POST['trans'] ?? [];
+    $pwd = $_POST['baPwd'];
+
+    if (empty($ids)) {
+        http_response_code(400);
+        echo "Please select a transaction.";
+        exit();
+    }
+
+    if (empty($pwd)) {
+        http_response_code(400);
+        echo "Empty Password.";
+        exit();
+    }
+
+    for ($i = 0; $i < count($ids); $i++) {
+        $status = check_status($conn, $ids[$i]);
+        if ($status !== "Finalizing") {
+            http_response_code(400);
+            echo "Invalid Status. Make sure the status is Accepted and Completed.";
+            exit();
+        }
+    }
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo "Wrong Password.";
+        exit();
+    }
+
+    $finalize = finalize_transactions($conn, $ids, $author);
+    if (isset($finalize['error'])) {
+        http_response_code(400);
+        echo $finalize['error'];
+        exit();
+    } else {
+        http_response_code(200);
+        echo json_encode(['success' => 'Transactions Finalized.']);
+        exit();
+    }
+}
+
+if (isset($_POST['reschedule']) && $_POST['reschedule'] === 'true') {
+    $id = $_POST['reschedid'];
+    $date = $_POST['reschedDate'];
+    $time = $_POST['reschedTime'];
+    $pwd = $_POST['baPwd'];
+
+    if (!is_numeric($id) || empty($id)) {
+        http_response_code(400);
+        echo 'Invalid Transaction ID.';
+        exit();
+    }
+
+    if (empty($date) || empty($time)) {
+        http_response_code(400);
+        echo 'Date and Time are required.';
+        exit();
+    }
+
+    $status = check_status($conn, $id);
+    if ($status !== 'Cancelled') {
+        http_response_code(400);
+        echo 'Invalid Status. Only cancelled transactions can be rescheduled.';
+        exit();
+    }
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo 'Wrong Password.';
+        exit();
+    }
+
+    $resched = reschedule_transaction($conn, $id, $date, $time, $author);
+    if (isset($resched['error'])) {
+        http_response_code(400);
+        echo $resched['error'] . ' at line ' . $resched['line'] . ' in file ' . $resched['file'];
+        exit();
+    } else {
+        http_response_code(200);
+        echo json_encode(['success' => 'Transaction Rescheduled.']);
+        exit();
+    }
+}
+
+
+if (isset($_POST['cancel']) && $_POST['cancel'] === 'true') {
+    $id = $_POST['transid'];
+    $pwd = $_POST['baPwd'];
+
+    $status = check_status($conn, $id);
+    if ($status === 'Cancelled') {
+        http_response_code(400);
+        echo "Transaction already cancelled.";
+        exit();
+    }
+
+    if (empty($id)) {
+        http_response_code(400);
+        echo "Invalid ID.";
+        exit();
+    }
+
+    if (empty($pwd)) {
+        http_response_code(400);
+        echo "Password is empty.";
+        exit();
+    }
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo "Wrong Password.";
+        exit();
+    }
+
+    $cancel = cancel_transaction($conn, $id, $author);
+    if (isset($cancel['error'])) {
+        http_response_code(400);
+        echo $cancel['error'] . ' at line ' . $cancel['line'] . ' in file ' . $cancel['file'];
+        exit();
+    } elseif ($cancel) {
+        http_response_code(200);
+        echo json_encode(['success' => 'Transaction Cancelled.']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo 'Unkown Error Occured.';
+        exit();
+    }
+}
+
+if (isset($_POST['finalsingletransact']) && $_POST['finalsingletransact'] === 'true') {
+    $id = $_POST['finalizeid'];
+    $chemUsed = $_POST['edit_chemBrandUsed'] ?? [];
+    $amtUsed = $_POST['edit-amountUsed'] ?? [];
+    $notes = $_POST['note'];
+    $pwd = $_POST['baPwd'];
+
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo "Invalid Transaction ID.";
+        exit();
+    }
+
+    // http_response_code(400);
+    // echo var_dump($chemUsed);
+
+    if(count($chemUsed) !== count($amtUsed)){
+        http_response_code(400);
+        echo "Error. The number of chemicals does not match the number of amount.";
+        exit();
+    }
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo "Invalid Password.";
+        exit();
+    }
+
+    $finalize = finalize_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['baID'], $notes, $_SESSION['user_role']);
+    if(isset($finalize['error'])){
+        http_response_code(400);
+        echo $finalize['error'];
+        exit();
+    } else if($finalize){
+        http_response_code(200);
+        echo json_encode(['success' => 'Transaction Finalized.']);
+        exit();
+    } else{
+        http_response_code(400);
+        echo "Unknown error occured.";
+        exit();
+    }
+}
+
+if (isset($_POST['singleconfirm']) && $_POST['singleconfirm'] === 'true') {
+    $id = $_POST['completeid'];
+    $chemUsed = $_POST['edit_chemBrandUsed'] ?? [];
+    $amtUsed = $_POST['edit-amountUsed'] ?? [];
+    $notes = $_POST['note'];
+    $pwd = $_POST['baPwd'];
+
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo "Invalid Transaction ID.";
+        exit();
+    }
+
+    if(count($chemUsed) !== count($amtUsed)){
+        http_response_code(400);
+        echo "Error. The number of chemicals does not match the number of amount.";
+        exit();
+    }
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo "Invalid Password.";
+        exit();
+    }
+
+    $finalize = complete_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['baID'], $notes, $_SESSION['user_role']);
+    if(isset($finalize['error'])){
+        http_response_code(400);
+        echo $finalize['error'];
+        exit();
+    } else if($finalize){
+        http_response_code(200);
+        echo json_encode(['success' => 'Transaction Finalized.']);
+        exit();
+    } else{
+        http_response_code(400);
+        echo "Unknown error occured.";
+        exit();
+    }
+}
+
+if (isset($_POST['singledispatch']) && $_POST['singledispatch'] === 'true') {
+    $id = $_POST['dispatchid'];
+    $chemUsed = $_POST['edit_chemBrandUsed'] ?? [];
+    $amtUsed = $_POST['edit-amountUsed'] ?? [];
+    $notes = $_POST['note'];
+    $pwd = $_POST['baPwd'];
+
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo "Invalid Transaction ID.";
+        exit();
+    }
+
+    if(count($chemUsed) !== count($amtUsed)){
+        http_response_code(400);
+        echo "Error. The number of chemicals does not match the number of amount.";
+        exit();
+    }
+
+    if (!validateOS($conn, $pwd)) {
+        http_response_code(400);
+        echo "Invalid Password.";
+        exit();
+    }
+
+    $finalize = dispatch_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['baID'], $notes, $_SESSION['user_role']);
+    if(isset($finalize['error'])){
+        http_response_code(400);
+        echo $finalize['error'];
+        exit();
+    } else if($finalize){
+        http_response_code(200);
+        echo json_encode(['success' => 'Transaction Finalized.']);
+        exit();
+    } else{
+        http_response_code(400);
+        echo "Unknown error occured.";
+        exit();
+    }
 }

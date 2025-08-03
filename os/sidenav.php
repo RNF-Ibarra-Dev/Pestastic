@@ -17,7 +17,7 @@
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 p-2 <?= $page == 'inventory.php' ? 'btn-active' : ''; ?>"
                 href="inventory.php">
-                <i class="bi bi-flask me-3"></i>
+                <i class="bi bi-boxes me-3"></i>
                 <div class="text-light fw-lighter fs-7">Inventory</div>
             </a>
         </li>

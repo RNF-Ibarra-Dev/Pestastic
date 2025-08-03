@@ -93,8 +93,8 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'add') {
     $checked = $_GET['checked'];
     get_prob($conn, $checked);
 } else if (isset($_GET['getMoreChem']) && $_GET['getMoreChem'] == 'true') {
-    $rowNum = $_GET['rowNum'];
-    get_more_chem($conn, $rowNum);
+    $status = $_GET['status'];
+    get_more_chem($conn, $status);
 } else if (isset($_GET['addMoreTech']) && $_GET['addMoreTech'] == 'true') {
     $rowNum = $_GET['techRowNum'];
     $active = isset($_GET['active']) ? $_GET['active'] : null;
@@ -206,7 +206,7 @@ function get_chem_edit($conn, $active = null)
         <?php
     }
 }
-function get_more_chem($conn, $rowNum)
+function get_more_chem($conn, $status): void
 {
     $sql = 'SELECT * FROM chemicals';
     $result = mysqli_query($conn, $sql);
@@ -215,17 +215,23 @@ function get_more_chem($conn, $rowNum)
         echo 'Error fetching chem data' . mysqli_error($conn);
         return;
     }
-
+    $id = uniqid();
     ?>
-    <div class="row mb-2">
-        <div class="col-lg-6 dropdown-center d-flex flex-column pe-0">
-            <select id="add-chemBrandUsed" name="add_chemBrandUsed[]" class="form-select">
+    <div class="row mb-2 addmorechem-row">
+        <div class="col-lg-6 dropdown-center d-flex flex-column">
+            <select id="add-chemBrandUsed-<?= $id ?>" name="add_chemBrandUsed[]" class="form-select chem-brand-select">
                 <?= get_chem($conn); ?>
                 <!-- chem ajax -->
             </select>
         </div>
-        <div class="col-2 d-flex">
-            <button type="button" id="deleteChem" class="btn btn-grad mt-auto py-2 px-3"><i
+        <div class="col-lg-6 mb-2 ps-0 d-flex justify-content-evenly">
+            <div class="d-flex flex-column">
+                <input type="number" maxlength="4" id="add-amountUsed-<?= $id ?>"
+                    class="form-control amt-used-input form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? "name='add-amountUsed[]'" : 'disabled' ?>>
+            </div>
+            <span class="form-text mt-2 mb-auto">-
+            </span>
+            <button type="button" id="deleteChem<?= $id ?>" class="delete-chem-row btn btn-grad mb-auto py-2 px-3"><i
                     class="bi bi-dash-circle text-light"></i></button>
         </div>
     </div>
@@ -873,7 +879,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
         echo "stmt error";
         exit();
     }
-    
+
     mysqli_stmt_bind_param($stmt, "s$type", ...$data);
     mysqli_stmt_execute($stmt);
 
