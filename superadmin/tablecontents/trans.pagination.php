@@ -3,7 +3,7 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 8;
-$rowCount = 'SELECT * FROM transactions';
+$rowCount = 'SELECT * FROM transactions WHERE void_request = 0;';
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
@@ -44,20 +44,20 @@ if (isset($_GET['search'])) {
     if ($istatus !== '' && $istatus !== NULL) {
         $data[] = (string) $istatus;
         $types .= "s";
-        $queries[] = "transaction_status = ?"; 
+        $queries[] = "transaction_status = ?";
     }
 
-    if($ibranch !== '' && $ibranch !== NULL){
+    if ($ibranch !== '' && $ibranch !== NULL) {
         $data[] = (int) $ibranch;
         $types .= "i";
         $queries[] = "branch = ?";
     }
 
-    if(!empty($data)){
+    if (!empty($data)) {
         $sql .= " AND " . implode(" AND ", $queries);
     }
 
-    $sql .= " ORDER BY id DESC;";
+    $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC;";
 
 
     $stmt = mysqli_stmt_init($conn);
@@ -69,9 +69,9 @@ if (isset($_GET['search'])) {
     $ssearch = "%" . $search . "%";
     // $sstatus = "%" . $status . "%";
 
-    if(!empty($data)){
+    if (!empty($data)) {
         mysqli_stmt_bind_param($stmt, "ssss$types", $ssearch, $ssearch, $ssearch, $ssearch, ...$data);
-    } else{
+    } else {
         mysqli_stmt_bind_param($stmt, 'ssss', $ssearch, $ssearch, $ssearch, $ssearch, );
     }
 
@@ -96,8 +96,14 @@ if (isset($_GET['search'])) {
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
-                        $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
-                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'text-light badge rounded-pill w-100 text-bg-warning bg-opacity-25'>Pending</span></a>" : ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" : ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" : ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
+                        $status === 'Pending' ? "<span id='pendingbtn' data-pending-id='$id' data-bs-toggle='modal' data-bs-target='#approvemodal' class = 'w-100 text-light badge btn btn-sidebar rounded-pill text-bg-warning bg-opacity-25'>Pending</span>" :
+                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" :
+                            ($status === 'Finalizing' ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalize-btn'>$status</span>" :
+                                ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" :
+                                    ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" :
+                                        ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge rounded-pill btn btn-sidebar text-bg-secondary bg-opacity-50 w-100'>$status</span>" :
+                                            ($status === 'Dispatched' ? "<span data-dispatched-id='$id' class='dispatch-btn badge rounded-pill btn btn-sidebar text-bg-warning bg-opacity-50 w-100'>$status</span>" : $status))))))
+
                         ?>
                 </td>
                 <td>
@@ -319,14 +325,14 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $data[] = $status ? $status : (int) $branch;
             $types = $status ? "s" : "i";
         }
-        $sql .= " ORDER BY id DESC LIMIT $limitstart, $pageRows;";
+        $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC LIMIT $limitstart, $pageRows;";
         mysqli_stmt_prepare($stmt, $sql);
         mysqli_stmt_bind_param($stmt, $types, ...$data);
         mysqli_stmt_execute($stmt);
 
         $result = mysqli_stmt_get_result($stmt);
     } else {
-        $sql .= " ORDER BY id DESC LIMIT $limitstart, $pageRows;";
+        $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC LIMIT $limitstart, $pageRows;";
         $result = mysqli_query($conn, $sql);
     }
 
@@ -344,16 +350,25 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $createdAt = $row['created_at'];
             $updatedAt = $row['updated_at'];
             $status = $row['transaction_status'];
+            $cr = (int) $row['complete_request'];
+
             ?>
             <tr class="text-center">
                 <td scope="row"><?= $id ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= htmlspecialchars($td) ?></td>
+                <td><?= $status === 'Cancelled' ? "<s class='text-warning'><i class='bi bi-exclamation'></i>" . htmlspecialchars($td) . "</s>" : htmlspecialchars($td) ?>
+                </td>
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
-                        $status === 'Pending' ? "<a id='pendingbtn' data-pending-id='$id' dasta-bs-toggle='modal' data-bs-target='#approvemodal'
-                             class='btn btn-sidebar rounded-pill border-0 p-0 w-100'><span class = 'w-100 text-light badge rounded-pill text-bg-warning bg-opacity-25'>Pending</span></a>" : ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" : ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" : ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" : $status)))
+                        $status === 'Pending' ? "<span id='pendingbtn' data-pending-id='$id' data-bs-toggle='modal' data-bs-target='#approvemodal' class = 'pending-btn w-100 text-light badge btn btn-sidebar rounded-pill text-bg-warning bg-opacity-25'>Pending</span>" :
+                        ($status === 'Accepted' ? "<span data-accepted='$id' class='accepted-btn btn btn-sidebar badge rounded-pill text-bg-success bg-opacity-50 w-100'>$status</span>" :
+                            ($status === 'Finalizing' ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-100 btn btn-sidebar finalizing-btn'>$status</span>" :
+                                ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-100'>$status</span>" :
+                                    ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-100'>$status</span>" :
+                                        ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge rounded-pill btn btn-sidebar text-bg-secondary bg-opacity-50 w-100'>$status</span>" :
+                                            ($status === 'Dispatched' ? "<span data-dispatched-id='$id' class='dispatched-btn btn btn-sidebar badge rounded-pill btn btn-sidebar text-bg-warning text-light bg-opacity-50 w-100'>$status</span>" : $status))))))
+
                         ?>
                 </td>
                 <td>

@@ -328,8 +328,6 @@ if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
     $trans = $_POST['transid'];
     $pwd = $_POST['baPwd'];
 
-
-
     $status = check_status($conn, $trans);
     if ($status === 'Voided' || $status === 'Finalizing' || $status === 'Completed') {
         http_response_code(400);

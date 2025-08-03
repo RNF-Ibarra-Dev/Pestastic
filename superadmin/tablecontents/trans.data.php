@@ -93,8 +93,8 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'add') {
     $checked = $_GET['checked'];
     get_prob($conn, $checked);
 } else if (isset($_GET['getMoreChem']) && $_GET['getMoreChem'] == 'true') {
-    $rowNum = $_GET['rowNum'];
-    get_more_chem($conn, $rowNum);
+    $status = $_GET['status'];
+    get_more_chem($conn, $status);
 } else if (isset($_GET['addMoreTech']) && $_GET['addMoreTech'] == 'true') {
     $rowNum = $_GET['techRowNum'];
     $active = isset($_GET['active']) ? $_GET['active'] : null;
@@ -206,7 +206,7 @@ function get_chem_edit($conn, $active = null)
         <?php
     }
 }
-function get_more_chem($conn, $rowNum)
+function get_more_chem($conn, $status): void
 {
     $sql = 'SELECT * FROM chemicals';
     $result = mysqli_query($conn, $sql);
@@ -215,17 +215,23 @@ function get_more_chem($conn, $rowNum)
         echo 'Error fetching chem data' . mysqli_error($conn);
         return;
     }
-
+    $id = uniqid();
     ?>
-    <div class="row mb-2">
-        <div class="col-lg-6 dropdown-center d-flex flex-column pe-0">
-            <select id="add-chemBrandUsed" name="add_chemBrandUsed[]" class="form-select">
+    <div class="row mb-2 addmorechem-row">
+        <div class="col-lg-6 dropdown-center d-flex flex-column">
+            <select id="add-chemBrandUsed-<?= $id ?>" name="add_chemBrandUsed[]" class="form-select chem-brand-select">
                 <?= get_chem($conn); ?>
                 <!-- chem ajax -->
             </select>
         </div>
-        <div class="col-2 d-flex">
-            <button type="button" id="deleteChem" class="btn btn-grad mt-auto py-2 px-3"><i
+        <div class="col-lg-6 mb-2 ps-0 d-flex justify-content-evenly">
+            <div class="d-flex flex-column">
+                <input type="number" maxlength="4" id="add-amountUsed-<?= $id ?>"
+                    class="form-control amt-used-input form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? "name='add-amountUsed[]'" : 'disabled' ?>>
+            </div>
+            <span class="form-text mt-2 mb-auto">-
+            </span>
+            <button type="button" id="deleteChem<?= $id ?>" class="delete-chem-row btn btn-grad mb-auto py-2 px-3"><i
                     class="bi bi-dash-circle text-light"></i></button>
         </div>
     </div>
@@ -873,7 +879,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
         echo "stmt error";
         exit();
     }
-    
+
     mysqli_stmt_bind_param($stmt, "s$type", ...$data);
     mysqli_stmt_execute($stmt);
 
@@ -882,4 +888,154 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
 
     echo $row[0];
     exit();
+}
+
+
+if (isset($_GET['getunit']) && $_GET['getunit'] === 'true') {
+    $chemId = $_GET['chemid'];
+    if (!is_numeric($chemId)) {
+        http_response_code(400);
+        echo "Invalid Chemical ID.";
+        exit();
+    }
+    $unit = get_unit($conn, $chemId);
+    if (isset($unit['error'])) {
+        http_response_code(400);
+        echo $unit['error'];
+        exit();
+    } else {
+        echo $unit;
+        exit();
+    }
+
+}
+
+if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
+    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing' ORDER BY updated_at DESC LIMIT 5;";
+    $result = mysqli_query($conn, $sql);
+    $rows = mysqli_num_rows($result);
+
+    if ($rows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $customerName = $row['customer_name'];
+            $treatmentDate = $row['treatment_date'];
+            $td = date('F j, Y', strtotime($treatmentDate));
+            $updatedat = $row['updated_at'];
+            $ua = date("H:i A", strtotime($updatedat));
+            $request = $row['void_request'];
+            $upby = $row['updated_by'];
+            $cby = $row['created_by'];
+            ?>
+            <tr class="text-center">
+                <td class="text-dark" scope="row"><button type="button" class="btn btn-sidebar text-dark finalize-peek-trans-btn"
+                        data-trans-id="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></button></td>
+                <td class="text-dark"><?= htmlspecialchars($customerName) ?></td>
+                <td class="text-dark"><?= htmlspecialchars($td) ?></td>
+                <td class="text-dark">
+                    <?= $upby === "No User" && $cby === "No User" ? htmlspecialchars("No Recorded User.") : ($upby === $cby ? htmlspecialchars($upby) : ($upby !== 'No User' ? htmlspecialchars($upby) : htmlspecialchars($cby))) ?>
+                </td>
+                <td class="text-dark"><?= htmlspecialchars($ua) ?></td>
+                <td class="text-dark">
+                    <div class="d-flex justify-content-center">
+                        <input type="checkbox" class="btn-check" value="<?= $id ?>" name="trans[]" id="c-<?= $id ?>"
+                            autocomplete="off">
+                        <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i class="bi bi-check-circle me-2"></i>Finalize
+                            Transaction</label>
+                    </div>
+                </td>
+            </tr>
+
+
+            <?php
+        }
+    } else {
+        echo "<tr><td scope='row' colspan='6' class='text-center text-dark'>No finalizing transactions.</td></tr>";
+    }
+}
+
+
+if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] === 'finalize' || $_GET['getChem'] === 'complete' || $_GET['getChem'] === 'dispatch')) {
+    $transId = $_GET['transId'];
+    $status = $_GET['status'];
+
+    $sql = "SELECT * FROM transaction_chemicals WHERE trans_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'stmt', 'message' => mysqli_stmt_error($stmt)]);
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $transId);
+    mysqli_stmt_execute($stmt);
+    $results = mysqli_stmt_get_result($stmt);
+    $numRows = mysqli_num_rows($results);
+
+
+    if ($numRows > 0) {
+        while ($row = mysqli_fetch_assoc($results)) {
+            $id = $row['chem_id'];
+            $amtUsed = $row['amt_used'];
+            $unit = get_unit($conn, $id);
+
+            ?>
+            <div class="row" id="row-<?= $id ?>">
+                <div class="col-lg-4 mb-2">
+                    <label for="edit-chemBrandUsed-<?= $id ?>" class="form-label fw-light">Chemical
+                        Used:</label>
+                    <select id="edit-chemBrandUsed-<?= $id ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
+                        <?php get_chem_edit($conn, $id); ?>
+                    </select>
+                </div>
+
+                <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
+                    <div class="d-flex flex-column">
+                        <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
+                            id="edit-amountUsed-label">Amount:</label>
+                        <input type="number" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $id ?>"
+                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
+                    </div>
+                    <span class="form-text mt-auto mx-3 mb-2">
+                        <?= $unit ?>
+                    </span>
+                    <button type="button" data-row-id="<?= $id ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
+                            class="bi bi-dash-circle text-light"></i></button>
+                </div>
+
+            </div>
+            <?php
+        }
+        mysqli_stmt_close($stmt);
+        exit();
+    } else {
+        $idd = uniqid();
+        ?>
+        <p class="alert alert-warning py-2 text-center fw-light w-75 mx-auto">This transaction has no chemicals set. Chemical might be deleted.</p>
+        <div class="row" id="row-<?= $idd ?>">
+            <div class="col-lg-4 mb-2">
+                <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
+                    Used:</label>
+                <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
+                    <?php get_chem($conn); ?>
+                </select>
+            </div>
+
+            <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
+                <div class="d-flex flex-column">
+                    <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light"
+                        id="edit-amountUsed-label">Amount:</label>
+                    <input type="number" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $idd ?>"
+                        class="form-control form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
+                </div>
+                <span class="form-text mt-auto mx-3 mb-2">
+                    -
+                </span>
+                <button type="button" data-row-id="<? $idd ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
+                        class="bi bi-dash-circle text-light"></i></button>
+            </div>
+        </div>
+        <?php
+        mysqli_stmt_close($stmt);
+        exit();
+    }
 }
