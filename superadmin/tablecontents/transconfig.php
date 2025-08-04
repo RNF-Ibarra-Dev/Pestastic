@@ -394,7 +394,7 @@ if (isset($_POST['finalize']) && $_POST['finalize'] === 'true') {
         }
     }
 
-    if (!validateOS($conn, $pwd)) {
+    if (!validate($conn, $pwd)) {
         http_response_code(400);
         echo "Wrong Password.";
         exit();
@@ -437,7 +437,7 @@ if (isset($_POST['reschedule']) && $_POST['reschedule'] === 'true') {
         exit();
     }
 
-    if (!validateOS($conn, $pwd)) {
+    if (!validate($conn, $pwd)) {
         http_response_code(400);
         echo 'Wrong Password.';
         exit();
@@ -479,7 +479,7 @@ if (isset($_POST['cancel']) && $_POST['cancel'] === 'true') {
         exit();
     }
 
-    if (!validateOS($conn, $pwd)) {
+    if (!validate($conn, $pwd)) {
         http_response_code(400);
         echo "Wrong Password.";
         exit();
@@ -523,13 +523,13 @@ if (isset($_POST['finalsingletransact']) && $_POST['finalsingletransact'] === 't
         exit();
     }
 
-    if (!validateOS($conn, $pwd)) {
+    if (!validate($conn, $pwd)) {
         http_response_code(400);
         echo "Invalid Password.";
         exit();
     }
 
-    $finalize = finalize_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['baID'], $notes, $_SESSION['user_role']);
+    $finalize = finalize_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['saID'], $notes, $_SESSION['user_role']);
     if(isset($finalize['error'])){
         http_response_code(400);
         echo $finalize['error'];
@@ -564,13 +564,13 @@ if (isset($_POST['singleconfirm']) && $_POST['singleconfirm'] === 'true') {
         exit();
     }
 
-    if (!validateOS($conn, $pwd)) {
+    if (!validate($conn, $pwd)) {
         http_response_code(400);
         echo "Invalid Password.";
         exit();
     }
 
-    $finalize = complete_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['baID'], $notes, $_SESSION['user_role']);
+    $finalize = complete_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['saID'], $notes, $_SESSION['user_role']);
     if(isset($finalize['error'])){
         http_response_code(400);
         echo $finalize['error'];
@@ -605,13 +605,13 @@ if (isset($_POST['singledispatch']) && $_POST['singledispatch'] === 'true') {
         exit();
     }
 
-    if (!validateOS($conn, $pwd)) {
+    if (!validate($conn, $pwd)) {
         http_response_code(400);
         echo "Invalid Password.";
         exit();
     }
 
-    $finalize = dispatch_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['baID'], $notes, $_SESSION['user_role']);
+    $finalize = dispatch_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['saID'], $notes, $_SESSION['user_role']);
     if(isset($finalize['error'])){
         http_response_code(400);
         echo $finalize['error'];

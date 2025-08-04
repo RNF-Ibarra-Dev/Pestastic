@@ -1,10 +1,10 @@
 <nav
-    class="navbar navbar-expand-sm my-2 mx-2 rounded-4 border border-dark navbar-dark bg-light bg-opacity-25 shadow-sm navbar-sticky overflow-auto">
+    class="navbar navbar-expand-sm my-2 mx-2 rounded-3 border border-light navbar-dark bg-dark bg-opacity-50 pt-1 pb-2 shadow">
     <div class="container-fluid">
         <div>
             <p class="text-wrap fs-2 m-0 ms-2 text-align-center fw-bold">Pestastic Inventory Management</p>
             <?php
-            echo "<p class='ms-3 mb-0 fw-light text-light'>" . date('l, F jS, Y \| h:i A') . "</p>";
+            echo "<p class='ms-3 my-0 fw-light text-light'>" . date('l, F jS, Y \| h:i A') . "</p>";
             ?>
         </div>
 

@@ -636,7 +636,7 @@ function add_chemical_used($conn, $transactionId, $chemUsedId, $amtUsed = 0)
         echo 'add chemical usage stmt failed.';
         exit();
     }
-    mysqli_stmt_bind_param($stmt, "iisi", $transactionId, $chemUsedId, $chemBrand, $amtUsed);
+    mysqli_stmt_bind_param($stmt, "iisd", $transactionId, $chemUsedId, $chemBrand, $amtUsed);
     mysqli_stmt_execute($stmt);
 
     if (!mysqli_stmt_affected_rows($stmt) > 0) {
@@ -1083,7 +1083,7 @@ function reflect_trans_chem($conn, $chem, $id)
         return ['error' => 'Stmt failed. Error: ' . mysqli_stmt_error($stmt)];
     }
 
-    mysqli_stmt_bind_param($stmt, 'ii', $chem, $id);
+    mysqli_stmt_bind_param($stmt, 'di', $chem, $id);
     mysqli_stmt_execute($stmt);
 
     if (mysqli_stmt_affected_rows($stmt) > 0) {
@@ -3191,7 +3191,7 @@ function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
         // check -> record -> reflect
         for ($i = 0; $i < count($chemUsed); $i++) {
             // $amt_used = $amtUsed[$i];
-            if ($amtUsed[$i] === '' || (int) $amtUsed[$i] === 0) {
+            if ($amtUsed[$i] === '' || (int) $amtUsed[$i] < 0) {
                 throw new Exception("Amount used should not be empty or zero.");
             }
 
@@ -3200,24 +3200,24 @@ function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
                 if (isset($prevtransamt['error'])) {
                     throw new Exception("Error: " . $prevtransamt['error'] . $chemUsed[$i] . json_encode($existingChems));
                 }
-                if ((int) $amtUsed[$i] === $prevtransamt) {
+                if ($amtUsed[$i] == $prevtransamt) {
                     continue;
                 }
             }
             // new chemicals
             $chemlevel = get_chem_level($conn, $chemUsed[$i]);
-            if ((int) $amtUsed[$i] > $chemlevel) {
+            if ((float) $amtUsed[$i] > $chemlevel) {
                 $chemname = get_chemical_name($conn, $chemUsed[$i]);
                 throw new Exception("Insufficient Chemical: " . $chemname);
             } else {
-                $amount = (int) $amtUsed[$i];
+                $amount = (float) $amtUsed[$i];
                 $amount = !in_array($amtUsed[$i], $existingChems) ? $amount * -1 : $amount;
                 $reflect = reflect_trans_chem($conn, $amount, $chemUsed[$i]);
                 if (isset($reflect['error'])) {
                     throw new Exception($reflect['error']);
                 }
             }
-            $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], $amtUsed[$i]);
+            $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], (float)$amtUsed[$i]);
             if (!$recordchem) {
                 throw new Exception("Failed to record a chemical. Please try again later.");
             }

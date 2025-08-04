@@ -855,7 +855,7 @@
                 </div>
             </form>
 
-            
+
             <form id="finalizetransactionform">
                 <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static"
                     id="finalizetransactionmodal" tabindex="0" aria-labelledby="confirmAdd" aria-hidden="true">
@@ -926,7 +926,7 @@
                                     <label for="confirmapprove-inputpwd" class="form-label fw-light">Approve Selected
                                         Transactions?
                                         Enter manager
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control"
                                             id="confirmapprove-inputpwd">
@@ -952,7 +952,7 @@
                 </div>
             </form>
 
-             <form id="cancelscheduledform">
+            <form id="cancelscheduledform">
                 <input type="hidden" name="transid" id="transidinputcancel">
                 <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="cancelscheduledmodal"
                     tabindex="0">
@@ -967,7 +967,7 @@
                                 <div class="row mb-2">
                                     <label for="confirmapprove-inputpwd" class="form-label fw-light">Cancel Transaction?
                                         Enter Operation Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control"
                                             id="confirmapprove-inputpwd">
@@ -1036,7 +1036,7 @@
                                     <label for="confirmapprove-inputpwd" class="form-label fw-light">Confirm reschedule
                                         of this transaction?
                                         Enter Operation Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control w-50"
                                             id="confirmapprove-inputpwd">
@@ -1104,7 +1104,7 @@
                                     <label for="finalizing-inputpwd" class="form-label fw-light">Confirm Finalizing
                                         this transaction?
                                         Enter Operation Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control w-75"
                                             id="finalizing-inputpwd">
@@ -1173,7 +1173,7 @@
                                     <label for="complete-inputpwd" class="form-label fw-light">Mark
                                         this transaction as Completed?
                                         Enter Operation Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control w-75"
                                             id="complete-inputpwd">
@@ -1238,15 +1238,17 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="complete-inputpwd" class="form-label fw-light">Update transaction to Dispatch?
+                                    <label for="complete-inputpwd" class="form-label fw-light">Update transaction to
+                                        Dispatch?
                                         Enter Operation Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control w-75"
                                             id="complete-inputpwd">
                                     </div>
                                 </div>
-                                <p class="text-body-secondary fw-light">Note. Make sure the dispatch team is geared and ready.</p>
+                                <p class="text-body-secondary fw-light">Note. Make sure the dispatch team is geared and
+                                    ready.</p>
                                 <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
                                     id="dispatchAlert">
                                 </p>
@@ -1280,6 +1282,13 @@
         const transUrl = 'tablecontents/trans.data.php';
         const submitUrl = 'tablecontents/transconfig.php';
         // addTechContainer | add-chemContainer
+
+        function show_toast(message) {
+            $('#toastmsg').html(message);
+            var toastid = $('#toast');
+            var toast = new bootstrap.Toast(toastid);
+            toast.show();
+        }
 
         <?php
         if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
@@ -1558,7 +1567,7 @@
                 })
         }
 
-        function get_counts (branch = '') {
+        function get_counts(branch = '') {
             get_overview_count('pending', branch);
             get_overview_count('accepted', branch);
             get_overview_count('completed', branch);
@@ -2585,7 +2594,7 @@
 
         })
 
-         $(document).ready(function () {
+        $(document).ready(function () {
             $('#table').on('mouseenter', '.pending-btn', function () {
                 $(this).html('Approve/Accept Transaction');
             });
@@ -2697,7 +2706,7 @@
             await loadpage(currentpage, status, branch);
         })
 
-          $(document).on('submit', '#cancelscheduledform', async function (e) {
+        $(document).on('submit', '#cancelscheduledform', async function (e) {
             e.preventDefault();
             // console.log($(this).serialize());
             await $.ajax({
@@ -2725,7 +2734,7 @@
             $("#reschedModal").modal('show');
         })
 
-         $("#finalizeForm").on('click', "#finalize-addMoreChem", function () {
+        $("#finalizeForm").on('click', "#finalize-addMoreChem", function () {
             $.get(transUrl, {
                 addrow: 'true',
                 status: 'Finalizing'
@@ -2782,6 +2791,122 @@
             } else {
                 row.remove();
             }
+        });
+
+        $(document).on('submit', "#finalizetransactionform", async function (e) {
+
+            e.preventDefault();
+            // console.log($(this).serialize());
+            await $.ajax({
+                method: 'POST',
+                url: submitUrl,
+                dataType: 'json',
+                data: $(this).serialize() + '&finalize=true'
+            })
+                .done(function (data) {
+                    // console.log(data);
+                    if (data.success) {
+                        $('#finalizeconfirm').modal('hide');
+                        // $("#tableAlert").removeClass('visually-hidden').html(data.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                        show_toast(data.success);
+                        loadpage(1, $("#sortstatus").val());
+                        $('#finalizetransactionmodal')[0].reset();
+                    }
+                })
+                .fail(function (err) {
+                    console.log(err);
+                    $("#finalizealert").html(err.responseText).fadeIn(400).delay(2000).fadeOut(1000);
+                });
+        });
+
+        $(document).on('submit', '#finalizeForm', async function (e) {
+            e.preventDefault();
+            let status = $('#sortstatus').val();
+            // console.log($(this).serialize());
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                data: $(this).serialize() + "&finalsingletransact=true",
+                url: submitUrl
+            })
+                .done(function (d) {
+                    if (d.success) {
+                        loadpage(1, status);
+                        show_toast(d.success);
+                        $("#finalizeForm")[0].reset();
+                        $("#finalconfirm").modal('hide');
+                    } else {
+                        alert('Unknown error occured');
+                    }
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $("#finalizingAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                })
+        });
+
+        $(document).on('submit', '#completeForm', async function (e) {
+            e.preventDefault();
+            let status = $('#sortstatus').val();
+            // console.log($(this).serialize());
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                data: $(this).serialize() + "&singleconfirm=true",
+                url: submitUrl
+            })
+                .done(function (d) {
+                    if (d.success) {
+                        loadpage(1, status);
+                        show_toast(d.success);
+                        $("#completeForm")[0].reset();
+                        $("#completeconfirm").modal('hide');
+                    } else {
+                        alert('Unknown error occured');
+                    }
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $("#completeAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                })
+        });
+
+        $(document).on('submit', '#dispatchForm', async function (e) {
+            e.preventDefault();
+            let status = $('#sortstatus').val();
+            console.log($(this).serialize());
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                data: $(this).serialize() + "&singledispatch=true",
+                url: submitUrl
+            })
+                .done(function (d) {
+                    if (d.success) {
+                        loadpage(1, status);
+                        show_toast(d.success);
+                        $("#dispatchForm")[0].reset();
+                        $("#dispatchconfirm").modal('hide');
+                    } else {
+                        alert('Unknown error occured');
+                    }
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $("#dispatchAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                })
+        });
+
+        $("#table").on('click', '.finalize-btn', function () {
+            // console.log($(this).data('finalize-id'));
+            let id = $(this).data('finalize-id');
+            $("#finalizebackbtn").hide().attr('data-bs-target', '');
+            $("#finalizeconfirm").modal('show');
+            $("#finalizeconfirm").on('hidden.bs.modal', function () {
+                $("#finalizebackbtn").show().attr('data-bs-target', '#finalizetransactionmodal');
+                $("#finalizesingletransinput").prop('disabled', true);
+            });
+            $("#finalizesingletransinput").prop('disabled', false).val(id);
         });
 
         // $(document).ready(function () {

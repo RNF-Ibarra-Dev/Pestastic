@@ -153,7 +153,7 @@ function get_prob($conn, $checked = null)
 function get_chem($conn, $active = null)
 {
     $active = $active == null ? '' : $active;
-    $sql = 'SELECT * FROM chemicals ORDER BY id DESC;';
+    $sql = 'SELECT * FROM chemicals WHERE request = 0 AND chemLevel > 0 ORDER BY id DESC;';
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -169,11 +169,11 @@ function get_chem($conn, $active = null)
         $brand = $row['brand'];
         $name = $row['name'];
         $level = $row['chemLevel'];
-        $req = $row['request']
-            ?>
+        $req = $row['request'];
+        $unit = $row['quantity_unit'];
+        ?>
         <option value="<?= htmlspecialchars($id) ?>" <?= $level <= 0 || $req == 1 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?>>
-            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars($level) . "ml" ?>
-            <?= $req == 1 ? " | Chemical Under Review" : '' ?>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level$unit") ?>
         </option>
         <?php
     }
@@ -181,7 +181,7 @@ function get_chem($conn, $active = null)
 function get_chem_edit($conn, $active = null)
 {
     $active = $active == null ? '' : $active;
-    $sql = 'SELECT * FROM chemicals ORDER BY id DESC;';
+    $sql = 'SELECT * FROM chemicals WHERE request = 0 AND chemLevel > 0 ORDER BY id DESC;';
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -197,11 +197,11 @@ function get_chem_edit($conn, $active = null)
         $brand = $row['brand'];
         $name = $row['name'];
         $level = $row['chemLevel'];
-        $req = $row['request']
-            ?>
+        $req = $row['request'];
+        $unit = $row['quantity_unit'];
+        ?>
         <option value="<?= htmlspecialchars($id) ?>" <?= $id == $active ? 'selected' : '' ?>>
-            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars($level) . "ml" ?>
-            <?= $req == 1 ? " | Chemical Under Review" : '' ?>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level$unit") ?>
         </option>
         <?php
     }
@@ -992,8 +992,9 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
                     <div class="d-flex flex-column">
                         <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
                             id="edit-amountUsed-label">Amount:</label>
-                        <input type="number" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $id ?>"
-                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
+                        <input type="number" step="any" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $id ?>"
+                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>"
+                            <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
                     </div>
                     <span class="form-text mt-auto mx-3 mb-2">
                         <?= $unit ?>
@@ -1010,7 +1011,8 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
     } else {
         $idd = uniqid();
         ?>
-        <p class="alert alert-warning py-2 text-center fw-light w-75 mx-auto">This transaction has no chemicals set. Chemical might be deleted.</p>
+        <p class="alert alert-warning py-2 text-center fw-light w-75 mx-auto">This transaction has no chemicals set. Chemical
+            might be deleted.</p>
         <div class="row" id="row-<?= $idd ?>">
             <div class="col-lg-4 mb-2">
                 <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
