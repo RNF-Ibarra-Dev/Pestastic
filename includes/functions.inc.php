@@ -621,7 +621,7 @@ function get_chemical_name($conn, $chemId)
     }
 }
 
-function add_chemical_used($conn, $transactionId, $chemUsedId, $amtUsed = 0)
+function add_chemical_used($conn, $transactionId, $chemUsedId, $amtUsed = 0.0)
 {
     $chemBrand = get_chemical_name($conn, (int) $chemUsedId);
     if (!$chemBrand) {
@@ -636,6 +636,7 @@ function add_chemical_used($conn, $transactionId, $chemUsedId, $amtUsed = 0)
         echo 'add chemical usage stmt failed.';
         exit();
     }
+    // $amount = 
     mysqli_stmt_bind_param($stmt, "iisd", $transactionId, $chemUsedId, $chemBrand, $amtUsed);
     mysqli_stmt_execute($stmt);
 
@@ -3005,7 +3006,7 @@ function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
         // throw new Exception(var_dump($chemUsed) . var_dump($existingChems));
         for ($i = 0; $i < count($chemUsed); $i++) {
             // $amt_used = $amtUsed[$i];
-            if ($amtUsed[$i] === '' || $amtUsed[$i] === 0) {
+            if ($amtUsed[$i] === '' || (float) $amtUsed[$i] <= 0.0) {
                 throw new Exception("Amount used should not be empty or zero.");
             }
 
@@ -3025,7 +3026,7 @@ function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
                 $chemname = get_chemical_name($conn, $chemUsed[$i]);
                 throw new Exception("Insufficient Chemical: " . $chemname);
             }
-            $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], $amtUsed[$i]);
+            $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], (float) $amtUsed[$i]);
             if (!$recordchem) {
                 throw new Exception("Failed to record a chemical. Please try again later.");
             }
@@ -3191,7 +3192,7 @@ function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
         // check -> record -> reflect
         for ($i = 0; $i < count($chemUsed); $i++) {
             // $amt_used = $amtUsed[$i];
-            if ($amtUsed[$i] === '' || (int) $amtUsed[$i] < 0) {
+            if ($amtUsed[$i] === '' || (float) $amtUsed[$i] < 0) {
                 throw new Exception("Amount used should not be empty or zero.");
             }
 

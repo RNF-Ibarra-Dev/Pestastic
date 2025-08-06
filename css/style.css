@@ -14,6 +14,10 @@
   --night-bg-color: #16404d;
 }
 
+.bg-opacity-25{
+    --bs-bg-opacity: 0.15;
+}
+
 .text-success {
   color: #68fdb9 !important;
 }
