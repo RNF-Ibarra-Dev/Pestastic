@@ -3018,17 +3018,20 @@ function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
                 if ((int) $amtUsed[$i] === $prevtransamt) {
                     continue;
                 }
-            }
-            // new chemicals
-            $chemlevel = get_chem_level($conn, $chemUsed[$i]);
-            // check if chemical stock is sufficiaent 
-            if ((int) $amtUsed[$i] > $chemlevel) {
-                $chemname = get_chemical_name($conn, $chemUsed[$i]);
-                throw new Exception("Insufficient Chemical: " . $chemname);
-            }
-            $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], (float) $amtUsed[$i]);
-            if (!$recordchem) {
-                throw new Exception("Failed to record a chemical. Please try again later.");
+            } else {
+
+                // new chemicals
+                $chemlevel = get_chem_level($conn, $chemUsed[$i]);
+                // check if chemical stock is sufficiaent 
+                if ((int) $amtUsed[$i] > $chemlevel) {
+                    $chemname = get_chemical_name($conn, $chemUsed[$i]);
+                    throw new Exception("Insufficient Chemical: " . $chemname);
+                }
+
+                $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], (float) $amtUsed[$i]);
+                if (!$recordchem) {
+                    throw new Exception("Failed to record a chemical. Please try again later.");
+                }
             }
         }
 
@@ -3218,7 +3221,7 @@ function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
                     throw new Exception($reflect['error']);
                 }
             }
-            $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], (float)$amtUsed[$i]);
+            $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], (float) $amtUsed[$i]);
             if (!$recordchem) {
                 throw new Exception("Failed to record a chemical. Please try again later.");
             }

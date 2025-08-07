@@ -328,10 +328,10 @@
                                                 <option value="" selected>Select Status</option>
                                                 <option value="Pending">Pending</option>
                                                 <option value="Accepted">Accepted</option>
-                                                <option value="Finalizing">Finalizing </option>
-                                                <option value="Dispatched">Dispatched </option>
-                                                <option value="Completed">Completed </option>
-                                                <option value="Cancelled">Cancelled </option>
+                                                <option value="Finalizing">Finalizing</option>
+                                                <option value="Dispatched">Dispatched</option>
+                                                <option value="Completed">Completed</option>
+                                                <option value="Cancelled">Cancelled</option>
                                                 <option value="Voided">Voided </option>
                                             </select>
                                             <p class="alert alert-warning py-1 mt-2" style="display: none !important;">

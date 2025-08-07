@@ -343,9 +343,13 @@
                                             <label for="add-status" class="form-label fw-light">Status</label>
                                             <select name="add-status" id="add-status" class="form-select">
                                                 <option value="" selected>Select Status</option>
-                                                <option value="Pending">Pending</option>
+                                                 <option value="Pending">Pending</option>
                                                 <option value="Accepted">Accepted</option>
-                                                <option value="Completed">Completed </option>
+                                                <option value="Finalizing">Finalizing</option>
+                                                <option value="Dispatched">Dispatched</option>
+                                                <option value="Completed">Completed</option>
+                                                <option value="Cancelled">Cancelled</option>
+                                                <option value="Voided">Voided</option>
                                             </select>
                                         </div>
                                         <div class="col-lg-6">
@@ -668,8 +672,11 @@
                                                 <option value="" selected>Select Status</option>
                                                 <option value="Pending">Pending</option>
                                                 <option value="Accepted">Accepted</option>
+                                                <option value="Finalizing">Finalizing</option>
+                                                <option value="Dispatched">Dispatched</option>
+                                                <option value="Completed">Completed</option>
+                                                 <option value="Cancelled">Cancelled</option>
                                                 <option value="Voided">Voided</option>
-                                                <option value="Completed">Completed </option>
                                             </select>
                                         </div>
                                         <p id="statusNote" class="text-muted fw-light d-none ms-2"></p>
@@ -1626,7 +1633,7 @@
                 })
                 .fail(function (err) {
                     console.log(err);
-                    $span.text('-');
+                    span.text('-');
                 });
         });
 
