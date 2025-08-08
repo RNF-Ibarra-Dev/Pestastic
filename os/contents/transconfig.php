@@ -10,6 +10,14 @@ $role = "branchadmin";
 $user = $_SESSION['baID'];
 $branch = $_SESSION['branch'];
 
+$required_os_status = [
+    'Pending',
+    'Dispatched',
+    'Finalizing',
+    'Accepted',
+    'Completed',
+    'Cancelled'
+];
 
 if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     // echo 'success';
@@ -48,6 +56,12 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         }
     }
 
+    if (!in_array($status, $required_os_status)) {
+        http_response_code(400);
+        echo "Invalid status access. Please try again.";
+        exit();
+    }
+
     if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($problems) || empty($chemUsed) || empty($status) || empty($t_type) || empty($address)) {
         http_response_code(400);
         echo "All input fields are required.";
@@ -74,11 +88,6 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         $package = null;
     }
 
-    if (!in_array($status, $allStatus)) {
-        http_response_code(400);
-        echo 'Invalid Status. Please Try Again.';
-        exit();
-    }
 
     if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
         if (empty($amtUsed)) {
@@ -514,7 +523,7 @@ if (isset($_POST['finalsingletransact']) && $_POST['finalsingletransact'] === 't
     // http_response_code(400);
     // echo var_dump($chemUsed);
 
-    if(count($chemUsed) !== count($amtUsed)){
+    if (count($chemUsed) !== count($amtUsed)) {
         http_response_code(400);
         echo "Error. The number of chemicals does not match the number of amount.";
         exit();
@@ -527,15 +536,15 @@ if (isset($_POST['finalsingletransact']) && $_POST['finalsingletransact'] === 't
     }
 
     $finalize = finalize_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['baID'], $notes, $_SESSION['user_role']);
-    if(isset($finalize['error'])){
+    if (isset($finalize['error'])) {
         http_response_code(400);
         echo $finalize['error'];
         exit();
-    } else if($finalize){
+    } else if ($finalize) {
         http_response_code(200);
         echo json_encode(['success' => 'Transaction Finalized.']);
         exit();
-    } else{
+    } else {
         http_response_code(400);
         echo "Unknown error occured.";
         exit();
@@ -555,7 +564,7 @@ if (isset($_POST['singleconfirm']) && $_POST['singleconfirm'] === 'true') {
         exit();
     }
 
-    if(count($chemUsed) !== count($amtUsed)){
+    if (count($chemUsed) !== count($amtUsed)) {
         http_response_code(400);
         echo "Error. The number of chemicals does not match the number of amount.";
         exit();
@@ -568,15 +577,15 @@ if (isset($_POST['singleconfirm']) && $_POST['singleconfirm'] === 'true') {
     }
 
     $finalize = complete_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['baID'], $notes, $_SESSION['user_role']);
-    if(isset($finalize['error'])){
+    if (isset($finalize['error'])) {
         http_response_code(400);
         echo $finalize['error'];
         exit();
-    } else if($finalize){
+    } else if ($finalize) {
         http_response_code(200);
         echo json_encode(['success' => 'Transaction Finalized.']);
         exit();
-    } else{
+    } else {
         http_response_code(400);
         echo "Unknown error occured.";
         exit();
@@ -596,7 +605,7 @@ if (isset($_POST['singledispatch']) && $_POST['singledispatch'] === 'true') {
         exit();
     }
 
-    if(count($chemUsed) !== count($amtUsed)){
+    if (count($chemUsed) !== count($amtUsed)) {
         http_response_code(400);
         echo "Error. The number of chemicals does not match the number of amount.";
         exit();
@@ -609,15 +618,15 @@ if (isset($_POST['singledispatch']) && $_POST['singledispatch'] === 'true') {
     }
 
     $finalize = dispatch_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['baID'], $notes, $_SESSION['user_role']);
-    if(isset($finalize['error'])){
+    if (isset($finalize['error'])) {
         http_response_code(400);
         echo $finalize['error'];
         exit();
-    } else if($finalize){
+    } else if ($finalize) {
         http_response_code(200);
         echo json_encode(['success' => 'Transaction Finalized.']);
         exit();
-    } else{
+    } else {
         http_response_code(400);
         echo "Unknown error occured.";
         exit();

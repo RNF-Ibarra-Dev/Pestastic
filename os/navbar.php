@@ -1,5 +1,5 @@
 <nav
-    class="navbar navbar-expand-sm my-2 mx-2 rounded-4 border border-light navbar-dark bg-dark bg-opacity-25 shadow-sm">
+    class="navbar navbar-expand-sm my-2 mx-2 rounded-4 border border-light navbar-dark bg-dark bg-opacity-50 shadow-sm">
     <div class="container-fluid">
         <div class="user-select-none">
             <p class="text-wrap fs-2 m-0 ms-2 text-align-center fw-bold">Pestastic Inventory Management</p>
