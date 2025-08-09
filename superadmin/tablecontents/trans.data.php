@@ -15,7 +15,8 @@ if (isset($_GET['voidreqs']) && $_GET['voidreqs'] === 'true') {
             $request = $row['void_request'];
             ?>
             <tr class="text-center">
-                <td scope="row"><?= htmlspecialchars($id) ?></td>
+                <td class="text-dark" scope="row"><button type="button" class="btn btn-sidebar text-dark check-void-req-btn"
+                        data-trans-id="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></button></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
                 <td><?= htmlspecialchars($treatmentDate) ?></td>
                 <td>

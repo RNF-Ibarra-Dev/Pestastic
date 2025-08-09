@@ -343,7 +343,7 @@
                                             <label for="add-status" class="form-label fw-light">Status</label>
                                             <select name="add-status" id="add-status" class="form-select">
                                                 <option value="" selected>Select Status</option>
-                                                 <option value="Pending">Pending</option>
+                                                <option value="Pending">Pending</option>
                                                 <option value="Accepted">Accepted</option>
                                                 <option value="Finalizing">Finalizing</option>
                                                 <option value="Dispatched">Dispatched</option>
@@ -675,13 +675,14 @@
                                                 <option value="Finalizing">Finalizing</option>
                                                 <option value="Dispatched">Dispatched</option>
                                                 <option value="Completed">Completed</option>
-                                                 <option value="Cancelled">Cancelled</option>
+                                                <option value="Cancelled">Cancelled</option>
                                                 <option value="Voided">Voided</option>
                                             </select>
                                         </div>
                                         <p id="statusNote" class="text-muted fw-light d-none ms-2"></p>
                                     </div>
 
+                                    <p id="transvoidalert" class="alert alert-danger py-2"></p>
                                     <!-- toggle visually hidden when edit -->
                                     <p class="mb-0 mt-4" id='metadata'><small id=view-time class="text-muted"></small>
                                     </p>
@@ -701,6 +702,15 @@
 
                                 <!-- footer -->
                                 <div class="modal-footer">
+                                    <div class="m-0 p-0 me-auto d-flex gap-2">
+                                        <!-- <button type="button" class="btn mt-auto btn-grad" data-bs-toggle="modal"
+                                            data-bs-target="#voidrequestmodal" id="requestvoidbtn">Request Void
+                                            Transaction</button> -->
+                                        <button type="button" class="btn btn-grad" id="modalcancelbtn"
+                                            data-bs-toggle="modal" data-bs-target="#cancelscheduledmodal">Cancel
+                                            Scheduled
+                                            Transaction</button>
+                                    </div>
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close
                                         Details</button>
                                     <button type="button" class="btn btn-grad" id="editbtn">Edit/Delete
@@ -789,7 +799,7 @@
                             <div class="modal-body text-dark p-3">
                                 <div class="table-responsive-sm  d-flex justify-content-center">
                                     <table class="table align-middle table-hover w-100" id="approvechemtable">
-                                        <caption class="fw-light text-muted">List of stocks added by the Operations
+                                        <caption class="fw-light text-muted">List of transactions requested for void by the Operations
                                             Supervisor.</captio>
                                         <thead>
                                             <tr class="text-center align-middle">
@@ -1282,6 +1292,17 @@
             <!-- content end -->
         </main>
     </div>
+
+    <div class="toast-container m-2 me-3 bottom-0 end-0 position-fixed">
+        <div class="toast align-items-center" role="alert" id="toast" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body text-dark ps-4 text-success-emphasis" id="toastmsg">
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
 
     <?php include('footer.links.php'); ?>
 
@@ -2058,10 +2079,53 @@
                     $('#edit-session').val(d.session_no ?? '-');
                     $('#view-treatmentType').html(d.treatment_type ?? 'Treatment type not set');
 
-                    if (d.transaction_status == 'Completed' || d.transaction_status == 'Voided') {
-                        $('#editbtn').attr('disabled', true);
+                    if (d.void_request === 1) {
+                        $("#transvoidalert").show().text("This transaction is requested for void by " + d.updated_by);
+                    } else{
+                        $("#transvoidalert").hide();
+                    }
+
+                    if (d.transaction_status === 'Completed' || d.transaction_status === 'Voided') {
+                        $('#editbtn').hide().attr('disabled', true);
+                        $("#viewEditForm #requestvoidbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                        $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                    } else if (d.transaction_status === 'Cancelled') {
+                        $('#editbtn').show().attr('disabled', false);
+                        $("#viewEditForm #requestvoidbtn").show().prop('disabled', false).attr('data-bs-target', '#voidrequestmodal');
+                        $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                    } else if (d.transaction_status === 'Voided') {
+                        $("#viewEditForm #requestvoidbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                    } else if (d.transaction_status === 'Finalizing') {
+                        $('#editbtn').show().attr('disabled', false);
+                        $("#viewEditForm #requestvoidbtn").show().prop('disabled', false).attr('data-bs-target', '#voidrequestmodal');
+                        $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                    } else if (d.transaction_status === 'Dispatched') {
+                        $('#editbtn').show().attr('disabled', false);
+                        $("#viewEditForm #requestvoidbtn").show().prop('disabled', false).attr('data-bs-target', '#voidrequestmodal');
+                        $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
                     } else {
-                        $('#editbtn').attr('disabled', false);
+                        $('#editbtn').show().attr('disabled', false);
+                        $("#viewEditForm #requestvoidbtn").show().prop('disabled', false).attr('data-bs-target', '#voidrequestmodal');
+                        $("#viewEditForm #modalcancelbtn").show().prop('disabled', false).attr('data-bs-target', '#cancelscheduledmodal');
+                    }
+
+                    if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {
+                        $("#edit-status option[value='Accepted']").prop('disabled', true);
+                        $("#edit-status option[value='Pending']").prop('disabled', true);
+                    } else {
+                        $("#edit-status option[value='Accepted']").prop('disabled', false);
+                        $("#edit-status option[value='Pending']").prop('disabled', false);
+                    }
+
+                    if (d.void_request === 1) {
+                        $('#editbtn').hide().attr('disabled', true);
+                        $("#viewEditForm #requestvoidbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                        $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                    }
+
+                    if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {
+                        $('#edit-chemBrandUsed input.form-control.form-add').attr('disabled', false);
+                        $('#edit-chemBrandUsed input.form-control.form-add').attr('name', 'edit-amountUsed[]');
                     }
 
                     if (d.package_id != null) {
@@ -2157,7 +2221,7 @@
         });
 
         // open details
-        $(document).on('click', '#tableDetails', async function () {
+        $(document).on('click', '#tableDetails, .finalize-peek-trans-btn, .check-void-req-btn', async function () {
             const clearform = await empty_form();
             if (clearform) {
                 $('#viewEditForm')[0].reset();
@@ -2837,6 +2901,7 @@
                 url: submitUrl
             })
                 .done(function (d) {
+                    console.log(d);
                     if (d.success) {
                         loadpage(1, status);
                         show_toast(d.success);

@@ -3016,8 +3016,8 @@ function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
                 throw new Exception("Amount used should not be empty or zero.");
             }
 
-            if (in_array((int) $chemUsed[$i], $existingChems)) {
-                if ((int) $amtUsed[$i] === $prevtransamt) {
+            if (in_array((float) $chemUsed[$i], $existingChems)) {
+                if ((float) $amtUsed[$i] === $prevtransamt) {
                     continue;
                 }
             }
@@ -3025,12 +3025,12 @@ function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
             // new chemicals
             $chemlevel = get_chem_level($conn, $chemUsed[$i]);
             // check if chemical stock is sufficiaent
-            if ((int) $amtUsed[$i] > $chemlevel) {
+            if ((float) $amtUsed[$i] > $chemlevel) {
                 $chemname = get_chemical_name($conn, $chemUsed[$i]);
                 throw new Exception("Insufficient Chemical: " . $chemname);
             }
 
-            if ((int) $amtUsed[$i] != $prevtransamt) {
+            if ((float) $amtUsed[$i] != $prevtransamt) {
                 $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], (float) $amtUsed[$i]);
                 if (!$recordchem) {
                     throw new Exception("Failed to record a chemical. Please try again later.");
@@ -3085,6 +3085,7 @@ function complete_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
             $logtype = 'Not Used (Returned from report)';
             $delChems = array_values($delChems);
             // throw new Exception(var_dump($delChems));
+            $qty = [];
             foreach ($delChems as $chem) {
                 $qty[] = get_amt_used($conn, $chem, $transid);
                 $logdel = log_transaction($conn, $transid, $delChems, $qty, $branch, $user_id, $role, $note, $status, $logtype);
@@ -3099,7 +3100,7 @@ function complete_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
 
             $revert = revert_v2($conn, $delChems, $transid);
             if (isset($revert['error'])) {
-                throw new Exception("Error: " . $revert['error'] . " 864: Current Del Chem ID: $delChems | Transaction ID: " . $transid);
+                throw new Exception($revert['error']);
             }
         }
 
@@ -3107,16 +3108,16 @@ function complete_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
         // check -> record -> reflect
         for ($i = 0; $i < count($chemUsed); $i++) {
             // $amt_used = $amtUsed[$i];
+            $prevtransamt = prev_trans_amt($conn, $chemUsed[$i], $transid);
+            if (isset($prevtransamt['error'])) {
+                throw new Exception("Error: " . $prevtransamt['error'] . $chemUsed[$i] . json_encode($existingChems));
+            }
             if ($amtUsed[$i] === '' || (int) $amtUsed[$i] === 0) {
                 throw new Exception("Amount used should not be empty or zero.");
             }
 
-            if (in_array((int) $chemUsed[$i], $existingChems)) {
-                $prevtransamt = prev_trans_amt($conn, $chemUsed[$i], $transid);
-                if (isset($prevtransamt['error'])) {
-                    throw new Exception("Error: " . $prevtransamt['error'] . $chemUsed[$i] . json_encode($existingChems));
-                }
-                if ((int) $amtUsed[$i] === $prevtransamt) {
+            if (in_array((float) $chemUsed[$i], $existingChems)) {
+                if ((float) $amtUsed[$i] === $prevtransamt) {
                     continue;
                 }
             }
@@ -3133,9 +3134,11 @@ function complete_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
                     throw new Exception($reflect['error']);
                 }
             }
-            $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], $amtUsed[$i]);
-            if (!$recordchem) {
-                throw new Exception("Failed to record a chemical. Please try again later.");
+            if ((float) $amtUsed[$i] != $prevtransamt) {
+                $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], $amtUsed[$i]);
+                if (!$recordchem) {
+                    throw new Exception("Failed to record a chemical. Please try again later.");
+                }
             }
         }
 
@@ -3198,15 +3201,16 @@ function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
         // check -> record -> reflect
         for ($i = 0; $i < count($chemUsed); $i++) {
             // $amt_used = $amtUsed[$i];
+            $prevtransamt = prev_trans_amt($conn, $chemUsed[$i], $transid);
+            if (isset($prevtransamt['error'])) {
+                throw new Exception("Error: " . $prevtransamt['error'] . $chemUsed[$i] . json_encode($existingChems));
+            }
+
             if ($amtUsed[$i] === '' || (float) $amtUsed[$i] < 0) {
                 throw new Exception("Amount used should not be empty or zero.");
             }
 
             if (in_array((int) $chemUsed[$i], $existingChems)) {
-                $prevtransamt = prev_trans_amt($conn, $chemUsed[$i], $transid);
-                if (isset($prevtransamt['error'])) {
-                    throw new Exception("Error: " . $prevtransamt['error'] . $chemUsed[$i] . json_encode($existingChems));
-                }
                 if ($amtUsed[$i] == $prevtransamt) {
                     continue;
                 }
@@ -3224,9 +3228,11 @@ function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
                     throw new Exception($reflect['error']);
                 }
             }
-            $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], (float) $amtUsed[$i]);
-            if (!$recordchem) {
-                throw new Exception("Failed to record a chemical. Please try again later.");
+            if ((float) $amtUsed[$i] != $prevtransamt) {
+                $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], (float) $amtUsed[$i]);
+                if (!$recordchem) {
+                    throw new Exception("Failed to record a chemical. Please try again later.");
+                }
             }
         }
 

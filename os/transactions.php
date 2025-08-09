@@ -25,58 +25,84 @@
             <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2 ">
                 <h1 class="display-6 text-light mb-0 fw-medium text-center">Manage Transactions</h1>
             </div>
-            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
-                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
-                    <p class="fs-5 fw-bold "><i
-                            class="bi bi-alarm-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm "></i>Pending
-                    </p>
+            <div class="d-flex gap-2 my-2 mx-3 user-select-none text-center">
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-alarm-fill bg-warning bg-opacity-75 pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">Pending</p>
+                    </div>
                     <p class="fw-light mb-0 ">Pending transactions that needs to be approved by either Operations
                         Supervisor or Manager.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_pending"></p>
                 </div>
-                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
-                    <p class="fs-5 fw-bold"><i
-                            class="bi bi-clipboard-check-fill me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm "></i>Accepted
-                    </p>
-                    <p class="fw-light mb-0 ">Accepted transactions that is at standby until dispatched at a
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-clipboard-check-fill bg-custom-success bg-opacity-25 pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">
+                            Accepted
+                        </p>
+                    </div>
+                    <p class=" mb-0 ">Accepted transactions that is at standby until dispatched at a
                         specific date.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_accepted"></p>
                 </div>
-                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
-                    <p class="fs-5 fw-bold"><i
-                            class="bi bi-truck-flatbed me-2 bg-warning bg-opacity-50 py-1 px-2 rounded shadow-sm "></i>Dispatched
-                    </p>
-                    <p class="fw-light mb-0 ">Transactions that are currently being carried out.</p>
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-truck-flatbed  bg-warning bg-opacity-50 pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">
+                            Dispatched
+                        </p>
+                    </div>
+                    <p class=" mb-0 ">Transactions that are currently being carried out.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_dispatched"></p>
                 </div>
             </div>
             <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
-                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
-                    <p class="fs-5 fw-bold"><i
-                            class="bi bi-calendar2-check-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm "></i>Completed
-                    </p>
-                    <p class="fw-light mb-0 ">Reviewed and approved as finished.</p>
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-calendar2-check-fill  bg-info bg-opacity-50 pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">
+                            Completed
+                        </p>
+                    </div>
+                    <p class=" mb-0 ">Reviewed and approved as finished.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_completed"></p>
                 </div>
-                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
-                    <p class="fs-5 fw-bold"><i
-                            class="bi bi-clipboard-x-fill me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm "></i>Voided
-                    </p>
-                    <p class="fw-light mb-0 ">Voided transactions cancelled due to a specific cause.</p>
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-clipboard-x-fill  bg-danger bg-opacity-50 pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">
+                            Voided
+                        </p>
+                    </div>
+                    <p class=" mb-0 ">Voided transactions cancelled due to a specific cause.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_voided"></p>
                 </div>
-                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
-                    <p class="fs-5 fw-bold"><i
-                            class="bi bi-arrow-repeat me-2 bg-primary bg-opacity-25 py-1 px-2 rounded shadow-sm "></i>Finalizing
-                    </p>
-                    <p class="fw-light mb-0 ">Transactions marked done by Technicians.</p>
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-arrow-repeat  bg-primary bg-opacity-50 pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">
+                            Finalizing
+                        </p>
+                    </div>
+                    <p class=" mb-0 ">Transactions marked done by Technicians.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_finalizing"></p>
                 </div>
-                <div class="bg-light bg-opacity-25 rounded px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
-                    <p class="fs-5 fw-bold"><i
-                            class="bi bi-calendar2-x-fill me-2 bg-secondary bg-opacity-25 py-1 px-2 rounded shadow-sm "></i>Cancelled
-                    </p>
-                    <p class="fw-light mb-0 ">Cancelled transaction schedules.</p>
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-calendar2-x-fill  bg-secondary pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">
+                            Cancelled
+                        </p>
+                    </div>
+                    <p class=" mb-0 ">Cancelled transaction schedules.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_cancelled"></p>
                 </div>
 
@@ -672,6 +698,8 @@
 
                                     </div>
 
+                                    <p id="transvoidalert" class="alert alert-danger py-2"></p>
+
                                     <!-- toggle visually hidden when edit -->
                                     <p class="mb-0 mt-4" id='metadata'><small id=view-time class="text-muted"></small>
                                     </p>
@@ -1240,7 +1268,8 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="complete-inputpwd" class="form-label fw-light">Update transaction to Dispatch?
+                                    <label for="complete-inputpwd" class="form-label fw-light">Update transaction to
+                                        Dispatch?
                                         Enter Operation Supervisor
                                         <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
@@ -1248,7 +1277,8 @@
                                             id="complete-inputpwd">
                                     </div>
                                 </div>
-                                <p class="text-body-secondary fw-light">Note. Make sure the dispatch team is geared and ready.</p>
+                                <p class="text-body-secondary fw-light">Note. Make sure the dispatch team is geared and
+                                    ready.</p>
                                 <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
                                     id="dispatchAlert">
                                 </p>
@@ -2264,6 +2294,12 @@
                     $('#edit-session').val(d.session_no ?? '-');
                     $('#view-treatmentType').html(d.treatment_type ?? 'Treatment type not set');
 
+                    if (d.void_request === 1) {
+                        $("#transvoidalert").show().text("This transaction is requested for void by " + d.updated_by);
+                    } else{
+                        $("#transvoidalert").hide();
+                    }
+
                     if (d.transaction_status === 'Completed' || d.transaction_status === 'Voided') {
                         $('#editbtn').hide().attr('disabled', true);
                         $("#viewEditForm #requestvoidbtn").hide().prop('disabled', true).attr('data-bs-target', '');
@@ -2272,8 +2308,6 @@
                         $('#editbtn').show().attr('disabled', false);
                         $("#viewEditForm #requestvoidbtn").show().prop('disabled', false).attr('data-bs-target', '#voidrequestmodal');
                         $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
-                    } else if (d.transaction_status === 'Voided') {
-                        $("#viewEditForm #requestvoidbtn").hide().prop('disabled', true).attr('data-bs-target', '');
                     } else if (d.transaction_status === 'Finalizing') {
                         $('#editbtn').show().attr('disabled', false);
                         $("#viewEditForm #requestvoidbtn").show().prop('disabled', false).attr('data-bs-target', '#voidrequestmodal');
