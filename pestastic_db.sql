@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 17, 2025 at 10:48 AM
+-- Generation Time: Aug 10, 2025 at 06:09 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,7 +46,7 @@ CREATE TABLE `branchadmin` (
 --
 
 INSERT INTO `branchadmin` (`baID`, `baFName`, `baLName`, `baUsn`, `baEmail`, `baPwd`, `baEmpId`, `baAddress`, `baContact`, `baBirthdate`, `user_branch`) VALUES
-(1, 'branch', 'admin', 'bAdmin', 'bAdmin@email.com', '$2y$13$4bt2QK95Yrz929t9CoHIc.balO5OVF.kFsirEhEU2krxHSyvhb7ji', '012345678', '-', '123', '1930-01-14', 1),
+(1, 'branch', 'admin', 'bAdmin', 'bAdmin@email.com', '$2y$13$4bt2QK95Yrz929t9CoHIc.balO5OVF.kFsirEhEU2krxHSyvhb7ji', '012345678', 'ADdress sample', '123', '1930-01-14', 1),
 (2, 'os', 'os', 'os', 'os@email.com', '$2y$10$qikFsWEjotZYeneR0x5.C.fTlLe/qQEkYLPlit8koQaQYFNh4cb.6', '0123', '-', '123', '1930-01-01', 2),
 (3, 'wers', 'wers', 'wers', 'wer@gmail.com', '$2y$10$EeO/yYAJ/2NLT0QJ0yNzke9HVVnXXmiNHEuB1lWMOk/lryJpcoAg2', '123123', '-', '123123000', '1930-01-01', 1),
 (5, 'aya', 'ibarra', 'aya123', 'aya@gmail.com', '$2y$10$fuswGyoFW1DOV.Hb3Y04W.L4BQvwHfxiGjz2wur3Q7OFkKiynjlf2', '002', '--', '123123123', '2020-06-10', 1),
@@ -99,8 +99,8 @@ CREATE TABLE `chemicals` (
   `added_by` varchar(64) NOT NULL DEFAULT 'No Record',
   `updated_by` varchar(64) NOT NULL DEFAULT 'No Update Record',
   `date_received` date DEFAULT NULL,
-  `quantity_unit` enum('mg','g','kg','L','mL') NOT NULL,
-  `chem_location` varchar(50) NOT NULL DEFAULT 'Room A',
+  `quantity_unit` enum('mg','g','kg','L','mL','pc','canister','gal','box') NOT NULL,
+  `chem_location` varchar(50) NOT NULL DEFAULT 'main_storage',
   `restock_threshold` int(11) NOT NULL DEFAULT 3
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -110,7 +110,7 @@ CREATE TABLE `chemicals` (
 
 INSERT INTO `chemicals` (`id`, `name`, `brand`, `chemLevel`, `container_size`, `unop_cont`, `expiryDate`, `added_at`, `updated_at`, `request`, `approval`, `notes`, `branch`, `added_by`, `updated_by`, `date_received`, `quantity_unit`, `chem_location`, `restock_threshold`) VALUES
 (1, 'Deltacide', 'ENVU', 6.03, 1000, 1, '2025-03-06', '2025-04-12 15:06:30', '2025-07-16 22:39:47', 0, 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL', 'main_storage', 3),
-(2, 'Abates', 'BASF', 5.00, 250, 2, '2032-03-11', '2025-04-12 15:06:30', '2025-07-16 22:39:47', 0, 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL', 'main_storage', 3),
+(2, 'Abates', 'BASF', 5.00, 250, 2, '2032-03-11', '2025-04-12 15:06:30', '2025-07-28 13:45:19', 0, 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL', 'main_storage', 3),
 (3, 'chemical', 'ABXV', 1.00, 1000, 1, '2028-01-19', '2025-04-12 15:06:30', '2025-07-16 22:40:04', 1, 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'kg', 'stock_entry', 3),
 (19, 'qwe', 'qwe', 0.00, 1000, 0, '2025-04-03', '2025-04-12 15:06:30', '2025-07-16 22:40:04', 1, 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL', 'stock_entry', 3),
 (44, 'asd', 'asd', 0.00, 1000, 0, '2025-01-01', '2025-04-12 15:06:30', '2025-07-16 22:39:47', 0, 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL', 'main_storage', 3),
@@ -132,14 +132,18 @@ INSERT INTO `chemicals` (`id`, `name`, `brand`, `chemLevel`, `container_size`, `
 (1008, 'fgh', 'fgh', 6.00, 1000, 5, '2025-01-01', '2025-04-17 13:25:30', '2025-07-16 22:40:04', 1, 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'kg', 'stock_entry', 3),
 (1009, 'fgh', 'fgh', 6.00, 1000, 0, '2025-01-01', '2025-04-17 13:25:31', '2025-07-16 22:40:04', 1, 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL', 'stock_entry', 3),
 (1012, 'ghjp', 'ghj', 6.00, 500, 0, '2025-01-01', '2025-04-17 13:27:35', '2025-07-16 22:40:04', 1, 0, NULL, 1, 'No Record', 'No Update Record', '2025-06-13', 'mL', 'stock_entry', 3),
-(1013, 'asbg', 'gdfg', 500.00, 1000, 5, '2025-07-24', '2025-04-17 13:31:02', '2025-07-16 22:40:04', 1, 0, '', 1, 'No Record', 'bAdmin | Employee no. 012345678', '2025-06-13', 'mL', 'stock_entry', 3),
-(1014, 'jhghj', 'hjghj', 89.00, 1000, 1, '2025-01-01', '2025-04-17 13:33:20', '2025-07-16 22:40:04', 1, 0, '', 1, 'No Record', '[1] - sAdmin', '2025-06-13', 'mL', 'stock_entry', 3),
-(1063, 'ssdf', 'sdfsdf', 480.00, 500, 3, '2026-08-06', '2025-07-03 02:19:10', '2025-07-16 22:39:47', 0, 0, NULL, 1, '[1] - bAdmin', 'No Update Record', '2025-07-11', 'mL', 'main_storage', 3),
+(1013, 'asbg', 'gdfg', 500.00, 1000, 5, '2025-07-24', '2025-04-17 13:31:02', '2025-08-10 15:31:37', 0, 0, '', 1, 'No Record', 'bAdmin | Employee no. 012345678', '2025-06-13', 'mL', 'main_storage', 3),
+(1014, 'jhghj', 'hjghj', 89.00, 1000, 1, '2025-01-01', '2025-04-17 13:33:20', '2025-08-10 15:30:03', 0, 0, '', 1, 'No Record', '[1] - sAdmin', '2025-06-13', 'mL', 'main_storage', 3),
+(1063, 'ssdf', 'sdfsdf', 250.00, 500, 2, '2026-08-06', '2025-07-03 02:19:10', '2025-08-09 05:56:12', 0, 0, NULL, 1, '[1] - bAdmin', 'bAdmin | Employee no. 012345678', '2025-07-11', 'mL', 'main_storage', 3),
 (1065, 'Lambda-cyhalothrin', 'Cyonara 9.7% CS/EC', 179.00, 1, 2, '2027-07-07', '2025-07-03 07:40:26', '2025-07-16 22:39:47', 0, 0, 'Insecticide', 1, '[1] - sAdmin', 'bAdmin | Employee no. 012345678', '2025-07-03', 'L', 'main_storage', 3),
-(1066, 'Cyphenothrin', 'Gokilaht-S 5EC', 1.00, 1, 2, '2027-06-11', '2025-07-13 15:08:40', '2025-07-16 22:39:47', 0, 0, 'Insecticide', 1, '[1] - bAdmin', 'No Update Record', '2025-07-12', 'L', 'main_storage', 3),
-(1067, 'Thiamethoxam', 'Thiamethoxam', 30.00, 30, 3, '2027-01-08', '2025-07-13 15:08:40', '2025-07-16 22:39:47', 0, 0, 'Per Tube - Insecticide (Ant Bait)', 1, '[1] - bAdmin', 'No Update Record', '2025-07-08', 'g', 'main_storage', 3),
+(1066, 'Cyphenothrin', 'Gokilaht-S 5EC', 0.00, 1, 0, '2027-06-11', '2025-07-13 15:08:40', '2025-07-28 12:50:34', 0, 0, 'Insecticide', 1, '[1] - bAdmin', 'No Update Record', '2025-07-12', 'L', 'main_storage', 3),
+(1067, 'Thiamethoxam', 'Thiamethoxam', 0.00, 30, 0, '2027-01-08', '2025-07-13 15:08:40', '2025-07-18 06:25:35', 0, 0, 'Per Tube - Insecticide (Ant Bait)', 1, '[1] - bAdmin', 'No Update Record', '2025-07-08', 'g', 'main_storage', 3),
 (1068, 'Fipronil', 'Isoptex 5SC', 500.00, 500, 2, '2028-07-12', '2025-07-13 15:13:28', '2025-07-16 23:33:45', 0, 0, 'Termiticide', 1, '[1] - bAdmin', 'bAdmin | Employee no. 012345678', '2025-07-09', 'mL', 'dispatched', 3),
-(1069, 'Fipronil', 'Isoptex 5SC', 1.00, 1, 2, '2028-07-12', '2025-07-13 15:13:28', '2025-07-16 22:39:47', 0, 0, 'Termiticide', 1, '[1] - bAdmin', 'No Update Record', '2025-07-03', 'L', 'main_storage', 3);
+(1069, 'Fipronil', 'Isoptex 5SC', 0.06, 1, 3, '2028-07-12', '2025-07-13 15:13:28', '2025-07-27 06:39:16', 0, 0, 'Termiticide', 1, '[1] - bAdmin', 'No Update Record', '2025-07-03', 'L', 'main_storage', 3),
+(1073, 'Thiamethoxam', 'Thiamethoxam', 30.00, 30, 0, '2027-01-08', '2025-07-18 04:48:12', '2025-07-18 06:20:39', 0, 0, 'Per Tube - Insecticide (Ant Bait)', 1, 'bAdmin | Employee no. 012345678', 'No Update Record', '2025-07-08', 'g', 'main_storage', 3),
+(1074, 'Thiamethoxam', 'Thiamethoxam', 30.00, 30, 0, '2027-01-08', '2025-07-18 06:25:35', '2025-07-18 06:25:35', 0, 0, 'Per Tube - Insecticide (Ant Bait)', 1, 'bAdmin | Employee no. 012345678', 'No Update Record', '2025-07-08', 'g', 'dispatched', 3),
+(1075, 'Cyphenothrin', 'Gokilaht-S 5EC', 1.00, 1, 2, '2027-06-11', '2025-07-18 15:03:24', '2025-07-18 15:23:01', 0, 0, 'Insecticide', 1, 'bAdmin | Employee no. 012345678', 'No Update Record', '2025-07-12', 'L', 'dispatched', 3),
+(1076, 'ssdf', 'sdfsdf', 50.00, 500, 6, '2026-08-06', '2025-07-20 07:24:38', '2025-07-27 14:25:35', 0, 0, '', 1, 'bAdmin | Employee no. 012345678', 'bAdmin | Employee no. 012345678', '2025-07-11', 'mL', 'dispatched', 3);
 
 -- --------------------------------------------------------
 
@@ -246,7 +250,61 @@ INSERT INTO `inventory_log` (`log_id`, `chem_id`, `log_type`, `quantity`, `conta
 (53, 1063, 'Manual Stock Correction (Out)', -500.00, -1, 'WHOLE_SEALED_CONTAINER_OUT', '2025-07-15 21:13:23', 1, 'branchadmin', NULL, '--', 1),
 (54, 1063, 'Manual Stock Correction (In)', 250.00, 0, 'PARTIAL_ADDITION', '2025-07-15 21:13:34', 1, 'branchadmin', NULL, '--', 1),
 (55, 1063, 'Manual Stock Correction (In)', 500.00, 1, 'WHOLE_SEALED_CONTAINER_ADDED', '2025-07-15 21:13:49', 1, 'branchadmin', NULL, '++', 1),
-(56, 54, 'Manual Stock Correction (In)', 1000.00, 1, 'WHOLE_SEALED_CONTAINER_ADDED', '2025-07-15 21:16:08', 1, 'branchadmin', NULL, '++', 1);
+(56, 54, 'Manual Stock Correction (In)', 1000.00, 1, 'WHOLE_SEALED_CONTAINER_ADDED', '2025-07-15 21:16:08', 1, 'branchadmin', NULL, '++', 1),
+(59, 1073, 'Transfer', 30.00, 1, 'WHOLE_CONTAINER_TRANSFER', '2025-07-18 12:48:12', 1, 'branchadmin', NULL, 'Received 1 containers (incl. opened: No) from original ID 1067 (main_storage). Performed by: bAdmin | Employee no. 012345678', 1),
+(60, 1067, 'Transferred to 1073.', -30.00, -1, 'WHOLE_CONTAINER_TRANSFER', '2025-07-18 12:48:12', 1, 'branchadmin', NULL, 'Transferred 1 containers (incl. opened: No) to dispatched. Performed by: bAdmin | Employee no. 012345678', 1),
+(61, 1074, 'Transfer', 30.00, 1, 'PARTIAL_AND_WHOLE_CONTAINER_TRANSFER', '2025-07-18 14:25:35', 1, 'branchadmin', NULL, 'Received 1 containers (incl. opened: Yes) from original ID 1067 (main_storage). Performed by: bAdmin | Employee no. 012345678', 1),
+(62, 1067, 'Transferred to 1074.', -30.00, -1, 'PARTIAL_AND_WHOLE_CONTAINER_TRANSFER', '2025-07-18 14:25:35', 1, 'branchadmin', NULL, 'Transferred 1 containers (incl. opened: Yes) to dispatched. Performed by: bAdmin | Employee no. 012345678', 1),
+(63, 1075, 'Transfer', 1.00, 1, 'WHOLE_CONTAINER_TRANSFER', '2025-07-18 23:03:24', 1, 'branchadmin', NULL, 'Received 1 containers (incl. opened: No) from original ID 1066 (main_storage). Performed by: bAdmin | Employee no. 012345678', 1),
+(64, 1066, 'Transferred to 1075.', -1.00, -1, 'WHOLE_CONTAINER_TRANSFER', '2025-07-18 23:03:24', 1, 'branchadmin', NULL, 'Transferred 1 containers (incl. opened: No) to dispatched. Performed by: bAdmin | Employee no. 012345678', 1),
+(65, 1075, 'Manual Stock Correction (In)', 2.00, 2, 'WHOLE_SEALED_CONTAINER_ADDED', '2025-07-18 23:23:01', 1, 'branchadmin', NULL, 'Debugging', 1),
+(66, 1063, 'Dispatch', -500.00, 0, 'CHEMICAL_DISPATCH_UPDATE', '2025-07-20 15:24:38', 1, 'branchadmin', NULL, 'Reverted/Used -500mL and 0 containers to dispatch transaction ID no. 10044.', 1),
+(67, 1076, 'Dispatch', 500.00, 1, 'WHOLE_CONTAINER_DISPATCH', '2025-07-20 15:24:38', 1, 'branchadmin', 10044, '1 containers (incl. opened: No) from chemical ID 1063 to dispatch. Performed by: bAdmin | Employee no. 012345678', 1),
+(68, 1063, 'Dispatch', 460.00, 0, 'CHEMICAL_DISPATCH_UPDATE', '2025-07-21 15:51:50', 1, 'branchadmin', NULL, 'Reverted/Used -20mL and 0.96 containers to dispatch transaction ID no. 10019.', 1),
+(69, 1076, 'Dispatch', 500.00, 1, 'WHOLE_CONTAINER_DISPATCH', '2025-07-21 15:51:50', 1, 'branchadmin', 10019, 'Added 1 containers (incl. opened: No) from chemical ID 1063 for dispatch. Performed by: bAdmin | Employee no. 012345678', NULL),
+(70, 1063, 'Dispatch', 320.00, 1, 'CHEMICAL_DISPATCH_UPDATE', '2025-07-21 22:03:05', 1, 'branchadmin', NULL, 'Reverted/Used -180mL and 1 containers to dispatch transaction ID no. 10019.', 1),
+(71, 1076, 'Dispatch', 180.00, 1, 'PARTIAL_AND_WHOLE_CONTAINER_DISPATCH', '2025-07-21 22:03:05', 1, 'branchadmin', 10019, 'Added 1 containers (incl. opened: Yes) from chemical ID 1063 for dispatch. Performed by: bAdmin | Employee no. 012345678', 1),
+(77, 1063, 'Dispatch', -820.00, -1, 'CHEMICAL_DISPATCH_UPDATE', '2025-07-21 23:24:27', 1, 'branchadmin', NULL, 'Reverted/Used -320mL and -1 containers to dispatch transaction ID no. 10019.', 1),
+(78, 1076, 'Dispatch', 1000.00, 2, 'WHOLE_CONTAINER_DISPATCH', '2025-07-21 23:24:27', 1, 'branchadmin', 10019, 'Added 2 containers (incl. opened: No) from chemical ID 1063 for dispatch. Performed by: bAdmin | Employee no. 012345678', 1),
+(79, 1063, 'Dispatch', 250.00, 0, 'CHEMICAL_DISPATCH_UPDATE', '2025-07-21 23:54:34', 1, 'branchadmin', NULL, 'Reverted 250mL and 0 container/s for the dispatch of transaction ID no. 10019.', 1),
+(80, 1076, 'Dispatch', 750.00, 2, 'PARTIAL_AND_WHOLE_CONTAINER_DISPATCH', '2025-07-21 23:54:34', 1, 'branchadmin', 10019, 'Added 2 containers (incl. opened: Yes) from chemical ID 1063 for dispatch. Performed by: bAdmin | Employee no. 012345678', 1),
+(81, 1063, 'Dispatch', -250.00, 0, 'CHEMICAL_DISPATCH_UPDATE', '2025-07-22 13:45:06', 1, 'branchadmin', NULL, 'Reverted -250mL and 0 container/s for the dispatch of transaction ID no. 10019.', 1),
+(82, 1076, 'Dispatch', 1000.00, 2, 'PARTIAL_AND_WHOLE_CONTAINER_DISPATCH', '2025-07-22 13:45:06', 1, 'branchadmin', 10019, 'Added 2 containers (incl. opened: Yes) from chemical ID 1063 for dispatch. Performed by: bAdmin | Employee no. 012345678', 1),
+(83, 1063, 'Dispatch', 750.00, 2, 'CHEMICAL_DISPATCH_UPDATE', '2025-07-22 14:20:50', 1, 'branchadmin', NULL, 'Reverted -250mL and 2 container/s for the dispatch of transaction ID no. 10019.', 1),
+(84, 1076, 'Dispatch', 250.00, 1, 'PARTIAL_AND_WHOLE_CONTAINER_DISPATCH', '2025-07-22 14:20:50', 1, 'branchadmin', 10019, 'Added 1 containers (incl. opened: Yes) from chemical ID 1063 for dispatch. Performed by: bAdmin | Employee no. 012345678', 1),
+(86, 1063, 'Used', 150.00, -1, 'DISPATCHED_CHEMICAL_USED', '2025-07-22 14:21:19', 1, 'branchadmin', 10044, 'Used 150mL from the dispatched transaction no. 10044.', 1),
+(87, 1076, 'Return', 500.00, 1, 'FROM_DISPATCHED_CHEMICAL', '2025-07-22 14:21:19', 1, 'branchadmin', 10044, 'Returned 500mL from the remaining dispatched chemical.', 1),
+(88, 1063, 'Dispatch', 150.00, 0, 'CHEMICAL_DISPATCH_UPDATE', '2025-07-22 14:23:14', 1, 'branchadmin', NULL, 'Reverted 150mL and 0 container/s for the dispatch of transaction ID no. 10019.', 1),
+(89, 1076, 'Dispatch', 100.00, 1, 'PARTIAL_AND_WHOLE_CONTAINER_DISPATCH', '2025-07-22 14:23:14', 1, 'branchadmin', 10019, 'Added 1 containers (incl. opened: Yes) from chemical ID 1063 for dispatch. Performed by: bAdmin | Employee no. 012345678', 1),
+(90, 1063, 'Dispatch', -350.00, 0, 'CHEMICAL_DISPATCH_UPDATE', '2025-07-22 14:23:50', 1, 'branchadmin', NULL, 'Reverted -350mL and 0 container/s for the dispatch of transaction ID no. 10019.', 1),
+(91, 1076, 'Dispatch', 450.00, 1, 'PARTIAL_AND_WHOLE_CONTAINER_DISPATCH', '2025-07-22 14:23:50', 1, 'branchadmin', 10019, 'Added 1 containers (incl. opened: Yes) from chemical ID 1063 for dispatch. Performed by: bAdmin | Employee no. 012345678', 1),
+(92, 1063, 'Used', 150.00, -1, 'DISPATCHED_CHEMICAL_USED', '2025-07-22 14:39:30', 1, 'branchadmin', 10044, 'Used 150mL from the dispatched transaction no. 10044.', 1),
+(93, 1076, 'Return', 300.00, 1, 'FROM_DISPATCHED_CHEMICAL', '2025-07-22 14:39:30', 1, 'branchadmin', 10044, 'Returned 300mL from the remaining dispatched chemical.', 1),
+(94, 1063, 'Used', 150.00, -1, 'DISPATCHED_CHEMICAL_USED', '2025-07-22 14:39:58', 1, 'branchadmin', 10044, 'Used 150mL from the dispatched transaction no. 10044.', 1),
+(95, 1076, 'Return', 300.00, 1, 'FROM_DISPATCHED_CHEMICAL', '2025-07-22 14:39:58', 1, 'branchadmin', 10044, 'Returned 300mL from the remaining dispatched chemical.', 1),
+(98, 1063, 'Dispatch', -850.00, -2, 'CHEMICAL_DISPATCH_UPDATE', '2025-07-22 15:02:06', 1, 'branchadmin', NULL, 'Reverted 150mL and -2 container/s for the dispatch of transaction ID no. 10019.', 1),
+(99, 1076, 'Dispatch', 1300.00, 3, 'PARTIAL_AND_WHOLE_CONTAINER_DISPATCH', '2025-07-22 15:02:06', 1, 'branchadmin', 10019, 'Added 3 containers (incl. opened: Yes) from chemical ID 1063 for dispatch. Performed by: bAdmin | Employee no. 012345678', 1),
+(100, 1063, 'Dispatch', -550.00, -1, 'CHEMICAL_DISPATCH_UPDATE', '2025-07-22 15:21:17', 1, 'branchadmin', NULL, 'Reverted -50mL and -1 container/s for the dispatch of transaction ID no. 10019.', 1),
+(101, 1076, 'Dispatch', 1300.00, 3, 'PARTIAL_AND_WHOLE_CONTAINER_DISPATCH', '2025-07-22 15:21:17', 1, 'branchadmin', 10019, 'Added 3 containers (incl. opened: Yes) from chemical ID 1063 for dispatch. Performed by: bAdmin | Employee no. 012345678', 1),
+(109, 1063, 'Dispatch', -550.00, -1, 'CHEMICAL_DISPATCH_UPDATE', '2025-07-22 22:20:53', 1, 'branchadmin', NULL, 'Reverted -50mL and -1 container/s for the dispatch of transaction ID no. 10019.', 1),
+(110, 1076, 'Dispatch', 1300.00, 3, 'PARTIAL_AND_WHOLE_CONTAINER_DISPATCH', '2025-07-22 22:20:53', 1, 'branchadmin', 10019, 'Added 3 containers (incl. opened: Yes) from chemical ID 1063 for dispatch. Performed by: bAdmin | Employee no. 012345678', 1),
+(111, 1069, 'Manual Stock Correction (In)', 0.06, 0, 'PARTIAL_ADDITION', '2025-07-27 14:39:16', 1, 'branchadmin', NULL, 'hhhh', 1),
+(112, 1063, 'Used', 0.00, 0, 'DISPATCHED_CHEMICAL_USED', '2025-07-27 22:25:35', 1, 'branchadmin', 10044, 'Used 0mL from the dispatched transaction no. 10044.', 1),
+(113, 1076, 'Return', 300.00, 1, 'FROM_DISPATCHED_CHEMICAL', '2025-07-27 22:25:35', 1, 'branchadmin', 10044, 'Returned 300mL from the remaining dispatched chemical.', 1),
+(114, 1066, 'Manual Stock Correction (Out)', -0.02, 0, 'FROM_OPENED_CONTAINER', '2025-07-28 20:50:34', 1, 'superadmin', NULL, 'test', 1),
+(115, 2, 'Manual Stock Correction (In)', 5.00, 0, 'PARTIAL_ADDITION', '2025-07-28 21:31:30', 1, 'superadmin', NULL, 'test', 1),
+(116, 2, 'Manual Stock Correction (Out)', -5.00, 0, 'FROM_OPENED_CONTAINER', '2025-07-28 21:32:12', 1, 'superadmin', NULL, 'rerere', 1),
+(117, 2, 'Manual Stock Correction (Out)', -5.00, 0, 'FROM_OPENED_CONTAINER', '2025-07-28 21:45:19', 1, 'superadmin', NULL, 'rerere', 1),
+(118, 1063, 'Used', 150.00, 0, NULL, '2025-08-07 21:46:10', 1, 'superadmin', 10044, '', 1),
+(119, 1063, 'Used', 150.00, 0, NULL, '2025-08-07 23:09:25', 1, 'superadmin', 10044, '', 1),
+(124, 1063, 'Used', 150.00, 0, NULL, '2025-08-08 22:23:59', 1, 'superadmin', 10044, '', 1),
+(125, 1063, 'Used', 150.00, 0, NULL, '2025-08-08 22:26:13', 1, 'superadmin', 10044, '', 1),
+(126, 1063, 'Used', 150.00, 0, NULL, '2025-08-08 22:29:48', 1, 'superadmin', 10044, '', 1),
+(127, 1063, 'Return', 150.00, 0, NULL, '2025-08-09 13:56:12', 1, 'superadmin', 10044, '', 1),
+(128, 1013, 'Used', 2.00, 0, NULL, '2025-08-09 23:20:11', 1, 'branchadmin', 10028, '', 1),
+(129, 1013, 'Out', 250.00, 0, NULL, '2025-08-09 23:24:38', 1, 'branchadmin', 10028, '', 1),
+(130, 1013, 'Used', -250.00, 0, 'DISPATCHED_CHEMICAL_USED', '2025-08-10 23:31:37', 1, 'branchadmin', 10028, 'Used -250mL from the dispatched transaction no. 10028.', 1),
+(131, 1013, 'Return', 500.00, 1, 'FROM_DISPATCHED_CHEMICAL', '2025-08-10 23:31:37', 1, 'branchadmin', 10028, 'Returned 500mL from the remaining dispatched chemical.', 1);
 
 -- --------------------------------------------------------
 
@@ -376,7 +434,7 @@ CREATE TABLE `technician` (
 
 INSERT INTO `technician` (`technicianId`, `firstName`, `lastName`, `username`, `techEmail`, `techPwd`, `techContact`, `techAddress`, `techEmpId`, `techBirthdate`, `technician_status`, `user_branch`) VALUES
 (1, 'rayan', 'ibarra', 'qweee3231', 'rnnoleal@gmail.com', '$2y$10$cti18IMlEMqlgJi2X2Dpfut49RIGvIartiYitMKLCqaMFbx/u97aq', '0917 123 4567', 'Phase 9, Phase 7 B3, Lot 14, Bagong Silang, Caloocan City, Metro Manila', '456', '1930-02-05', 'Unavailable', 1),
-(2, 'asdf', 'asdf', 'tech1', 'asd@a.com', '$2y$10$70/GbO1etq830pk1gX6sMuz6QstqZIpMO2/xEey4Sla01wqRekdKG', '639610970714', '362 Moret St, Sampaloc, Manila, 1008 Metro Manila, Philippines', '654', '1930-01-29', 'Available', 1),
+(2, 'asdf', 'asdf', 'tech1', 'asd@a.com', '$2y$13$O1xjPNVHUWNGevU.PKLit.gXXkQiBRR7lOmhwuKNOURJEYoQulj6C', '639610970714', '362 Moret St, Sampaloc, Manila, 1008 Metro Manila, Philippines', '654', '1930-01-29', 'Available', 1),
 (4, 'rayan', 'ibarra', 'sdf', 'leal@gmail.com', '041902', '6391 2321 123', '-', '065', '1930-01-01', 'Dispatched', 1),
 (10, 'fgh', 'fgh', 'fgh', 'fghfgh@email.com', '$2y$10$/upNMNYpGayHj5V51qpSuuyN9kTYFGhUT9pyt9jB8fcKPphv4Crv.', '456564546', '--', '645', '1930-01-01', 'On Leave', 1),
 (15, 'alena', 'datolayta', 'alena', 'alenadatolayta10@gmail.com', '$2y$10$0nDgpiyIh1B9un8kCOIQnupvVI6fgaEY3CVE/LDxeIbQPLEGTLSnq', '32132131', '--', '001', '2002-07-10', 'Dispatched', 1),
@@ -445,12 +503,13 @@ INSERT INTO `transactions` (`id`, `treatment_date`, `customer_name`, `customer_a
 (10023, '2025-06-26', 'Name', 'Address', '2025-06-05 14:08:45', '2025-07-06 14:53:18', 'Completed', 0, '09:05:00', 'notess\r\n', NULL, 101, 'Follow-up Treatment', 4, '2027-06-18', 4, '2025-06-18', 'No User', 'No User', 1, 0),
 (10024, '2025-07-24', 'tutu', 'fghfgh', '2025-07-03 14:47:52', '2025-07-12 14:12:00', 'Finalizing', 0, '02:00:00', '', NULL, 101, 'Follow-up Treatment', 4, '2027-07-16', 0, '2025-07-16', 'branch admin', 'No User', 1, 0),
 (10027, '2025-07-23', 'ttiititit', 'sdfsdf', '2025-07-03 15:16:18', '2025-07-04 15:25:05', 'Completed', 0, '10:00:00', '', NULL, NULL, 'General Treatment', 1, NULL, NULL, NULL, '0', 'No User', 1, 0),
-(10028, '2025-07-16', '123456', 'sdffsdf', '2025-07-06 06:18:53', '2025-07-07 14:35:47', 'Pending', 0, '11:00:00', '', NULL, NULL, 'General Treatment', 2, NULL, NULL, NULL, 'branch admin', 'branch admin', 1, 0),
+(10028, '2025-07-16', '123456', 'sdffsdf', '2025-07-06 06:18:53', '2025-08-10 15:31:37', 'Completed', 0, '11:00:00', '', NULL, NULL, 'General Treatment', 2, NULL, NULL, NULL, 'branch admin', 'branch admin', 1, 0),
 (10039, '2025-07-30', 'dssf', 'sdfsdf', '2025-07-10 15:25:18', '2025-07-12 15:17:53', 'Finalizing', 0, '12:00:00', '20mL used for kitchen area ', NULL, NULL, 'Follow-up Treatment', 2, NULL, NULL, NULL, 'branch admin', 'branch admin', 1, 0),
 (10040, '2025-07-23', 'asd', 'sad', '2025-07-10 22:16:27', '2025-07-12 13:25:21', 'Completed', 0, '10:00:00', 'asdas', NULL, NULL, 'General Treatment', 2, NULL, NULL, NULL, 'branch admin', 'branch admin', 1, 0),
 (10041, '2025-07-24', 'Nw name', 'address', '2025-07-10 22:22:37', '2025-07-10 22:22:37', 'Completed', 0, '10:00:00', '', NULL, NULL, 'Follow-up Treatment', 2, NULL, NULL, NULL, 'No User', 'branch admin', 1, 0),
 (10042, '2025-07-30', 'dfgd', 'dddd', '2025-07-12 05:54:59', '2025-07-13 06:17:38', 'Finalizing', 0, '10:00:00', '', NULL, NULL, 'General Treatment', 2, NULL, NULL, NULL, 'branch admin', 'branch admin', 1, 0),
-(10043, '2025-07-30', 'dfgd', 'dddd', '2025-07-12 06:01:34', '2025-07-13 13:36:30', 'Dispatched', 0, '10:00:00', '', NULL, NULL, 'General Treatment', 2, NULL, NULL, NULL, 'branch admin', 'branch admin', 1, 0);
+(10043, '2025-07-30', 'dfgd', 'dddd', '2025-07-12 06:01:34', '2025-07-13 13:36:30', 'Dispatched', 0, '10:00:00', '', NULL, NULL, 'General Treatment', 2, NULL, NULL, NULL, 'branch admin', 'branch admin', 1, 0),
+(10044, '2025-07-31', 'Test', 'test', '2025-07-20 07:18:56', '2025-08-09 05:56:12', 'Completed', 0, '12:00:00', '', NULL, NULL, 'General Treatment', 2, NULL, NULL, NULL, 'No User', 'branch admin', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -462,7 +521,7 @@ CREATE TABLE `transaction_chemicals` (
   `trans_id` int(11) NOT NULL,
   `chem_id` int(11) NOT NULL,
   `chem_brand` varchar(255) NOT NULL,
-  `amt_used` int(11) DEFAULT NULL
+  `amt_used` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -470,45 +529,47 @@ CREATE TABLE `transaction_chemicals` (
 --
 
 INSERT INTO `transaction_chemicals` (`trans_id`, `chem_id`, `chem_brand`, `amt_used`) VALUES
-(76, 1, 'Deltacide | ENVU', 56),
-(76, 51, 'asd | asd', 56),
-(80, 54, 'chem B | brand B', 56),
-(82, 52, 'asd | asd', 55),
-(83, 54, 'chem B | brand B', 22),
-(84, 1, 'Deltacide | ENVU', 89),
-(85, 52, 'asd | asd', 11),
-(96, 51, 'asd | asd', 3),
-(97, 51, 'asd | asd', 6),
-(98, 50, 'Deltacides | CHEM', 9),
-(99, 1, 'Deltacide | ENVU', 1),
-(100, 1, 'Deltacide | ENVU', 1),
-(101, 1, 'Deltacide | ENVU', 1),
-(102, 1, 'Deltacide | ENVU', 1),
-(103, 1, 'Deltacide | ENVU', 1),
-(104, 3, 'chemical | ABXV', 5),
-(10001, 2, 'Abates | BASF', 4),
-(10001, 47, 'sad | asd', 3),
-(10001, 51, 'asd | asd', 5),
-(10002, 54, 'chem B | brand B', 8),
-(10003, 51, 'asd | asd', 3),
-(10003, 1002, 'fgh | fgh', 3),
-(10004, 1004, 'fgh | fgh', 7),
-(10019, 54, 'chem B | brand B', 5),
-(10020, 54, 'chem B | brand B', 0),
-(10020, 1004, 'fgh | fgh', 0),
-(10021, 54, 'chem B | brand B', 10),
-(10022, 51, 'asd | asd', 3),
-(10023, 52, 'asd | asd', 5),
-(10024, 1004, 'fgh | fgh', 1),
-(10027, 1001, 'gh | gh', 3),
-(10028, 1013, 'tamod | gdfg', 0),
-(10039, 1063, 'ssdf | sdfsdf', 20),
-(10039, 1065, 'ddg | dfgdfg', 20),
-(10040, 54, 'chem B | brand B', 2),
-(10040, 1065, 'ddg | dfgdfg', 1),
-(10041, 2, 'Abates | BASF', 2),
-(10042, 54, 'chem B | brand B', 5),
-(10043, 52, 'asd | asd', 1);
+(76, 1, 'Deltacide | ENVU', 56.00),
+(76, 51, 'asd | asd', 56.00),
+(80, 54, 'chem B | brand B', 56.00),
+(82, 52, 'asd | asd', 55.00),
+(83, 54, 'chem B | brand B', 22.00),
+(84, 1, 'Deltacide | ENVU', 89.00),
+(85, 52, 'asd | asd', 11.00),
+(96, 51, 'asd | asd', 3.00),
+(97, 51, 'asd | asd', 6.00),
+(98, 50, 'Deltacides | CHEM', 9.00),
+(99, 1, 'Deltacide | ENVU', 1.00),
+(100, 1, 'Deltacide | ENVU', 1.00),
+(101, 1, 'Deltacide | ENVU', 1.00),
+(102, 1, 'Deltacide | ENVU', 1.00),
+(103, 1, 'Deltacide | ENVU', 1.00),
+(104, 3, 'chemical | ABXV', 5.00),
+(10001, 2, 'Abates | BASF', 4.00),
+(10001, 47, 'sad | asd', 3.00),
+(10001, 51, 'asd | asd', 5.00),
+(10002, 54, 'chem B | brand B', 8.00),
+(10003, 51, 'asd | asd', 3.00),
+(10003, 1002, 'fgh | fgh', 3.00),
+(10004, 1004, 'fgh | fgh', 7.00),
+(10019, 54, 'chem B | brand B', 5.00),
+(10019, 1063, 'ssdf | sdfsdf', 1300.00),
+(10020, 54, 'chem B | brand B', 0.00),
+(10020, 1004, 'fgh | fgh', 0.00),
+(10021, 54, 'chem B | brand B', 10.00),
+(10022, 51, 'asd | asd', 3.00),
+(10023, 52, 'asd | asd', 5.00),
+(10024, 1004, 'fgh | fgh', 1.00),
+(10027, 1001, 'gh | gh', 3.00),
+(10028, 1013, 'asbg | gdfg', -250.00),
+(10039, 1063, 'ssdf | sdfsdf', 20.00),
+(10039, 1065, 'ddg | dfgdfg', 20.00),
+(10040, 54, 'chem B | brand B', 2.00),
+(10040, 1065, 'ddg | dfgdfg', 1.00),
+(10041, 2, 'Abates | BASF', 2.00),
+(10042, 54, 'chem B | brand B', 5.00),
+(10043, 52, 'asd | asd', 1.00),
+(10044, 1063, 'ssdf | sdfsdf', 150.00);
 
 --
 -- Triggers `transaction_chemicals`
@@ -610,7 +671,9 @@ INSERT INTO `transaction_problems` (`trans_id`, `problem_id`) VALUES
 (10041, 3),
 (10041, 7),
 (10042, 3),
-(10043, 3);
+(10043, 3),
+(10044, 3),
+(10044, 10);
 
 -- --------------------------------------------------------
 
@@ -668,7 +731,8 @@ INSERT INTO `transaction_technicians` (`trans_id`, `tech_id`, `tech_info`) VALUE
 (10040, 2, 'asdf asdf'),
 (10041, 1, 'rayan ibarra'),
 (10042, 18, 'gf ddfd'),
-(10043, 18, 'gf ddfd');
+(10043, 18, 'gf ddfd'),
+(10044, 1, 'rayan ibarra');
 
 --
 -- Triggers `transaction_technicians`
@@ -841,7 +905,7 @@ ALTER TABLE `branches`
 -- AUTO_INCREMENT for table `chemicals`
 --
 ALTER TABLE `chemicals`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1070;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1077;
 
 --
 -- AUTO_INCREMENT for table `equipments`
@@ -853,7 +917,7 @@ ALTER TABLE `equipments`
 -- AUTO_INCREMENT for table `inventory_log`
 --
 ALTER TABLE `inventory_log`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=132;
 
 --
 -- AUTO_INCREMENT for table `packages`
@@ -889,7 +953,7 @@ ALTER TABLE `technician`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10044;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10045;
 
 --
 -- AUTO_INCREMENT for table `treatments`

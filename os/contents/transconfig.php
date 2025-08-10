@@ -188,7 +188,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $upby = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
 
-    $allowedUpdateStatus = ['Pending', 'Accepted', 'Finalizing', 'Cancelled', 'Dispatched'];
+    $allowedUpdateStatus = ['Pending', 'Accepted', 'Finalizing', 'Cancelled', 'Dispatched', 'Completed'];
 
     // add updated by 
     if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatmentTime) || empty($problems) || empty($chemUsed) || empty($status) || empty($ttype) || empty($address)) {
@@ -197,11 +197,13 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         exit();
     }
 
-    $today = date("Y-m-d");
-    if ($treatmentDate < $today) {
-        http_response_code(400);
-        echo "Invalid treatment date.";
-        exit();
+    if ($status === 'Pending' || $status === 'Cancelled' || $status === 'Accepted') {
+        $today = date("Y-m-d");
+        if ($treatmentDate < $today) {
+            http_response_code(400);
+            echo "Invalid treatment date.";
+            exit();
+        }
     }
 
     $oStatus = check_status($conn, $transId);

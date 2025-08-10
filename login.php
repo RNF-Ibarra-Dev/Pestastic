@@ -32,7 +32,7 @@ if (isset($_SESSION['saUsn'])) {
 
 ?>
 
-<body class="d-flex py-4 bg-body-tertiary bg-official-login">
+<body class="d-flex py-4 bg-body-tertiary bg-official-login align-items-center justify-content-center">
 
     <main class="w-100 h-100 d-flex p-4">
         <div class="container border row rounded-end-pill mx-auto my-auto bg-light bg-opacity-25 ps-0 shadow-lg">

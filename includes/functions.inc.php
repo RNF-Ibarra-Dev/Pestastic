@@ -1310,11 +1310,10 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
             }
             for ($i = 0; $i < count($chemUsed); $i++) {
                 $oamt = prev_trans_amt($conn, $chemUsed[$i], $transData['transId']);
-                // throw new Exception(var_dump($oamt));
-                if ($oamt) {
-                    if ((int) $amtUsed[$i] === $oamt) {
-                        continue;
-                    }
+                $input_amt = (float) $amtUsed[$i];
+                if ($input_amt === (float) $oamt) {
+                    // throw new Exception("$oamt = {$amtUsed[$i]} ");
+                    continue;
                 }
                 $chemNames = get_chemical_name($conn, $chemUsed[$i]);
                 if (!$chemNames) {
@@ -1324,7 +1323,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                 mysqli_stmt_execute($chemStmt);
                 $chemAR += mysqli_stmt_affected_rows($chemStmt);
                 if (!mysqli_stmt_affected_rows($chemStmt) > 0) {
-                    throw new Exception("Update failed. $chemNames " . $amtUsed[$i] . mysqli_stmt_error($chemStmt));
+                    throw new Exception("Chemical transaction update failed. Please try again later.");
                 }
             }
         } else {
@@ -1373,50 +1372,30 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
         if ($transData['status'] === 'Dispatched') {
             for ($i = 0; $i < count($chemUsed); $i++) {
-                dispatch_chemical($conn, $chemUsed[$i], $transData['transId'], $amtUsed[$i], true);
+                $dispatch = dispatch_chemical($conn, $chemUsed[$i], $transData['transId'], $amtUsed[$i], true);
+                if (isset($dispatch['error'])) {
+                    throw new Exception($dispatch['error']);
+                }
             }
         } else if ($transData['status'] === 'Completed') {
             for ($i = 0; $i < count($chemUsed); $i++) {
                 $original_data = get_chemical($conn, $chemUsed[$i]);
 
-                // this whole function gets the actual amount used
-                // get the dispatched transchem from transaction_chemicals
-                // if no row, then no record -> insert
-                // if yes fetch, calculate, and update.
-                // fetch transchem, 
-
-                // $check_main_chem_sql = "SELECT * FROM chemicals WHERE name = ? AND brand = ? AND container_size = ? AND quantity_unit = ? AND chem_location = 'dispatched';";
-                // $check_main_chem_stmt = mysqli_stmt_init($conn);
-                // if (!mysqli_stmt_prepare($check_main_chem_stmt, $check_main_chem_sql)) {
-                //     throw new Exception("Prepared statment failed at finding main chemical. Please try again later.");
-                // }
-                // mysqli_stmt_bind_param($check_main_chem_stmt, 'ssis', $original_data['name'], $original_data['brand'], $original_data['container_size'], $original_data['quantity_unit']);
-                // mysqli_stmt_execute($check_main_chem_stmt);
-                // $check_main_chem_res = mysqli_stmt_get_result($check_main_chem_stmt);
-                // $dispatched_item = mysqli_fetch_assoc($check_main_chem_res);
-                // if ($dispatched_item) {
-                //     // chemical exists
-
-                // } else {
-                //     // doesn't exists
-                // }
-                // $dispatched_id = $dispatched_item['id'];
-                // mysqli_stmt_close($check_main_chem_stmt);
-
-
-                // put remaining chemical to return and the function will reduce it
-                // $signed_amt_used = (float) $amtUsed[$i] * -1;
                 $amt = (float) $amtUsed[$i];
+                // throw new Exception(var_dump($original_data));
                 $cc = 0;
-                while ($amt > $original_data['contsize']) {
-                    $amt -= $original_data['contsize'];
+                while ($amt > $original_data['container_size']) {
+                    $amt -= $original_data['container_size'];
                     $cc++;
                 }
 
                 $signed_amt = (float) $amt * -1.0;
                 $signed_cc = (int) $cc * -1;
 
-                return_dispatched_chemical($conn, $chemUsed[$i], $transData['transId'], $signed_amt, $signed_cc);
+                $return = return_dispatched_chemical($conn, $chemUsed[$i], $transData['transId'], $signed_amt, $signed_cc);
+                if (isset($return['error'])) {
+                    throw new Exception($return['error'] . $chemUsed[$i]);
+                }
             }
         }
 
@@ -1531,7 +1510,7 @@ function approve_stock($conn, $id)
 {
     $questionmarks = array_fill(0, count($id), '?');
     try {
-        $sql = "UPDATE chemicals SET request = 0 WHERE id IN (" . implode(',', $questionmarks) . ");";
+        $sql = "UPDATE chemicals SET request = 0, chem_location = 'main_storage' WHERE id IN (" . implode(',', $questionmarks) . ");";
         $stmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -3770,7 +3749,7 @@ function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $cl
         $check_main_chem_res = mysqli_stmt_get_result($check_main_chem_stmt);
         $main_chemical = mysqli_fetch_assoc($check_main_chem_res);
         if (!$main_chemical) {
-            throw new Exception("Main chemical doesn't exist. Chemical might be deleted or information must have changed.");
+            throw new Exception("Main chemical doesn't exist. Chemical might be deleted or information must have changed." . var_dump($main_chemical));
         }
         $main_id = $main_chemical['id'];
         mysqli_stmt_close($check_main_chem_stmt);
