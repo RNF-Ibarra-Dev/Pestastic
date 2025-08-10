@@ -70,6 +70,7 @@ if (isset($_GET['search'])) {
             $treatment = $row['treatment'];
             $td = date("F j, Y", strtotime($treatmentDate));
             $t_name = treatment_name($conn, intval($treatment));
+            $today = date('Y-m-d');
             $createdAt = $row['created_at'];
             $updatedAt = $row['updated_at'];
             $status = $row['transaction_status'];
@@ -78,7 +79,7 @@ if (isset($_GET['search'])) {
             <tr class="text-center">
                 <td scope="row"><?= $id ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= $status === 'Cancelled' ? "<s class='text-warning'><i class='bi bi-exclamation'></i>" . htmlspecialchars($td) . "</s>" : htmlspecialchars($td) ?>
+                <td><?= $status === 'Cancelled' || ($treatmentDate < $today && ($status === 'Accepted' || $status === 'Pending')) ? "<p class='btn btn-sidebar m-0 rounded-pill bg-dark bg-opacity-25 ps-2 text-warning resched-btn' data-cancelled-id='$id'><i class='bi bi-exclamation-lg'></i>Reschedule Transaction</p>" : htmlspecialchars($td) ?>               
                 </td>
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
@@ -319,6 +320,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $customerName = $row['customer_name'];
             $treatmentDate = $row['treatment_date'];
             $td = date("F j, Y", strtotime($treatmentDate));
+            $today = date("Y-m-d");
             $treatment = $row['treatment'];
             $t_name = treatment_name($conn, $treatment);
             $createdAt = $row['created_at'];
@@ -329,7 +331,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <tr class="text-center">
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= $status === 'Cancelled' ? "<s class='text-warning'><i class='bi bi-exclamation'></i>" . htmlspecialchars($td) . "</s>" : htmlspecialchars($td) ?>
+                <td><?= $status === 'Cancelled' || ($treatmentDate < $today && ($status === 'Accepted' || $status === 'Pending')) ? "<p class='btn btn-sidebar m-0 rounded-pill bg-dark bg-opacity-25 ps-2 text-warning resched-btn' data-cancelled-id='$id'><i class='bi bi-exclamation-lg'></i>Reschedule Transaction</p>" : htmlspecialchars($td) ?>
                 </td>
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>

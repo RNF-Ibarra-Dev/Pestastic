@@ -686,11 +686,10 @@
                                                 <option value="" selected>Select Status</option>
                                                 <option value="Pending">Pending</option>
                                                 <option value="Accepted">Accepted</option>
-                                                <option value="Finalizing">Finalizing</option>
                                                 <option value="Dispatched">Dispatched</option>
+                                                <option value="Finalizing">Finalizing</option>
                                                 <option value="Completed">Completed</option>
                                                 <option value="Cancelled">Cancelled</option>
-                                                <option value="Voided">Voided</option>
                                             </select>
                                             <p class="alert alert-warning py-1 mt-2" style="display: none !important;">
                                             </p>
@@ -698,7 +697,7 @@
 
                                     </div>
 
-                                    <p id="transvoidalert" class="alert alert-danger py-2"></p>
+                                    <p id="transvoidalert" class="alert alert-danger py-2 text-center w-50 mx-auto mb-0"></p>
 
                                     <!-- toggle visually hidden when edit -->
                                     <p class="mb-0 mt-4" id='metadata'><small id=view-time class="text-muted"></small>
@@ -969,7 +968,7 @@
                                 <div id="passwordHelpBlock" class="form-text">
                                     Note: This might take a while for the Manager to process. Please be patient.
                                 </div>
-                                <p class="text-center alert alert-info w-75 mx-auto visually-hidden" id="voidalert">
+                                <p class="text-center alert alert-info w-75 mx-auto mb-0 mt-2" style="display: none" id="voidalert">
                                 </p>
                             </div>
                             <div class="modal-footer">
@@ -2133,7 +2132,7 @@
                     await loadpage(1, $("#sortstatus").val());
                 })
                 .fail(function (e) {
-                    $("voidalert").fadeIn(400).html(e.responseText).delay(2000).fadeOut(1000);
+                    $("#voidalert").fadeIn(400).html(e.responseText).delay(2000).fadeOut(1000);
                     // console.log(e);
                 })
         })
@@ -2158,7 +2157,7 @@
                 })
         })
 
-        $("#table").on('click', '.cancel-btn', function () {
+        $("#table").on('click', '.cancel-btn, .resched-btn', function () {
             let id = $(this).data('cancelled-id');
             // console.log(id);
             $("#reschedId").val(id);
@@ -2275,7 +2274,7 @@
                 });
 
                 if (details.success) {
-                    console.log(details);
+                    // console.log(details);
                     let d = details.success;
                     $('#view-transId').val(d.id);
                     $('#view-customerName').val(d.customer_name ?? `Name not set.`);
@@ -2296,7 +2295,7 @@
 
                     if (d.void_request === 1) {
                         $("#transvoidalert").show().text("This transaction is requested for void by " + d.updated_by);
-                    } else{
+                    } else {
                         $("#transvoidalert").hide();
                     }
 
@@ -2319,7 +2318,18 @@
                     } else {
                         $('#editbtn').show().attr('disabled', false);
                         $("#viewEditForm #requestvoidbtn").show().prop('disabled', false).attr('data-bs-target', '#voidrequestmodal');
-                        $("#viewEditForm #modalcancelbtn").show().prop('disabled', false).attr('data-bs-target', '#cancelscheduledmodal');
+
+                        var t = new Date();
+                        var tdate = new Date(d.treatment_date);
+                        var today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+                        // console.log(tdate + today);
+                        if (tdate > today) {
+                            $("#viewEditForm #modalcancelbtn").show().prop('disabled', false).attr('data-bs-target', '#cancelscheduledmodal');
+                            alert('tite');
+                            console.log('tite');
+                        } else {
+                            $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '#cancelscheduledmodal');
+                        }
                     }
 
                     if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {
@@ -2804,7 +2814,7 @@
                 }
             } catch (error) {
                 console.log(error);
-                alert(error.responseText);
+                // alert(error.responseText);
                 let err = error.responseText;
                 $('#del-errormessage').removeClass('visually-hidden').html(err).hide().fadeIn(400).delay(2000).fadeOut(1000);
                 $('input#editPwd').addClass('border border-danger-subtle').fadeIn(400);
@@ -2836,7 +2846,7 @@
                     show_toast(del.success);
                 }
             } catch (error) {
-                console.log(error.responseText);
+                // console.log(error.responseText);
                 console.log(error);
                 let errdata = jQuery.parseJSON(error.responseText);
 

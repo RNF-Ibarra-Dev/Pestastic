@@ -1299,7 +1299,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
             }
         }
 
-        // throw new Exception(var_dump($chemUsed) . var_dump($amtUsed));
+        // throw new Exception(var_dump($chemUsed) . var_dump($amtUsed) . $transData['status'] . $transData['transId']);
 
         if (count($chemUsed) === count($amtUsed)) {
             $chemSql = "INSERT INTO transaction_chemicals (trans_id, chem_id, chem_brand, amt_used) VALUES (?, ?, ?, ?) 
@@ -1349,10 +1349,74 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         // finalizing -> logtype = used
         // completed -> logtype = return
         // if completed, check for logtypes with same transaction
-        if ($transData['status'] === 'Dispatched' || $transData['status'] === 'Completed' || $transData['status'] === 'Finalizing') {
-            $log = log_transaction($conn, $transData['transId'], $chemUsed, $amtUsed, $transData['branch'], $transData['userid'], $transData['role'], $transData['note'], $transData['status']);
-            if (isset($log['error'])) {
-                throw new Exception($log['error']);
+        // if ($transData['status'] === 'Dispatched' || $transData['status'] === 'Completed' || $transData['status'] === 'Finalizing') {
+        //     switch ($transData['status']) {
+        //         case 'Dispatched':
+        //             $log_note = "Dispatched through transaction update. Transaction no. {$transData['transId']}.";
+        //             break;
+        //         case 'Completed':
+        //             $log_note = "Returned through transaction update. Transaction no. {$transData['transId']}";
+        //             break;
+        //         case 'Finalizing':
+        //             $log_note = "Used through transaction update. Transaction no. {$transData['transId']}";
+        //             break;
+        //         default:
+        //             $log_note = "Status {$transData['status']} logged with item id $chemUsed and amount used $amtUsed.";
+        //             break;
+        //     }
+        //     $log = log_transaction($conn, $transData['transId'], $chemUsed, $amtUsed, $transData['branch'], $transData['userid'], $transData['role'], $transData['note'], $transData['status']);
+        //     if (isset($log['error'])) {
+        //         throw new Exception($log['error']);
+        //     }
+        // }
+
+
+        if ($transData['status'] === 'Dispatched') {
+            for ($i = 0; $i < count($chemUsed); $i++) {
+                dispatch_chemical($conn, $chemUsed[$i], $transData['transId'], $amtUsed[$i], true);
+            }
+        } else if ($transData['status'] === 'Completed') {
+            for ($i = 0; $i < count($chemUsed); $i++) {
+                $original_data = get_chemical($conn, $chemUsed[$i]);
+
+                // this whole function gets the actual amount used
+                // get the dispatched transchem from transaction_chemicals
+                // if no row, then no record -> insert
+                // if yes fetch, calculate, and update.
+                // fetch transchem, 
+
+                // $check_main_chem_sql = "SELECT * FROM chemicals WHERE name = ? AND brand = ? AND container_size = ? AND quantity_unit = ? AND chem_location = 'dispatched';";
+                // $check_main_chem_stmt = mysqli_stmt_init($conn);
+                // if (!mysqli_stmt_prepare($check_main_chem_stmt, $check_main_chem_sql)) {
+                //     throw new Exception("Prepared statment failed at finding main chemical. Please try again later.");
+                // }
+                // mysqli_stmt_bind_param($check_main_chem_stmt, 'ssis', $original_data['name'], $original_data['brand'], $original_data['container_size'], $original_data['quantity_unit']);
+                // mysqli_stmt_execute($check_main_chem_stmt);
+                // $check_main_chem_res = mysqli_stmt_get_result($check_main_chem_stmt);
+                // $dispatched_item = mysqli_fetch_assoc($check_main_chem_res);
+                // if ($dispatched_item) {
+                //     // chemical exists
+
+                // } else {
+                //     // doesn't exists
+                // }
+                // $dispatched_id = $dispatched_item['id'];
+                // mysqli_stmt_close($check_main_chem_stmt);
+
+
+                // put remaining chemical to return and the function will reduce it
+                // $signed_amt_used = (float) $amtUsed[$i] * -1;
+                $amt = (float) $amtUsed[$i];
+                $cc = 0;
+                while ($amt > $original_data['contsize']) {
+                    $amt -= $original_data['contsize'];
+                    $cc++;
+                }
+
+                $signed_amt = (float) $amt * -1.0;
+                $signed_cc = (int) $cc * -1;
+
+                return_dispatched_chemical($conn, $chemUsed[$i], $transData['transId'], $signed_amt, $signed_cc);
             }
         }
 
@@ -3301,7 +3365,7 @@ function check_location_exists($conn, $name, $brand, $container_size, $quantity_
     return $row['id'];
 }
 
-function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $include_opened, $new_location = "dispatched")
+function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $include_opened = true, $new_location = "dispatched")
 {
     mysqli_begin_transaction($conn);
     try {

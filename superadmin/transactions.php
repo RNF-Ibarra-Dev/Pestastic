@@ -682,7 +682,7 @@
                                         <p id="statusNote" class="text-muted fw-light d-none ms-2"></p>
                                     </div>
 
-                                    <p id="transvoidalert" class="alert alert-danger py-2"></p>
+                                    <p id="transvoidalert" class="alert alert-danger py-2 text-center w-50 mx-auto mb-0"></p>
                                     <!-- toggle visually hidden when edit -->
                                     <p class="mb-0 mt-4" id='metadata'><small id=view-time class="text-muted"></small>
                                     </p>
@@ -799,7 +799,8 @@
                             <div class="modal-body text-dark p-3">
                                 <div class="table-responsive-sm  d-flex justify-content-center">
                                     <table class="table align-middle table-hover w-100" id="approvechemtable">
-                                        <caption class="fw-light text-muted">List of transactions requested for void by the Operations
+                                        <caption class="fw-light text-muted">List of transactions requested for void by
+                                            the Operations
                                             Supervisor.</captio>
                                         <thead>
                                             <tr class="text-center align-middle">
@@ -2081,7 +2082,7 @@
 
                     if (d.void_request === 1) {
                         $("#transvoidalert").show().text("This transaction is requested for void by " + d.updated_by);
-                    } else{
+                    } else {
                         $("#transvoidalert").hide();
                     }
 
@@ -2106,7 +2107,18 @@
                     } else {
                         $('#editbtn').show().attr('disabled', false);
                         $("#viewEditForm #requestvoidbtn").show().prop('disabled', false).attr('data-bs-target', '#voidrequestmodal');
-                        $("#viewEditForm #modalcancelbtn").show().prop('disabled', false).attr('data-bs-target', '#cancelscheduledmodal');
+                        
+                        var t = new Date();
+                        var tdate = new Date(d.treatment_date);
+                        var today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+                        // console.log(tdate + today);
+                        if (tdate > today) {
+                            $("#viewEditForm #modalcancelbtn").show().prop('disabled', false).attr('data-bs-target', '#cancelscheduledmodal');
+                            alert('tite');
+                            console.log('tite');
+                        } else {
+                            $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '#cancelscheduledmodal');
+                        }
                     }
 
                     if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {

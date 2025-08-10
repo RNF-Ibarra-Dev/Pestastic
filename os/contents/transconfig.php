@@ -181,7 +181,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $session = $_POST['edit-session'] ?? null;
     $problems = $_POST['pest_problems'] ?? []; //array
     $chemUsed = $_POST['edit_chemBrandUsed'] ?? []; //arrya
-    $amtUsed = $_POST['edit-amountUsed'] ?? null; //array
+    $amtUsed = $_POST['edit-amountUsed'] ?? []; //array
     $status = $_POST['edit-status'];
     $note = $_POST['edit-note'] ?? null;
     $saPwd = $_POST['edit-saPwd'];
@@ -194,6 +194,13 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatmentTime) || empty($problems) || empty($chemUsed) || empty($status) || empty($ttype) || empty($address)) {
         http_response_code(400);
         echo "All input fields are required.";
+        exit();
+    }
+
+    $today = date("Y-m-d");
+    if ($treatmentDate < $today) {
+        http_response_code(400);
+        echo "Invalid treatment date.";
         exit();
     }
 
@@ -223,6 +230,12 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
                 exit();
             }
         }
+    }
+
+    if (!in_array($status, $allowedUpdateStatus)) {
+        http_response_code(400);
+        echo "Invalid status set. Please try again.";
+        exit();
     }
 
     // no transId
@@ -344,10 +357,9 @@ if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
         exit();
     }
 
-
     if (empty($trans) || empty($pwd)) {
         http_response_code(400);
-        echo 'Empty Inputs.';
+        echo 'Input Required.';
         exit();
     }
 
@@ -436,10 +448,12 @@ if (isset($_POST['reschedule']) && $_POST['reschedule'] === 'true') {
         exit();
     }
 
+    $valid_status = ['Cancelled', 'Pending', 'Accepted'];
+
     $status = check_status($conn, $id);
-    if ($status !== 'Cancelled') {
+    if (!in_array($status, $valid_status)) {
         http_response_code(400);
-        echo 'Invalid Status. Only cancelled transactions can be rescheduled.';
+        echo 'Invalid Status.';
         exit();
     }
 

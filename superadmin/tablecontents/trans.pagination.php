@@ -85,6 +85,7 @@ if (isset($_GET['search'])) {
             $treatmentDate = $row['treatment_date'];
             $treatment = $row['treatment'];
             $t_name = treatment_name($conn, intval($treatment));
+            $today = date("Y-m-d");
             $createdAt = $row['created_at'];
             $updatedAt = $row['updated_at'];
             $status = $row['transaction_status'];
@@ -92,7 +93,8 @@ if (isset($_GET['search'])) {
             <tr class="text-center">
                 <td scope="row"><?= $id ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= htmlspecialchars($treatmentDate) ?></td>
+                <td><?= $status === 'Cancelled' || ($treatmentDate < $today && ($status === 'Accepted' || $status === 'Pending')) ? "<p class='btn btn-sidebar m-0 rounded-pill bg-dark bg-opacity-25 ps-2 text-warning resched-btn' data-cancelled-id='$id'><i class='bi bi-exclamation-lg'></i>Reschedule Transaction</p>" : htmlspecialchars($td) ?>
+                </td>
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
@@ -325,14 +327,14 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $data[] = $status ? $status : (int) $branch;
             $types = $status ? "s" : "i";
         }
-        $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC LIMIT $limitstart, $pageRows;";
+        $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY updated_at DESC LIMIT $limitstart, $pageRows;";
         mysqli_stmt_prepare($stmt, $sql);
         mysqli_stmt_bind_param($stmt, $types, ...$data);
         mysqli_stmt_execute($stmt);
 
         $result = mysqli_stmt_get_result($stmt);
     } else {
-        $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC LIMIT $limitstart, $pageRows;";
+        $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY updated_at DESC LIMIT $limitstart, $pageRows;";
         $result = mysqli_query($conn, $sql);
     }
 
@@ -346,6 +348,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $treatmentDate = $row['treatment_date'];
             $td = date("F j, Y", strtotime($treatmentDate));
             $treatment = $row['treatment'];
+            $today = date("Y-m-d");
             $t_name = treatment_name($conn, $treatment);
             $createdAt = $row['created_at'];
             $updatedAt = $row['updated_at'];
@@ -356,7 +359,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <tr class="text-center">
                 <td scope="row"><?= $id ?></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= $status === 'Cancelled' ? "<s class='text-warning'><i class='bi bi-exclamation'></i>" . htmlspecialchars($td) . "</s>" : htmlspecialchars($td) ?>
+                <td><?= $status === 'Cancelled' || ($treatmentDate < $today && ($status === 'Accepted' || $status === 'Pending')) ? "<p class='btn btn-sidebar m-0 rounded-pill bg-dark bg-opacity-25 ps-2 text-warning resched-btn' data-cancelled-id='$id'><i class='bi bi-exclamation-lg'></i>Reschedule Transaction</p>" : htmlspecialchars($td) ?>
                 </td>
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
