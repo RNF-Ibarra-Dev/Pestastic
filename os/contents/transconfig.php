@@ -196,7 +196,8 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         echo "All input fields are required.";
         exit();
     }
-
+    
+    $oStatus = check_status($conn, $transId);
     if ($status === 'Pending' || $status === 'Cancelled' || $status === 'Accepted') {
         $today = date("Y-m-d");
         if ($treatmentDate < $today) {
@@ -204,9 +205,13 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
             echo "Invalid treatment date.";
             exit();
         }
+        if($status === 'Cancelled' && $oStatus === 'Pending'){
+            http_response_code(400);
+            echo "Transaction should be approved first before cancelling treatment date.";
+            exit();
+        }
     }
 
-    $oStatus = check_status($conn, $transId);
     if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
         if ($oStatus === 'Finalizing' && $status === 'Dispatched') {
             http_response_code(400);

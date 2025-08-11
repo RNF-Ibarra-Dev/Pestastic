@@ -3790,7 +3790,7 @@ function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $cl
         if (!mysqli_stmt_prepare($trans_chem_update_stmt, $trans_chem_update_sql)) {
             throw new Exception("Prepared statement failed at updating transaction chemicals. Please try again later.");
         }
-        mysqli_stmt_bind_param($trans_chem_update_stmt, 'dii', $total_amt_used, $trans_id, $main_id);
+        mysqli_stmt_bind_param($trans_chem_update_stmt, 'dii', abs($total_amt_used), $trans_id, $main_id);
         mysqli_stmt_execute($trans_chem_update_stmt);
 
         // if (mysqli_stmt_affected_rows($trans_chem_update_stmt) === 0) {

@@ -2325,8 +2325,7 @@
                         // console.log(tdate + today);
                         if (tdate > today) {
                             $("#viewEditForm #modalcancelbtn").show().prop('disabled', false).attr('data-bs-target', '#cancelscheduledmodal');
-                            alert('tite');
-                            console.log('tite');
+                          
                         } else {
                             $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '#cancelscheduledmodal');
                         }
@@ -2483,23 +2482,23 @@
         $(document).on('change', '#add-status, #edit-status', function () {
             let sel = $(this);
             if (sel.val() === 'Voided') {
-                sel.next().fadeOut().fadeIn(750).html("Note. Voiding a transaction completely will require Manager approval. Ignore to continue.");
+                sel.next().fadeOut().fadeIn(750).html("Note: Voiding a transaction completely will require Manager approval. Ignore to continue.");
                 $(".amt-used-alert").fadeOut(1000);
             } else if (sel.val() === 'Accepted') {
                 sel.next().fadeOut().fadeIn(750).html("Make sure to double check the details at least before the dispatch date.");
                 $(".amt-used-alert").fadeOut(1000);
             } else if (sel.val() === 'Finalizing') {
-                sel.next().fadeOut().fadeIn(750).html("Note. Transactions with this status will be subjected to completion, please make sure to double check the details.");
-                $(".amt-used-alert").fadeOut().fadeIn(750).html('Note. Only report the amount the technician used.');
+                sel.next().fadeOut().fadeIn(750).html("Note: Transactions with this status will be subjected to completion, please make sure to double check the details.");
+                $(".amt-used-alert").fadeOut().fadeIn(750).html('Note: Only report the amount the technician used.');
             } else if (sel.val() === 'Cancelled') {
-                sel.next().fadeOut().fadeIn(750).html("Cancelled transactions are accepted and is needed to be rescheduled.");
+                sel.next().fadeOut().fadeIn(750).html("Cancelled transactions should be accepted first.");
                 $(".amt-used-alert").fadeOut(1000);
             } else if (sel.val() === 'Dispatched') {
-                sel.next().fadeOut().fadeIn(750).html("Note. Make sure the technicians are ready.");
-                $(".amt-used-alert").fadeOut().fadeIn(750).html('Note. Only put the amount the technician will bring.');
+                sel.next().fadeOut().fadeIn(750).html("Note: Make sure the technicians are ready.");
+                $(".amt-used-alert").fadeOut().fadeIn(750).html('Note: Only put the amount the technician will bring.');
             } else if (sel.val() === 'Completed') {
                 sel.next().fadeOut().fadeIn(750).html("Make sure to double check details. Setting this transaction to complete will make this viewonly.");
-                $(".amt-used-alert").fadeOut().fadeIn(750).html('Note. Make sure to put only the actual amount of the used chemical.');
+                $(".amt-used-alert").fadeOut().fadeIn(750).html('Note: Make sure to put only the actual amount of the used chemical.');
             } else {
                 sel.next().fadeOut(1000);
                 $(".amt-used-alert").fadeOut(1000);
