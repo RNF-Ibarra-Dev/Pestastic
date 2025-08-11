@@ -1,4 +1,4 @@
-    <?php
+<?php
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
@@ -166,41 +166,35 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $contsize = (int) $row['container_size'];
             $unit = $row['quantity_unit'];
             $datereceived = $row['date_received'];
-            $dr = date("F j Y", strtotime($datereceived));
+            $dr = date("F j, Y", strtotime($datereceived));
+            $expiry = $row['expiryDate'];
+            $e = date("F j, Y", strtotime($expiry));
             ?>
             <tr class="text-center">
                 <td>
-                    <?= htmlspecialchars("$id") ?>
+                    <?= htmlspecialchars($id) ?>
                 </td>
-                <td><?= htmlspecialchars("$name") ?></td>
+                <td><?= htmlspecialchars($name) ?></td>
                 <td><?= htmlspecialchars($brand) ?></td>
                 <td>
-                    <?= htmlspecialchars($contsize) ?>
+                    <?= htmlspecialchars("$contsize $unit") ?>
                 </td>
                 <td>
-                    <?= htmlspecialchars($datereceived) ?>
+                    <?= htmlspecialchars($dr) ?>
                 </td>
                 <td>
-                    <div class="d-flex justify-content-center">
-                        <!-- add dispatch/return chem -->
-                        <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
-                                class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
-                        <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
-                                class="bi bi-info-circle"></i></button>
-                    </div>
+                    <?= htmlspecialchars($e) ?>
                 </td>
             </tr>
 
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='7' class='text-center'>No chemicals found.</td></tr>";
+        echo "<tr><td scope='row' colspan='6' class='text-center'>No entry found.</td></tr>";
     }
     mysqli_close($conn);
     exit();
 }
-
-
 
 if (isset($_GET['search'])) {
     $search = $_GET['search'];

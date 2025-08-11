@@ -3,20 +3,20 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 10;
-$rowCount = 'SELECT * FROM chemicals';
+$rowCount = 'SELECT * FROM chemicals WHERE request = 0;';
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
 function row_status($conn, $entries = false)
 {
-    $rowCount = "SELECT COUNT(*) FROM chemicals";
+    $rowCount = "SELECT COUNT(*) FROM chemicals WHERE request = 0;";
 
-    if ($entries) {
-        $rowCount .= "  WHERE request = 0;";
-    } else {
-        $rowCount .= ";";
-    }
+    // if ($entries) {
+    //     $rowCount .= "  WHERE request = 0;";
+    // } else {
+    //     $rowCount .= ";";
+    // }
 
     $totalRows = 0;
     $result = mysqli_query($conn, $rowCount);
@@ -152,7 +152,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     $sql = "SELECT * FROM chemicals";
 
-    $sql .= $entries === 'true' ? " WHERE request = 0 " : ' ';
+    // $sql .= $entries === 'true' ? " WHERE request = 0 " : ' ';
+    $sql .= " WHERE request = 0 ";
 
     $sql .= "ORDER BY request DESC, id DESC LIMIT " . $limitstart
         . ", " . $pageRows . ";";

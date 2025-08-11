@@ -118,7 +118,7 @@ require("startsession.php");
                     <span id="hideentrytext">Hide Entries</span>
                 </button> -->
                 <button type="button" id="entriesTableBtn" class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i class="bi bi-clock-fill me-2"></i>Pending Entries</button>
-                <button type="button" id="restockTableBtn" class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center">Restock Items</button>
+                <button type="button" id="restockTableBtn" class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i class="bi bi-box-fill me-2"></i>Restock Items</button>
                 <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light"
                     placeholder="Search . . ." id="searchbar" name="search" autocomplete="one-time-code">
                 <button type="button" id="loadChem"
@@ -128,15 +128,15 @@ require("startsession.php");
 
             </div>
 
-            <!-- item entry modal table -->
-            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="itemEntryModal"
+            <!-- restock modal -->
+            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="restockModal"
                 tabindex="0">
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title">
                             <h1 class="modal-title fs-5 text-light">
-                                <i class="bi bi-journal-text me-2"></i>
-                                Item Logs
+                                <i class="bi bi-box-fill me-2"></i>
+                                Items for Restock
                             </h1>
                             <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
                                 aria-label="Close"><i class="bi bi-x"></i></button>
@@ -144,23 +144,23 @@ require("startsession.php");
 
                         <div class="modal-body text-dark p-3">
                             <div class="table-responsive-sm  d-flex justify-content-center">
-                                <table class="table align-middle table-hover w-100" id="approvechemtable">
-                                    <caption class="fw-light text-muted">Note. Associated transactions are logs that are
-                                        auto deducted by the transaction.
+                                <table class="table align-middle table-hover w-100">
+                                    <caption class="fw-light text-muted">
+                                        Items on this list are still pending for approval. Only a Manager can approve an item stock.
                                     </caption>
                                     <thead>
                                         <tr class="text-center align-middle">
                                             <th class="text-dark" scope="col">Item ID</th>
                                             <th class="text-dark">Item</th>
                                             <th class="text-dark">Brand</th>
-                                            <th class="text-dark">Container Size</th>
+                                            <th class="text-dark">Item Size/Volume</th>
                                             <th class="text-dark">Date Received</th>
-                                            <th class="text-dark">Associated Transaction</th>
-                                            <th class="text-dark">Notes</th>
+                                            <th class="text-dark">Item Expiry</th>
+                                            <!-- <th class="text-dark">Notes</th> -->
                                         </tr>
                                     </thead>
 
-                                    <tbody id="itemEntryTable" class="table-group-divider text-dark ">
+                                    <tbody id="restockTable" class="table-group-divider text-dark">
                                     </tbody>
 
                                 </table>
@@ -169,9 +169,57 @@ require("startsession.php");
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                data-bs-target="#finalizeconfirm">Continue</button>
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            <!-- <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#finalizeconfirm">Continue</button> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- item entry modal table -->
+            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="itemEntryModal"
+                tabindex="0">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title">
+                            <h1 class="modal-title fs-5 text-light">
+                                <i class="bi bi-clock-fill me-2"></i>
+                                Item Entries
+                            </h1>
+                            <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
+                                aria-label="Close"><i class="bi bi-x"></i></button>
+                        </div>
+
+                        <div class="modal-body text-dark p-3">
+                            <div class="table-responsive-sm  d-flex justify-content-center">
+                                <table class="table align-middle table-hover w-100" id="approvechemtable">
+                                    <!-- <caption class="fw-light text-muted">
+                                    </caption> -->
+                                    <thead>
+                                        <tr class="text-center align-middle">
+                                            <th class="text-dark" scope="col">Item ID</th>
+                                            <th class="text-dark">Item</th>
+                                            <th class="text-dark">Brand</th>
+                                            <th class="text-dark">Item Size/Volume</th>
+                                            <th class="text-dark">Date Received</th>
+                                            <th class="text-dark">Item Expiry</th>
+                                            <!-- <th class="text-dark">Notes</th> -->
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="itemEntryTable" class="table-group-divider text-dark">
+                                    </tbody>
+
+                                </table>
+                                <div id="inventorylogpaginationbtns"></div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            <!-- <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#finalizeconfirm">Continue</button> -->
                         </div>
                     </div>
                 </div>
