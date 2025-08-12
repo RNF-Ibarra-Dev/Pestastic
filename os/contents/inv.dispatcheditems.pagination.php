@@ -5,11 +5,7 @@ require_once('../../includes/functions.inc.php');
 $pageRows = 10;
 $rowCount = "SELECT * FROM chemicals
                 WHERE request = 0
-                AND chem_location = 'main_storage'
-                AND restock_threshold >= ((CASE
-                    WHEN chemLevel > 0 THEN 1
-                    ELSE 0
-                    END ) + unop_cont);";
+                AND chem_location = 'dispatched';";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
@@ -18,11 +14,7 @@ function row_status($conn, $entries = false)
 {
     $rowCount = "SELECT COUNT(*) FROM chemicals
                 WHERE request = 0
-                AND chem_location = 'main_storage'
-                AND restock_threshold >= ((CASE
-                    WHEN chemLevel > 0 THEN 1
-                    ELSE 0
-                    END ) + unop_cont);";
+                AND chem_location = 'dispatched';";
 
     if ($entries) {
         $rowCount .= "  WHERE request = 0;";
@@ -157,11 +149,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     $sql = "SELECT * FROM chemicals
             WHERE request = 0
-            AND chem_location = 'main_storage'
-            AND restock_threshold >= ((CASE
-                WHEN chemLevel > 0 THEN 1
-                ELSE 0
-                END ) + unop_cont)
+            AND chem_location = 'dispatched'
             ORDER BY updated_at
             DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 
@@ -204,7 +192,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                     <button type="button" class="btn btn-sidebar border border-dark rounded-4 editbtn"
                         data-chem="<?= htmlspecialchars($id) ?>"><i class="bi bi-info-circle text-dark"></i></button>
                     <button type="button" class="btn btn-sidebar border border-dark rounded-4 restock-btn" data-chem="<?= htmlspecialchars($id) ?>"><i
-                            class=" bi bi-box text-dark"></i></button>
+                            class=" bi bi-box-arrow-in-left text-dark returnbtn" data-return="<?= htmlspecialchars($id) ?>"></i></button>
                 </td>
             </tr>
 
@@ -222,7 +210,7 @@ if (isset($_GET['search'])) {
 
     $sql = "SELECT * FROM chemicals
             WHERE request = 0
-            AND chem_location = 'main_storage'
+            AND chem_location = 'dispatched'
             AND restock_threshold >= ((CASE
                 WHEN chemLevel > 0 THEN 1
                 ELSE 0

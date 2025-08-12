@@ -119,6 +119,7 @@ require("startsession.php");
                 </button> -->
                 <button type="button" id="entriesTableBtn" class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i class="bi bi-clock-fill me-2"></i>Pending Entries</button>
                 <button type="button" id="restockTableBtn" class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i class="bi bi-box-fill me-2"></i>Restock Items</button>
+                <button type="button" id="dispatchedTableBtn" class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i class="bi bi-truck-flatbed me-2"></i>Dispatched Items</button>
                 <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light"
                     placeholder="Search . . ." id="searchbar" name="search" autocomplete="one-time-code">
                 <button type="button" id="loadChem"
@@ -126,6 +127,55 @@ require("startsession.php");
                     data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
                         class="bi bi-plus-square"></i></button>
 
+            </div>
+
+            <!-- dispatched modal -->
+            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="dispatchedItemsModal"
+                tabindex="0">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title">
+                            <h1 class="modal-title fs-5 text-light">
+                                <i class="bi bi-truck-flatbed me-2"></i>
+                                Dispatched Items
+                            </h1>
+                            <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
+                                aria-label="Close"><i class="bi bi-x"></i></button>
+                        </div>
+
+                        <div class="modal-body text-dark p-3">
+                            <div class="table-responsive-sm  d-flex justify-content-center">
+                                <table class="table align-middle table-hover w-100">
+                                    <caption class="fw-light text-muted">
+                                        Items on this list are still pending for approval. Only a Manager can approve an item stock.
+                                    </caption>
+                                    <thead>
+                                        <tr class="text-center align-middle">
+                                            <th class="text-dark" scope="col">Item ID</th>
+                                            <th class="text-dark">Item</th>
+                                            <th class="text-dark">Brand</th>
+                                            <th class="text-dark">Outgoing Stock Level (Opened)</th>
+                                            <th class="text-dark">Unopened Stock</th>
+                                            <th class="text-dark">Restock Threshold</th>
+                                            <th class="text-dark">Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="dispatchedTable" class="table-group-divider text-dark">
+                                    </tbody>
+
+                                </table>
+                                <div id="inventorylogpaginationbtns"></div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            <!-- <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                data-bs-target="#finalizeconfirm">Continue</button> -->
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- restock modal -->
@@ -2249,15 +2299,33 @@ require("startsession.php");
                 $("#restockTable").empty();
                 $("#restockTable").append(d);
                 $("#restockModal").modal('show');
-            })
+            }, 'html')
             .fail(function(e){
                 console.log(e);
                 alert('An error occured loading content. Please try again later.');
             })
         });
 
-        $("restockTableBtn").on('click', '.restock-info', function(){
-            
+        $("#restockTable").on('click', '.editbtn', function(){
+            $("#restockModal").modal('hide');
+        });
+
+        $("#dispatchedTable").on('click', '.editbtn, .returnbtn', function(){
+            $("#dispatchedItemsModal").modal('hide');
+        })
+
+        $(document).on('click', '#dispatchedTableBtn', function(){
+            $.get('contents/inv.dispatcheditems.pagination.php', {
+                table: true
+            }, function(d){
+                $("#dispatchedTable").empty();
+                $("#dispatchedTable").append(d);
+                $("#dispatchedItemsModal").modal('show');
+            }, 'html')
+            .fail(function(e){
+                console.log(e);
+                alert("An error occured when loading dispatched items. Please try again later.");
+            })
         })
     </script>
 </body>
