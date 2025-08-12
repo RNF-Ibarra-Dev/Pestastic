@@ -18,7 +18,7 @@
   text-shadow: 0px 1px 5px rgba(0, 0, 0, 0.3) !important;
 }
 
-tbody#itemEntryTable tr td{
+tbody#itemEntryTable tr td, tbody#restockTable tr td{
   color: #000 !important;
 }
 

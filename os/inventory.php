@@ -153,10 +153,10 @@ require("startsession.php");
                                             <th class="text-dark" scope="col">Item ID</th>
                                             <th class="text-dark">Item</th>
                                             <th class="text-dark">Brand</th>
-                                            <th class="text-dark">Item Size/Volume</th>
-                                            <th class="text-dark">Date Received</th>
-                                            <th class="text-dark">Item Expiry</th>
-                                            <!-- <th class="text-dark">Notes</th> -->
+                                            <th class="text-dark">Outgoing Stock Level (Opened)</th>
+                                            <th class="text-dark">Unopened Stock</th>
+                                            <th class="text-dark">Restock Threshold</th>
+                                            <th class="text-dark">Actions</th>
                                         </tr>
                                     </thead>
 
@@ -204,7 +204,7 @@ require("startsession.php");
                                             <th class="text-dark">Item Size/Volume</th>
                                             <th class="text-dark">Date Received</th>
                                             <th class="text-dark">Item Expiry</th>
-                                            <!-- <th class="text-dark">Notes</th> -->
+                                            <th class="text-dark">Added By</th>
                                         </tr>
                                     </thead>
 
@@ -2240,6 +2240,24 @@ require("startsession.php");
                 console.log(e);
                 alert('An error occured loading content. Please try again later.');
             })
+        });
+
+        $(document).on('click', '#restockTableBtn', function() {
+            $.get('contents/inv.itemrestock.pagination.php', {
+                table: true
+            }, function(d) {
+                $("#restockTable").empty();
+                $("#restockTable").append(d);
+                $("#restockModal").modal('show');
+            })
+            .fail(function(e){
+                console.log(e);
+                alert('An error occured loading content. Please try again later.');
+            })
+        });
+
+        $("restockTableBtn").on('click', '.restock-info', function(){
+            
         })
     </script>
 </body>

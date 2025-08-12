@@ -3,14 +3,24 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 10;
-$rowCount = "SELECT * FROM chemicals WHERE request = 1;";
+$rowCount = "SELECT * FROM chemicals
+                WHERE request = 0
+                AND restock_threshold >= ((CASE
+                    WHEN chemLevel > 0 THEN 1
+                    ELSE 0
+                    END ) + unop_cont);";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
 function row_status($conn, $entries = false)
 {
-    $rowCount = "SELECT COUNT(*) FROM chemicals";
+    $rowCount = "SELECT COUNT(*) FROM chemicals
+                WHERE request = 0
+                AND restock_threshold >= ((CASE
+                    WHEN chemLevel > 0 THEN 1
+                    ELSE 0
+                    END ) + unop_cont);";
 
     if ($entries) {
         $rowCount .= "  WHERE request = 0;";
@@ -143,13 +153,13 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT *
-            FROM 
-                chemicals
-            WHERE
-                request = 1   
-            ORDER BY
-                updated_at
+    $sql = "SELECT * FROM chemicals
+            WHERE request = 0
+            AND restock_threshold >= ((CASE
+                WHEN chemLevel > 0 THEN 1
+                ELSE 0
+                END ) + unop_cont)
+            ORDER BY updated_at
             DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 
     $result = mysqli_query($conn, $sql);
@@ -163,31 +173,34 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $id = $row['id'];
             $name = $row["name"];
             $brand = $row["brand"];
-            $contsize = (int) $row['container_size'];
+            $level = $row['chemLevel'];
             $unit = $row['quantity_unit'];
+            $opened = $level <= 0 ? "Empty" : "$level";
+            $contsize = $row['container_size'];
             $datereceived = $row['date_received'];
-            $dr = date("F j, Y", strtotime($datereceived));
-            $expiry = $row['expiryDate'];
-            $e = date("F j, Y", strtotime($expiry));
-            $added_by = $row['added_by'];
-            $ab = $added_by === "No Record" ? "User not found." : $added_by;
+            $unopened = $row['unop_cont'];
+            $threshold = $row['restock_threshold'];
+            $loc = $row['chem_location'];
     ?>
             <tr class="text-center">
                 <td>
-                    <?= htmlspecialchars($id) ?>
+                    <?= $loc === 'main_storage' ? htmlspecialchars($id) : ($loc === 'dispatched' ? htmlspecialchars("Dispatched Item ID: $id") : "Invalid Item ID") ?>
                 </td>
                 <td><?= htmlspecialchars($name) ?></td>
                 <td><?= htmlspecialchars($brand) ?></td>
                 <td>
-                    <?= htmlspecialchars("$contsize $unit") ?>
+                    <?= htmlspecialchars("$opened / $contsize $unit") ?>
                 </td>
                 <td>
-                    <?= htmlspecialchars($dr) ?>
+                    <?= htmlspecialchars($unopened) ?>
                 </td>
                 <td>
-                    <?= htmlspecialchars($e) ?>
+                    <?= htmlspecialchars($threshold) ?>
                 </td>
-                <td><?= htmlspecialchars($ab) ?></td>
+                <td>
+                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 restock-info"><i class="bi bi-info-circle text-dark"></i></button>
+                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 restock-btn"><i class="bi bi-box text-dark"></i></button>
+                </td>
             </tr>
 
         <?php
