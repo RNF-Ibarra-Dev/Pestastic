@@ -151,6 +151,9 @@ require("startsession.php");
                             </div>
 
                             <div class="modal-body text-dark p-3">
+                                <p
+                                    class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                    Main Item Information</p>
                                 <div class="row">
                                     <div class="col-2">
                                         <p class="fw-bold">Item ID:</p>
@@ -172,8 +175,14 @@ require("startsession.php");
                                         <p class="fw-bold">Item Size:</p>
                                         <p id="restock_size" class="ms-1"></p>
                                     </div>
+                                    <div class="col-2">
+                                        <p class="fw-bold">Restock Threshold:</p>
+                                        <p id="restock_threshold" class="ms-1"></p>
+                                    </div>
                                 </div>
-
+                                <p
+                                    class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                    Remaining Stock Summary</p>
                                 <div class="row">
                                     <div class="col-3">
                                         <p class="fw-bold">Current Opened/Outgoing Item Left:</p>
@@ -182,6 +191,10 @@ require("startsession.php");
                                     <div class="col-3">
                                         <p class="fw-bold">Current Closed Container Left:</p>
                                         <p id="restock_ccontainer" class="ms-1"></p>
+                                    </div>
+                                    <div class="col-3">
+                                        <p class="fw-bold">Total Container Left:</p>
+                                        <p id="restock_tcontainer" class="ms-1"></p>
                                     </div>
                                 </div>
 
@@ -2430,7 +2443,8 @@ require("startsession.php");
             var details = JSON.parse(deets);
             console.log(details);
 
-            let opened_level = details.level == 0 ? "Empty" : details.level + details.unit;
+            let opened_level = details.level == 0 ? "Empty" : `${details.level}/${details.container_size}${details.unit}`;
+            let tcontainer = details.unop_cont + (details.level > 0 ? 1 : 0);
 
             $("#restock_id").text(details.id);
             $("#restock_name").text(details.name);
@@ -2439,6 +2453,8 @@ require("startsession.php");
             $("#restock_size").text(details.container_size + details.unit);
             $("#restock_opened").text(opened_level);
             $("#restock_ccontainer").text(details.unop_cont);
+            $("#restock_threshold").text(details.threshold);
+            $("#restock_tcontainer").text(details.threshold);
 
             $("#restockFunctionModal").modal("show");
         })
