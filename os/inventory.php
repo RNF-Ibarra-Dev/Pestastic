@@ -251,7 +251,7 @@ require("startsession.php");
                         </div>
 
                         <div class="modal-body text-dark p-3">
-                            <div class="table-responsive-sm  d-flex justify-content-center">
+                            <div class="table-responsive-sm flex-column d-flex justify-content-center">
                                 <table class="table align-middle table-hover w-100">
                                     <caption class="fw-light text-muted">
                                         Items on this list are still pending for approval. Only a Manager can approve an
@@ -273,7 +273,7 @@ require("startsession.php");
                                     </tbody>
 
                                 </table>
-                                <div id="inventorylogpaginationbtns"></div>
+                                <div id="dispatchedTablePagination"></div>
                             </div>
                         </div>
 
@@ -299,7 +299,7 @@ require("startsession.php");
                         </div>
 
                         <div class="modal-body text-dark p-3">
-                            <div class="table-responsive-sm  d-flex justify-content-center">
+                            <div class="table-responsive-sm flex-column d-flex justify-content-center">
                                 <table class="table align-middle table-hover w-100">
                                     <caption class="fw-light text-muted">
                                         Items on this list are still pending for approval. Only a Manager can approve an
@@ -321,14 +321,12 @@ require("startsession.php");
                                     </tbody>
 
                                 </table>
-                                <div id="inventorylogpaginationbtns"></div>
+                                <div id="restockPagination"></div>
                             </div>
                         </div>
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
-                            <!-- <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                data-bs-target="#finalizeconfirm">Continue</button> -->
                         </div>
                     </div>
                 </div>
@@ -349,7 +347,7 @@ require("startsession.php");
                         </div>
 
                         <div class="modal-body text-dark p-3">
-                            <div class="table-responsive-sm  d-flex justify-content-center">
+                            <div class="table-responsive-sm flex-column d-flex justify-content-center">
                                 <table class="table align-middle table-hover w-100" id="approvechemtable">
                                     <!-- <caption class="fw-light text-muted">
                                     </caption> -->
@@ -369,14 +367,12 @@ require("startsession.php");
                                     </tbody>
 
                                 </table>
-                                <div id="inventorylogpaginationbtns"></div>
+                                <div id="itemEntriesPagination"></div>
                             </div>
                         </div>
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
-                            <!-- <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                data-bs-target="#finalizeconfirm">Continue</button> -->
                         </div>
                     </div>
                 </div>
@@ -2385,32 +2381,76 @@ require("startsession.php");
                 })
         })
 
-        $(document).on('click', '#entriesTableBtn', function () {
-            $.get('contents/inv.itementries.pagination.php', {
-                table: true
-            }, function (d) {
-                $("#itemEntryTable").empty();
-                $("#itemEntryTable").append(d);
-                $("#itemEntryModal").modal('show');
-            })
-                .fail(function (e) {
-                    console.log(e);
-                    alert('An error occured loading content. Please try again later.');
-                })
-        });
 
-        $(document).on('click', '#restockTableBtn', function () {
-            $.get('contents/inv.itemrestock.pagination.php', {
-                table: true
+        // new additions
+
+        async function load_other_table(url, tbody_id, page = 1) {
+            return await $.get(url, {
+                table: true,
+                currentpage: page
             }, function (d) {
-                $("#restockTable").empty();
-                $("#restockTable").append(d);
-                $("#restockModal").modal('show');
+                $(`#${tbody_id}`).empty();
+                $(`#${tbody_id}`).append(d);
             }, 'html')
                 .fail(function (e) {
                     console.log(e);
-                    alert('An error occured loading content. Please try again later.');
-                })
+                    $(`#${tbody_id}`).html("<tr><td colspan='25'>An error occured loading this table. Please try again later.</td></tr>")
+                });
+        }
+
+        async function load_other_pagination(url, container_id, active_page_no = 1) {
+            return await $.get(url, {
+                pagenav: true,
+                active: active_page_no
+            }, async function (d) {
+                $(`#${container_id}`).empty();
+                $(`#${container_id}`).append(d);
+            }, 'html')
+                .fail(function (e) {
+                    console.log(e);
+                    alert(`An error occured loading pagination to container with ID ${container_id}. Please try again later.`);
+                });
+        }
+
+        async function modal_table_pagination(url, tbody_id, pagination_id, page = 1) {
+            let table = await load_other_table(url, tbody_id, page);
+            let pagination = await load_other_pagination(url, pagination_id, page);
+            if (pagination && table) {
+                return true;
+            }
+            return false;
+        }
+
+
+        $(document).on('click', '#entriesTableBtn', async function () {
+            let table = await modal_table_pagination('contents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination');
+            if (table) {
+                $("#itemEntryModal").modal('show');
+            } else {
+                console.log(table);
+                alert("An error occured loading content. Please try again later.");
+            }
+            $('#itemEntriesPagination').on('click', '.page-link', async function (e) {
+                e.preventDefault();
+                let currentpage = $(this).data('page');
+                await modal_table_pagination('contents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination', currentpage);
+            });
+        });
+
+        $(document).on('click', '#restockTableBtn', async function () {
+            let table = await modal_table_pagination('contents/inv.itemrestock.pagination.php', 'restockTable', 'restockPagination');
+            if (table) {
+                $("#restockModal").modal('show');
+            } else {
+                console.log(table);
+                alert("An error occured loading content. Please try again later.");
+            }
+            $('#restockPagination').on('click', '.page-link', async function (e) {
+                e.preventDefault();
+                let currentpage = $(this).data('page');
+                await modal_table_pagination('contents/inv.itemrestock.pagination.php', 'restockTable', 'restockPagination', currentpage);
+            });
+
         });
 
         $("#restockTable").on('click', '.editbtn', function () {
@@ -2421,18 +2461,20 @@ require("startsession.php");
             $("#dispatchedItemsModal").modal('hide');
         })
 
-        $(document).on('click', '#dispatchedTableBtn', function () {
-            $.get('contents/inv.dispatcheditems.pagination.php', {
-                table: true
-            }, function (d) {
-                $("#dispatchedTable").empty();
-                $("#dispatchedTable").append(d);
+
+        $(document).on('click', '#dispatchedTableBtn', async function () {
+            let table = await modal_table_pagination('contents/inv.dispatcheditems.pagination.php', 'dispatchedTable', 'dispatchedTablePagination');
+            if (table) {
                 $("#dispatchedItemsModal").modal('show');
-            }, 'html')
-                .fail(function (e) {
-                    console.log(e);
-                    alert("An error occured when loading dispatched items. Please try again later.");
-                })
+            } else {
+                console.log(table);
+                alert("An error occured loading content. Please try again later.");
+            }
+            $('#dispatchedTablePagination').on('click', '.page-link', async function (e) {
+                e.preventDefault();
+                let currentpage = $(this).data('page');
+                await modal_table_pagination('contents/inv.dispatcheditems.pagination.php', 'dispatchedTable', 'dispatchedTablePagination', currentpage);
+            });
         });
 
         $("#restockTable").on('click', '.restock-btn', async function () {
@@ -2445,7 +2487,7 @@ require("startsession.php");
 
             let opened_level = details.level == 0 ? "Empty" : `${details.level}/${details.container_size}${details.unit}`;
             let tcontainer = details.unop_cont + (details.level > 0 ? 1 : 0);
-
+            console.log(opened_level);
             $("#restock_id").text(details.id);
             $("#restock_name").text(details.name);
             $("#restock_brand").text(details.brand);
@@ -2454,7 +2496,7 @@ require("startsession.php");
             $("#restock_opened").text(opened_level);
             $("#restock_ccontainer").text(details.unop_cont);
             $("#restock_threshold").text(details.threshold);
-            $("#restock_tcontainer").text(details.threshold);
+            $("#restock_tcontainer").text(tcontainer);
 
             $("#restockFunctionModal").modal("show");
         })

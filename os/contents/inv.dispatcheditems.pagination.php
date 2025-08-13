@@ -2,7 +2,7 @@
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
-$pageRows = 10;
+$pageRows = 5;
 $rowCount = "SELECT * FROM chemicals
                 WHERE request = 0
                 AND chem_location = 'dispatched';";

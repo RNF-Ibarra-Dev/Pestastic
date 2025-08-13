@@ -2,7 +2,7 @@
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
-$pageRows = 10;
+$pageRows = 5;
 $rowCount = "SELECT * FROM chemicals
                 WHERE request = 0
                 AND chem_location = 'main_storage'
@@ -41,7 +41,7 @@ function row_status($conn, $entries = false)
 }
 
 
-if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
+if (isset($_GET['pagenav']) && $_GET['pagenav'] === 'true') {
 
     $GLOBALS['totalPages'];
 
@@ -178,8 +178,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $brand = $row["brand"];
             $level = $row['chemLevel'];
             $unit = $row['quantity_unit'];
-            $opened = $level <= 0 ? "Empty" : "$level";
             $contsize = $row['container_size'];
+            $opened = $level <= 0 ? "Empty" : "$level / $contsize$unit";
             $datereceived = $row['date_received'];
             $unopened = $row['unop_cont'];
             $threshold = $row['restock_threshold'];
@@ -192,7 +192,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td><?= htmlspecialchars($name) ?></td>
                 <td><?= htmlspecialchars($brand) ?></td>
                 <td>
-                    <?= htmlspecialchars("$opened / $contsize $unit") ?>
+                    <?= htmlspecialchars($opened) ?>
                 </td>
                 <td>
                     <?= htmlspecialchars($unopened) ?>
