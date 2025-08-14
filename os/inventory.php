@@ -204,7 +204,7 @@ require("startsession.php");
                                         <div class="d-flex">
                                             <button type="button" class="btn btn-grad py-0" id="restock_less"><i
                                                     class="bi bi-dash"></i></button>
-                                            <input type="number" class="form-control text-center mx-2" value="0"
+                                            <input type="number" class="form-control text-center mx-2 px-1" value="0"
                                                 style="width: 3rem !important;" id="restock_value" name="restock_value">
                                             <button type="button" class="btn btn-grad py-0" id="restock_add"><i
                                                     class="bi bi-plus"></i></button>
@@ -226,27 +226,30 @@ require("startsession.php");
                     </div>
                 </div>
 
-                <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="restockConfirm"
-                    tabindex="0">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="restockConfirm" tabindex="0">
                     <div class="modal-dialog modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title">
                                 <h1 class="modal-title fs-5 text-light">
                                     <i class="bi bi-truck-flatbed me-2"></i>
-                                    Restock Confirmation
+                                    Confirmation
                                 </h1>
                                 <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x"></i></button>
                             </div>
 
                             <div class="modal-body text-dark p-3">
-
+                                <label for="restock_confirmation" class="form-label fw-light">Confirm restock? Enter
+                                    <?= $_SESSION['baUsn'] ?>'s password to confirm.</label>
+                                <input type="password" name="pwd" id="restock_confirmation"
+                                    class="form-control ps-2 w-50">
+                                <p class="text-secondary fw-light">Note: restock note.</p>
                             </div>
 
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-toggle="modal"
                                     data-bs-target="#restockFunctionModal">Go back</button>
-                                <button type="submit" class="btn btn-grad">Submit</button>
+                                <button type="submit" class="btn btn-grad">Restock Item</button>
                             </div>
                         </div>
                     </div>
@@ -2497,14 +2500,14 @@ require("startsession.php");
         $("#restockTable").on('click', '.restock-btn', async function () {
             let id = $(this).data('restock');
             $("#restockModal").modal('hide');
-            console.log(id);
+            // console.log(id);
             let deets = await get_chem_details(id);
             var details = JSON.parse(deets);
-            console.log(details);
+            // console.log(details);
 
             let opened_level = details.level == 0 ? "Empty" : `${details.level}/${details.container_size}${details.unit}`;
             let tcontainer = details.unop_cont + (details.level > 0 ? 1 : 0);
-            console.log(opened_level);
+            // console.log(opened_level);
             $("#id_input").val(details.id);
             $("#restock_id").text(details.id);
             $("#restock_name").text(details.name);
@@ -2541,7 +2544,7 @@ require("startsession.php");
 
             setTimeout(() => {
                 $("#restock_val_alert").fadeOut();
-            }, 5000);
+            }, 2500);
         });
 
         $("#restockFunctionModal").on('click', '#restock_add', function (e) {
@@ -2549,8 +2552,8 @@ require("startsession.php");
             let restock_value = parseInt($("#restock_value").val());
             let new_value = 0;
 
-            if (restock_value > 500) {
-                $("#restock_val_alert").text("Maximum number is 500.");
+            if (restock_value >= 500) {
+                $("#restock_val_alert").text("Maximum number is 500.").fadeIn();
             } else {
                 new_value = restock_value + 1;
                 $("#restock_value").val(new_value);
@@ -2562,11 +2565,42 @@ require("startsession.php");
 
             setTimeout(() => {
                 $("#restock_val_alert").fadeOut();
-            }, 5000);
+            }, 2500);
         });
 
-        $(document).on('submit', '#restockForm', async function (e) {
+        $("#restockFunctionModal").on('input', '#restock_value', function () {
+            let value = parseInt($(this).val());
+            if (value >= 500) {
+                $("#restock_val_alert").text("Maximum number is 500.").fadeIn();
+                $(this).val('');
+            } else if (value < 0) {
+                $("#restock_val_alert").text("Value should not be less than zero.").fadeIn();
+                $(this).val('');
+            } else {
+                $("#restock_val_alert").fadeOut();
+            }
+        })
+
+        $(document).on('submit', '#restockForm', function (e) {
             e.preventDefault();
+            let data = $(this).serialize();
+
+            console.log(data);
+
+            $.ajax({
+                method: 'post',
+                url: urldata,
+                data: data + "&restock=true",
+                dataType: 'json'
+            })
+            .done(function(d){
+                console.log(d);
+                show_toast('done');
+            })
+            .fail(function(e){
+                console.log(e);
+                show_toast(e.responseText);
+            })
         });
 
     </script>

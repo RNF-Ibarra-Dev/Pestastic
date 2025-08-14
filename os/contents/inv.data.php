@@ -1134,3 +1134,37 @@ if (isset($_GET['dispatch_cur_transchem']) && $_GET['dispatch_cur_transchem'] ==
     echo json_encode(["error" => "This item has no recorded amount set for transaction ID $transid."]);
     exit();
 }
+
+
+if(isset($_POST['restock']) && $_POST['restock'] === 'true'){
+    $id = $_POST['id'];
+    $value = $_POST['restock_value'];
+    $pwd = $_POST['pwd'];
+
+    if(!is_numeric(trim($id)) || empty($id)){
+        http_response_code(400);
+        echo "Invalid ID. Please refresh the page and try again.";
+        exit();
+    }
+
+    if(!is_numeric(trim($value)) || empty($value)){
+        http_response_code(400);
+        echo "Invalid restock value.";
+        exit();
+    }
+
+    if($value <= 0){
+        http_response_code(400);
+        echo "Restock value should not be less or equal to zero.";
+        exit();
+    }
+
+    if(!validateOS($conn, $pwd)){
+        http_response_code(400);
+        echo "Wrong password.";
+        exit();
+    }
+
+    // $restock = restock_item();
+    if(isset())
+}
