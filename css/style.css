@@ -14,16 +14,24 @@
   --night-bg-color: #16404d;
 }
 
-.text-shadow, .fs-5.text-light, h1.text-light, th.text-light, i.text-light, .fw-bold.text-light {
+.text-shadow,
+.fs-5.text-light,
+h1.text-light,
+th.text-light,
+i.text-light,
+.fw-bold.text-light {
   text-shadow: 0px 1px 5px rgba(0, 0, 0, 0.3) !important;
 }
 
-tbody#itemEntryTable tr td, tbody#restockTable tr td, tbody#dispatchedTable tr td{
+tbody#itemEntryTable tr td,
+tbody#restockTable tr td,
+tbody#dispatchedTable tr td {
   color: #000 !important;
 }
 
-.text-light .os-table th, .bg-light table th {
-    border-top: #ffffffde 1px solid !important;
+.text-light .os-table th,
+.bg-light table th {
+  border-top: #ffffffde 1px solid !important;
 }
 
 .bg-opacity-25 {
@@ -92,6 +100,19 @@ body {
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
     color 0.15s ease-in-out;
 }
+
+.modal nav ul li a {
+  background: rgba(231, 231, 231, 0.25);
+  color: #2b2b2b !important;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+    color 0.15s ease-in-out;
+}
+
+nav ul li a:hover {
+  background-color: rgba(40, 103, 119, 0.479) !important;
+  color: #e9e9e9 !important;
+}
+
 
 #pagination nav ul li a:hover,
 #table2pagination nav ul li a:hover,

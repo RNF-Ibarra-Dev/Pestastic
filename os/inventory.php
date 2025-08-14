@@ -137,6 +137,7 @@ require("startsession.php");
 
             <!-- restock -->
             <form id="restockForm">
+                <input type="hidden" name="id" id="id_input">
                 <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static"
                     id="restockFunctionModal" tabindex="0">
                     <div class="modal-dialog modal-dialog-scrollable">
@@ -195,6 +196,22 @@ require("startsession.php");
                                     <div class="col-3">
                                         <p class="fw-bold">Total Container Left:</p>
                                         <p id="restock_tcontainer" class="ms-1"></p>
+                                    </div>
+
+                                    <div class="col-3">
+                                        <label for="restock_value" class="form-label fw-bold">Number of items to
+                                            restock:</label>
+                                        <div class="d-flex">
+                                            <button type="button" class="btn btn-grad py-0" id="restock_less"><i
+                                                    class="bi bi-dash"></i></button>
+                                            <input type="number" class="form-control text-center mx-2" value="0"
+                                                style="width: 3rem !important;" id="restock_value" name="restock_value">
+                                            <button type="button" class="btn btn-grad py-0" id="restock_add"><i
+                                                    class="bi bi-plus"></i></button>
+                                        </div>
+                                        <p class="alert alert-warning mt-1 py-1 px-2" style="display: none;"
+                                            id="restock_val_alert">
+                                        </p>
                                     </div>
                                 </div>
 
@@ -2488,6 +2505,7 @@ require("startsession.php");
             let opened_level = details.level == 0 ? "Empty" : `${details.level}/${details.container_size}${details.unit}`;
             let tcontainer = details.unop_cont + (details.level > 0 ? 1 : 0);
             console.log(opened_level);
+            $("#id_input").val(details.id);
             $("#restock_id").text(details.id);
             $("#restock_name").text(details.name);
             $("#restock_brand").text(details.brand);
@@ -2499,7 +2517,58 @@ require("startsession.php");
             $("#restock_tcontainer").text(tcontainer);
 
             $("#restockFunctionModal").modal("show");
-        })
+
+        });
+
+        $("#restockFunctionModal").on('click', '#restock_less', function (e) {
+            e.preventDefault();
+            let restock_value = parseInt($("#restock_value").val());
+
+            let new_value = 0;
+            if (restock_value <= 0) {
+                $("#restock_val_alert").text("Value should not be less than zero.").fadeIn();
+            } else if (restock_value > 0) {
+                new_value = restock_value - 1;
+                // console.log(`${new_value} ${restock_value}`);
+                $("#restock_value").val(new_value);
+            } else {
+                $("#restock_val_alert").text("An unknown error has occured. Please refresh the page and try again.").fadeIn();
+            }
+
+            if (!Number.isInteger(restock_value)) {
+                $("#restock_val_alert").text("Input should be a number!").fadeIn();
+            }
+
+            setTimeout(() => {
+                $("#restock_val_alert").fadeOut();
+            }, 5000);
+        });
+
+        $("#restockFunctionModal").on('click', '#restock_add', function (e) {
+            e.preventDefault();
+            let restock_value = parseInt($("#restock_value").val());
+            let new_value = 0;
+
+            if (restock_value > 500) {
+                $("#restock_val_alert").text("Maximum number is 500.");
+            } else {
+                new_value = restock_value + 1;
+                $("#restock_value").val(new_value);
+            }
+
+            if (!Number.isInteger(restock_value)) {
+                $("#restock_val_alert").text("Input should be a number!").fadeIn();
+            }
+
+            setTimeout(() => {
+                $("#restock_val_alert").fadeOut();
+            }, 5000);
+        });
+
+        $(document).on('submit', '#restockForm', async function (e) {
+            e.preventDefault();
+        });
+
     </script>
 </body>
 
