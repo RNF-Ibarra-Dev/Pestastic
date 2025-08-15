@@ -1777,6 +1777,7 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             $_SESSION['empId'] = $userExists['techEmpId'];
             $_SESSION['branch'] = $userExists['user_branch'];
             $_SESSION['user_role'] = "technician";
+            $_SESSION['author'] = "{$userExists['username']} | Employee no. {$userExists['techEmpId']}";
             header("location: ../technician/index.php?tech_login=success");
             exit();
         } else {
@@ -1809,6 +1810,8 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             $_SESSION['baEmail'] = $userExists['baEmail'];
             $_SESSION['branch'] = $userExists['user_branch'];
             $_SESSION['user_role'] = "branchadmin";
+            $_SESSION['author'] = "{$userExists['baUsn']} | Employee no. {$userExists['baEmpId']}";
+
             header("location: ../os/index.php?os_login=success");
             exit();
         } else {
@@ -1833,6 +1836,8 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             $_SESSION['saEmail'] = $userExists['saEmail'];
             $_SESSION['branch'] = $userExists['user_branch'];
             $_SESSION['user_role'] = "superadmin";
+            $_SESSION['author'] = "{$userExists['saUsn']} | Employee no. {$userExists['saEmpId']}";
+
             header("location: ../superadmin/index.php?sa_login=success");
             exit();
         } else {
@@ -2889,7 +2894,6 @@ function reflect_chem_log($conn, $chemid, $qty, $containercount)
             $datatypes = "di";
             $data[] = $total_chemLevel;
             $data[] = $current_unop_cont;
-
         }
         $sql .= " WHERE id = ?;";
         $datatypes .= "i";
@@ -3079,7 +3083,6 @@ function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
                     throw new Exception("Failed to record a chemical. Please try again later.");
                 }
             }
-
         }
 
         // log transaction
@@ -3442,7 +3445,6 @@ function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $includ
             if (!$insert_trans_chem) {
                 throw new Exception($insert_trans_chem);
             }
-
         } else {
             // update transaction_chemicals
             if ($dispatched_quantity == $old_qty) {
@@ -3460,7 +3462,6 @@ function dispatch_chemical($conn, $id, $transaction_id, $dispatch_value, $includ
                 throw new Exception("Failed to update transaction chemical information. Please try again later.");
             }
             mysqli_stmt_close($update_existing_chem_stmt);
-
         }
 
         // update original chemical based on the usage
@@ -3689,7 +3690,6 @@ function dispatch_all_chemical($conn, $id, $transaction, $new_location = "Dispat
             if (!$insert_trans_chem) {
                 throw new Exception($insert_trans_chem);
             }
-
         } else {
             // update transaction_chemicals
 
@@ -3704,7 +3704,6 @@ function dispatch_all_chemical($conn, $id, $transaction, $new_location = "Dispat
                 throw new Exception("Failed to update transaction chemical information. Please try again later.");
             }
             mysqli_stmt_close($update_existing_chem_stmt);
-
         }
 
         mysqli_commit($conn);
@@ -4019,4 +4018,47 @@ function convert_to_main_unit($input_unit, $main_unit, $value_to_convert)
     $base_value = $value_to_convert * $input_unit_factor;
     $converted_value = $base_value / $main_unit_factor;
     return $converted_value;
+}
+
+function restock_item($conn, $id, $restock_value, $author, $user_id, $user_role, $note, $branch)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $item_data = get_chemical($conn, $id);
+        if(isset($item_data['error'])){
+            throw new Exception($item_data['error']);
+        }
+
+        $sql = "UPDATE chemicals SET unop_cont = unop_cont + ?, updated_by = ?, updated_at = NOW() WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("Statement prepare failed, please try again later.");
+        }
+
+        mysqli_stmt_bind_param($stmt, 'isi', $restock_value, $author, $id);
+        mysqli_stmt_execute($stmt);
+        if (mysqli_stmt_affected_rows($stmt) <= 0) {
+            throw new Exception("There was an error restocking the item. Please try again later.");
+        }
+        mysqli_stmt_close($stmt);
+
+        $total_qty = $item_data['container_size'] * $restock_value;
+        $new_cc = $item_data['unop_cont'] + $restock_value;
+
+        $log_note = "Restocked $restock_value new items. New unopened item count: $new_cc" . $note != '' ? " | User note: '$note'" : '';
+
+        $log = log_chemical($conn, $id, "Restock Item", $total_qty, $restock_value, NULL, $user_id, $user_role, $log_note, $branch);
+        if(isset($log['error'])){
+            throw new Exception($log['error']);
+        }
+
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            "error" => $e->getMessage() . " at line " . $e->getLine() . " at file " . $e->getFile()
+        ];
+    }
 }

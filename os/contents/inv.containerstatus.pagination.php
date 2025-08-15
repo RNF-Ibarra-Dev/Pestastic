@@ -2,7 +2,7 @@
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
-$pageRows = 10;
+$pageRows = 5;
 $rowCount = "SELECT
                 id,
                 name,
@@ -21,7 +21,7 @@ $rowCount = "SELECT
             FROM
                 chemicals
             WHERE
-                chemLevel > 0
+                (chemLevel > 0 OR unop_cont > 0) 
                 AND expiryDate > NOW()
             GROUP BY
                 id, name, brand, container_size, chemLevel, unop_cont, chem_location
@@ -239,7 +239,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='7' class='text-center'>No chemicals found.</td></tr>";
+        echo "<tr><td scope='row' colspan='6' class='text-center'>No chemicals found.</td></tr>";
     }
     mysqli_close($conn);
     exit();

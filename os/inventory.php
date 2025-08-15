@@ -205,13 +205,20 @@ require("startsession.php");
                                             <button type="button" class="btn btn-grad py-0" id="restock_less"><i
                                                     class="bi bi-dash"></i></button>
                                             <input type="number" class="form-control text-center mx-2 px-1" value="0"
-                                                style="width: 3rem !important;" id="restock_value" name="restock_value">
+                                                style="width: 3rem !important;" id="restock_value" name="restock_value" autocomplete='new-password'>
                                             <button type="button" class="btn btn-grad py-0" id="restock_add"><i
                                                     class="bi bi-plus"></i></button>
                                         </div>
                                         <p class="alert alert-warning mt-1 py-1 px-2" style="display: none;"
                                             id="restock_val_alert">
                                         </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label for="restock_notes" class="form-label fw-bold">Additional restock note:</label>
+                                        <textarea name="note" id="restock_notes" rows="1"
+                                            class="form-control" placeholder="Optional note . . ."></textarea>
                                     </div>
                                 </div>
 
@@ -244,6 +251,7 @@ require("startsession.php");
                                 <input type="password" name="pwd" id="restock_confirmation"
                                     class="form-control ps-2 w-50">
                                 <p class="text-secondary fw-light">Note: restock note.</p>
+                                <p class="alert alert-info text-center py-2 px-3" id="restock_err_alert" style="display: none;"></p>
                             </div>
 
                             <div class="modal-footer">
@@ -2593,14 +2601,15 @@ require("startsession.php");
                 data: data + "&restock=true",
                 dataType: 'json'
             })
-            .done(function(d){
-                console.log(d);
-                show_toast('done');
-            })
-            .fail(function(e){
-                console.log(e);
-                show_toast(e.responseText);
-            })
+                .done(function (d) {
+                    console.log(d);
+                    show_toast(d.success);
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    show_toast(e.responseText);
+                    $("#restock_err_alert").text(e.responseText).fadeIn().delay(2500).fadeOut();
+                })
         });
 
     </script>

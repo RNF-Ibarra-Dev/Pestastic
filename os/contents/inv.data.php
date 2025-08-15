@@ -8,6 +8,7 @@ require_once('../../includes/functions.inc.php');
 $role = $_SESSION['user_role'];
 $user = $_SESSION['baID'];
 $branch = $_SESSION['branch'];
+$author = $_SESSION['author'];
 
 $units = ['mg', 'g', 'kg', 'L', 'mL', 'gal', 'box', 'pc', 'canister'];
 
@@ -1140,6 +1141,7 @@ if(isset($_POST['restock']) && $_POST['restock'] === 'true'){
     $id = $_POST['id'];
     $value = $_POST['restock_value'];
     $pwd = $_POST['pwd'];
+    $note = $_POST['note'];
 
     if(!is_numeric(trim($id)) || empty($id)){
         http_response_code(400);
@@ -1165,6 +1167,18 @@ if(isset($_POST['restock']) && $_POST['restock'] === 'true'){
         exit();
     }
 
-    // $restock = restock_item();
-    if(isset())
+    $restock = restock_item($conn, $id, $value, $author, $user,$role, $note, $branch);
+    if(isset($restock['error'])){
+        http_response_code(400);
+        echo $restock['error'];
+        exit();
+    } else if($restock){
+        http_response_code(200);
+        echo json_encode(['success' => 'Restock success']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo 'An unknown error has occured. Please try again later.';
+        exit();
+    }
 }
