@@ -1,9 +1,10 @@
 <?php
+session_start();
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 5;
-$rowCount = "SELECT * FROM chemicals WHERE request = 1;";
+$rowCount = "SELECT * FROM chemicals WHERE request = 1 AND branch = {$_SESSION['branch']};";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
@@ -33,7 +34,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
     $GLOBALS['totalPages'];
 
-?>
+    ?>
 
 
     <nav aria-label="Page navigation">
@@ -65,7 +66,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
             $lastpages = $totalPages;
             // var_dump($lastpages);
-
+        
             ?>
             <li class="page-item">
                 <a class="page-link" data-page="1" href=""><i class="bi bi-caret-left-fill"></i></a>
@@ -73,12 +74,12 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
             <li class="page-item">
                 <?php
                 if ($prev > 0) {
-                ?>
+                    ?>
                     <a class="page-link" data-page="<?= $prev ?>"><i class="bi bi-caret-left"></i></a>
-                <?php
+                    <?php
                 } else { ?>
                     <a class="page-link" data-page="1"><i class="bi bi-caret-left"></i></a>
-                <?php
+                    <?php
                 }
                 ?>
             </li>
@@ -98,7 +99,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
                     $limitreached = true;
 
                     if ($currentPage != $lastpages && $currentPage <= $lastpages) {
-                ?>
+                        ?>
                         <li class="page-item disabled">
                             <a class="page-link">...</a>
                         </li>
@@ -106,7 +107,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
                         <li class="page-item">
                             <a class="page-link" data-page="<?= $totalPages ?>"><?= $totalPages ?></a>
                         </li>
-            <?php
+                        <?php
                     }
                     break;
                 }
@@ -116,14 +117,14 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
             <li class="page-item">
                 <?php
                 if ($next <= $totalPages) {
-                ?>
+                    ?>
                     <a class="page-link" data-page="<?= $totalPages != 0 ? $next : 1 ?>" href=""><i
                             class="bi bi-caret-right"></i></a>
-                <?php
+                    <?php
                 } else { ?>
                     <a class="page-link" data-page="<?= $totalPages != 0 ? $totalPages : 1 ?>"><i
                             class="bi bi-caret-right"></i></a>
-                <?php
+                    <?php
                 }
                 ?>
             </li>
@@ -147,7 +148,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             FROM 
                 chemicals
             WHERE
-                request = 1   
+                request = 1
+                AND branch = {$_SESSION['branch']} 
             ORDER BY
                 updated_at
             DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
@@ -171,7 +173,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $e = date("F j, Y", strtotime($expiry));
             $added_by = $row['added_by'];
             $ab = $added_by === "No Record" ? "User not found." : $added_by;
-    ?>
+            ?>
             <tr class="text-center">
                 <td>
                     <?= htmlspecialchars($id) ?>
@@ -190,7 +192,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td><?= htmlspecialchars($ab) ?></td>
             </tr>
 
-        <?php
+            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='6' class='text-center'>No entry found.</td></tr>";
@@ -253,7 +255,7 @@ if (isset($_GET['search'])) {
             $contsize = (int) $row['container_size'];
             // $total_stored = $level + ($container_count * $contsize);
             // $unit = $row['quantity_unit'];
-        ?>
+            ?>
             <tr class="text-center">
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td>
@@ -277,7 +279,7 @@ if (isset($_GET['search'])) {
                 </td>
             </tr>
 
-<?php
+            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='7' class='text-center'>Your search does not exist.</td></tr>";

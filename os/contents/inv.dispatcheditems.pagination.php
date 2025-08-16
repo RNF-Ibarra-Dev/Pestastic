@@ -1,11 +1,13 @@
 <?php
+session_start();
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 5;
 $rowCount = "SELECT * FROM chemicals
                 WHERE request = 0
-                AND chem_location = 'dispatched';";
+                AND chem_location = 'dispatched'
+                AND branch = {$_SESSION['branch']};";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
@@ -150,6 +152,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $sql = "SELECT * FROM chemicals
             WHERE request = 0
             AND chem_location = 'dispatched'
+            AND branch = {$_SESSION['branch']}
             ORDER BY updated_at
             DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 

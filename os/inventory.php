@@ -205,7 +205,8 @@ require("startsession.php");
                                             <button type="button" class="btn btn-grad py-0" id="restock_less"><i
                                                     class="bi bi-dash"></i></button>
                                             <input type="number" class="form-control text-center mx-2 px-1" value="0"
-                                                style="width: 3rem !important;" id="restock_value" name="restock_value" autocomplete='new-password'>
+                                                style="width: 3rem !important;" id="restock_value" name="restock_value"
+                                                autocomplete='new-password'>
                                             <button type="button" class="btn btn-grad py-0" id="restock_add"><i
                                                     class="bi bi-plus"></i></button>
                                         </div>
@@ -216,9 +217,10 @@ require("startsession.php");
                                 </div>
                                 <div class="row">
                                     <div class="col-4">
-                                        <label for="restock_notes" class="form-label fw-bold">Additional restock note:</label>
-                                        <textarea name="note" id="restock_notes" rows="1"
-                                            class="form-control" placeholder="Optional note . . ."></textarea>
+                                        <label for="restock_notes" class="form-label fw-bold">Additional restock
+                                            note:</label>
+                                        <textarea name="note" id="restock_notes" rows="1" class="form-control"
+                                            placeholder="Optional note . . ."></textarea>
                                     </div>
                                 </div>
 
@@ -251,7 +253,8 @@ require("startsession.php");
                                 <input type="password" name="pwd" id="restock_confirmation"
                                     class="form-control ps-2 w-50">
                                 <p class="text-secondary fw-light">Note: restock note.</p>
-                                <p class="alert alert-info text-center py-2 px-3" id="restock_err_alert" style="display: none;"></p>
+                                <p class="alert alert-info text-center py-2 px-3" id="restock_err_alert"
+                                    style="display: none;"></p>
                             </div>
 
                             <div class="modal-footer">
@@ -437,12 +440,12 @@ require("startsession.php");
                                         </tr>
                                     </thead>
 
-                                    <tbody id="inventorylogtable" class="table-group-divider">
+                                    <tbody id="log_tbody" class="table-group-divider">
                                     </tbody>
 
                                 </table>
-                                <div id="inventorylogpaginationbtns"></div>
                             </div>
+                            <div id="inv_log_pagination"></div>
                         </div>
 
                         <div class="modal-footer">
@@ -503,7 +506,7 @@ require("startsession.php");
                                             </tbody>
 
                                         </table>
-                                        <div id="inventorylogpaginationbtns"></div>
+                                        <div id="chem_log_pagination"></div>
                                     </div>
                                 </div>
 
@@ -2278,36 +2281,57 @@ require("startsession.php");
                 })
         });
 
-        $(document).on('click', '#inventorylogbtn', function () {
-            $('#inventorylogmodal').modal('show');
-            $.get('contents/inv.log.pagination.php', {
-                inventorylog: true
-            })
-                .done(function (data) {
-                    $('#inventorylogmodal .modal-body #inventorylogtable').empty();
-                    $('#inventorylogmodal .modal-body #inventorylogtable').append(data);
-                })
-                .fail(function (e) {
-                    console.log(e);
-                    $('#inventorylogmodal .modal-body').html('<p class="text-center text-danger">Error loading inventory log.</p>');
-                });
-        });
 
-        function load_chem_log_history(id) {
-            $.get('contents/inv.log.pagination.php', {
-                chemloghistory: true,
+
+        async function load_chem_log_history(id) {
+            return await $.get('contents/inv.itemloghistory.pagination.php', {
+                table: true,
                 chemid: id
             })
                 .done(function (data) {
-                    $('#chemicallogmodal .modal-body #chemicalhistorylogtable').empty();
-                    $('#chemicallogmodal .modal-body #chemicalhistorylogtable').append(data);
+                    try {
+                        $('#chemicallogmodal .modal-body #chemicalhistorylogtable').empty();
+                        $('#chemicallogmodal .modal-body #chemicalhistorylogtable').append(data);
+                        return true;
+                    } catch (error) {
+                        console.error(error);
+                        return error;
+                    }
+
                 })
                 .fail(function (e) {
-                    console.log(e);
+                    console.error(e);
                     $('#chemicallogmodal .modal-body').html('<p class="text-center text-danger">Error loading inventory log.</p>');
                 });
         }
 
+        async function load_item_history_pagination(page) {
+            return await $.get("contents/inv.itemloghistory.pagination.php", {
+                pagenav: true,
+                active: page
+            }, function (d) {
+                try {
+                    $("#chem_log_pagination").empty();
+                    $("#chem_log_pagination").append(d);
+                    return true;
+                } catch (error) {
+                    console.error(error);
+                    return error;
+                }
+            }, 'html')
+                .fail(function (e) {
+                    console.log(e);
+                    $('#chemicallogmodal .modal-body').html('<p class="text-center text-danger">Error loading inventory log.</p>');
+                })
+        }
+
+        async function item_history(id, page) {
+            let table = await load_chem_log_history(id);
+            const pagination = await load_item_history_pagination(page);
+            if(table && pagination){
+                
+            }
+        }
 
         $(document).on('click', '.log-chem-btn', async function () {
             let id = $(this).data('chem');
@@ -2412,43 +2436,75 @@ require("startsession.php");
 
         // new additions
 
+
+
         async function load_other_table(url, tbody_id, page = 1) {
-            return await $.get(url, {
-                table: true,
-                currentpage: page
-            }, function (d) {
-                $(`#${tbody_id}`).empty();
-                $(`#${tbody_id}`).append(d);
-            }, 'html')
-                .fail(function (e) {
-                    console.log(e);
-                    $(`#${tbody_id}`).html("<tr><td colspan='25'>An error occured loading this table. Please try again later.</td></tr>")
+            try {
+                const data = await $.get(url, {
+                    table: true,
+                    currentpage: page
                 });
+
+                $(`#${tbody_id}`).empty();
+                $(`#${tbody_id}`).append(data);
+                return data;
+
+            } catch (e) {
+                console.log('Error in load_other_table:', e);
+                $(`#${tbody_id}`).html("<tr><td colspan='25'>An error occured loading this table. Please try again later.</td></tr>");
+                throw e; // Re-throw to let calling function handle it
+            }
         }
 
         async function load_other_pagination(url, container_id, active_page_no = 1) {
-            return await $.get(url, {
-                pagenav: true,
-                active: active_page_no
-            }, async function (d) {
-                $(`#${container_id}`).empty();
-                $(`#${container_id}`).append(d);
-            }, 'html')
-                .fail(function (e) {
-                    console.log(e);
-                    alert(`An error occured loading pagination to container with ID ${container_id}. Please try again later.`);
+            try {
+                const data = await $.get(url, {
+                    pagenav: true,
+                    active: active_page_no
                 });
+
+                $(`#${container_id}`).empty();
+                $(`#${container_id}`).append(data);
+                return data;
+
+            } catch (e) {
+                console.log('Error in load_other_pagination:', e);
+                alert(`An error occured loading pagination to container with ID ${container_id}. Please try again later.`);
+                throw e;
+            }
         }
 
         async function modal_table_pagination(url, tbody_id, pagination_id, page = 1) {
-            let table = await load_other_table(url, tbody_id, page);
-            let pagination = await load_other_pagination(url, pagination_id, page);
-            if (pagination && table) {
-                return true;
+            try {
+                const table = await load_other_table(url, tbody_id, page);
+                const pagination = await load_other_pagination(url, pagination_id, page);
+
+                if (pagination && table) {
+                    return true;
+                }
+                return false;
+            } catch (e) {
+                console.log('Error in modal_table_pagination:', e);
+                return false;
             }
-            return false;
         }
 
+        // edit on sAdmin
+        $(document).on('click', '#inventorylogbtn', async function () {
+            let table = await modal_table_pagination('contents/inv.log.pagination.php', 'log_tbody', 'inv_log_pagination');
+            if (table) {
+                $('#inventorylogmodal').modal('show');
+            } else {
+                console.log(table);
+                alert("An error occured when loading log contents. Please try again later.");
+            }
+            $('#inv_log_pagination').on('click', '.page-link', async function (e) {
+                e.preventDefault();
+                let currentpage = $(this).data('page');
+                await modal_table_pagination('contents/inv.log.pagination.php', 'log_tbody', 'inv_log_pagination', currentpage);
+            });
+
+        });
 
         $(document).on('click', '#entriesTableBtn', async function () {
             let table = await modal_table_pagination('contents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination');
@@ -2611,6 +2667,7 @@ require("startsession.php");
                     $("#restock_err_alert").text(e.responseText).fadeIn().delay(2500).fadeOut();
                 })
         });
+
 
     </script>
 </body>

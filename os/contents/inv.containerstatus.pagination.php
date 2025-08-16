@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
@@ -23,6 +24,7 @@ $rowCount = "SELECT
             WHERE
                 (chemLevel > 0 OR unop_cont > 0) 
                 AND expiryDate > NOW()
+                AND branch = {$_SESSION['branch']}
             GROUP BY
                 id, name, brand, container_size, chemLevel, unop_cont, chem_location
             ORDER BY
@@ -186,6 +188,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             WHERE
                 (chemLevel > 0 OR unop_cont > 0) 
                 AND expiryDate > NOW()
+                AND branch = {$_SESSION['branch']}
             GROUP BY
                 name, brand, quantity_unit, container_size 
             ORDER BY
@@ -271,6 +274,7 @@ if (isset($_GET['search'])) {
                 chemLevel > 0
                 AND expiryDate > NOW()
                 AND (id LIKE ? OR name LIKE ? OR brand LIKE ? OR quantity_unit LIKE ? OR container_size LIKE ?)
+                AND branch = {$_SESSION['branch']}
             GROUP BY
                 id, name, brand, container_size, chemLevel, unop_cont, chem_location, quantity_unit, container_size
             ORDER BY
@@ -278,7 +282,7 @@ if (isset($_GET['search'])) {
 
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-        echo "<tr><td scope='row' colspan='7' class='text-center'>Error. Search stmt failed.</td></tr>";
+        echo "<tr><td scope='row' colspan='6' class='text-center'>Error. Search stmt failed.</td></tr>";
         exit();
     }
 
@@ -289,7 +293,7 @@ if (isset($_GET['search'])) {
     $numrows = mysqli_num_rows($result);
     if ($numrows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
+            $id = $row['id'];   
             $name = $row["name"];
             $brand = $row["brand"];
             $unit = $row['unit'];
@@ -303,7 +307,6 @@ if (isset($_GET['search'])) {
             // $unit = $row['quantity_unit'];
             ?>
             <tr class="text-center">
-                <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td>
                     <?= htmlspecialchars("$name ($brand)") ?>
                 </td>
@@ -317,6 +320,7 @@ if (isset($_GET['search'])) {
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
+                        <!-- add dispatch/return chem -->
                         <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
                                 class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
                         <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
@@ -328,7 +332,7 @@ if (isset($_GET['search'])) {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='7' class='text-center'>Your search does not exist.</td></tr>";
+        echo "<tr><td scope='row' colspan='6' class='text-center'>Your search does not exist.</td></tr>";
     }
     mysqli_close($conn);
     exit();
