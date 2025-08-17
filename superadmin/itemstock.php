@@ -125,13 +125,22 @@ include('tablecontents/tables.php');
                 </div>
             </div>
 
-            <div class="hstack gap-3 my-3 mx-3">
-                <button type="button" id="hideentries"
+            <div class="hstack gap-2 my-3 mx-3">
+                <!-- <button type="button" id="hideentries"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 w-25 px-2 text-light"
                     title="Hide Entries"><i class="bi bi-eye-slash me-2"></i><span id="hideEnText">Hide
-                        Entries</span></button>
+                        Entries</span></button> -->
+                <button type="button" id="entriesTableBtn"
+                    class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
+                        class="bi bi-clock-fill me-2"></i>Pending Entries</button>
+                <button type="button" id="restockTableBtn"
+                    class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
+                        class="bi bi-box-fill me-2"></i>Restock Items</button>
+                <button type="button" id="dispatchedTableBtn"
+                    class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
+                        class="bi bi-truck-flatbed me-2"></i>Dispatched Items</button>
                 <select
-                    class="form-select select-transparent bg-light bg-opacity-25 py-2 border-0 h-100 text-light w-25"
+                    class="form-select select-transparent bg-light bg-opacity-25 py-2 border-0 h-100 text-light fw-bold w-25"
                     id="sortbranches" aria-label="Default select example">
                 </select>
                 <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light" type="search"
@@ -151,6 +160,286 @@ include('tablecontents/tables.php');
 
             </div>
 
+            <!-- restock -->
+            <form id="restockForm">
+                <input type="hidden" name="id" id="id_input">
+                <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static"
+                    id="restockFunctionModal" tabindex="0">
+                    <div class="modal-dialog modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title">
+                                <h1 class="modal-title fs-5 text-light">
+                                    <i class="bi bi-truck-flatbed me-2"></i>
+                                    Restock Item
+                                </h1>
+                                <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x"></i></button>
+                            </div>
+
+                            <div class="modal-body text-dark p-3">
+                                <p
+                                    class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                    Main Item Information</p>
+                                <div class="row">
+                                    <div class="col-2">
+                                        <p class="fw-bold">Item ID:</p>
+                                        <p id="restock_id" class="ms-1"></p>
+                                    </div>
+                                    <div class="col-2">
+                                        <p class="fw-bold">Item Name:</p>
+                                        <p id="restock_name" class="ms-1"></p>
+                                    </div>
+                                    <div class="col-2">
+                                        <p class="fw-bold">Item Brand:</p>
+                                        <p id="restock_brand" class="ms-1"></p>
+                                    </div>
+                                    <div class="col-2">
+                                        <p class="fw-bold">Expiry Date:</p>
+                                        <p id="restock_expiry" class="ms-1"></p>
+                                    </div>
+                                    <div class="col-2">
+                                        <p class="fw-bold">Item Size:</p>
+                                        <p id="restock_size" class="ms-1"></p>
+                                    </div>
+                                    <div class="col-2">
+                                        <p class="fw-bold">Restock Threshold:</p>
+                                        <p id="restock_threshold" class="ms-1"></p>
+                                    </div>
+                                </div>
+                                <p
+                                    class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                    Remaining Stock Summary</p>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <p class="fw-bold">Current Opened/Outgoing Item Left:</p>
+                                        <p id="restock_opened" class="ms-1"></p>
+                                    </div>
+                                    <div class="col-3">
+                                        <p class="fw-bold">Current Closed Container Left:</p>
+                                        <p id="restock_ccontainer" class="ms-1"></p>
+                                    </div>
+                                    <div class="col-3">
+                                        <p class="fw-bold">Total Container Left:</p>
+                                        <p id="restock_tcontainer" class="ms-1"></p>
+                                    </div>
+
+                                    <div class="col-3">
+                                        <label for="restock_value" class="form-label fw-bold">Number of items to
+                                            restock:</label>
+                                        <div class="d-flex">
+                                            <button type="button" class="btn btn-grad py-0" id="restock_less"><i
+                                                    class="bi bi-dash"></i></button>
+                                            <input type="number" class="form-control text-center mx-2 px-1" value="0"
+                                                style="width: 3rem !important;" id="restock_value" name="restock_value"
+                                                autocomplete='new-password'>
+                                            <button type="button" class="btn btn-grad py-0" id="restock_add"><i
+                                                    class="bi bi-plus"></i></button>
+                                        </div>
+                                        <p class="alert alert-warning mt-1 py-1 px-2" style="display: none;"
+                                            id="restock_val_alert">
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label for="restock_notes" class="form-label fw-bold">Additional restock
+                                            note:</label>
+                                        <textarea name="note" id="restock_notes" rows="1" class="form-control"
+                                            placeholder="Optional note . . ."></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#restockConfirm">Continue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="restockConfirm" tabindex="0">
+                    <div class="modal-dialog modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title">
+                                <h1 class="modal-title fs-5 text-light">
+                                    <i class="bi bi-truck-flatbed me-2"></i>
+                                    Confirmation
+                                </h1>
+                                <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x"></i></button>
+                            </div>
+
+                            <div class="modal-body text-dark p-3">
+                                <label for="restock_confirmation" class="form-label fw-light">Confirm restock? Enter
+                                    <?= $_SESSION['saUsn'] ?>'s password to confirm.</label>
+                                <input type="password" name="pwd" id="restock_confirmation"
+                                    class="form-control ps-2 w-50">
+                                <p class="text-secondary fw-light">Note: restock note.</p>
+                                <p class="alert alert-info text-center py-2 px-3" id="restock_err_alert"
+                                    style="display: none;"></p>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#restockFunctionModal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Restock Item</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- dispatched modal -->
+            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="dispatchedItemsModal"
+                tabindex="0">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title">
+                            <h1 class="modal-title fs-5 text-light">
+                                <i class="bi bi-truck-flatbed me-2"></i>
+                                Dispatched Items
+                            </h1>
+                            <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
+                                aria-label="Close"><i class="bi bi-x"></i></button>
+                        </div>
+
+                        <div class="modal-body text-dark p-3">
+                            <div class="table-responsive-sm flex-column d-flex justify-content-center">
+                                <table class="table align-middle table-hover w-100">
+                                    <caption class="fw-light text-muted">
+                                        Items on this list are still pending for approval. Only a Manager can approve an
+                                        item stock.
+                                    </caption>
+                                    <thead>
+                                        <tr class="text-center align-middle">
+                                            <th class="text-dark" scope="col">Item ID</th>
+                                            <th class="text-dark">Item</th>
+                                            <th class="text-dark">Brand</th>
+                                            <th class="text-dark">Outgoing Stock Level (Opened)</th>
+                                            <th class="text-dark">Unopened Stock</th>
+                                            <th class="text-dark">Restock Threshold</th>
+                                            <th class="text-dark">Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="dispatchedTable" class="table-group-divider text-dark">
+                                    </tbody>
+
+                                </table>
+                                <div id="dispatchedTablePagination"></div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- restock modal -->
+            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="restockModal"
+                tabindex="0">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title">
+                            <h1 class="modal-title fs-5 text-light">
+                                <i class="bi bi-box-fill me-2"></i>
+                                Items for Restock
+                            </h1>
+                            <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
+                                aria-label="Close"><i class="bi bi-x"></i></button>
+                        </div>
+
+                        <div class="modal-body text-dark p-3">
+                            <div class="table-responsive-sm flex-column d-flex justify-content-center">
+                                <table class="table align-middle table-hover w-100">
+                                    <caption class="fw-light text-muted">
+                                        Items on this list are still pending for approval. Only a Manager can approve an
+                                        item stock.
+                                    </caption>
+                                    <thead>
+                                        <tr class="text-center align-middle">
+                                            <th class="text-dark" scope="col">Item ID</th>
+                                            <th class="text-dark">Item</th>
+                                            <th class="text-dark">Brand</th>
+                                            <th class="text-dark">Outgoing Stock Level (Opened)</th>
+                                            <th class="text-dark">Unopened Stock</th>
+                                            <th class="text-dark">Restock Threshold</th>
+                                            <th class="text-dark">Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="restockTable" class="table-group-divider text-dark">
+                                    </tbody>
+
+                                </table>
+                                <div id="restockPagination"></div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- item entry modal table -->
+            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="itemEntryModal"
+                tabindex="0">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title">
+                            <h1 class="modal-title fs-5 text-light">
+                                <i class="bi bi-clock-fill me-2"></i>
+                                Item Entries
+                            </h1>
+                            <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
+                                aria-label="Close"><i class="bi bi-x"></i></button>
+                        </div>
+
+                        <div class="modal-body text-dark p-3">
+                            <div class="table-responsive-sm flex-column d-flex justify-content-center">
+                                <table class="table align-middle table-hover w-100" id="approvechemtable">
+                                    <!-- <caption class="fw-light text-muted">
+                                    </caption> -->
+                                    <thead>
+                                        <tr class="text-center align-middle">
+                                            <th class="text-dark" scope="col">Item ID</th>
+                                            <th class="text-dark">Item</th>
+                                            <th class="text-dark">Brand</th>
+                                            <th class="text-dark">Item Size/Volume</th>
+                                            <th class="text-dark">Date Received</th>
+                                            <th class="text-dark">Item Expiry</th>
+                                            <th class="text-dark">Added By</th>
+                                            <th>
+                                                <input type="checkbox" class="btn-check" id="checkall"
+                                                    autocomplete="off">
+                                                <label class="btn fw-bold" for="checkall">Check All <i id="checkicon"
+                                                        class="bi ms-2 bi-check-square"></i></label>
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="itemEntryTable" class="table-group-divider text-dark">
+                                    </tbody>
+
+                                </table>
+                                <div id="itemEntriesPagination"></div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- inventory log modal -->
             <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="inventorylogmodal"
                 tabindex="0">
@@ -166,7 +455,7 @@ include('tablecontents/tables.php');
                         </div>
 
                         <div class="modal-body text-dark p-3">
-                            <div class="table-responsive-sm  d-flex justify-content-center">
+                            <div class="table-responsive-sm flex-column d-flex justify-content-center">
                                 <table class="table align-middle table-hover w-100" id="approvechemtable">
                                     <caption class="fw-light text-muted">Note. Associated transactions are logs that are
                                         auto deducted by the transaction.
@@ -183,11 +472,11 @@ include('tablecontents/tables.php');
                                         </tr>
                                     </thead>
 
-                                    <tbody id="inventorylogtable" class="table-group-divider">
+                                    <tbody id="log_tbody" class="table-group-divider">
                                     </tbody>
 
                                 </table>
-                                <div id="inventorylogpaginationbtns"></div>
+                                <div id="inv_log_pagination"></div>
                             </div>
                         </div>
 
@@ -232,7 +521,7 @@ include('tablecontents/tables.php');
                                     <h3 class="fw-medium text-center mt-2">Item Log</h3>
                                     <p class="text-secondary text-center fw-light">Recent log history from item changes.
                                     </p>
-                                    <div class="table-responsive-sm  d-flex justify-content-center">
+                                    <div class="table-responsive-sm flex-column d-flex justify-content-center">
                                         <table class="table align-middle table-hover w-100" id="chemicalhistorylog">
                                             <thead>
                                                 <tr class="text-center align-middle">
@@ -249,7 +538,7 @@ include('tablecontents/tables.php');
                                             </tbody>
 
                                         </table>
-                                        <div id="inventorylogpaginationbtns"></div>
+                                        <div id="chem_log_pagination"></div>
                                     </div>
                                 </div>
 
@@ -819,7 +1108,7 @@ include('tablecontents/tables.php');
                                 <div class="row mb-2">
                                     <label for="pass" class="form-label fw-light">Dispatch Item? Enter Operations
                                         Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control">
                                     </div>
@@ -976,7 +1265,7 @@ include('tablecontents/tables.php');
                                 <div class="row mb-2">
                                     <label for="pass" class="form-label fw-light">Return Item? Enter Operations
                                         Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control">
                                     </div>
@@ -1361,10 +1650,8 @@ include('tablecontents/tables.php');
 
         $(document).on('click', '#approvemulti', async function () {
             $('#multiapprove')[0].reset();
-            const reqlist = await stock_requests();
-            if (reqlist) {
-                $('#multiapproveModal').modal('show');
-            }
+            await stock_requests();
+            $('#multiapproveModal').modal('show');
         });
 
         $(document).on('change', '#checkall', function () {
@@ -1527,7 +1814,6 @@ include('tablecontents/tables.php');
                 alert(error);
             }
         }
-
 
         $(document).ready(async function () {
             get_sa_id();
@@ -1708,7 +1994,7 @@ include('tablecontents/tables.php');
 
             let branch = $("#sortbranches").val();
             let currentpage = $(this).data('page');
-            
+
             await loadtable(currentpage, entryHidden, branch);
             await loadpagination(currentpage, entryHidden, branch);
         })
@@ -1999,29 +2285,71 @@ include('tablecontents/tables.php');
 
         });
 
-        function load_chem_log_history(id) {
-            $.get('tablecontents/inv.log.pagination.php', {
-                chemloghistory: true,
-                chemid: id
+        async function load_chem_log_history(id, currentpage) {
+            return $.get('tablecontents/inv.itemloghistory.pagination.php', {
+                table: true,
+                chemid: id,
+                currentpage: currentpage
             })
                 .done(function (data) {
                     $('#chemicallogmodal .modal-body #chemicalhistorylogtable').empty();
                     $('#chemicallogmodal .modal-body #chemicalhistorylogtable').append(data);
                 })
                 .fail(function (e) {
-                    console.log(e);
-                    $('#chemicallogmodal .modal-body').html('<p class="text-center text-danger">Error loading inventory log.</p>');
+                    console.error(e);
+                    $('#chemicallogmodal .modal-body .tab-pane.fade').html('<p class="text-center text-danger">Error loading item log.</p>');
                 });
         }
 
+        async function load_item_history_pagination(id, page) {
+            return $.get("tablecontents/inv.itemloghistory.pagination.php", {
+                pagenav: true,
+                active: page,
+                id: id
+            }, function (d) {
+                $("#chem_log_pagination").empty();
+                $("#chem_log_pagination").append(d);
+            }, 'html')
+                .fail(function (e) {
+                    console.log(e);
+                    $('#chem_log_pagination').html('<p class="text-center text-warning">Error loading pagination.</p>');
+                })
+        }
+
+        async function item_history(id, page = 1) {
+            try {
+                await load_chem_log_history(id, page);
+                await load_item_history_pagination(id, page);
+            } catch (e) {
+                console.log(e);
+                alert("An error has occured loading item history. Please try again later.");
+            }
+        }
+
+        async function setup_pagination_event(id) {
+            $("#chem_log_pagination").off('click', '.page-link');
+            $('#chem_log_pagination').on('click', '.page-link', async function (e) {
+                e.preventDefault();
+                let currentpage = $(this).data('page');
+                await item_history(id, currentpage);
+            });
+        }
 
         $(document).on('click', '.log-chem-btn', async function () {
             let id = $(this).data('chem');
-            await load_chem_log_history(id);
+            try {
+                await item_history(id);
+                await setup_pagination_event(id);
+                await get_chem_log(id);
+                $('#chemicallogmodal').modal('show');
+
+            } catch (error) {
+                console.error(error);
+            }
         });
 
         async function get_chem_log(id) {
-            console.log(id);
+            // console.log(id);
             $.ajax({
                 method: 'GET',
                 url: dataurl,
@@ -2031,7 +2359,7 @@ include('tablecontents/tables.php');
                 },
                 dataType: 'json'
             }).done(async function (data) {
-                console.log(data);
+                // console.log(data);
 
                 if (data.success) {
                     let d = JSON.parse(data.success);
@@ -2387,7 +2715,7 @@ include('tablecontents/tables.php');
 
         $(document).on('submit', '#dispatchChemicalForm', async function (e) {
             e.preventDefault();
-            console.log($(this).serialize());
+            // console.log($(this).serialize());
 
             $.ajax({
                 method: 'POST',
@@ -2408,6 +2736,238 @@ include('tablecontents/tables.php');
                     $("#dispatchAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
                 })
         });
+
+        async function load_other_table(url, tbody_id, page = 1) {
+            try {
+                const data = await $.get(url, {
+                    table: true,
+                    currentpage: page
+                });
+
+                $(`#${tbody_id}`).empty();
+                $(`#${tbody_id}`).append(data);
+                return data;
+
+            } catch (e) {
+                console.log('Error in load_other_table:', e);
+                $(`#${tbody_id}`).html("<tr><td colspan='25'>An error occured loading this table. Please try again later.</td></tr>");
+                throw e; // Re-throw to let calling function handle it
+            }
+        }
+
+        async function load_other_pagination(url, container_id, active_page_no = 1) {
+            try {
+                const data = await $.get(url, {
+                    pagenav: true,
+                    active: active_page_no
+                });
+
+                $(`#${container_id}`).empty();
+                $(`#${container_id}`).append(data);
+                return data;
+
+            } catch (e) {
+                console.log('Error in load_other_pagination:', e);
+                alert(`An error occured loading pagination to container with ID ${container_id}. Please try again later.`);
+                throw e;
+            }
+        }
+
+        async function modal_table_pagination(url, tbody_id, pagination_id, page = 1) {
+            try {
+                const table = await load_other_table(url, tbody_id, page);
+                const pagination = await load_other_pagination(url, pagination_id, page);
+
+                if (pagination && table) {
+                    return true;
+                }
+                return false;
+            } catch (e) {
+                console.log('Error in modal_table_pagination:', e);
+                return false;
+            }
+        }
+
+        // edit on sAdmin
+        $(document).on('click', '#inventorylogbtn', async function () {
+            let table = await modal_table_pagination('tablecontents/inv.log.pagination.php', 'log_tbody', 'inv_log_pagination');
+            if (table) {
+                $('#inventorylogmodal').modal('show');
+            } else {
+                console.log(table);
+                alert("An error occured when loading log contents. Please try again later.");
+            }
+            $('#inv_log_pagination').on('click', '.page-link', async function (e) {
+                e.preventDefault();
+                let currentpage = $(this).data('page');
+                await modal_table_pagination('tablecontents/inv.log.pagination.php', 'log_tbody', 'inv_log_pagination', currentpage);
+            });
+
+        });
+
+        $(document).on('click', '#entriesTableBtn', async function () {
+            let table = await modal_table_pagination('tablecontents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination');
+            if (table) {
+                $("#itemEntryModal").modal('show');
+            } else {
+                console.log(table);
+                alert("An error occured loading content. Please try again later.");
+            }
+            $('#itemEntriesPagination').on('click', '.page-link', async function (e) {
+                e.preventDefault();
+                let currentpage = $(this).data('page');
+                await modal_table_pagination('tablecontents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination', currentpage);
+            });
+        });
+
+        $(document).on('click', '#restockTableBtn', async function () {
+            let table = await modal_table_pagination('tablecontents/inv.itemrestock.pagination.php', 'restockTable', 'restockPagination');
+            if (table) {
+                $("#restockModal").modal('show');
+            } else {
+                console.log(table);
+                alert("An error occured loading content. Please try again later.");
+            }
+            $('#restockPagination').on('click', '.page-link', async function (e) {
+                e.preventDefault();
+                let currentpage = $(this).data('page');
+                await modal_table_pagination('tablecontents/inv.itemrestock.pagination.php', 'restockTable', 'restockPagination', currentpage);
+            });
+
+        });
+
+        $("#restockTable").on('click', '.editbtn', function () {
+            $("#restockModal").modal('hide');
+        });
+
+        $("#dispatchedTable").on('click', '.editbtn, .returnbtn', function () {
+            $("#dispatchedItemsModal").modal('hide');
+        })
+
+
+        $(document).on('click', '#dispatchedTableBtn', async function () {
+            let table = await modal_table_pagination('tablecontents/inv.dispatcheditems.pagination.php', 'dispatchedTable', 'dispatchedTablePagination');
+            if (table) {
+                $("#dispatchedItemsModal").modal('show');
+            } else {
+                console.log(table);
+                alert("An error occured loading content. Please try again later.");
+            }
+            $('#dispatchedTablePagination').on('click', '.page-link', async function (e) {
+                e.preventDefault();
+                let currentpage = $(this).data('page');
+                await modal_table_pagination('tablecontents/inv.dispatcheditems.pagination.php', 'dispatchedTable', 'dispatchedTablePagination', currentpage);
+            });
+        });
+
+        $("#restockTable").on('click', '.restock-btn', async function () {
+            let id = $(this).data('restock');
+            $("#restockModal").modal('hide');
+            // console.log(id);
+            let deets = await get_chem_details(id);
+            var details = JSON.parse(deets);
+            // console.log(details);
+
+            let opened_level = details.level == 0 ? "Empty" : `${details.level}/${details.container_size}${details.unit}`;
+            let tcontainer = details.unop_cont + (details.level > 0 ? 1 : 0);
+            // console.log(opened_level);
+            $("#id_input").val(details.id);
+            $("#restock_id").text(details.id);
+            $("#restock_name").text(details.name);
+            $("#restock_brand").text(details.brand);
+            $("#restock_expiry").text(details.expDate);
+            $("#restock_size").text(details.container_size + details.unit);
+            $("#restock_opened").text(opened_level);
+            $("#restock_ccontainer").text(details.unop_cont);
+            $("#restock_threshold").text(details.threshold);
+            $("#restock_tcontainer").text(tcontainer);
+
+            $("#restockFunctionModal").modal("show");
+
+        });
+
+        $("#restockFunctionModal").on('click', '#restock_less', function (e) {
+            e.preventDefault();
+            let restock_value = parseInt($("#restock_value").val());
+
+            let new_value = 0;
+            if (restock_value <= 0) {
+                $("#restock_val_alert").text("Value should not be less than zero.").fadeIn();
+            } else if (restock_value > 0) {
+                new_value = restock_value - 1;
+                // console.log(`${new_value} ${restock_value}`);
+                $("#restock_value").val(new_value);
+            } else {
+                $("#restock_val_alert").text("An unknown error has occured. Please refresh the page and try again.").fadeIn();
+            }
+
+            if (!Number.isInteger(restock_value)) {
+                $("#restock_val_alert").text("Input should be a number!").fadeIn();
+            }
+
+            setTimeout(() => {
+                $("#restock_val_alert").fadeOut();
+            }, 2500);
+        });
+
+        $("#restockFunctionModal").on('click', '#restock_add', function (e) {
+            e.preventDefault();
+            let restock_value = parseInt($("#restock_value").val());
+            let new_value = 0;
+
+            if (restock_value >= 500) {
+                $("#restock_val_alert").text("Maximum number is 500.").fadeIn();
+            } else {
+                new_value = restock_value + 1;
+                $("#restock_value").val(new_value);
+            }
+
+            if (!Number.isInteger(restock_value)) {
+                $("#restock_val_alert").text("Input should be a number!").fadeIn();
+            }
+
+            setTimeout(() => {
+                $("#restock_val_alert").fadeOut();
+            }, 2500);
+        });
+
+        $("#restockFunctionModal").on('input', '#restock_value', function () {
+            let value = parseInt($(this).val());
+            if (value >= 500) {
+                $("#restock_val_alert").text("Maximum number is 500.").fadeIn();
+                $(this).val('');
+            } else if (value < 0) {
+                $("#restock_val_alert").text("Value should not be less than zero.").fadeIn();
+                $(this).val('');
+            } else {
+                $("#restock_val_alert").fadeOut();
+            }
+        })
+
+        $(document).on('submit', '#restockForm', function (e) {
+            e.preventDefault();
+            let data = $(this).serialize();
+            // console.log(data);
+
+            $.ajax({
+                method: 'post',
+                url: dataurl,
+                data: data + "&restock=true",
+                dataType: 'json'
+            })
+                .done(function (d) {
+                    // console.log(d);
+                    show_toast(d.success);
+                    $("#restockConfirm").modal('hide');
+
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    show_toast(e.responseText);
+                    $("#restock_err_alert").text(e.responseText).fadeIn().delay(2500).fadeOut();
+                })
+        });
+
     </script>
 </body>
 

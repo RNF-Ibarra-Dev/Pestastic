@@ -1,6 +1,7 @@
 <?php
 require("startsession.php");
-// include('tablecontents/tables.php');
+// require("/tablecontents/tables.php");
+include('tablecontents/tables.php');
 ?>
 
 <!DOCTYPE html>
@@ -9,10 +10,24 @@ require("startsession.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operations Supervisor | Inventory</title>
-    <!-- <link rel="stylesheet" href="../../css/style.css"> -->
+    <title>Manager | Inventory</title>
     <?php include('header.links.php'); ?>
+    <style>
+        table#approvechemtable tr td,
+        table#approvechemtable tr th {
+            background-color: unset !important;
+            color: unset !important;
+            padding: 1.25rem !important;
+        }
 
+        table#approvechemtable tr th {
+            padding: 0.75rem 0.5rem;
+        }
+
+        table#approvechemtable tr td button {
+            color: unset !important;
+        }
+    </style>
 </head>
 
 <body class="bg-official text-light">
@@ -32,7 +47,7 @@ require("startsession.php");
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
-                            class="bi bi-archive-fill me-2 bg-success bg-opacity-50 py-1 px-2 rounded-circle shadow-sm align-middle float-start"></i>
+                            class="bi bi-archive-fill me-2 bg-success bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold w-75 mx-auto align-middle mb-0">Total
                             Items
                         </p>
@@ -43,7 +58,7 @@ require("startsession.php");
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
-                            class="bi bi-box-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded-circle shadow-sm align-middle float-start"></i>
+                            class="bi bi-exclamation-triangle-fill me-2 bg-warning bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold w-75 mx-auto align-middle mb-0">
                             Restock Items
                         </p>
@@ -54,7 +69,7 @@ require("startsession.php");
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
-                            class="bi bi-calendar-x-fill me-2 bg-danger bg-opacity-25 py-1 px-2 rounded-circle shadow-sm align-middle float-start"></i>
+                            class="bi bi-calendar-x-fill me-2 bg-danger bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold w-75 mx-auto align-middle mb-0">Expired
                             Items
                         </p>
@@ -67,7 +82,7 @@ require("startsession.php");
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
-                            class="bi bi-clock-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded-circle shadow-sm align-middle float-start"></i>
+                            class="bi bi-clock-fill me-2 bg-info bg-opacity-25 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold w-75 mx-auto align-middle mb-0">Pending
                             Entries
                         </p>
@@ -78,7 +93,7 @@ require("startsession.php");
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
-                            class="bi bi-check-circle-fill me-2 bg-success bg-opacity-50 py-1 px-2 rounded-circle shadow-sm align-middle float-start"></i>
+                            class="bi bi-check-circle-fill me-2 bg-success bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold w-75 mx-auto align-middle mb-0">Available
                             Items
                         </p>
@@ -89,7 +104,7 @@ require("startsession.php");
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
-                            class="bi bi-truck-flatbed me-2 bg-secondary bg-opacity-75 py-1 px-2 rounded-circle shadow-sm align-middle float-start"></i>
+                            class="bi bi-truck-flatbed me-2 bg-secondary bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold mb-0 w-75 mx-auto">Dispatched
                             Items
                         </p>
@@ -100,7 +115,7 @@ require("startsession.php");
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
-                            class="bi bi-x-octagon me-2 bg-danger bg-opacity-50 py-1 px-2 rounded-circle shadow-sm align-middle float-start"></i>
+                            class="bi bi-x-octagon me-2 bg-danger bg-opacity-50 py-1 px-2 rounded shadow-sm align-middle float-start"></i>
                         <p class="fs-5 fw-bold mb-0 w-75 mx-auto">Out
                             of Stock Items
                         </p>
@@ -110,13 +125,11 @@ require("startsession.php");
                 </div>
             </div>
 
-            <div class="hstack gap-2 my-2 mx-3">
+            <div class="hstack gap-2 my-3 mx-3">
                 <!-- <button type="button" id="hideentries"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 w-25 px-2 text-light"
-                    title="Hide Entries">
-                    <i class="bi bi-eye-slash me-2"></i>
-                    <span id="hideentrytext">Hide Entries</span>
-                </button> -->
+                    title="Hide Entries"><i class="bi bi-eye-slash me-2"></i><span id="hideEnText">Hide
+                        Entries</span></button> -->
                 <button type="button" id="entriesTableBtn"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
                         class="bi bi-clock-fill me-2"></i>Pending Entries</button>
@@ -126,8 +139,20 @@ require("startsession.php");
                 <button type="button" id="dispatchedTableBtn"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
                         class="bi bi-truck-flatbed me-2"></i>Dispatched Items</button>
-                <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light"
-                    placeholder="Search . . ." id="searchbar" name="search" autocomplete="one-time-code">
+                <select
+                    class="form-select select-transparent bg-light bg-opacity-25 py-2 border-0 h-100 text-light fw-bold w-25"
+                    id="sortbranches" aria-label="Default select example">
+                </select>
+                <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light" type="search"
+                    placeholder="Search . . ." id="searchbar" name="searchforafuckingchemical"
+                    autocomplete="one-time-code">
+                <button type="button" id="inventorylogbtn"
+                    class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 px-4 text-light"
+                    title="Inventory Logs"><i class="bi bi-file-earmark-text"></i><span id="hideEnText"></button>
+                <button type="button" id="approvemulti"
+                    class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 px-4 text-light" data-bs-toggle="modal"
+                    data-bs-toggle="tooltip" data-bs-target="#multiapproveModal" title="Approve multiple stocks"><i
+                        class="bi bi-list-check"></i></button>
                 <button type="button" id="loadChem"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded text-light py-2 px-4" data-bs-toggle="modal"
                     data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
@@ -249,7 +274,7 @@ require("startsession.php");
 
                             <div class="modal-body text-dark p-3">
                                 <label for="restock_confirmation" class="form-label fw-light">Confirm restock? Enter
-                                    <?= $_SESSION['baUsn'] ?>'s password to confirm.</label>
+                                    <?= $_SESSION['saUsn'] ?>'s password to confirm.</label>
                                 <input type="password" name="pwd" id="restock_confirmation"
                                     class="form-control ps-2 w-50">
                                 <p class="text-secondary fw-light">Note: restock note.</p>
@@ -408,6 +433,7 @@ require("startsession.php");
                     </div>
                 </div>
             </div>
+
             <!-- inventory log modal -->
             <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="inventorylogmodal"
                 tabindex="0">
@@ -423,7 +449,7 @@ require("startsession.php");
                         </div>
 
                         <div class="modal-body text-dark p-3">
-                            <div class="table-responsive-sm  d-flex justify-content-center">
+                            <div class="table-responsive-sm flex-column d-flex justify-content-center">
                                 <table class="table align-middle table-hover w-100" id="approvechemtable">
                                     <caption class="fw-light text-muted">Note. Associated transactions are logs that are
                                         auto deducted by the transaction.
@@ -444,8 +470,8 @@ require("startsession.php");
                                     </tbody>
 
                                 </table>
+                                <div id="inv_log_pagination"></div>
                             </div>
-                            <div id="inv_log_pagination"></div>
                         </div>
 
                         <div class="modal-footer">
@@ -489,7 +515,7 @@ require("startsession.php");
                                     <h3 class="fw-medium text-center mt-2">Item Log</h3>
                                     <p class="text-secondary text-center fw-light">Recent log history from item changes.
                                     </p>
-                                    <div class="table-responsive-sm d-flex flex-column justify-content-center">
+                                    <div class="table-responsive-sm  d-flex justify-content-center">
                                         <table class="table align-middle table-hover w-100" id="chemicalhistorylog">
                                             <thead>
                                                 <tr class="text-center align-middle">
@@ -506,7 +532,7 @@ require("startsession.php");
                                             </tbody>
 
                                         </table>
-                                        <div id="chem_log_pagination"></div>
+                                        <div id="chemical_log_pagination"></div>
                                     </div>
                                 </div>
 
@@ -548,7 +574,6 @@ require("startsession.php");
                                                 <div class="d-flex">
                                                     <input type="number" class="form-control ps-2" id="adjust-qty"
                                                         name="qty">
-                                                    <!-- <span class="qty-unit ms-2 my-auto"></span> -->
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" name="containerchk" type="checkbox"
@@ -616,6 +641,7 @@ require("startsession.php");
                                                     placeholder="state reason of adjustment . . ."
                                                     autocomplete="off"></textarea>
                                             </div>
+
                                         </div>
                                         <p class="alert alert-info py-2 text-center w-75 mx-auto" id="adjustalert"
                                             style="display: none;"></p>
@@ -635,7 +661,6 @@ require("startsession.php");
                     </div>
                 </div>
             </div>
-
 
             <!-- edit chemical -->
             <form id="editChemForm">
@@ -732,7 +757,7 @@ require("startsession.php");
                                         <p
                                             class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
                                             Item Count Information</p>
-                                        <div class="row mb-2 user-select-none">
+                                        <div class="row mb-2 d-none user-select-none" id="chemState">
                                             <div class="col-3">
                                                 <p class="fw-medium mb-2">Opened Item Level:</p>
                                                 <p class="ps-2 mb-2" id="openedContainerLevel"></p>
@@ -777,13 +802,13 @@ require("startsession.php");
                             <div class="modal-body">
                                 <div class="row mb-2">
                                     <label for="pass" class="form-label fw-light">Change item information? Enter manager
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
-                                        <input type="password" name="baPwd" class="form-control" id="pwd">
+                                        <input type="password" name="saPwd" class="form-control" id="pwd">
                                     </div>
                                 </div>
-                                <p class='text-center alert alert-info p-1 py-3 w-50 mx-auto my-0'
-                                    style="display: none !important;" id="incPass"></p>
+                                <p class='text-center alert alert-info p-1 w-50 mx-auto my-0 visually-hidden'
+                                    id="incPass"></p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-target="#editModal"
@@ -810,7 +835,6 @@ require("startsession.php");
                                             class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
-                                    <!-- <input type="hidden" name="id" id="id" class="form-control"> -->
                                     <div class="row mb-2">
                                         <div class="col-lg-3 mb-2">
                                             <label for="name" class="form-label fw-light">Item Name</label>
@@ -822,7 +846,6 @@ require("startsession.php");
                                             <input type="text" name="chemBrand[]" id="add-chemBrand"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
-
                                         <div class="col-lg-2 mb-2">
                                             <label for="chemLevel" class="form-label fw-light">Item Size</label>
                                             <input type="text" name="containerSize[]" id="add-chemLevel"
@@ -869,31 +892,33 @@ require("startsession.php");
                                         <div class="col-lg-2 mb-2">
                                             <label for="expDate" class="form-label fw-light">Expiry Date</label>
                                             <input type="date" name="expDate[]" id="add-expDate"
-                                                class="form-control form-add form-date-exp">
-                                            <!-- <div class="text-body-secondary fw-light text-muted mt-2">
+                                                class="form-control form-add form-date">
+                                            <div class="text-body-secondary fw-light text-muted mt-2">
                                                 Note: specify expiry date or default date will be set.
-                                            </div> -->
+                                            </div>
                                         </div>
                                         <div class="col-3 mb-2">
                                             <label for="notes" class="form-label fw-light">Short Note</label>
                                             <textarea name="notes[]" id="notes" class="form-control"
                                                 placeholder="Optional short note . . . "></textarea>
                                         </div>
-                                    </div>
-                                    <div id="addMoreChem"></div>
-                                    <hr class="mt-2 mb-3">
-                                    <div class="d-flex justify-content-between">
-                                        <button type="button" class="btn btn-grad" id="addMoreChemBtn"><i
-                                                class="bi bi-plus-circle-dotted  me-2"></i> Add More
-                                            Item</button>
-                                    </div>
+                                        <div id="addMoreChem"></div>
+                                        <hr class="mt-2 mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <button type="button" class="btn btn-grad" id="addMoreChemBtn"><i
+                                                    class="bi bi-plus-circle-dotted  me-2"></i> Add More
+                                                Item</button>
+                                        </div>
 
-                                </div>
-                                <div class="modal-footer d-flex justify-content-between">
-                                    <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                        data-bs-target="#areyousureaboutthat">Cancel</button>
-                                    <button type="button" class="btn btn-grad" disabled-id="submitAdd"
-                                        data-bs-toggle="modal" data-bs-target="#confirmAdd">Proceed & Confirm</button>
+
+                                    </div>
+                                    <div class="modal-footer d-flex justify-content-between">
+                                        <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                            data-bs-target="#areyousureaboutthat">Cancel</button>
+                                        <button type="button" class="btn btn-grad" disabled-id="submitAdd"
+                                            data-bs-toggle="modal" data-bs-target="#confirmAdd">Proceed &
+                                            Confirm</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -911,7 +936,8 @@ require("startsession.php");
                             <div class="modal-footer d-flex justify-content-between">
                                 <button type="button" class="btn btn-grad" data-bs-target="#addModal"
                                     data-bs-toggle="modal">Go Back</button>
-                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel Entry</button>
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel
+                                    Entry</button>
                             </div>
                         </div>
                     </div>
@@ -931,12 +957,13 @@ require("startsession.php");
                             <div class="modal-body">
                                 <div class="row mb-2">
                                     <label for="pass" class="form-label fw-light">Add Item? Enter manager
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
-                                        <input type="password" name="baPwd" class="form-control" id="addPwd">
+                                        <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
                                 </div>
-                                <p class="text-center alert alert-info w-75 mx-auto d-none" id="aea">
+                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none !important;"
+                                    id="aea">
                                 </p>
                             </div>
                             <div class="modal-footer">
@@ -1075,7 +1102,7 @@ require("startsession.php");
                                 <div class="row mb-2">
                                     <label for="pass" class="form-label fw-light">Dispatch Item? Enter Operations
                                         Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control">
                                     </div>
@@ -1159,6 +1186,7 @@ require("startsession.php");
                                     <p
                                         class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
                                         Return Information</p>
+
                                     <div class="row mb-2">
                                         <div class="col-5 mb-2">
                                             <label for="opened_container" class="form-label fw-medium">Returned quantity
@@ -1184,6 +1212,7 @@ require("startsession.php");
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="row mb-2">
                                         <div class="col-lg-4 mb-2">
                                             <label for="return_transaction" class="form-label fw-medium">Select
@@ -1200,7 +1229,6 @@ require("startsession.php");
                                                 a transaction.</p>
                                         </div>
                                     </div>
-
 
                                     <p class="mb-0 mt-3 text-center alert alert-warning">Note: This is a summary of
                                         multiple dispatched items. This will
@@ -1231,7 +1259,7 @@ require("startsession.php");
                                 <div class="row mb-2">
                                     <label for="pass" class="form-label fw-light">Return Item? Enter Operations
                                         Supervisor
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control">
                                     </div>
@@ -1266,10 +1294,10 @@ require("startsession.php");
                             <div class="modal-body">
                                 <div class="row mb-2">
                                     <label for="pass" class="form-label fw-light">Are you sure you want to
-                                        delete this product? Enter Branch Admin
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                        delete this product? Enter Manager
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
-                                        <input type="password" name="baPwd" class="form-control" id="manPass">
+                                        <input type="password" name="saPwd" class="form-control" id="manPass">
                                     </div>
                                 </div>
                                 <div id="passwordHelpBlock" class="form-text">
@@ -1283,6 +1311,131 @@ require("startsession.php");
                                 <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
                                 <button type="submit" class="btn btn-grad" id="delsub">Delete
                                     Item</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form id="multiapprove">
+                <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static" id="multiapproveModal"
+                    tabindex="0" aria-labelledby="confirmAdd" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title">
+                                <h1 class="modal-title fs-5 text-light">Stock Entries</h1>
+                                <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x"></i></button>
+                            </div>
+
+                            <div class="modal-body text-dark p-3">
+                                <div class="table-responsive-sm  d-flex justify-content-center">
+                                    <table class="table align-middle table-hover w-100" id="approvechemtable">
+                                        <caption class="fw-light text-muted">List of items added by the Operations
+                                            Supervisor.</captio>
+                                        <thead>
+                                            <tr class="text-center align-middle">
+                                                <th scope="col">Name</th>
+                                                <th>Brand</th>
+                                                <th>Level</th>
+                                                <th>Expiry Date</th>
+                                                <th>
+                                                    <input type="checkbox" class="btn-check" id="checkall"
+                                                        autocomplete="off">
+                                                    <label class="btn fw-bold" for="checkall">Check All <i
+                                                            id="checkicon" class="bi bi-square ms-2"></i></label>
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody id="approve-chemtable" class="table-group-divider">
+                                            <!-- ajax chem table -->
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#confirmmultiapprove">Continue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="confirmmultiapprove"
+                    tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Stock Entry Approval</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Approve selected
+                                        entries?
+                                        Enter manager
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="saPwd" class="form-control"
+                                            id="confirmapprove-inputpwd">
+                                    </div>
+                                </div>
+                                <div id="passwordHelpBlock" class="form-text">
+                                    Note: Approving entry requests will officially make the chemicals a part of the
+                                    inventory.
+                                </div>
+                                <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
+                                    id="approvemulti-errmsg">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#multiapproveModal">Go Back</button>
+                                <button type="submit" class="btn btn-grad" id="approvemultichem">Approve
+                                    Entries</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- single approval modal | acts as confirmation modal (?) -->
+            <form id="confirmapprove">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="approveModal" tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5" id="verifyChanges">Entry Approval</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="approve-inputpwd" class="form-label fw-light">Approve Item <span
+                                            id="chemname"></span>? Enter manager
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="hidden" name="id" id="approve-id">
+                                        <input type="password" name="saPwd" class="form-control" id="approve-inputpwd">
+                                    </div>
+                                </div>
+                                <div id="passwordHelpBlock" class="form-text">
+                                    Note: Approving stock entries will officially make the stocks a part of the
+                                    inventory.
+                                </div>
+                                <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
+                                    id="approve-errmsg">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-grad" id="approvechem">Approve
+                                    Entry</button>
                             </div>
                         </div>
                     </div>
@@ -1420,8 +1573,8 @@ require("startsession.php");
     <?php include('footer.links.php'); ?>
 
     <script>
-        const urldata = 'contents/inv.data.php';
-        const urlpage = 'contents/inv.pagination.php';
+        const pageurl = 'tablecontents/pagination.php';
+        const dataurl = 'tablecontents/chemicals.php';
 
         function show_toast(message) {
             $('#toastmsg').html(message);
@@ -1430,41 +1583,198 @@ require("startsession.php");
             toast.show();
         }
 
-        $(document).ready(async function () {
-            // get_data();
-            // get_id();
-            get_sa_id();
-            await loadpage(1);
-            // await loadstate(1);
+        flatpickr("#addMoreChem input.form-date-exp", {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y",
+            minDate: 'today'
+        });
+        flatpickr("#addMoreChem input.form-date-rec", {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y",
+            maxDate: 'today'
         });
 
-        async function loadpagination(pageno, entries = false) {
+        $(document).on('click', "#loadChem", function () {
+            // flatpickrdate(d);
+            $("#addMoreChem").empty();
+            $("#addForm")[0].reset();
+        });
+
+        $(document).on('click', '.remove-btn', function () {
+            $(this).parent().parent().remove();
+        })
+
+        $(document).on('click', '#addMoreChemBtn', async function () {
+            $.get(dataurl, "addrow=true")
+                .done(function (data) {
+                    $('#addMoreChem').append(data);
+                    flatpickr("#addMoreChem input.form-date-exp", {
+                        dateFormat: "Y-m-d",
+                        altInput: true,
+                        altFormat: "F j, Y",
+                        minDate: 'today'
+                    });
+                    flatpickr("#addMoreChem input.form-date-rec", {
+                        dateFormat: "Y-m-d",
+                        altInput: true,
+                        altFormat: "F j, Y",
+                        maxDate: 'today'
+                    });
+                })
+                .fail(function (e, s, em) {
+                    console.log(e);
+                });
+        });
+
+
+        $(document).on('change', '#add-approved', function () {
+            // let flask = $('#flaskApproveAll');
+            if ($(this).is(':checked')) {
+                $("#flaskApproveAll").removeClass('bi-flask');
+                $("#flaskApproveAll").addClass('bi-flask-fill');
+            } else {
+                $("#flaskApproveAll").removeClass('bi-flask-fill');
+                $("#flaskApproveAll").addClass('bi-flask');
+            }
+        });
+
+        // const addexpdatee = document.getElementBy
+
+        $(document).on('click', '#approvemulti', async function () {
+            $('#multiapprove')[0].reset();
+            const reqlist = await stock_requests();
+            if (reqlist) {
+                $('#multiapproveModal').modal('show');
+            }
+        });
+
+        $(document).on('change', '#checkall', function () {
+            $('#checkicon').toggleClass('bi-square bi-check-square');
+            var checked = $(this).prop('checked');
+            $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
+        });
+
+        async function stock_requests() {
             try {
-                return $.ajax({
-                    type: 'GET',
-                    url: urlpage,
-                    data: {
-                        pagenav: 'true',
-                        active: pageno,
-                        entries: entries
-                    },
-                    success: async function (res) {
-                        $('#pagination').empty();
-                        $('#pagination').append(res);
-                        window.history.pushState(null, "", "?page=" + pageno);
-                    }
+                const stock = await $.ajax({
+                    method: 'GET',
+                    url: dataurl,
+                    dataType: 'html',
+                    data: '&stock=true'
                 });
 
+                if (stock) {
+                    $('#approve-chemtable').empty();
+                    $('#approve-chemtable').append(stock);
+                } else {
+                    alert('append err');
+                }
             } catch (error) {
-                alert(error);
+                console.log(error);
             }
         }
+
+        $(document).on('submit', '#multiapprove', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            try {
+                const approve = await $.ajax({
+                    method: 'POST',
+                    url: dataurl,
+                    dataType: 'json',
+                    data: $(this).serialize() + '&approvemultiple=true'
+                });
+
+                if (approve) {
+                    console.log(approve);
+                    console.log(approve.success);
+                    $('#tableAlert').css('display', 'block').html(approve.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                    await loadpage(1);
+                    $('#confirmmultiapprove').modal('hide');
+                }
+            } catch (error) {
+                let err = error.responseJSON;
+                console.log(error.responseText);
+                switch (err.error) {
+                    case 'emptyfield':
+                        $('input#confirmapprove-inputpwd').addClass('border border-warning-subtle').fadeIn(400);
+                        $('#approvemulti-errmsg').removeClass('visually-hidden').html(err.msg).hide().fadeIn(400).delay(1500).fadeOut(1000);
+                        break;
+                    case 'wrongpwd':
+                        $('input#confirmapprove-inputpwd').addClass('border border-danger-subtle').fadeIn(400);
+                        $('#approvemulti-errmsg').removeClass('visually-hidden').html(err.msg).hide().fadeIn(400).delay(1500).fadeOut(1000);
+                        break;
+                    case 'function':
+                        // console.log(error.responseJSON.pwd);
+                        $('input#confirmapprove-inputpwd').addClass('border border-danger-subtle').fadeIn(400);
+                        $('#approvemulti-errmsg').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(1500).fadeOut(1000);
+                        break;
+                    default:
+                        alert('unknown error. Please contact administration.');
+                        break;
+                }
+            }
+        });
+
+
+        $(document).on('click', '#approvebtn', async function () {
+            $('#confirmapprove')[0].reset();
+            let chemId = $(this).data('id');
+            let name = $(this).data('name');
+            $("#approve-id").val(chemId);
+            $('#chemname').html(name);
+        });
+
+        $(document).on('submit', '#confirmapprove', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            try {
+                const approve = await $.ajax({
+                    method: 'POST',
+                    dataType: 'json',
+                    url: dataurl,
+                    data: $(this).serialize() + '&approve=true'
+                });
+
+                if (approve) {
+                    console.log(approve.success);
+                    $('#tableAlert').css('display', 'block').html(approve.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                    await loadpage(1);
+                    $('#approveModal').modal('hide');
+                }
+            } catch (error) {
+                let err = error.responseJSON;
+                console.log(error.responseText);
+                switch (err.error) {
+                    case 'emptyfield':
+                        $('input#approve-inputpwd').addClass('border border-warning-subtle').fadeIn(400);
+                        $('#approve-errmsg').removeClass('visually-hidden').html(err.msg).hide().fadeIn(400).delay(1500).fadeOut(1000);
+                        break;
+                    case 'wrongpwd':
+                        $('input#approve-inputpwd').addClass('border border-danger-subtle').fadeIn(400);
+                        $('#approve-errmsg').removeClass('visually-hidden').html(err.msg).hide().fadeIn(400).delay(1500).fadeOut(1000);
+                        break;
+                    case 'function':
+                        // console.log(error.responseJSON.pwd);
+                        $('input#approve-inputpwd').addClass('border border-danger-subtle').fadeIn(400);
+                        $('#approve-errmsg').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(1500).fadeOut(1000);
+                        break;
+                    default:
+                        alert('unknown error. Please contact administration.');
+                        break;
+                }
+
+            }
+        });
+
 
         async function loadpagination2(pageno) {
             try {
                 return $.ajax({
                     type: 'GET',
-                    url: 'contents/state.pagination.php',
+                    url: 'tablecontents/state.pagination.php',
                     data: {
                         pagenav: 'true',
                         active: pageno
@@ -1484,7 +1794,7 @@ require("startsession.php");
             try {
                 return $.ajax({
                     type: 'GET',
-                    url: 'contents/inv.containerstatus.pagination.php',
+                    url: 'tablecontents/inv.containerstatus.pagination.php',
                     data: {
                         pagenav: 'true',
                         active: pageno
@@ -1501,35 +1811,98 @@ require("startsession.php");
             }
         }
 
-        async function loadtable(page, hide_entries = false) {
+        $(document).ready(async function () {
+            get_sa_id();
+            await loadpage(1);
+
+            $.get(dataurl, {
+                branchoptions: true
+            })
+                .done(function (d) {
+                    $("#sortbranches").append(d);
+                })
+                .fail(function (e) {
+                    console.log('error appending branches option');
+                })
+        });
+
+
+        function get_overview_count(container, branch) {
+            $.get(dataurl, {
+                count: true,
+                status: container,
+                branch: branch
+            })
+                .done(function (d) {
+                    console.log(d);
+                    $(`#count_${container}`).empty();
+                    $(`#count_${container}`).append(d);
+                })
+                .fail(function (e) {
+                    console.log(e);
+                })
+        }
+
+        function overview_display(branch = null) {
+            get_overview_count('total', branch);
+            get_overview_count('low', branch);
+            get_overview_count('expired', branch);
+            get_overview_count('entries', branch);
+            get_overview_count('available', branch);
+            get_overview_count('dispatched', branch);
+            get_overview_count('out-of-stock', branch);
+        }
+
+        async function loadpagination(pageno, entries = false, branch = null) {
             try {
                 return $.ajax({
                     type: 'GET',
-                    url: urlpage,
+                    url: pageurl,
                     data: {
-                        table: 'true',
-                        currentpage: page,
-                        hideentries: hide_entries
+                        pagenav: 'true',
+                        active: pageno,
+                        entries: entries,
+                        branch: branch
                     },
-                    success: function (data) {
-                        $('#chemicalTable').empty();
-                        $('#chemicalTable').append(data);
-                    },
-                    error: function (err) {
-                        alert('There was a problem fetching the data of a table. Please try again later.');
+                    success: async function (res) {
+                        // console.log(res);
+
+                        $('#pagination').empty();
+                        $('#pagination').append(res);
+                        window.history.pushState(null, "", "?page=" + pageno);
                     }
                 });
 
             } catch (error) {
                 alert(error);
             }
+        }
+
+        async function loadtable(page = 1, hide_entries = false, branch = null) {
+            $.ajax({
+                type: 'GET',
+                url: pageurl,
+                data: {
+                    table: 'true',
+                    currentpage: page,
+                    hideentries: hide_entries,
+                    branch: branch
+                },
+                success: function (data) {
+                    $('#chemicalTable').empty();
+                    $('#chemicalTable').append(data);
+                },
+                error: function (err) {
+                    alert('loadtable func error:' + err);
+                }
+            });
 
         }
 
         async function loadtable2(page) {
             $.ajax({
                 method: 'GET',
-                url: 'contents/state.pagination.php',
+                url: 'tablecontents/state.pagination.php',
                 data: {
                     table: 'true',
                     currentpage: page
@@ -1549,7 +1922,7 @@ require("startsession.php");
         async function loadtable3(page) {
             $.ajax({
                 method: 'GET',
-                url: 'contents/inv.containerstatus.pagination.php',
+                url: 'tablecontents/inv.containerstatus.pagination.php',
                 data: {
                     table: 'true',
                     currentpage: page
@@ -1566,44 +1939,70 @@ require("startsession.php");
                 })
         }
 
-        async function loadpage(page) {
-            await loadtable(page);
-            await loadpagination(page);
+        async function loadpage(page, entryHidden = false, branch = null) {
+            await loadtable(page, entryHidden, branch);
+            await loadpagination(page, entryHidden, branch);
             await loadpagination2(page);
             await loadtable2(page);
             await loadtable3(page);
             await loadpagination3(page);
-            overview_display();
+            overview_display(branch);
         }
 
+        let entryHidden = false;
+        async function hide_entries() {
+            if ($('#searchbar').length > 0) {
+                $('#pagination').removeClass('d-none');
+                $('#searchbar').val('');
+            }
+            entryHidden = !entryHidden ? true : false;
+            await loadpage(1, entryHidden)
+
+            if (entryHidden) {
+                $('#hideentries > i').removeClass('bi-eye-slash').addClass('bi-eye');
+                $('#hideEnText').text('Show Entries');
+            } else {
+                $('#hideentries > i').removeClass('bi-eye').addClass('bi-eye-slash');
+                $('#hideEnText').text('Hide Entries');
+            }
+            return entryHidden;
+        }
+
+        $(document).on('change', '#sortbranches', async function () {
+            let branch = $(this).val();
+            // console.log(branch);
+            await loadpage(1, entryHidden, branch);
+            $("#searchbar").val('');
+            let pagination = $("#pagination");
+            if (pagination.hasClass('d-none')) {
+                $('#pagination').removeClass('d-none');
+            }
+            overview_display(branch);
+
+        })
+
+        $(document).on('click', '#hideentries', async function () {
+            await hide_entries();
+        });
 
         $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
 
+            let branch = $("#sortbranches").val();
             let currentpage = $(this).data('page');
-            await loadtable(currentpage);
-            await loadpagination(currentpage);
+
+            await loadtable(currentpage, entryHidden, branch);
+            await loadpagination(currentpage, entryHidden, branch);
         })
 
-        $('#table2pagination').on('click', '.page-link', async function (e) {
-            e.preventDefault();
-            let currentpage = $(this).data('page');
-            await loadtable2(currentpage);
-            await loadpagination2(currentpage);
-        })
 
-        $('#containerReportPagination').on('click', '.page-link', async function (e) {
-            e.preventDefault();
-            let currentpage = $(this).data('page');
-            await loadtable3(currentpage);
-            await loadpagination3(currentpage);
-        })
 
         // search
         $(function () {
             let timeout = null;
 
             $('#searchbar').keyup(function () {
+                let branch = $("#sortbranches").val();
                 clearTimeout(timeout);
                 $('#chemicalTable').empty();
                 // $('#chemicalTable').append($('#loader'))
@@ -1614,11 +2013,13 @@ require("startsession.php");
                     var search = $('#searchbar').val();
                     try {
                         const searchChem = await $.ajax({
-                            url: urlpage,
+                            url: 'tablecontents/pagination.php',
                             type: 'GET',
                             dataType: 'html',
                             data: {
                                 search: search,
+                                entries: entryHidden,
+                                branch: branch
                             },
                             success: async function (searchChem, status) {
                                 if (!search == '') {
@@ -1627,9 +2028,10 @@ require("startsession.php");
                                     // $('#loader').addClass('visually-hidden');
                                     $('#loader').attr('style', 'display: none !important;');
                                     $('#chemicalTable').append(searchChem);
+
                                 } else {
                                     $('#loader').attr('style', 'display: none !important;');
-                                    await loadpage(1);
+                                    await loadpage(1, entryHidden, branch);
                                     $('#pagination').removeClass('d-none');
                                 }
                             }
@@ -1642,6 +2044,401 @@ require("startsession.php");
             });
         });
 
+
+
+        function get_sa_id() {
+            $.post(dataurl, {
+                managerId: true
+            }, function (data, status) {
+                // console.log(data + ' status ' + status);
+                $('#idForDeletion').val(data);
+                // var saID = data;
+                // console.log($('#idForDeletion').val());
+                // console.log(saID);   
+                // return saID; 
+            })
+        }
+
+        // edit chemical
+        $(document).on('submit', '#editChemForm', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            try {
+                const data = await $.ajax({
+                    type: 'POST',
+                    url: dataurl,
+                    data: $(this).serialize() + '&action=edit',
+                    dataType: 'json'
+                });
+                if (data.success) {
+                    $("#chemicalTable").empty();
+                    await loadpage(1);
+                    $('#tableAlert').css('display', 'block').html(data.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                    $('#editChemForm')[0].reset();
+                    $('#confirmEdit').modal('hide');
+                } else {
+                    alert("Invalid Response");
+                }
+            } catch (error) {
+                let err = error.responseText;
+                $('#incPass').removeClass('visually-hidden').html(err).hide().fadeIn(400).delay(1500).fadeOut(1000);
+
+            }
+        });
+
+        $(document).on('click', '.delbtn', function () {
+            $('#deleteForm')[0].reset();
+            $('#delChemId').val($(this).data('id'));
+            $('#deleteModal').modal('show');
+        });
+
+
+        $(document).on('submit', '#deleteForm', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            $.ajax({
+                type: 'POST',
+                url: dataurl,
+                data: $(this).serialize() + '&action=delete',
+                dataType: 'json'
+            }).done(function (d) {
+                // console.log(d);
+                if (d.success) {
+                    $('#chemicalTable').empty();
+                    loadpage(1, entryHidden);
+                    $('#deleteModal').modal('hide');
+                    $('#tableAlert').html(d.success).fadeIn(400).delay(2000).fadeOut(1000);
+                    $('#deleteForm')[0].reset();
+                }
+            }).fail(function (e) {
+                // console.log(e);
+                $('#manPass').addClass('border border-warning').fadeIn(400);
+                $('#del-emptyInput').removeClass('visually-hidden').html(e.responseText).hide().fadeIn(400).delay(2000).fadeOut(1000);
+            })
+        });
+
+
+        $(document).on('submit', '#addForm', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            try {
+                const add = await $.ajax({
+                    type: 'POST',
+                    url: dataurl,
+                    data: $(this).serialize() + '&action=add',
+                    dataType: 'json'
+                });
+                if (add.success) {
+                    $('#chemicalTable').empty();
+                    await loadpage(1);
+                    $('#confirmAdd').modal('hide');
+                    $('#tableAlert').html(add.success).fadeIn(400).delay(2000).fadeOut(1000);
+                    $('#addForm')[0].reset();
+                }
+
+            } catch (error) {
+                console.log(error);
+                $('#addForm input').addClass('border border-warning').fadeIn(400);
+                $('#aea').html(error.responseText).removeClass('d-none').fadeIn(400).delay(2000).fadeOut(1000);
+            }
+        });
+
+        async function get_chem_details(id) {
+            return $.get(dataurl, {
+                id: id,
+                chemDetails: 'true'
+            })
+                .done(function (d, s) {
+                    console.log(d);
+                    return d;
+                })
+                .fail(function (e) {
+                    console.log(e);
+                })
+        }
+
+        flatpickr("#edit-dateReceived, #add-dateReceived", {
+            dateFormat: "Y-m-d",
+            maxDate: 'today'
+        });
+
+        flatpickr("#edit-expDate, #add-expDate", {
+            dateFormat: "Y-m-d",
+            minDate: 'today'
+        });
+
+        $(document).on('click', '#inventorylogbtn', function () {
+            $('#inventorylogmodal').modal('show');
+            $.get('tablecontents/inv.log.pagination.php', {
+                inventorylog: true
+            })
+                .done(function (data) {
+                    $('#inventorylogmodal .modal-body #inventorylogtable').empty();
+                    $('#inventorylogmodal .modal-body #inventorylogtable').append(data);
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $('#inventorylogmodal .modal-body').html('<p class="text-center text-danger">Error loading inventory log.</p>');
+                });
+        });
+
+        let toggled = false;
+
+        function toggle() {
+            $('#submitEdit').toggleClass('d-none');
+            $('#view-chemUnit, #edit-chemUnit').toggleClass('d-none');
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount, #edit-restockThreshold').attr('readonly', function (i, a) {
+                return a ? false : true;
+            });
+            $("#edit-expDate, #edit-dateReceived, #edit-chemUnit").attr('disabled', function (i, a) {
+                return a ? false : true;
+            });
+
+            $("#toggleEditBtn").html(function (i, a) {
+                return a.includes('Close Edit') ? 'Edit' : 'Close Edit';
+            });
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived, #edit-contSize, #edit-containerCount, #edit-restockThreshold').toggleClass('form-control-plaintext form-control');
+
+            return toggled = toggled ? false : true;
+        }
+
+        async function qty_unit_options(current_unit, select_id) {
+            $.get(dataurl, {
+                qty_unit_options: true,
+                current_unit: current_unit
+            },
+                async function (d) {
+                    $(`select#${select_id}`).empty();
+                    $(`select#${select_id}`).append(d);
+                },
+                'html'
+            )
+                .fail(function (e) {
+                    alert("Error in loading quantity unit options. Please refresh the page and try again.");
+                    console.log(e);
+                });
+        }
+
+        $(document).on('click', '.editbtn', async function () {
+            $('#editChemForm')[0].reset();
+            let id = $(this).data('chem');
+            let deets = await get_chem_details(id);
+            var details = JSON.parse(deets);
+            console.log(details);
+
+            $('#submitEdit, #toggleEditBtn').attr('disabled', function () {
+                return details.req == 1 ? true : false;
+            });
+
+            var today = new Date();
+            var exp = new Date(details.expDate);
+            if (exp <= today) {
+                $("#expdatewarning").html('Caution. Chemical Expired.').toggleClass('d-none');
+            } else {
+                $('#expdatewarning').html('').addClass('d-none');
+            }
+
+            $("#edit-id").val(details.id);
+            $('#edit-name').val(details.name);
+            $('#edit-chemBrand').val(details.brand);
+            $('#edit-chemLevel').val(details.level);
+            $('#edit-contSize').val(details.container_size);
+            $('#edit-containerCount').val(details.unop_cont);
+            $('#edit-dateReceived').val(details.daterec);
+            $('#edit-expDate').val(details.expDate);
+            $('#edit-notes').val(details.notes);
+            $('#edit-chemUnit').val(details.unit);
+            $('#edit-restockThreshold').val(details.threshold);
+            $('#view-chemUnit').text(details.unit);
+            $('#addinfo').html(function () {
+                return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
+            });
+            $('#updateinfo').html(function () {
+                return details.upby === 'No Update Record' ? 'Updated at: ' + details.upat : 'Updated at: ' + details.upat + ' by ' + details.upby;
+            });
+
+            let reqAlertStatus = $('#reqalert').hasClass('d-none');
+            let chemstate = $("#chemState").hasClass('d-none');
+            if (details.req == 1) {
+                $('#reqalert').removeClass('d-none').html('This chemical is pending for approval by the Manager. You can only view the details of this chemical.').fadeIn(750);
+                $('#chemState').removeClass('d-none');
+
+            } else {
+                if (!reqAlertStatus) {
+                    $('#reqalert').addClass('d-none');
+                }
+                if (chemstate) {
+                    $('#chemState').removeClass('d-none');
+                }
+                $('#reqalert').html('');
+            }
+
+            if (toggled) {
+                toggle();
+            }
+
+            $('#editModal').modal('show');
+
+        });
+
+        async function load_chem_log_history(id, currentpage) {
+            return $.get('tablecontents/inv.itemloghistory.pagination.php', {
+                table: true,
+                chemid: id,
+                currentpage: currentpage
+            })
+                .done(function (data) {
+                    $('#chemicallogmodal .modal-body #chemicalhistorylogtable').empty();
+                    $('#chemicallogmodal .modal-body #chemicalhistorylogtable').append(data);
+                })
+                .fail(function (e) {
+                    console.error(e);
+                    $('#chemicallogmodal .modal-body .tab-pane.fade').html('<p class="text-center text-danger">Error loading item log.</p>');
+                });
+        }
+
+        async function load_item_history_pagination(id, page) {
+            return $.get("tablecontents/inv.itemloghistory.pagination.php", {
+                pagenav: true,
+                active: page,
+                id: id
+            }, function (d) {
+                $("#chem_log_pagination").empty();
+                $("#chem_log_pagination").append(d);
+            }, 'html')
+                .fail(function (e) {
+                    console.log(e);
+                    $('#chem_log_pagination').html('<p class="text-center text-warning">Error loading pagination.</p>');
+                })
+        }
+
+        async function item_history(id, page = 1) {
+            try {
+                await load_chem_log_history(id, page);
+                await load_item_history_pagination(id, page);
+            } catch (e) {
+                console.log(e);
+                alert("An error has occured loading item history. Please try again later.");
+            }
+        }
+
+        async function setup_pagination_event(id) {
+            $("#chem_log_pagination").off('click', '.page-link');
+            $('#chem_log_pagination').on('click', '.page-link', async function (e) {
+                e.preventDefault();
+                let currentpage = $(this).data('page');
+                await item_history(id, currentpage);
+            });
+        }
+
+        $(document).on('click', '.log-chem-btn', async function () {
+            let id = $(this).data('chem');
+            try {
+                await item_history(id);
+                await setup_pagination_event(id);
+                await get_chem_log(id);
+                $('#chemicallogmodal').modal('show');
+
+            } catch (error) {
+                console.error(error);
+            }
+        });
+
+        async function get_chem_log(id) {
+            console.log(id);
+            $.ajax({
+                method: 'GET',
+                url: dataurl,
+                data: {
+                    chemLog: true,
+                    id: id
+                },
+                dataType: 'json'
+            }).done(async function (data) {
+                console.log(data);
+
+                if (data.success) {
+                    let d = JSON.parse(data.success);
+                    $(".log-chem-id").val(d.id);
+                    $(".chem-name").val(d.name);
+                    // $(".qty-unit").text(' - ' + d.quantity_unit);
+                    $("#main_qty_unit").val(d.quantity_unit);
+
+                    await qty_unit_options(d.quantity_unit, "adjust_qty_unit");
+
+                    $("#adjust-curlevel").text(d.chemLevel + '/' + d.container_size + d.quantity_unit + ' (' + d.unop_cont + ' container/s left.)');
+                    $("#adjust-dispatched").text(d.chem_location === 'dispatched' ? "Item dispatched." : "Item available.");
+
+                    if (!$("#wholecontainercheck").prop('checked')) {
+                        $("#adjust-containerinput").hide();
+                        $("#adjust-containerinput input").prop('disabled', true);
+                        $("#adjust-qty").prop('disabled', false);
+                    }
+                    $('#wholecontainercheck').on('change', function () {
+                        if ($(this).prop('checked')) {
+                            $("#adjust-containerinput").show();
+                            $("#adjust-containerinput input").prop('disabled', false);
+                            $("#adjust-qty").prop('disabled', true);
+                            $("#adjust_qty_unit").prop('disabled', true);
+                        } else {
+                            $("#adjust-containerinput").hide();
+                            $("#adjust-containerinput input").prop('disabled', true);
+                            $("#adjust-qty").prop('disabled', false);
+                            $("#adjust_qty_unit").prop('disabled', false);
+                        }
+                    })
+
+                    $('#chemicallogmodal').modal('show');
+
+                } else {
+                    alert('Unknown Error. Please try again later.');
+                }
+            })
+                .fail(function (e) {
+                    console.log(e);
+                })
+        }
+
+        $(document).on('click', '.log-chem-btn', function () {
+            let id = $(this).data('chem');
+            get_chem_log(id);
+        });
+
+        $('#adjust-logtype').on('change', function () {
+            if ($(this).val() === 'other') {
+                $("#ltothers").toggleClass('d-none');
+                $("#ltothers input").prop('disabled', false);
+            } else {
+                if (!$("#ltothers").hasClass('d-none')) {
+                    $("#ltothers").addClass('d-none');
+                    $("#ltothers input").prop('disabled', true);
+                }
+            }
+        });
+
+
+        $(document).on('submit', '#adjustform', async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            $.ajax({
+                method: "POST",
+                url: dataurl,
+                dataType: 'json',
+                data: $(this).serialize() + "&adjust=true"
+            })
+                .done(function (d) {
+                    $("#adjustform")[0].reset();
+                    // $("#adjustalert").text(d.success).fadeIn(300).delay(2000).fadeOut(1000);
+                    $("#chemicallogmodal").modal('hide');
+                    show_toast(d.success);
+                    loadpage(1, entryHidden);
+                })
+                .fail(function (e) {
+                    $("#adjustalert").text(e.responseText).fadeIn(300).delay(2000).fadeOut(1000);
+                    console.log(e);
+                })
+        })
+
         $(function () {
             let timeout = null;
 
@@ -1653,7 +2450,7 @@ require("startsession.php");
                 timeout = setTimeout(async function () {
                     var search = $('#searchChemUsedSummary').val();
                     await $.ajax({
-                        url: "contents/state.pagination.php",
+                        url: "tablecontents/state.pagination.php",
                         type: 'GET',
                         dataType: 'html',
                         data: {
@@ -1690,7 +2487,7 @@ require("startsession.php");
                 timeout = setTimeout(async function () {
                     var search = $('#searchContainerStatus').val();
                     await $.ajax({
-                        url: "contents/inv.containerstatus.pagination.php",
+                        url: "tablecontents/inv.containerstatus.pagination.php",
                         type: 'GET',
                         dataType: 'html',
                         data: {
@@ -1716,293 +2513,24 @@ require("startsession.php");
             });
         });
 
-
-        function get_sa_id() {
-            $.post(urldata, {
-                managerId: true
-            }, function (data, status) {
-                $('#idForDeletion').val(data);
-            })
-        }
-
-        // edit chemical
-        $(document).on('submit', '#editChemForm', async function (e) {
+        $('#table2pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
-            // console.log($(this).serialize());
-            try {
-                const data = await $.ajax({
-                    type: 'POST',
-                    url: urldata,
-                    data: $(this).serialize() + '&action=edit',
-                    dataType: 'json'
-                });
-                if (data.success) {
-                    $("#chemicalTable").empty();
-                    await loadpage(1);
-                    $('#confirmEdit').modal('hide');
-                    $('#tableAlert').css('display', 'block').html(data.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                    $('#editChemForm')[0].reset();
-                }
-            } catch (error) {
-                // console.log(error);
-                let err = typeof error.responseJSON === 'undefined' ? error.responseText : error.responseJSON;
-                $('#incPass').html(err).fadeIn(750).delay(2000).fadeOut(1000);
-            }
+            let currentpage = $(this).data('page');
+            await loadtable2(currentpage);
+            await loadpagination2(currentpage);
         })
 
-
-
-
-        flatpickr("#add-receivedDate form-date-exp", {
-            dateFormat: "Y-m-d",
-            altInput: true,
-            altFormat: "F j, Y",
-            minDate: 'today'
-        });
-        flatpickr("#add-receivedDate form-date-rec", {
-            dateFormat: "Y-m-d",
-            altInput: true,
-            altFormat: "F j, Y",
-            maxDate: 'today'
-        });
-
-
-        $(document).on('click', '.remove-btn', function () {
-            $(this).parent().parent().remove();
-        })
-
-        // $(document).on("shown.bs.modal", "#addModal", function () {
-        //     $.get(urldata, {
-        //         get_qty_unit: true
-        //     }, function(d){
-        //         $("#add-chemUnit").empty();
-        //         $("#add-chemUnit").append(d);
-        //     }, 'html')
-        //     .fail(function (e) {
-        //         $("#add-chemUnit").append("<option value=''>Error loading units</option>");
-        //         console.log(e);
-        //     });
-        // })
-
-        $(document).on('click', '#addMoreChemBtn', async function () {
-            $.get(urldata, "addrow=true")
-                .done(function (data) {
-                    $('#addMoreChem').append(data);
-                    flatpickr("#addMoreChem input.form-date-exp", {
-                        dateFormat: "Y-m-d",
-                        altInput: true,
-                        altFormat: "F j, Y",
-                        minDate: 'today'
-                    });
-                    flatpickr("#addMoreChem input.form-date-rec", {
-                        dateFormat: "Y-m-d",
-                        altInput: true,
-                        altFormat: "F j, Y",
-                        maxDate: 'today'
-                    });
-                })
-                .fail(function (e, s, em) {
-                    console.log(e);
-                });
-        });
-
-        $(document).on('click', "#loadChem", function () {
-            // flatpickrdate(d);
-            $("#addMoreChem").empty();
-            $("#addForm")[0].reset();
-        });
-
-
-        $(document).on('click', '.delbtn', function () {
-            $('#deleteForm')[0].reset();
-            $('#delChemId').val($(this).data('id'));
-            $('#deleteModal').modal('show');
-        });
-
-        $(document).on('submit', '#deleteForm', async function (e) {
+        $('#containerReportPagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
-            console.log($(this).serialize());
-            $.ajax({
-                type: 'POST',
-                url: urldata,
-                data: $(this).serialize() + '&action=delete',
-                dataType: 'json'
-            }).done(function (d) {
-                // console.log(d);
-                if (d.success) {
-                    $('#chemicalTable').empty();
-                    loadpage(1);
-                    $('#deleteModal').modal('hide');
-                    $('#tableAlert').html(d.success).fadeIn(400).delay(2000).fadeOut(1000);
-                    $('#deleteForm')[0].reset();
-                }
-            }).fail(function (e) {
-                // console.log(e);
-                $('#manPass').addClass('border border-warning').fadeIn(400);
-                $('#del-emptyInput').removeClass('visually-hidden').html(e.responseText).hide().fadeIn(400).delay(2000).fadeOut(1000);
-            })
+            let currentpage = $(this).data('page');
+            await loadtable3(currentpage);
+            await loadpagination3(currentpage);
         });
 
 
 
-        $(document).on('submit', '#addForm', async function (e) {
-            e.preventDefault();
-            console.log($(this).serialize());
-            try {
-                const add = await $.ajax({
-                    type: 'POST',
-                    url: urldata,
-                    data: $(this).serialize() + '&action=add',
-                    dataType: 'json'
-                });
-                if (add.success) {
-                    $('#chemicalTable').empty();
-                    await loadpage(1);
-                    $('#confirmAdd').modal('hide');
-                    $('#tableAlert').html(add.success).fadeIn(400).delay(2000).fadeOut(1000);
-                    $('#addForm')[0].reset();
-                }
-
-            } catch (error) {
-                console.log(error);
-                $('#addForm input').addClass('border border-warning').fadeIn(400);
-                $('#aea').html(error.responseText).removeClass('d-none').fadeIn(400).delay(2000).fadeOut(1000);
-            }
-        });
-
-        async function get_chem_details(id) {
-            return $.get(urldata, {
-                id: id,
-                chemDetails: 'true'
-            })
-                .done(function (d, s) {
-                    console.log(d);
-                    return d;
-                })
-                .fail(function (e) {
-                    console.log(e);
-                })
-        }
-
-        flatpickr("#edit-dateReceived, #add-dateReceived", {
-            dateFormat: "Y-m-d",
-            maxDate: 'today'
-        });
-
-        flatpickr("#edit-expDate, #add-expDate", {
-            dateFormat: "Y-m-d",
-            minDate: 'today'
-        })
-
-        let toggled = false;
-
-        function toggle() {
-            $('#submitEdit').toggleClass('d-none');
-            $('#view-chemUnit, #edit-chemUnit, #view-location, #edit-location').toggleClass('d-none');
-            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount, #edit-restockThreshold').attr('readonly', function (i, a) {
-                return a ? false : true;
-            });
-            $("#edit-expDate, #edit-dateReceived, #edit-chemUnit").attr('disabled', function (i, a) {
-                return a ? false : true;
-            });
-
-            $("#toggleEditBtn").html(function (i, a) {
-                return a.includes('Close Edit') ? 'Edit' : 'Close Edit';
-            });
-            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived, #edit-contSize, #edit-containerCount, #edit-restockThreshold').toggleClass('form-control-plaintext form-control');
-
-            return toggled = toggled ? false : true;
-        }
-
-        // get specific chemical information when edit btn is clicked
-        $(document).on('click', '.editbtn', async function () {
-            $('#editChemForm')[0].reset();
-            let id = $(this).data('chem');
-            let deets = await get_chem_details(id);
-            var details = JSON.parse(deets);
-            console.log(details);
-
-            $('#submitEdit, #toggleEditBtn').attr('disabled', function () {
-                return details.req == 1 ? true : false;
-            });
-
-            var today = new Date();
-            var exp = new Date(details.expDate);
-            if (exp <= today) {
-                $("#expdatewarning").html('Caution. Item Expired.').toggleClass('d-none');
-            } else {
-                $('#expdatewarning').html('').addClass('d-none');
-            }
-
-            let clocation = 'Not defined';
-            if (details.location == 'main_storage') {
-                clocation = "Main Storage";
-            } else if (details.location == 'dispatched') {
-                clocation = "Dispatched";
-            }
-
-            $("#edit-id").val(details.id);
-            $('#edit-name').val(details.name);
-            $('#edit-chemBrand').val(details.brand);
-            $('#edit-chemLevel').val(details.level);
-            $('#edit-contSize').val(details.container_size);
-            $('#edit-containerCount').val(details.unop_cont);
-            $('#edit-dateReceived').val(details.daterec);
-            $('#edit-expDate').val(details.expDate);
-            $('#edit-notes').val(details.notes);
-            $('#edit-chemUnit').val(details.unit);
-            $('#edit-restockThreshold').val(details.threshold);
-            // $('#edit-location').val(details.location);
-            // $('#view-location').text(clocation);
-            $('#view-chemUnit').text(details.unit);
-            $('#addinfo').html(function () {
-                return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
-            });
-            $('#updateinfo').html(function () {
-                return details.upby === 'No Update Record' ? 'Updated at: ' + details.upat : 'Updated at: ' + details.upat + ' by ' + details.upby;
-            });
-
-            $("#openedContainerLevel").text(details.level + details.unit);
-            $("#closedContainerCount").text(details.unop_cont + " Container/s");
-
-            if (toggled) {
-                toggle();
-            }
-            let reqAlertStatus = $('#reqalert').hasClass('d-none');
-            let chemstate = $("#chemState").hasClass('d-none');
-            if (details.req == 1) {
-                $('#reqalert').removeClass('d-none').html('This item is pending for approval by the Manager. You can only view the details of this item.').fadeIn(750);
-                $('#chemState').addClass('d-none');
-            } else {
-                if (!reqAlertStatus) {
-                    $('#reqalert').addClass('d-none');
-                }
-                if (chemstate) {
-                    $('#chemState').removeClass('d-none');
-                }
-                $('#reqalert').html('');
-            }
-
-            $('#editModal').modal('show');
-
-        });
-
-        async function get_transaction_option() {
-            $.get(urldata, {
-                transaction_options: true
-            },
-                async function (d) {
-                    $("#dispatch-transaction").empty();
-                    $("#dispatch-transaction").append(d);
-                },
-                'html'
-            )
-                .fail(function (e) {
-                    alert("Error in loading transaction options. Please refresh the page and try again.");
-                });
-        }
         async function get_transaction_return(name, brand, csize, unit) {
-            $.get(urldata, {
+            $.get(dataurl, {
                 dispatched_transactions: true,
                 name: name,
                 brand: brand,
@@ -2021,22 +2549,6 @@ require("startsession.php");
                 });
         }
 
-        async function qty_unit_options(current_unit, select_id) {
-            $.get(urldata, {
-                qty_unit_options: true,
-                current_unit: current_unit
-            },
-                async function (d) {
-                    $(`select#${select_id}`).empty();
-                    $(`select#${select_id}`).append(d);
-                },
-                'html'
-            )
-                .fail(function (e) {
-                    alert("Error in loading quantity unit options. Please refresh the page and try again.");
-                    console.log(e);
-                });
-        }
 
         $(document).on('click', '.returnbtn', async function () {
             let id = $(this).data('return');
@@ -2083,13 +2595,7 @@ require("startsession.php");
             $("#returnChemicalForm").on('change', "select#return_transaction", function () {
                 let transid = $(this).val();
 
-                $.get(urldata, {
-                    dispatch_cur_transchem: true,
-                    chemId: id,
-                    transid: transid,
-                    return: true,
-                    containerSize: details.container_size
-                }, function (d) {
+                $.get(dataurl, { dispatch_cur_transchem: true, chemId: id, transid: transid, return: true, containerSize: details.container_size }, function (d) {
                     if (d.error) {
                         $("p#return_current_transaction_info").text(d.error);
                     } else {
@@ -2106,6 +2612,21 @@ require("startsession.php");
                     });
             });
         });
+
+        async function get_transaction_option() {
+            $.get(dataurl, {
+                transaction_options: true
+            },
+                async function (d) {
+                    $("#dispatch-transaction").empty();
+                    $("#dispatch-transaction").append(d);
+                },
+                'html'
+            )
+                .fail(function (e) {
+                    alert("Error in loading transaction options. Please refresh the page and try again.");
+                });
+        }
 
         $(document).on('click', '.dispatchbtn', async function () {
             let id = $(this).data('dispatch');
@@ -2148,12 +2669,7 @@ require("startsession.php");
             $("#dispatchChemicalForm").on('change', "select#dispatch-transaction", function () {
                 let transid = $(this).val();
 
-                $.get(urldata, {
-                    dispatch_cur_transchem: true,
-                    chemId: id,
-                    transid: transid,
-                    containerSize: details.container_size
-                }, function (d) {
+                $.get(dataurl, { dispatch_cur_transchem: true, chemId: id, transid: transid, containerSize: details.container_size }, function (d) {
                     if (d.error) {
                         $("p#current_transaction_info").text(d.error);
                     } else {
@@ -2174,7 +2690,7 @@ require("startsession.php");
             console.log($(this).serialize());
             $.ajax({
                 method: 'POST',
-                url: urldata,
+                url: dataurl,
                 data: $(this).serialize() + "&return_chemical=true",
                 dataType: 'json'
             })
@@ -2182,7 +2698,7 @@ require("startsession.php");
                     if (d.success) {
                         show_toast(d.success);
                         $("#returnConfirmationModal").modal('hide');
-                        loadpage(1);
+                        loadpage(1, entryHidden);
                     } else {
                         alert('An unknown error has occured. Please try again later.');
                     }
@@ -2195,11 +2711,11 @@ require("startsession.php");
 
         $(document).on('submit', '#dispatchChemicalForm', async function (e) {
             e.preventDefault();
-            console.log($(this).serialize());
+            // console.log($(this).serialize());
 
             $.ajax({
                 method: 'POST',
-                url: urldata,
+                url: dataurl,
                 data: $(this).serialize() + "&dispatch=true",
                 dataType: 'json'
             })
@@ -2207,7 +2723,7 @@ require("startsession.php");
                     if (d.success) {
                         show_toast(d.success);
                         $("#dispatchConfirmationModal").modal('hide');
-                        loadpage(1);
+                        loadpage(1, entryHidden);
                     } else {
                         alert('An unknown error has occured. Please try again later.');
                     }
@@ -2216,211 +2732,6 @@ require("startsession.php");
                     $("#dispatchAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
                 })
         });
-
-        function get_overview_count(container, branch) {
-            $.get(urldata, {
-                count: true,
-                status: container,
-                branch: branch
-            })
-                .done(function (d) {
-                    // console.log(d);
-                    $(`#count_${container}`).empty();
-                    $(`#count_${container}`).append(d);
-                })
-                .fail(function (e) {
-                    console.log(e);
-                })
-        }
-
-        function overview_display(branch = null) {
-            get_overview_count('total', branch);
-            get_overview_count('low', branch);
-            get_overview_count('expired', branch);
-            get_overview_count('entries', branch);
-            get_overview_count('available', branch);
-            get_overview_count('dispatched', branch);
-            get_overview_count('out-of-stock', branch);
-        }
-
-        // $("#chemicallogmodal").on('shown.bs.modal', function () {
-        //     $.get(urldata, {
-        //         trans_select: true
-        //     }, function (d) {
-        //         $('#chemicallogmodal select#adjust_transaction').empty();
-        //         $('#chemicallogmodal select#adjust_transaction').append(d);
-        //     }, 'html')
-        //         .fail(function (e) {
-        //             alert("An error has occured. Please try again later.");
-        //             console.log(e);
-        //         })
-        // });
-
-
-
-        async function load_chem_log_history(id, currentpage) {
-            return $.get('contents/inv.itemloghistory.pagination.php', {
-                table: true,
-                chemid: id,
-                currentpage: currentpage
-            })
-                .done(function (data) {
-                    $('#chemicallogmodal .modal-body #chemicalhistorylogtable').empty();
-                    $('#chemicallogmodal .modal-body #chemicalhistorylogtable').append(data);
-                })
-                .fail(function (e) {
-                    console.error(e);
-                    $('#chemicallogmodal .modal-body .tab-pane.fade').html('<p class="text-center text-danger">Error loading item log.</p>');
-                });
-        }
-
-        async function load_item_history_pagination(id, page) {
-            return $.get("contents/inv.itemloghistory.pagination.php", {
-                pagenav: true,
-                active: page,
-                id: id
-            }, function (d) {
-                $("#chem_log_pagination").empty();
-                $("#chem_log_pagination").append(d);
-            }, 'html')
-                .fail(function (e) {
-                    console.log(e);
-                    $('#chem_log_pagination').html('<p class="text-center text-danger">Error loading pagination.</p>');
-                })
-        }
-
-        async function item_history(id, page = 1) {
-            try {
-                await load_chem_log_history(id, page);
-                await load_item_history_pagination(id, page);
-            } catch (e) {
-                console.log(e);
-                alert("An error has occured loading item history. Please try again later.");
-            }
-        }
-
-        async function setup_pagination_event(id) {
-            $("#chem_log_pagination").off('click', '.page-link');
-            $('#chem_log_pagination').on('click', '.page-link', async function (e) {
-                e.preventDefault();
-                let currentpage = $(this).data('page');
-                await item_history(id, currentpage);
-            });
-        }
-
-        $(document).on('click', '.log-chem-btn', async function () {
-            let id = $(this).data('chem');
-            try {
-                await item_history(id);
-                await setup_pagination_event(id);
-                await get_chem_log(id);
-                $('#chemicallogmodal').modal('show');
-
-            } catch (error) {
-                console.error(error);
-            }
-        });
-
-
-
-        async function get_chem_log(id) {
-            // console.log(id);
-            return $.ajax({
-                method: 'GET',
-                url: urldata,
-                data: {
-                    chemLog: true,
-                    id: id
-                },
-                dataType: 'json'
-            }).done(async function (data) {
-                console.log(data);
-
-                if (data.success) {
-                    let d = JSON.parse(data.success);
-                    $(".log-chem-id").val(d.id);
-                    $(".chem-name").val(d.name);
-                    // $(".qty-unit").text(' - ' + d.quantity_unit);
-                    $("#main_qty_unit").val(d.quantity_unit);
-
-                    await qty_unit_options(d.quantity_unit, "adjust_qty_unit");
-
-                    $("#adjust-curlevel").text(d.chemLevel + '/' + d.container_size + d.quantity_unit + ' (' + d.unop_cont + ' container/s left.)');
-                    $("#adjust-dispatched").text(d.chem_location === 'dispatched' ? "Item dispatched." : "Item available.");
-
-                    if (!$("#wholecontainercheck").prop('checked')) {
-                        $("#adjust-containerinput").hide();
-                        $("#adjust-containerinput input").prop('disabled', true);
-                        $("#adjust-qty").prop('disabled', false);
-                    }
-                    $('#wholecontainercheck').on('change', function () {
-                        if ($(this).prop('checked')) {
-                            $("#adjust-containerinput").show();
-                            $("#adjust-containerinput input").prop('disabled', false);
-                            $("#adjust-qty").prop('disabled', true);
-                            $("#adjust_qty_unit").prop('disabled', true);
-                        } else {
-                            $("#adjust-containerinput").hide();
-                            $("#adjust-containerinput input").prop('disabled', true);
-                            $("#adjust-qty").prop('disabled', false);
-                            $("#adjust_qty_unit").prop('disabled', false);
-                        }
-                    })
-
-
-                } else {
-                    alert('Unknown Error. Please try again later.');
-                }
-            })
-                .fail(function (e) {
-                    console.log(e);
-                })
-        }
-
-        // $(document).on('click', '.log-chem-btn', function () {
-        //     let id = $(this).data('chem');
-        //     get_chem_log(id);
-        // });
-
-        $('#adjust-logtype').on('change', function () {
-            if ($(this).val() === 'other') {
-                $("#ltothers").toggleClass('d-none');
-                $("#ltothers input").prop('disabled', false);
-            } else {
-                if (!$("#ltothers").hasClass('d-none')) {
-                    $("#ltothers").addClass('d-none');
-                    $("#ltothers input").prop('disabled', true);
-                }
-            }
-        });
-
-
-        $(document).on('submit', '#adjustform', async function (e) {
-            e.preventDefault();
-            console.log($(this).serialize());
-            $.ajax({
-                method: "POST",
-                url: urldata,
-                dataType: 'json',
-                data: $(this).serialize() + "&adjust=true"
-            })
-                .done(function (d) {
-                    $("#adjustform")[0].reset();
-                    // $("#adjustalert").text(d.success).fadeIn(300).delay(2000).fadeOut(1000);
-                    $("#chemicallogmodal").modal('hide');
-                    show_toast(d.success);
-                    loadpage(1);
-                })
-                .fail(function (e) {
-                    $("#adjustalert").text(e.responseText).fadeIn(300).delay(2000).fadeOut(1000);
-                    console.log(e);
-                })
-        })
-
-
-        // new additions
-
-
 
         async function load_other_table(url, tbody_id, page = 1) {
             try {
@@ -2475,23 +2786,23 @@ require("startsession.php");
 
         // edit on sAdmin
         $(document).on('click', '#inventorylogbtn', async function () {
-            let table = await modal_table_pagination('contents/inv.log.pagination.php', 'log_tbody', 'inv_log_pagination');
+            let table = await modal_table_pagination('tablecontents/inv.log.pagination.php', 'log_tbody', 'inv_log_pagination');
             if (table) {
                 $('#inventorylogmodal').modal('show');
             } else {
-                // console.log(table);
+                console.log(table);
                 alert("An error occured when loading log contents. Please try again later.");
             }
             $('#inv_log_pagination').on('click', '.page-link', async function (e) {
                 e.preventDefault();
                 let currentpage = $(this).data('page');
-                await modal_table_pagination('contents/inv.log.pagination.php', 'log_tbody', 'inv_log_pagination', currentpage);
+                await modal_table_pagination('tablecontents/inv.log.pagination.php', 'log_tbody', 'inv_log_pagination', currentpage);
             });
 
         });
 
         $(document).on('click', '#entriesTableBtn', async function () {
-            let table = await modal_table_pagination('contents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination');
+            let table = await modal_table_pagination('tablecontents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination');
             if (table) {
                 $("#itemEntryModal").modal('show');
             } else {
@@ -2501,12 +2812,12 @@ require("startsession.php");
             $('#itemEntriesPagination').on('click', '.page-link', async function (e) {
                 e.preventDefault();
                 let currentpage = $(this).data('page');
-                await modal_table_pagination('contents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination', currentpage);
+                await modal_table_pagination('tablecontents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination', currentpage);
             });
         });
 
         $(document).on('click', '#restockTableBtn', async function () {
-            let table = await modal_table_pagination('contents/inv.itemrestock.pagination.php', 'restockTable', 'restockPagination');
+            let table = await modal_table_pagination('tablecontents/inv.itemrestock.pagination.php', 'restockTable', 'restockPagination');
             if (table) {
                 $("#restockModal").modal('show');
             } else {
@@ -2516,7 +2827,7 @@ require("startsession.php");
             $('#restockPagination').on('click', '.page-link', async function (e) {
                 e.preventDefault();
                 let currentpage = $(this).data('page');
-                await modal_table_pagination('contents/inv.itemrestock.pagination.php', 'restockTable', 'restockPagination', currentpage);
+                await modal_table_pagination('tablecontents/inv.itemrestock.pagination.php', 'restockTable', 'restockPagination', currentpage);
             });
 
         });
@@ -2531,7 +2842,7 @@ require("startsession.php");
 
 
         $(document).on('click', '#dispatchedTableBtn', async function () {
-            let table = await modal_table_pagination('contents/inv.dispatcheditems.pagination.php', 'dispatchedTable', 'dispatchedTablePagination');
+            let table = await modal_table_pagination('tablecontents/inv.dispatcheditems.pagination.php', 'dispatchedTable', 'dispatchedTablePagination');
             if (table) {
                 $("#dispatchedItemsModal").modal('show');
             } else {
@@ -2541,7 +2852,7 @@ require("startsession.php");
             $('#dispatchedTablePagination').on('click', '.page-link', async function (e) {
                 e.preventDefault();
                 let currentpage = $(this).data('page');
-                await modal_table_pagination('contents/inv.dispatcheditems.pagination.php', 'dispatchedTable', 'dispatchedTablePagination', currentpage);
+                await modal_table_pagination('tablecontents/inv.dispatcheditems.pagination.php', 'dispatchedTable', 'dispatchedTablePagination', currentpage);
             });
         });
 
@@ -2632,12 +2943,11 @@ require("startsession.php");
         $(document).on('submit', '#restockForm', function (e) {
             e.preventDefault();
             let data = $(this).serialize();
-
-            console.log(data);
+            // console.log(data);
 
             $.ajax({
                 method: 'post',
-                url: urldata,
+                url: dataurl,
                 data: data + "&restock=true",
                 dataType: 'json'
             })
@@ -2645,6 +2955,7 @@ require("startsession.php");
                     // console.log(d);
                     show_toast(d.success);
                     $("#restockConfirm").modal('hide');
+
                 })
                 .fail(function (e) {
                     console.log(e);
@@ -2652,7 +2963,6 @@ require("startsession.php");
                     $("#restock_err_alert").text(e.responseText).fadeIn().delay(2500).fadeOut();
                 })
         });
-
 
     </script>
 </body>

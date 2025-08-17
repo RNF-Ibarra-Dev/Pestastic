@@ -948,7 +948,7 @@ if (isset($_GET['dispatched_transactions']) && $_GET['dispatched_transactions'] 
 if (isset($_POST['return_chemical']) && $_POST['return_chemical'] === 'true') {
 
     $chem_id = $_POST['returnChemicalId'];
-    $trans_id = $_POST['return_transaction'];
+    $trans_id = $_POST['return_transaction'] ?? NULL;
     $opened_qty = $_POST['opened_container'];
     $closed_qty = $_POST['container_count'];
     $entered_unit = $_POST['return_unit'];
@@ -956,6 +956,12 @@ if (isset($_POST['return_chemical']) && $_POST['return_chemical'] === 'true') {
     $pwd = $_POST['baPwd'];
 
     // exit();
+
+    if (!$trans_id) {
+        http_response_code(400);
+        echo "Please select a valid transaction ID associated with the dispatched item.";
+        exit();
+    }
 
     if (!is_numeric($chem_id) || !is_numeric($trans_id)) {
         http_response_code(400);
@@ -993,7 +999,7 @@ if (isset($_POST['return_chemical']) && $_POST['return_chemical'] === 'true') {
             exit();
         }
         $opened_qty = $convert;
-    } 
+    }
 
 
     if (!validateOS($conn, $pwd)) {
@@ -1137,42 +1143,42 @@ if (isset($_GET['dispatch_cur_transchem']) && $_GET['dispatch_cur_transchem'] ==
 }
 
 
-if(isset($_POST['restock']) && $_POST['restock'] === 'true'){
+if (isset($_POST['restock']) && $_POST['restock'] === 'true') {
     $id = $_POST['id'];
     $value = $_POST['restock_value'];
     $pwd = $_POST['pwd'];
     $note = $_POST['note'];
 
-    if(!is_numeric(trim($id)) || empty($id)){
+    if (!is_numeric(trim($id)) || empty($id)) {
         http_response_code(400);
         echo "Invalid ID. Please refresh the page and try again.";
         exit();
     }
 
-    if(!is_numeric(trim($value)) || empty($value)){
+    if (!is_numeric(trim($value)) || empty($value)) {
         http_response_code(400);
         echo "Invalid restock value.";
         exit();
     }
 
-    if($value <= 0){
+    if ($value <= 0) {
         http_response_code(400);
         echo "Restock value should not be less or equal to zero.";
         exit();
     }
 
-    if(!validateOS($conn, $pwd)){
+    if (!validateOS($conn, $pwd)) {
         http_response_code(400);
         echo "Wrong password.";
         exit();
     }
 
-    $restock = restock_item($conn, $id, $value, $author, $user,$role, $note, $branch);
-    if(isset($restock['error'])){
+    $restock = restock_item($conn, $id, $value, $author, $user, $role, $note, $branch);
+    if (isset($restock['error'])) {
         http_response_code(400);
         echo $restock['error'];
         exit();
-    } else if($restock){
+    } else if ($restock) {
         http_response_code(200);
         echo json_encode(['success' => 'Restock success']);
         exit();

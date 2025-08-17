@@ -1,26 +1,28 @@
 <?php
+session_start();
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
-
-
+    
 $pageRows = 5;
-$rowCount = 'SELECT * FROM inventory_log;';
-$countResult = mysqli_query($conn, $rowCount);
-$totalRows = mysqli_num_rows($countResult);
-$totalPages = ceil($totalRows / $pageRows);
 
-if (isset($_GET['table']) && $_GET['table'] == 'true') {
+if (isset($_GET['table']) && $_GET['table'] === 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
 
     $limitstart = ($current - 1) * $pageRows;
+    $chemid = (int) $_GET['chemid'];
 
-    $sql = "SELECT * FROM inventory_log ORDER BY log_date DESC LIMIT $limitstart, $pageRows;";
+    $sql = "SELECT * FROM inventory_log WHERE chem_id = ? AND branch = {$_SESSION['branch']} ORDER BY log_date DESC LIMIT $limitstart, $pageRows;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "Stmt Failed. Please try again later.";
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $chemid);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
-    $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
-
-
-    // echo "<caption class='text-light'>List of all shit.</caption>";
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
@@ -52,74 +54,35 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='7' class='text-center text-dark'>No existing logs found.</td></tr>";
-    }
-}
-
-if (isset($_GET['chemloghistory']) && $_GET['chemloghistory'] == 'true') {
-    $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
-
-    // $limitstart = ($current - 1) * $pageRows;
-    $chemid = (int) $_GET['chemid'];
-
-    $sql = "SELECT * FROM inventory_log WHERE chem_id = ? ORDER BY log_date DESC LIMIT 0, 10;";
-    $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        http_response_code(400);
-        echo "Stmt Failed. Please try again later.";
-        exit();
-    }
-    mysqli_stmt_bind_param($stmt, 'i', $chemid);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-
-    $rows = mysqli_num_rows($result);
-
-
-    // echo "<caption class='text-light'>List of all shit.</caption>";
-
-    if ($rows > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['log_id'];
-            $chemid = $row['chem_id'];
-            $chemname = get_chemical_name($conn, $chemid);
-            $logtype = $row['log_type'];
-            $qty = $row['quantity'];
-            $logdate = $row['log_date'];
-            $lg = date('F j, Y | H:s A');
-            $role = $row['user_role'];
-            $userid = $row['user_id'];
-            $user = get_user($conn, $userid, $role);
-            $transid = $row['trans_id'] === NULL ? 'None' : $row['trans_id'];
-            $notes = $row['notes'];
-            $chem = get_chemical($conn, $chemid);
-            ?>
-            <tr class="text-center text-dark">
-                <td scope="row"><?= htmlspecialchars($lg) ?></td>
-                <td><?= htmlspecialchars($logtype) ?></td>
-                <td><?= htmlspecialchars($qty . ' ' . $chem['quantity_unit']) ?></td>
-                <td><?= htmlspecialchars($user) ?></td>
-                <td><?= htmlspecialchars($transid) ?></td>
-                <td><?= htmlspecialchars($notes) ?></td>
-            </tr>
-
-            <?php
-        }
-    } else {
         echo "<tr><td scope='row' colspan='7' class='text-center text-dark'>No recorded data.</td></tr>";
     }
 }
 
-if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
-    // $entries = $_GET['entries'];
+if (isset($_GET['pagenav']) && $_GET['pagenav'] === 'true') {
+    // $GLOBALS['totalPages'];
+    $id = $_GET['id'];
 
-    // if ($entries === 'true') {
-    //     $rowstatus = row_status($conn, $entries);
-    //     $totalRows = $rowstatus['rows'];
-    //     $totalPages = $rowstatus['pages'];
-    // } else {
-        $GLOBALS['totalPages'];
-    // }
+    if(!is_numeric(trim($id))){
+        http_response_code(400);
+        echo "Invalid item ID.";
+        exit();
+    }
+    
+    $rowCountSql = "SELECT * FROM inventory_log WHERE chem_id = ? AND branch = {$_SESSION['branch']};";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt, $rowCountSql)){
+        http_response_code(400);
+        echo "Row count statement preparation failed.";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $countResult = mysqli_stmt_get_result($stmt);
+    $totalRows = mysqli_num_rows($countResult);
+    $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
+
     ?>
 
 
