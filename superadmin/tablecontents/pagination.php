@@ -2,21 +2,21 @@
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
-$pageRows = 8;
-$rowCount = 'SELECT * FROM chemicals';
+$pageRows = 5;
+$rowCount = 'SELECT * FROM chemicals WHERE request = 0 AND chem_location = "main_storage";';
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
 
-function row_status($conn, $entries = false, $ibranch = '')
+function row_status($conn, $ibranch = '')
 {
     $rowCount = "SELECT COUNT(*) FROM chemicals";
     $queries = [];
 
-    if ($entries === 'true') {
-        $queries[] = 'request = 0';
-    }
+    // if ($entries === 'true') {
+    //     $queries[] = 'request = 0';
+    // }
 
     if ($ibranch !== '' && $ibranch !== NULL) {
         $queries[] = "branch = ?";
@@ -26,7 +26,7 @@ function row_status($conn, $entries = false, $ibranch = '')
     if (!empty($queries)) {
         $rowCount .= " WHERE " . implode(" AND ", $queries);
     }
-    $rowCount .= ';';
+    $rowCount .= " AND request = 0 AND chem_location = 'main_storage';";
     $stmt = mysqli_stmt_init($conn);
     $totalRows = 0;
 
@@ -54,8 +54,8 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] === 'true') {
     $entries = $_GET['entries'];
     $branch = $_GET['branch'];
 
-    if ($entries === 'true' || ($branch !== '' && $branch !== NULL)) {
-        $rowstatus = row_status($conn, $entries, $branch);
+    if ($branch !== '' && $branch !== NULL) {
+        $rowstatus = row_status($conn, $branch);
         $totalRows = $rowstatus['rows'];
         $totalPages = $rowstatus['pages'];
     } else {
@@ -169,7 +169,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] === 'true') {
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
-    $entries = $_GET['hideentries'];
+    // $entries = $_GET['hideentries'];
     $ibranch = $_GET['branch'];
 
     // echo var_dump($hideentries);
@@ -179,9 +179,9 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $sql = "SELECT * FROM chemicals";
     $queries = [];
 
-    if ($entries === 'true') {
-        $queries[] = 'request = 0';
-    }
+    // if ($entries === 'true') {
+    //     $queries[] = 'request = 0';
+    // }
 
     if ($ibranch !== '' && $ibranch !== NULL) {
         $queries[] = "branch = ?";
@@ -189,10 +189,12 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
     }
 
     if (!empty($queries)) {
-        $sql .= " WHERE " . implode(" AND ", $queries);
+        $sql .= " WHERE " . implode(" AND ", $queries) . " AND ";
+    } else {
+        $sql .= " WHERE ";
     }
 
-    $sql .= " ORDER BY request DESC, id DESC LIMIT " . $limitstart
+    $sql .= "request = 0 AND chem_location = 'main_storage' ORDER BY request DESC, id DESC LIMIT " . $limitstart
         . ", " . $pageRows . ";";
     $stmt = mysqli_stmt_init($conn);
     $totalRows = 0;
@@ -322,14 +324,14 @@ if (isset($_GET['search'])) {
     $search = $_GET['search'];
     $ibranch = $_GET['branch'];
     $entries = $_GET['entries'];
-    $sql = "SELECT * FROM chemicals WHERE (name LIKE ? OR brand LIKE ? OR chemLevel LIKE ? OR expiryDate LIKE ?) ";
+    $sql = "SELECT * FROM chemicals WHERE (id LIKE ? OR name LIKE ? OR brand LIKE ? OR chemLevel LIKE ? OR expiryDate LIKE ?) AND request = 0";
 
     // $sql .= $entries === 'true' ? "AND request = 0 ORDER BY request DESC, id DESC;" : 'ORDER BY id DESC;';
 
     $queries = [];
-    if ($entries === 'true') {
-        $queries[] = 'request = 0';
-    }
+    // if ($entries === 'true') {
+    //     $queries[] = 'request = 0';
+    // }
     $bt = '';
     $data = [];
     if ($ibranch !== '' && $ibranch !== NULL) {
@@ -341,7 +343,7 @@ if (isset($_GET['search'])) {
 
     if (!empty($queries)) {
         $sql .= " AND " . implode(" AND ", $queries);
-    }
+    } 
 
     $sql .= " ORDER BY request DESC, id DESC;";
 
@@ -353,7 +355,7 @@ if (isset($_GET['search'])) {
     }
 
     $search = "%" . $search . "%";
-    mysqli_stmt_bind_param($stmt, "ssss$bt", $search, $search, $search, $search, ...$data);
+    mysqli_stmt_bind_param($stmt, "sssss$bt", $search, $search, $search, $search, $search, ...$data);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $numrows = mysqli_num_rows($result);
@@ -365,54 +367,77 @@ if (isset($_GET['search'])) {
             $brand = $row["brand"];
             $level = $row["chemLevel"];
             $expDate = $row["expiryDate"];
-            $request = $row['request'];
+            $request = (int) $row['request'];
             $now = date("Y-m-d");
             $exp = date_create($expDate);
             $remcom = $row['unop_cont'];
+            $dr = $row['date_received'];
+            $date_received = date_create($dr);
             $contsize = $row['container_size'];
             $unit = $row['quantity_unit'];
-
+            $threshold = $row['restock_threshold'];
+            $opened_container = $level > 0 ? 1 : 0;
+            $cur_location = $row['chem_location'];
+            if ($request === 1) {
+                $location = "Stock Entry";
+            } else if ($cur_location === 'main_storage') {
+                $location = "Main Storage";
+            } else if ($cur_location === 'dispatched') {
+                $location = "Dispatched";
+            } else {
+                $location = "Unknown";
+            }
+            $stock_qty = $remcom + ($level > 0 ? 1 : 0);
             ?>
             <tr class="text-center">
-                <td scope="row">
-                    <?=
-                        $request === 1 ? "<i class='bi bi-exclamation-diamond text-warning me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong><br>(For Approval)" : htmlspecialchars($name);
+                <td scope="row"><?php
+                if ($cur_location === 'dispatched') {
+                    echo htmlspecialchars("Dispatched Chemical ID: $id");
+                } else {
+                    echo htmlspecialchars($id);
+                }
+                ?></td>
+                <td>
+                    <?php
+                    if ($request === 1) {
+                        ?>
+                        <i class="bi bi-exclamation-diamond text-warning" data-bs-toggle="tooltip" title="Pending Entry"></i><br>
+                        <span class="fw-bold"><?= htmlspecialchars("Item pending for entry: $name ($brand)") ?></span>
+                        <?php
+                    } else {
+                        echo htmlspecialchars("$name ($brand)");
+                    }
                     ?>
                 </td>
-                <td><?= htmlspecialchars($brand) ?></td>
+                <td><?= htmlspecialchars($stock_qty) ?></td>
                 <td>
-                    <?= htmlspecialchars("$level / $contsize$unit") ?>
+                    <?= htmlspecialchars(date_format($date_received, "F j, Y")) ?>
                 </td>
-                <td><?= htmlspecialchars($remcom) ?></td>
-                <td class="<?= $expDate == $now ? 'text-warning' : ($expDate < $now ? 'text-danger' : '') ?>">
-                    <?= htmlspecialchars(date_format($exp, "F j, Y")) ?>
+                <td>
+                    <?php
+                    if ($request === 0) {
+                        if ($stock_qty <= $threshold) {
+                            echo "<span class='bg-warning px-2 py-1 bg-opacity-25 badge rounded-pill'>Running Out</span>";
+                        } else {
+                            echo "<span class='bg-custom-success px-2 py-1 badge rounded-pill'>Good</span>";
+                        }
+                    } else {
+                        echo "<span class='bg-info px-2 py-1 bg-opacity-25 badge rounded-pill'>Pending Entry</span>";
+                    }
+                    ?>
                 </td>
-                <td><?= $level === 0 ? "<span class='bg-danger px-2 py-1 bg-opacity-25 rounded-pill'>Out of Stock</span>" : ($level <= $contsize * 0.2 ? "<span class='bg-warning px-2 py-1 bg-opacity-25 rounded-pill'>Low Stock</span>" : "<span class='bg-success px-2 py-1 bg-opacity-25 rounded-pill'>Good</span>") ?>
-                </td>
+                <td><?= htmlspecialchars($location) ?></td>
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
-                        if ($request === 1) {
-                            ?>
-                            <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
-                                    class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
-                            <button type="button" id="approvebtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#approveModal" data-id="<?= $id ?>" data-name="<?= $name ?>"><i
-                                    class="bi bi-check-circle"></i></button>
-                            <button type="button" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
-                                    class="bi bi-info-circle"></i></button>
-                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-x-octagon"></i></button>
-                            <?php
-                        } else {
-                            ?>
-                            <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
-                                    class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
-                            <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
-                                    class="bi bi-info-circle"></i></button>
-                            <button type="button" id="delbtn" class="btn btn-sidebar" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal" data-id="<?= $id ?>"><i class="bi bi-trash"></i></button>
-                        <?php } ?>
+                        if ($cur_location === 'main_storage') {
+                            echo '<button type="button" class="btn btn-sidebar dispatchbtn border-0" ' . ($request === 1 ? 'disabled' : "data-dispatch='$id'") . '><i class="bi bi-truck-flatbed text-success"></i></button>';
+                        } else if ($cur_location === 'dispatched') {
+                            echo '<button type="button" class="btn btn-sidebar returnbtn border-0" ' . ($request === 1 ? 'disabled' : "data-return='$id'") . '><i class="bi bi-box-arrow-in-left text-info"></i></button>';
+                        }
+                        ?>
+                        <button type="button" id="editbtn" class="btn btn-sidebar editbtn border-0" data-chem="<?= $id ?>"><i
+                                class="bi bi-info-circle"></i></button>
                     </div>
                 </td>
             </tr>

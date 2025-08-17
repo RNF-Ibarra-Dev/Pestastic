@@ -489,7 +489,7 @@ require("startsession.php");
                                     <h3 class="fw-medium text-center mt-2">Item Log</h3>
                                     <p class="text-secondary text-center fw-light">Recent log history from item changes.
                                     </p>
-                                    <div class="table-responsive-sm  d-flex justify-content-center">
+                                    <div class="table-responsive-sm d-flex flex-column justify-content-center">
                                         <table class="table align-middle table-hover w-100" id="chemicalhistorylog">
                                             <thead>
                                                 <tr class="text-center align-middle">
@@ -1566,9 +1566,9 @@ require("startsession.php");
                 })
         }
 
-        async function loadpage(page, entryHidden = false) {
-            await loadtable(page, entryHidden);
-            await loadpagination(page, entryHidden);
+        async function loadpage(page) {
+            await loadtable(page);
+            await loadpagination(page);
             await loadpagination2(page);
             await loadtable2(page);
             await loadtable3(page);
@@ -1576,37 +1576,13 @@ require("startsession.php");
             overview_display();
         }
 
-        let entryHidden = false;
-        async function hide_entries() {
-            if ($('#searchbar').length > 0) {
-                $('#pagination').removeClass('d-none');
-                $('#searchbar').val('');
-            }
-            entryHidden = !entryHidden ? true : false;
-            await loadpage(1, entryHidden)
-
-            if (entryHidden) {
-                $('#hideentries > i').removeClass('bi-eye-slash').addClass('bi-eye');
-                $('#hideentrytext').text('Show Entries');
-            } else {
-                $('#hideentries > i').removeClass('bi-eye').addClass('bi-eye-slash');
-                $('#hideentrytext').text('Hide Entries');
-            }
-            return entryHidden;
-        }
-
-        $(document).on('click', '#hideentries', async function () {
-            await hide_entries();
-        });
 
         $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
 
             let currentpage = $(this).data('page');
-            // console.log(currentpage);
-            window.history.pushState(null, "", "?page=" + currentpage);
-            await loadtable(currentpage, entryHidden);
-            await loadpagination(currentpage, entryHidden);
+            await loadtable(currentpage);
+            await loadpagination(currentpage);
         })
 
         $('#table2pagination').on('click', '.page-link', async function (e) {
@@ -1643,7 +1619,6 @@ require("startsession.php");
                             dataType: 'html',
                             data: {
                                 search: search,
-                                entries: entryHidden
                             },
                             success: async function (searchChem, status) {
                                 if (!search == '') {
@@ -1654,7 +1629,7 @@ require("startsession.php");
                                     $('#chemicalTable').append(searchChem);
                                 } else {
                                     $('#loader').attr('style', 'display: none !important;');
-                                    await loadpage(1, entryHidden);
+                                    await loadpage(1);
                                     $('#pagination').removeClass('d-none');
                                 }
                             }
@@ -1763,7 +1738,7 @@ require("startsession.php");
                 });
                 if (data.success) {
                     $("#chemicalTable").empty();
-                    await loadpage(1, entryHidden);
+                    await loadpage(1);
                     $('#confirmEdit').modal('hide');
                     $('#tableAlert').css('display', 'block').html(data.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
                     $('#editChemForm')[0].reset();
@@ -1856,7 +1831,7 @@ require("startsession.php");
                 // console.log(d);
                 if (d.success) {
                     $('#chemicalTable').empty();
-                    loadpage(1, entryHidden);
+                    loadpage(1);
                     $('#deleteModal').modal('hide');
                     $('#tableAlert').html(d.success).fadeIn(400).delay(2000).fadeOut(1000);
                     $('#deleteForm')[0].reset();
@@ -1882,7 +1857,7 @@ require("startsession.php");
                 });
                 if (add.success) {
                     $('#chemicalTable').empty();
-                    await loadpage(1, entryHidden);
+                    await loadpage(1);
                     $('#confirmAdd').modal('hide');
                     $('#tableAlert').html(add.success).fadeIn(400).delay(2000).fadeOut(1000);
                     $('#addForm')[0].reset();
@@ -2207,7 +2182,7 @@ require("startsession.php");
                     if (d.success) {
                         show_toast(d.success);
                         $("#returnConfirmationModal").modal('hide');
-                        loadpage(1, entryHidden);
+                        loadpage(1);
                     } else {
                         alert('An unknown error has occured. Please try again later.');
                     }
@@ -2232,7 +2207,7 @@ require("startsession.php");
                     if (d.success) {
                         show_toast(d.success);
                         $("#dispatchConfirmationModal").modal('hide');
-                        loadpage(1, entryHidden);
+                        loadpage(1);
                     } else {
                         alert('An unknown error has occured. Please try again later.');
                     }
@@ -2268,79 +2243,89 @@ require("startsession.php");
             get_overview_count('out-of-stock', branch);
         }
 
-        $("#chemicallogmodal").on('shown.bs.modal', function () {
-            $.get(urldata, {
-                trans_select: true
-            }, function (d) {
-                $('#chemicallogmodal select#adjust_transaction').empty();
-                $('#chemicallogmodal select#adjust_transaction').append(d);
-            }, 'html')
-                .fail(function (e) {
-                    alert("An error has occured. Please try again later.");
-                    console.log(e);
-                })
-        });
+        // $("#chemicallogmodal").on('shown.bs.modal', function () {
+        //     $.get(urldata, {
+        //         trans_select: true
+        //     }, function (d) {
+        //         $('#chemicallogmodal select#adjust_transaction').empty();
+        //         $('#chemicallogmodal select#adjust_transaction').append(d);
+        //     }, 'html')
+        //         .fail(function (e) {
+        //             alert("An error has occured. Please try again later.");
+        //             console.log(e);
+        //         })
+        // });
 
 
 
-        async function load_chem_log_history(id) {
-            return await $.get('contents/inv.itemloghistory.pagination.php', {
+        async function load_chem_log_history(id, currentpage) {
+            return $.get('contents/inv.itemloghistory.pagination.php', {
                 table: true,
-                chemid: id
+                chemid: id,
+                currentpage: currentpage
             })
                 .done(function (data) {
-                    try {
-                        $('#chemicallogmodal .modal-body #chemicalhistorylogtable').empty();
-                        $('#chemicallogmodal .modal-body #chemicalhistorylogtable').append(data);
-                        return true;
-                    } catch (error) {
-                        console.error(error);
-                        return error;
-                    }
-
+                    $('#chemicallogmodal .modal-body #chemicalhistorylogtable').empty();
+                    $('#chemicallogmodal .modal-body #chemicalhistorylogtable').append(data);
                 })
                 .fail(function (e) {
                     console.error(e);
-                    $('#chemicallogmodal .modal-body').html('<p class="text-center text-danger">Error loading inventory log.</p>');
+                    $('#chemicallogmodal .modal-body .tab-pane.fade').html('<p class="text-center text-danger">Error loading item log.</p>');
                 });
         }
 
-        async function load_item_history_pagination(page) {
-            return await $.get("contents/inv.itemloghistory.pagination.php", {
+        async function load_item_history_pagination(id, page) {
+            return $.get("contents/inv.itemloghistory.pagination.php", {
                 pagenav: true,
-                active: page
+                active: page,
+                id: id
             }, function (d) {
-                try {
-                    $("#chem_log_pagination").empty();
-                    $("#chem_log_pagination").append(d);
-                    return true;
-                } catch (error) {
-                    console.error(error);
-                    return error;
-                }
+                $("#chem_log_pagination").empty();
+                $("#chem_log_pagination").append(d);
             }, 'html')
                 .fail(function (e) {
                     console.log(e);
-                    $('#chemicallogmodal .modal-body').html('<p class="text-center text-danger">Error loading inventory log.</p>');
+                    $('#chem_log_pagination').html('<p class="text-center text-danger">Error loading pagination.</p>');
                 })
         }
 
-        async function item_history(id, page) {
-            let table = await load_chem_log_history(id);
-            const pagination = await load_item_history_pagination(page);
-            if(table && pagination){
-                
+        async function item_history(id, page = 1) {
+            try {
+                await load_chem_log_history(id, page);
+                await load_item_history_pagination(id, page);
+            } catch (e) {
+                console.log(e);
+                alert("An error has occured loading item history. Please try again later.");
             }
+        }
+
+        async function setup_pagination_event(id) {
+            $("#chem_log_pagination").off('click', '.page-link');
+            $('#chem_log_pagination').on('click', '.page-link', async function (e) {
+                e.preventDefault();
+                let currentpage = $(this).data('page');
+                await item_history(id, currentpage);
+            });
         }
 
         $(document).on('click', '.log-chem-btn', async function () {
             let id = $(this).data('chem');
-            await load_chem_log_history(id);
+            try {
+                await item_history(id);
+                await setup_pagination_event(id);
+                await get_chem_log(id);
+                $('#chemicallogmodal').modal('show');
+
+            } catch (error) {
+                console.error(error);
+            }
         });
 
+
+
         async function get_chem_log(id) {
-            console.log(id);
-            $.ajax({
+            // console.log(id);
+            return $.ajax({
                 method: 'GET',
                 url: urldata,
                 data: {
@@ -2382,7 +2367,6 @@ require("startsession.php");
                         }
                     })
 
-                    $('#chemicallogmodal').modal('show');
 
                 } else {
                     alert('Unknown Error. Please try again later.');
@@ -2393,10 +2377,10 @@ require("startsession.php");
                 })
         }
 
-        $(document).on('click', '.log-chem-btn', function () {
-            let id = $(this).data('chem');
-            get_chem_log(id);
-        });
+        // $(document).on('click', '.log-chem-btn', function () {
+        //     let id = $(this).data('chem');
+        //     get_chem_log(id);
+        // });
 
         $('#adjust-logtype').on('change', function () {
             if ($(this).val() === 'other') {
@@ -2425,7 +2409,7 @@ require("startsession.php");
                     // $("#adjustalert").text(d.success).fadeIn(300).delay(2000).fadeOut(1000);
                     $("#chemicallogmodal").modal('hide');
                     show_toast(d.success);
-                    loadpage(1, entryHidden);
+                    loadpage(1);
                 })
                 .fail(function (e) {
                     $("#adjustalert").text(e.responseText).fadeIn(300).delay(2000).fadeOut(1000);

@@ -1699,8 +1699,6 @@ include('tablecontents/tables.php');
 
         })
 
-
-
         $(document).on('click', '#hideentries', async function () {
             await hide_entries();
         });
@@ -1710,15 +1708,9 @@ include('tablecontents/tables.php');
 
             let branch = $("#sortbranches").val();
             let currentpage = $(this).data('page');
-            console.log(currentpage);
-
-            // $('#chemicalTable').empty();
-            window.history.pushState(null, "", "?page=" + currentpage, branch);
-            // await loadtable(currentpage);
-
-            // $('#pagination').empty();
-            // await loadpagination(currentpage);
-            await loadpage(currentpage, entryHidden, branch);
+            
+            await loadtable(currentpage, entryHidden, branch);
+            await loadpagination(currentpage, entryHidden, branch);
         })
 
 

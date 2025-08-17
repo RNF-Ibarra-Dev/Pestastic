@@ -4,14 +4,14 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 5;
-$rowCount = 'SELECT * FROM chemicals WHERE request = 0 AND chem_location = "main_storage";';
+$rowCount = "SELECT * FROM chemicals WHERE request = 0 AND chem_location = 'main_storage' AND branch = {$_SESSION['branch']};";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
 function row_status($conn, $entries = false)
 {
-    $rowCount = "SELECT COUNT(*) FROM chemicals WHERE request = 0 AND chem_location = 'main_storage';";
+    $rowCount = "SELECT COUNT(*) FROM chemicals WHERE request = 0 AND chem_location = 'main_storage' AND branch = {$_SESSION['branch']};";
 
     // if ($entries) {
     //     $rowCount .= "  WHERE request = 0;";
@@ -32,14 +32,7 @@ function row_status($conn, $entries = false)
 
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
     $entries = $_GET['entries'];
-
-    if ($entries === 'true') {
-        $rowstatus = row_status($conn, $entries);
-        $totalRows = $rowstatus['rows'];
-        $totalPages = $rowstatus['pages'];
-    } else {
-        $GLOBALS['totalPages'];
-    }
+    $GLOBALS['totalPages'];
     ?>
 
 
@@ -147,23 +140,20 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
-    $entries = $_GET['hideentries'];
+    // $entries = $_GET['hideentries'];
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT * FROM chemicals";
-
-    // $sql .= $entries === 'true' ? " WHERE request = 0 " : ' ';
-    $sql .= " WHERE request = 0 AND chem_location = 'main_storage' ";
-
-    $sql .= "ORDER BY request DESC, id DESC LIMIT " . $limitstart
-        . ", " . $pageRows . ";";
+    $sql = "SELECT * FROM chemicals 
+                WHERE request = 0 
+                AND chem_location = 'main_storage' 
+                AND branch = {$_SESSION['branch']} 
+                ORDER BY updated_at DESC, 
+                id DESC 
+                LIMIT $limitstart, $pageRows;";
 
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
-
-
-    // echo "<caption class='text-light'>List of all shit.</caption>";
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
