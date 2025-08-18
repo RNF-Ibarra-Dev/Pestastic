@@ -4,48 +4,76 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 5;
-$rowCount = "SELECT * FROM chemicals
+$rowCount = "SELECT COUNT(*) FROM chemicals
                 WHERE request = 0
                 AND chem_location = 'main_storage'
                 AND restock_threshold >= ((CASE
                     WHEN chemLevel > 0 THEN 1
                     ELSE 0
-                    END ) + unop_cont)
-                AND branch = {$_SESSION['branch']};";
+                    END ) + unop_cont);";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
-// function row_status($conn, $entries = false)
-// {
-//     $rowCount = "SELECT COUNT(*) FROM chemicals
-//                 WHERE request = 0
-//                 AND chem_location = 'main_storage'
-//                 AND restock_threshold >= ((CASE
-//                     WHEN chemLevel > 0 THEN 1
-//                     ELSE 0
-//                     END ) + unop_cont);";
 
-//     if ($entries) {
-//         $rowCount .= "  WHERE request = 0;";
-//     } else {
-//         $rowCount .= ";";
-//     }
+function row_status($conn, $ibranch = '')
+{
+    $rowCount = "SELECT COUNT(*) FROM chemicals
+                WHERE request = 0
+                AND chem_location = 'main_storage'
+                AND restock_threshold >= ((CASE
+                    WHEN chemLevel > 0 THEN 1
+                    ELSE 0
+                    END ) + unop_cont)";
+    $queries = [];
 
-//     $totalRows = 0;
-//     $result = mysqli_query($conn, $rowCount);
-//     $row = mysqli_fetch_row($result);
-//     $totalRows = $row[0];
+    // if ($entries === 'true') {
+    //     $queries[] = 'request = 0';
+    // }
 
-//     $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
+    if ($ibranch !== '' && $ibranch !== NULL) {
+        $queries[] = "branch = ?";
+        $branch = (int) $ibranch;
+    }
 
-//     return ['pages' => $totalPages, 'rows' => $totalRows];
-// }
+    if (!empty($queries)) {
+        $rowCount .= " AND " . implode(" AND ", $queries);
+    }
+    // $rowCount .= " AND request = 0 AND chem_location = 'main_storage';";
+    $stmt = mysqli_stmt_init($conn);
+    $totalRows = 0;
 
+    if (!mysqli_stmt_prepare($stmt, $rowCount)) {
+        http_response_code(400);
+        echo "row status stmt failed.";
+        exit;
+    }
+
+    if ($ibranch !== '') {
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_row($res);
+    $totalRows = $row[0] ?? 0;
+
+    $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
+
+    return ['pages' => $totalPages, 'rows' => $totalRows];
+}
 
 if (isset($_GET['pagenav']) && $_GET['pagenav'] === 'true') {
 
-    $GLOBALS['totalPages'];
+    $branch = $_GET['branch'] ?? NULL;
+
+    if ($branch !== '' && $branch !== NULL) {
+        $rowstatus = row_status($conn, $branch);
+        $totalRows = $rowstatus['rows'];
+        $totalPages = $rowstatus['pages'];
+    } else {
+        $GLOBALS['totalPages'];
+    }
 
     ?>
 
@@ -155,6 +183,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] === 'true') {
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
 
+    $branch = $_GET['branch'] ?? NULL;
     $limitstart = ($current - 1) * $pageRows;
 
     $sql = "SELECT * FROM chemicals
@@ -163,16 +192,30 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             AND restock_threshold >= ((CASE
                 WHEN chemLevel > 0 THEN 1
                 ELSE 0
-                END ) + unop_cont)
-            AND branch = {$_SESSION['branch']}
-            ORDER BY updated_at
+                END ) + unop_cont)";
+
+    $data = [];
+    $type = '';
+    if ($branch !== '' && $branch !== NULL) {
+        $data[] = $branch;
+        $type .= 'i';
+        $sql .= " AND branch = ?";
+    }
+
+    $sql .= " ORDER BY updated_at
             DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
+    $stmt = mysqli_stmt_init($conn);
+    if(!mysqli_stmt_prepare($stmt, $sql)){
+        echo "<tr><td scope='row' colspan='7' class='text-center'>Statement preparation failed.</td></tr>";
+        exit();
+    }
 
-    $result = mysqli_query($conn, $sql);
+    if(!empty($data)){
+        mysqli_stmt_bind_param($stmt, $type, ...$data);
+    }
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $rows = mysqli_num_rows($result);
-
-
-    // echo "<caption class='text-light'>List of all shit.</caption>";
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
@@ -206,86 +249,17 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td>
                     <button type="button" class="btn btn-sidebar border border-dark rounded-4 editbtn"
                         data-chem="<?= htmlspecialchars($id) ?>"><i class="bi bi-info-circle text-dark"></i></button>
-                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 restock-btn" data-restock="<?= htmlspecialchars($id) ?>"><i
-                            class=" bi bi-box text-dark"></i></button>
+                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 restock-btn"
+                        data-restock="<?= htmlspecialchars($id) ?>"><i class=" bi bi-box text-dark"></i></button>
                 </td>
             </tr>
 
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='6' class='text-center'>No entry found.</td></tr>";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>No entry found.</td></tr>";
     }
     mysqli_close($conn);
     exit();
 }
 
-if (isset($_GET['search'])) {
-    $search = $_GET['search'];
-
-    $sql = "SELECT * FROM chemicals
-            WHERE request = 0
-            AND chem_location = 'main_storage'
-            AND restock_threshold >= ((CASE
-                WHEN chemLevel > 0 THEN 1
-                ELSE 0
-                END ) + unop_cont)
-            AND branch = {$_SESSION['branch']}
-            ORDER BY id";
-
-    $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        echo "<tr><td scope='row' colspan='7' class='text-center'>Error. Search stmt failed.</td></tr>";
-        exit();
-    }
-
-    $search = "%" . $search . "%";
-    mysqli_stmt_bind_param($stmt, "sssss", $search, $search, $search, $search, $search);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $numrows = mysqli_num_rows($result);
-    if ($numrows > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $name = $row["name"];
-            $brand = $row["brand"];
-            $level = $row['chemLevel'];
-            $unit = $row['quantity_unit'];
-            $opened = $level <= 0 ? "Empty" : "$level";
-            $contsize = $row['container_size'];
-            $datereceived = $row['date_received'];
-            $unopened = $row['unop_cont'];
-            $threshold = $row['restock_threshold'];
-            $loc = $row['chem_location'];
-            ?>
-            <tr class="text-center">
-                <td>
-                    <?= htmlspecialchars($id) ?>
-                </td>
-                <td><?= htmlspecialchars($name) ?></td>
-                <td><?= htmlspecialchars($brand) ?></td>
-                <td>
-                    <?= htmlspecialchars("$opened / $contsize $unit") ?>
-                </td>
-                <td>
-                    <?= htmlspecialchars($unopened) ?>
-                </td>
-                <td>
-                    <?= htmlspecialchars($threshold) ?>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 editbtn"
-                        data-chem="<?= htmlspecialchars($id) ?>"><i class="bi bi-info-circle text-dark"></i></button>
-                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 restock-btn" data-chem="<?= htmlspecialchars($id) ?>"><i
-                            class=" bi bi-box text-dark"></i></button>
-                </td>
-            </tr>
-
-            <?php
-        }
-    } else {
-        echo "<tr><td scope='row' colspan='7' class='text-center'>Your search does not exist.</td></tr>";
-    }
-    mysqli_close($conn);
-    exit();
-}

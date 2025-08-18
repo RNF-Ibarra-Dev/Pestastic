@@ -4,32 +4,47 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 5;
-$rowCount = "SELECT * FROM chemicals
+$rowCount = "SELECT COUNT(*) FROM chemicals
                 WHERE request = 0
-                AND chem_location = 'dispatched'
-                AND branch = {$_SESSION['branch']};";
+                AND chem_location = 'dispatched';";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
-function row_status($conn, $entries = false)
+function row_status($conn, $ibranch = '')
 {
     $rowCount = "SELECT COUNT(*) FROM chemicals
                 WHERE request = 0
-                AND chem_location = 'dispatched';";
+                AND chem_location = 'dispatched'";
+    $queries = [];
 
-    if ($entries) {
-        $rowCount .= "  WHERE request = 0;";
-    } else {
-        $rowCount .= ";";
+    if ($ibranch !== '' && $ibranch !== NULL) {
+        $queries[] = "branch = ?";
+        $branch = (int) $ibranch;
     }
 
+    if (!empty($queries)) {
+        $rowCount .= " AND " . implode(" AND ", $queries) . ";";
+    }
+    $stmt = mysqli_stmt_init($conn);
     $totalRows = 0;
-    $result = mysqli_query($conn, $rowCount);
-    $row = mysqli_fetch_row($result);
-    $totalRows = $row[0];
 
-    $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
+    if (!mysqli_stmt_prepare($stmt, $rowCount)) {
+        http_response_code(400);
+        echo "row status stmt failed.";
+        exit;
+    }
+
+    if ($ibranch !== '') {
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_row($res);
+    $totalRows = $row[0] ?? 0;
+
+    $totalPages = (int) ceil($totalRows / $GLOBALS['pageRows']);
 
     return ['pages' => $totalPages, 'rows' => $totalRows];
 }
@@ -37,11 +52,16 @@ function row_status($conn, $entries = false)
 
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
-    $GLOBALS['totalPages'];
+    $branch = $_GET['branch'] ?? NULL;
 
+    if ($branch !== '' && $branch !== NULL) {
+        $rowstatus = row_status($conn, $branch);
+        $totalRows = $rowstatus['rows'];
+        $totalPages = $rowstatus['pages'];
+    } else {
+        $GLOBALS['totalPages'];
+    }
     ?>
-
-
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
             <?php
@@ -140,27 +160,43 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
         </ul>
     </nav>
 
+
     <?php
 
 }
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
+    $branch = $_GET['branch'] ?? NULL;
 
     $limitstart = ($current - 1) * $pageRows;
 
     $sql = "SELECT * FROM chemicals
             WHERE request = 0
-            AND chem_location = 'dispatched'
-            AND branch = {$_SESSION['branch']}
-            ORDER BY updated_at
+            AND chem_location = 'dispatched'";
+
+    $data = [];
+    $type = '';
+    if ($branch !== '' && $branch !== NULL) {
+        $data[] = $branch;
+        $type .= 'i';
+        $sql .= " AND branch = ?";
+    }
+
+    $sql .= " ORDER BY updated_at
             DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo "<tr><td scope='row' colspan='7' class='text-center'>Statement preparation failed.</td></tr>";
+        exit();
+    }
 
-    $result = mysqli_query($conn, $sql);
+    if (!empty($data)) {
+        mysqli_stmt_bind_param($stmt, $type, ...$data);
+    }
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $rows = mysqli_num_rows($result);
-
-
-    // echo "<caption class='text-light'>List of all shit.</caption>";
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
@@ -194,15 +230,16 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td>
                     <button type="button" class="btn btn-sidebar border border-dark rounded-4 editbtn"
                         data-chem="<?= htmlspecialchars($id) ?>"><i class="bi bi-info-circle text-dark"></i></button>
-                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 restock-btn" data-chem="<?= htmlspecialchars($id) ?>"><i
-                            class=" bi bi-box-arrow-in-left text-dark returnbtn" data-return="<?= htmlspecialchars($id) ?>"></i></button>
+                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 restock-btn"
+                        data-chem="<?= htmlspecialchars($id) ?>"><i class=" bi bi-box-arrow-in-left text-dark returnbtn"
+                            data-return="<?= htmlspecialchars($id) ?>"></i></button>
                 </td>
             </tr>
 
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='6' class='text-center'>No entry found.</td></tr>";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>No dispatched items found.</td></tr>";
     }
     mysqli_close($conn);
     exit();
@@ -263,8 +300,8 @@ if (isset($_GET['search'])) {
                 <td>
                     <button type="button" class="btn btn-sidebar border border-dark rounded-4 editbtn"
                         data-chem="<?= htmlspecialchars($id) ?>"><i class="bi bi-info-circle text-dark"></i></button>
-                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 restock-btn" data-chem="<?= htmlspecialchars($id) ?>"><i
-                            class=" bi bi-box text-dark"></i></button>
+                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 restock-btn"
+                        data-chem="<?= htmlspecialchars($id) ?>"><i class=" bi bi-box text-dark"></i></button>
                 </td>
             </tr>
 

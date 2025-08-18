@@ -44,7 +44,6 @@ if (isset($_GET['table']) && $_GET['table'] === 'true') {
             <tr class="text-center text-dark">
                 <td scope="row"><?= htmlspecialchars($lg) ?></td>
                 <td><?= htmlspecialchars($logtype) ?></td>
-                <td><?= htmlspecialchars($chemname) ?></td>
                 <td><?= htmlspecialchars($qty . ' ' . $chem['quantity_unit']) ?></td>
                 <td><?= htmlspecialchars($user) ?></td>
                 <td><?= htmlspecialchars($transid) ?></td>

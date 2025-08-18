@@ -37,11 +37,88 @@ $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
+function row_status($conn, $ibranch = '')
+{
+
+    $rowCount = "SELECT
+                c.id AS chem_id,
+                c.name,
+                c.brand,
+                c.quantity_unit AS unit,
+                c.container_size,
+                (c.chemLevel + (c.unop_cont * c.container_size)) AS total_stored_quantity,
+                SUM(CASE
+                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
+                    AND il.containers_affected_count = 0
+                    THEN ABS(il.quantity)
+                    ELSE 0
+                END) AS total_used_open,
+                SUM(CASE
+                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
+                    AND il.containers_affected_count < 0
+                    THEN ABS(il.quantity)
+                    ELSE 0
+                END) AS total_used_closed
+            FROM
+                chemicals c
+            LEFT JOIN
+                inventory_log il ON c.id = il.chem_id
+            WHERE
+                c.request = 0
+                AND c.expiryDate > NOW()";
+    $queries = [];
+
+    // if ($entries === 'true') {
+    //     $queries[] = 'request = 0';
+    // }
+
+    if ($ibranch !== '' && $ibranch !== NULL) {
+        $queries[] = "c.branch = ?";
+        $branch = (int) $ibranch;
+    }
+
+    if (!empty($queries)) {
+        $rowCount .= " AND " . implode(" AND ", $queries);
+    }
+    $rowCount .= " GROUP BY
+                        c.id, c.name, c.brand, c.container_size, c.chemLevel, c.unop_cont
+                    ORDER BY
+                        c.id;";
+    $stmt = mysqli_stmt_init($conn);
+    $totalRows = 0;
+
+    if (!mysqli_stmt_prepare($stmt, $rowCount)) {
+        http_response_code(400);
+        echo "row status stmt failed.";
+        exit;
+    }
+
+    if ($ibranch !== '') {
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_row($res);
+    $totalRows = $row[0] ?? 0;
+
+    $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
+
+    return ['pages' => $totalPages, 'rows' => $totalRows];
+}
+
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
-    $GLOBALS['totalPages'];
+    $branch = $_GET['branch'];
 
-?>
+    if ($branch !== '' && $branch !== NULL) {
+        $rowstatus = row_status($conn, $branch);
+        $totalRows = $rowstatus['rows'];
+        $totalPages = $rowstatus['pages'];
+    } else {
+        $GLOBALS['totalPages'];
+    }
+    ?>
 
 
     <nav aria-label="Page navigation">
@@ -73,7 +150,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
             $lastpages = $totalPages;
             // var_dump($lastpages);
-
+        
             ?>
             <li class="page-item">
                 <a class="page-link" data-page="1" href=""><i class="bi bi-caret-left-fill"></i></a>
@@ -81,12 +158,12 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
             <li class="page-item">
                 <?php
                 if ($prev > 0) {
-                ?>
+                    ?>
                     <a class="page-link" data-page="<?= $prev ?>"><i class="bi bi-caret-left"></i></a>
-                <?php
+                    <?php
                 } else { ?>
                     <a class="page-link" data-page="1"><i class="bi bi-caret-left"></i></a>
-                <?php
+                    <?php
                 }
                 ?>
             </li>
@@ -106,7 +183,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
                     $limitreached = true;
 
                     if ($currentPage != $lastpages && $currentPage <= $lastpages) {
-                ?>
+                        ?>
                         <li class="page-item disabled">
                             <a class="page-link">...</a>
                         </li>
@@ -114,7 +191,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
                         <li class="page-item">
                             <a class="page-link" data-page="<?= $totalPages ?>"><?= $totalPages ?></a>
                         </li>
-            <?php
+                        <?php
                     }
                     break;
                 }
@@ -124,14 +201,14 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
             <li class="page-item">
                 <?php
                 if ($next <= $totalPages) {
-                ?>
+                    ?>
                     <a class="page-link" data-page="<?= $totalPages != 0 ? $next : 1 ?>" href=""><i
                             class="bi bi-caret-right"></i></a>
-                <?php
+                    <?php
                 } else { ?>
                     <a class="page-link" data-page="<?= $totalPages != 0 ? $totalPages : 1 ?>"><i
                             class="bi bi-caret-right"></i></a>
-                <?php
+                    <?php
                 }
                 ?>
             </li>
@@ -148,7 +225,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
 if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
-
+    $branch = $_GET['branch'] ?? NULL;
     $limitstart = ($current - 1) * $pageRows;
 
     $sql = "SELECT
@@ -177,14 +254,34 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             WHERE
                 c.request = 0
                 AND c.chemLevel > 0
-                AND c.expiryDate > NOW()
-            GROUP BY
+                AND c.expiryDate > NOW()";
+    $data = [];
+    $type = '';
+
+    if ($branch !== '' && $branch !== NULL) {
+        $data[] = $branch;
+        $type .= 'i';
+        $sql .= " AND c.branch = ? ";
+    }
+
+    $sql .= " GROUP BY
                 c.id, c.name, c.brand, c.container_size, c.chemLevel, c.unop_cont
             ORDER BY
-                c.id
-                DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
+                c.id DESC 
+            LIMIT " . $limitstart . ", " . $pageRows . ";";
 
-    $result = mysqli_query($conn, $sql);
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "<tr><td scope='row' colspan='8' class='text-center'>Statement preparation failed.</td></tr>";
+        exit();
+    }
+    if (!empty($data)) {
+        mysqli_stmt_bind_param($stmt, $type, ...$data);
+    }
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
     $rows = mysqli_num_rows($result);
 
 
@@ -205,7 +302,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $contsize = (int) $row['container_size'];
             // $total_stored = $level + ($container_count * $contsize);
             // $unit = $row['quantity_unit'];
-    ?>
+            ?>
             <tr class="text-center">
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td>
@@ -233,7 +330,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 </td>
             </tr>
 
-        <?php
+            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='8' class='text-center'>No Summary Found.</td></tr>";
@@ -301,7 +398,7 @@ if (isset($_GET['search'])) {
             $total_used_closed = $row['total_used_closed'];
             $total_qty = (float) $total_stored + (float) $total_used_open + (float) $total_used_closed;
             $contsize = (int) $row['container_size'];
-        ?>
+            ?>
             <tr class="text-center">
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td>
@@ -328,7 +425,7 @@ if (isset($_GET['search'])) {
                 </td>
             </tr>
 
-<?php
+            <?php
         }
     } else {
         echo "<tr><td scope='row' colspan='8' class='text-center'>Your search does not exist.</td></tr>";

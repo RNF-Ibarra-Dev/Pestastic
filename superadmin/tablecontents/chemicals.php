@@ -295,9 +295,10 @@ if (isset($_POST['approvemultiple']) && $_POST['approvemultiple'] === 'true') {
 
 if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
     $sql = "SELECT * FROM chemicals WHERE request = 1 ";
+    $branch = $_GET['branch'] ?? NULL;
     $data = [];
     $type = '';
-    if (isset($_GET['branch'])) {
+    if ($branch !== '' && $branch !== NULL) {
         $branch = $_GET['branch'];
         $sql .= " AND branch = ? ";
         $data[] = $branch;
@@ -386,7 +387,7 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='5' class='text-center'>No Stock Requests.</td></tr>";
+        echo "<tr><td scope='row' colspan='9' class='text-center'>No Stock Entries.</td></tr>";
     }
 }
 

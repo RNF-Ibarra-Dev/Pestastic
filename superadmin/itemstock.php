@@ -1693,11 +1693,15 @@ include('tablecontents/tables.php');
 
         async function stock_requests() {
             try {
+                let branch = $("#sortbranches").val();
                 const stock = await $.ajax({
                     method: 'GET',
                     url: dataurl,
                     dataType: 'html',
-                    data: '&stock=true'
+                    data: {
+                        stock: true,
+                        branch: branch
+                    },
                 });
 
                 if (stock) {
@@ -1805,19 +1809,19 @@ include('tablecontents/tables.php');
         });
 
 
-        async function loadpagination2(pageno) {
+        async function loadpagination2(pageno, branch = null) {
             try {
                 return $.ajax({
                     type: 'GET',
                     url: 'tablecontents/state.pagination.php',
                     data: {
                         pagenav: 'true',
-                        active: pageno
+                        active: pageno,
+                        branch: branch
                     },
                     success: async function (res) {
                         $('#table2pagination').empty();
                         $('#table2pagination').append(res);
-                        // window.history.pushState(null, "", "?page=" + pageno);
                     }
                 });
 
@@ -1825,14 +1829,15 @@ include('tablecontents/tables.php');
                 alert(error);
             }
         }
-        async function loadpagination3(pageno) {
+        async function loadpagination3(pageno, branch = null) {
             try {
                 return $.ajax({
                     type: 'GET',
                     url: 'tablecontents/inv.containerstatus.pagination.php',
                     data: {
                         pagenav: 'true',
-                        active: pageno
+                        active: pageno,
+                        branch: branch
                     },
                     success: async function (res) {
                         $('#containerReportPagination').empty();
@@ -1934,13 +1939,14 @@ include('tablecontents/tables.php');
 
         }
 
-        async function loadtable2(page) {
+        async function loadtable2(page, branch = null) {
             $.ajax({
                 method: 'GET',
                 url: 'tablecontents/state.pagination.php',
                 data: {
                     table: 'true',
-                    currentpage: page
+                    currentpage: page,
+                    branch: branch
                 },
                 dataType: 'html'
             })
@@ -1954,13 +1960,14 @@ include('tablecontents/tables.php');
                 })
         }
 
-        async function loadtable3(page) {
+        async function loadtable3(page, branch = null) {
             $.ajax({
                 method: 'GET',
                 url: 'tablecontents/inv.containerstatus.pagination.php',
                 data: {
                     table: 'true',
-                    currentpage: page
+                    currentpage: page,
+                    branch: branch
                 },
                 dataType: 'html'
             })
@@ -1977,10 +1984,10 @@ include('tablecontents/tables.php');
         async function loadpage(page, entryHidden = false, branch = null) {
             await loadtable(page, entryHidden, branch);
             await loadpagination(page, entryHidden, branch);
-            await loadpagination2(page);
-            await loadtable2(page);
-            await loadtable3(page);
-            await loadpagination3(page);
+            await loadpagination2(page, branch);
+            await loadtable2(page, branch);
+            await loadtable3(page, branch);
+            await loadpagination3(page, branch);
             overview_display(branch);
         }
 
@@ -2003,17 +2010,20 @@ include('tablecontents/tables.php');
             return entryHidden;
         }
 
+        let branch = null;
+
         $(document).on('change', '#sortbranches', async function () {
-            let branch = $(this).val();
+            branch = $(this).val();
             // console.log(branch);
             await loadpage(1, entryHidden, branch);
-            $("#searchbar").val('');
-            let pagination = $("#pagination");
-            if (pagination.hasClass('d-none')) {
+            $("#searchbar, #searchChemUsedSummary, #searchContainerStatus").val('');
+            let pagination1 = $("#pagination");
+            if (pagination1.hasClass('d-none')) {
                 $('#pagination').removeClass('d-none');
             }
+            $('#table2pagination,#containerReportPagination').show();
             overview_display(branch);
-
+            // return branch;
         })
 
         $(document).on('click', '#hideentries', async function () {
@@ -2479,6 +2489,7 @@ include('tablecontents/tables.php');
 
             $('#searchChemUsedSummary').keyup(function () {
                 clearTimeout(timeout);
+                let branch = $("#sortbranches").val();
                 $('#chemStateTable').empty();
                 $('#loader2').show();
 
@@ -2490,6 +2501,7 @@ include('tablecontents/tables.php');
                         dataType: 'html',
                         data: {
                             search: search,
+                            branch: branch
                         }
                     })
                         .done(async function (searchChem) {
@@ -2516,6 +2528,7 @@ include('tablecontents/tables.php');
 
             $('#searchContainerStatus').keyup(function () {
                 clearTimeout(timeout);
+                let branch = $("#sortbranches").val();
                 $('#containerReportTable').empty();
                 $('#containerReportLoader').show();
 
@@ -2527,6 +2540,7 @@ include('tablecontents/tables.php');
                         dataType: 'html',
                         data: {
                             search: search,
+                            branch: branch
                         }
                     })
                         .done(async function (searchChem) {
@@ -2551,15 +2565,17 @@ include('tablecontents/tables.php');
         $('#table2pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
             let currentpage = $(this).data('page');
-            await loadtable2(currentpage);
-            await loadpagination2(currentpage);
+            let branch = $("#sortbranches").val();
+            await loadtable2(currentpage, branch);
+            await loadpagination2(currentpage, branch);
         })
 
         $('#containerReportPagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
             let currentpage = $(this).data('page');
-            await loadtable3(currentpage);
-            await loadpagination3(currentpage);
+            let branch = $("#sortbranches").val();
+            await loadtable3(currentpage, branch);
+            await loadpagination3(currentpage, branch);
         });
 
 
@@ -2768,11 +2784,12 @@ include('tablecontents/tables.php');
                 })
         });
 
-        async function load_other_table(url, tbody_id, page = 1) {
+        async function load_other_table(url, tbody_id, page = 1, branch) {
             try {
                 const data = await $.get(url, {
                     table: true,
-                    currentpage: page
+                    currentpage: page,
+                    branch: branch
                 });
 
                 $(`#${tbody_id}`).empty();
@@ -2786,11 +2803,12 @@ include('tablecontents/tables.php');
             }
         }
 
-        async function load_other_pagination(url, container_id, active_page_no = 1) {
+        async function load_other_pagination(url, container_id, active_page_no = 1, branch) {
             try {
                 const data = await $.get(url, {
                     pagenav: true,
-                    active: active_page_no
+                    active: active_page_no,
+                    branch: branch
                 });
 
                 $(`#${container_id}`).empty();
@@ -2804,10 +2822,10 @@ include('tablecontents/tables.php');
             }
         }
 
-        async function modal_table_pagination(url, tbody_id, pagination_id, page = 1) {
+        async function modal_table_pagination(url, tbody_id, pagination_id, page = 1, branch) {
             try {
-                const table = await load_other_table(url, tbody_id, page);
-                const pagination = await load_other_pagination(url, pagination_id, page);
+                const table = await load_other_table(url, tbody_id, page, branch);
+                const pagination = await load_other_pagination(url, pagination_id, page, branch);
 
                 if (pagination && table) {
                     return true;
@@ -2819,9 +2837,10 @@ include('tablecontents/tables.php');
             }
         }
 
+
         // edit on sAdmin
         $(document).on('click', '#inventorylogbtn', async function () {
-            let table = await modal_table_pagination('tablecontents/inv.log.pagination.php', 'log_tbody', 'inv_log_pagination');
+            let table = await modal_table_pagination('tablecontents/inv.log.pagination.php', 'log_tbody', 'inv_log_pagination', 1, branch);
             if (table) {
                 $('#inventorylogmodal').modal('show');
             } else {
@@ -2831,28 +2850,14 @@ include('tablecontents/tables.php');
             $('#inv_log_pagination').on('click', '.page-link', async function (e) {
                 e.preventDefault();
                 let currentpage = $(this).data('page');
-                await modal_table_pagination('tablecontents/inv.log.pagination.php', 'log_tbody', 'inv_log_pagination', currentpage);
+                await modal_table_pagination('tablecontents/inv.log.pagination.php', 'log_tbody', 'inv_log_pagination', currentpage, branch);
             });
 
         });
 
-        // $(document).on('click', '#entriesTableBtn', async function () {
-        //     let table = await modal_table_pagination('tablecontents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination');
-        //     if (table) {
-        //         $("#itemEntryModal").modal('show');
-        //     } else {
-        //         console.log(table);
-        //         alert("An error occured loading content. Please try again later.");
-        //     }
-        //     $('#itemEntriesPagination').on('click', '.page-link', async function (e) {
-        //         e.preventDefault();
-        //         let currentpage = $(this).data('page');
-        //         await modal_table_pagination('tablecontents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination', currentpage);
-        //     });
-        // });
-
         $(document).on('click', '#restockTableBtn', async function () {
-            let table = await modal_table_pagination('tablecontents/inv.itemrestock.pagination.php', 'restockTable', 'restockPagination');
+            // let branch = $("#sortbranches").val();
+            let table = await modal_table_pagination('tablecontents/inv.itemrestock.pagination.php', 'restockTable', 'restockPagination', 1, branch);
             if (table) {
                 $("#restockModal").modal('show');
             } else {
@@ -2862,7 +2867,7 @@ include('tablecontents/tables.php');
             $('#restockPagination').on('click', '.page-link', async function (e) {
                 e.preventDefault();
                 let currentpage = $(this).data('page');
-                await modal_table_pagination('tablecontents/inv.itemrestock.pagination.php', 'restockTable', 'restockPagination', currentpage);
+                await modal_table_pagination('tablecontents/inv.itemrestock.pagination.php', 'restockTable', 'restockPagination', currentpage, branch);
             });
 
         });
@@ -2877,7 +2882,8 @@ include('tablecontents/tables.php');
 
 
         $(document).on('click', '#dispatchedTableBtn', async function () {
-            let table = await modal_table_pagination('tablecontents/inv.dispatcheditems.pagination.php', 'dispatchedTable', 'dispatchedTablePagination');
+            // let branch = $("#sortbranches").val();
+            let table = await modal_table_pagination('tablecontents/inv.dispatcheditems.pagination.php', 'dispatchedTable', 'dispatchedTablePagination', 1, branch);
             if (table) {
                 $("#dispatchedItemsModal").modal('show');
             } else {
@@ -2887,7 +2893,7 @@ include('tablecontents/tables.php');
             $('#dispatchedTablePagination').on('click', '.page-link', async function (e) {
                 e.preventDefault();
                 let currentpage = $(this).data('page');
-                await modal_table_pagination('tablecontents/inv.dispatcheditems.pagination.php', 'dispatchedTable', 'dispatchedTablePagination', currentpage);
+                await modal_table_pagination('tablecontents/inv.dispatcheditems.pagination.php', 'dispatchedTable', 'dispatchedTablePagination', currentpage, branch);
             });
         });
 

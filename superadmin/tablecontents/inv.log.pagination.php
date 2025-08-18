@@ -13,10 +13,32 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
 
     $limitstart = ($current - 1) * $pageRows;
+    $branch = $_GET['branch'] ?? NULL;
 
-    $sql = "SELECT * FROM inventory_log ORDER BY log_date DESC LIMIT $limitstart, $pageRows;";
+    $sql = "SELECT * FROM inventory_log";
+    $data = [];
+    $type = '';
+    if ($branch !== NULL && $branch !== '') {
+        $sql .= " WHERE branch = ?";
+        $data[] = $branch;
+        $type .= 'i';
+    }
 
-    $result = mysqli_query($conn, $sql);
+    $sql .= " ORDER BY log_date DESC LIMIT $limitstart, $pageRows;";
+
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "<tr><td scope='row' colspan='7' class='text-center text-dark'>Statement preparation failed.</td></tr>";
+        exit();
+    }
+
+    if (!empty($data)) {
+        mysqli_stmt_bind_param($stmt, $type, ...$data);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $rows = mysqli_num_rows($result);
 
 
@@ -56,70 +78,59 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
     }
 }
 
-if (isset($_GET['chemloghistory']) && $_GET['chemloghistory'] == 'true') {
-    $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
+function row_status($conn, $ibranch = '')
+{
+    $rowCount = "SELECT COUNT(*) FROM chemicals";
+    $queries = [];
 
-    // $limitstart = ($current - 1) * $pageRows;
-    $chemid = (int) $_GET['chemid'];
+    // if ($entries === 'true') {
+    //     $queries[] = 'request = 0';
+    // }
 
-    $sql = "SELECT * FROM inventory_log WHERE chem_id = ? ORDER BY log_date DESC LIMIT 0, 10;";
+    if ($ibranch !== '' && $ibranch !== NULL) {
+        $queries[] = "branch = ?";
+        $branch = (int) $ibranch;
+    }
+
+    if (!empty($queries)) {
+        $rowCount .= " WHERE " . implode(" AND ", $queries);
+    }
+    $rowCount .= " AND request = 0 AND chem_location = 'main_storage';";
     $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
+    $totalRows = 0;
+
+    if (!mysqli_stmt_prepare($stmt, $rowCount)) {
         http_response_code(400);
-        echo "Stmt Failed. Please try again later.";
-        exit();
+        echo "row status stmt failed.";
+        exit;
     }
-    mysqli_stmt_bind_param($stmt, 'i', $chemid);
+
+    if ($ibranch !== '') {
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+
     mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_row($res);
+    $totalRows = $row[0];
 
-    $rows = mysqli_num_rows($result);
+    $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
 
-
-    // echo "<caption class='text-light'>List of all shit.</caption>";
-
-    if ($rows > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['log_id'];
-            $chemid = $row['chem_id'];
-            $chemname = get_chemical_name($conn, $chemid);
-            $logtype = $row['log_type'];
-            $qty = $row['quantity'];
-            $logdate = $row['log_date'];
-            $lg = date('F j, Y | H:s A');
-            $role = $row['user_role'];
-            $userid = $row['user_id'];
-            $user = get_user($conn, $userid, $role);
-            $transid = $row['trans_id'] === NULL ? 'None' : $row['trans_id'];
-            $notes = $row['notes'];
-            $chem = get_chemical($conn, $chemid);
-            ?>
-            <tr class="text-center text-dark">
-                <td scope="row"><?= htmlspecialchars($lg) ?></td>
-                <td><?= htmlspecialchars($logtype) ?></td>
-                <td><?= htmlspecialchars($qty . ' ' . $chem['quantity_unit']) ?></td>
-                <td><?= htmlspecialchars($user) ?></td>
-                <td><?= htmlspecialchars($transid) ?></td>
-                <td><?= htmlspecialchars($notes) ?></td>
-            </tr>
-
-            <?php
-        }
-    } else {
-        echo "<tr><td scope='row' colspan='7' class='text-center text-dark'>No recorded data.</td></tr>";
-    }
+    return ['pages' => $totalPages, 'rows' => $totalRows];
 }
 
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
     // $entries = $_GET['entries'];
 
-    // if ($entries === 'true') {
-    //     $rowstatus = row_status($conn, $entries);
-    //     $totalRows = $rowstatus['rows'];
-    //     $totalPages = $rowstatus['pages'];
-    // } else {
+    $branch = $_GET['branch'] ?? NULL;
+
+    if ($branch !== '' && $branch !== NULL) {
+        $rowstatus = row_status($conn, $branch);
+        $totalRows = $rowstatus['rows'];
+        $totalPages = $rowstatus['pages'];
+    } else {
         $GLOBALS['totalPages'];
-    // }
+    }
     ?>
 
 
