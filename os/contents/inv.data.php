@@ -189,10 +189,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         }
     }
 
-    // http_response_code(400);
-    // echo var_dump($expDate);
-    // exit();
-
     if (empty($baPwd)) {
         http_response_code(400);
         echo 'Empty Password.';

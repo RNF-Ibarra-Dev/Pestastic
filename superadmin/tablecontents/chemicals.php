@@ -105,32 +105,36 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 if (isset($_POST['action']) && $_POST['action'] === 'add') {
     $loggedId = $_SESSION['saID'];
     $loggedUsn = $_SESSION['saUsn'];
-    $branch = $_SESSION['branch'];
+    $branch = $_POST['target_branch'] ?? NULL;
     $empId = $_SESSION['empId'];
     $request = isset($_POST['approveCheck']) ? 0 : 1;
     $notes = $_POST['notes'];
     $name = $_POST['name'] ?? [];
+    $unit = $_POST['chemUnit'] ?? [];
     $receivedDate = $_POST['receivedDate'] ?? [];
     $brand = $_POST['chemBrand'] ?? [];
     $level = $_POST['chemLevel'] ?? [];
     $expDate = $_POST['expDate'] ?? [];
     $containerSize = $_POST['containerSize'] ?? [];
+    $threshold = $_POST['restockThreshold'] ?? [];
     $containerCount = $_POST['containerCount'] ?? [];
     $saPwd = $_POST['saPwd'];
 
     $addedBy = "[$loggedId] - $loggedUsn";
 
-    if (empty($name) || empty($brand) || empty($level)) {
+
+    if (empty($name) || empty($brand) || empty($unit) || empty($containerCount) || empty($containerSize)) {
         http_response_code(400);
-        echo 'Fields cannot be empty.';
+        echo "Fields cannot be empty." . var_dump($unit);
         exit;
     }
 
-    for ($i = 0; $i < count($level); $i++) {
-        if ($level[$i] > $containerSize[$i]) {
-            http_response_code(400);
-            echo 'Chemical Level cannot be greater than Container Size.';
-            exit;
+    $three_years = strtotime("+3 years");
+    $default_expiry = date("Y-m-d", $three_years);
+
+    for ($i = 0; $i < count($expDate); $i++) {
+        if (empty($expDate[$i]) || $expDate == '') {
+            $expDate[$i] = $default_expiry;
         }
     }
 
@@ -149,13 +153,15 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
 
     $data = [
         'brand' => $brand,
-        'level' => $level,
+        'unit' => $unit,
+        'level' => $containerSize,
         'notes' => $notes,
         'name' => $name,
         'rDate' => $receivedDate,
         'eDate' => $expDate,
         'csize' => $containerSize,
         'ccount' => $containerCount,
+        'threshold' => $threshold
     ];
     // echo var_dump($data);
     // exit();
@@ -245,7 +251,8 @@ if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
 
 if (isset($_POST['approvemultiple']) && $_POST['approvemultiple'] === 'true') {
     // get ids to delete
-    $stocks = $_POST['stocks'];
+    $stocks = $_POST['stocks'] ?? [];
+    $rejected_stocks = $_POST['stock_reject'] ?? [];
     $pwd = $_POST['saPwd'];
 
     if (empty($stocks) || empty($pwd)) {
@@ -264,55 +271,118 @@ if (isset($_POST['approvemultiple']) && $_POST['approvemultiple'] === 'true') {
         exit();
     }
 
-    $approve = approve_stock($conn, $stocks);
-    if (!isset($approve['success'])) {
-        http_response_code(400);
-        echo json_encode(['error' => 'function', 'msg' => $approve['msg'] . $approve['ids']]);
-    } else {
-        echo json_encode(['success' => 'Stock approved and added to inventory officially.']);
+    if (!empty($rejected_stocks)) {
+        $reject = reject_stocks($conn, $rejected_stocks);
+        if (!isset($reject['success'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'function', 'msg' => $reject['msg']]);
+            exit();
+        }
     }
+
+    if (!empty($stocks)) {
+        $approve = approve_stock($conn, $stocks);
+        if (!isset($approve['success'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'function', 'msg' => $approve['msg'] . $approve['ids']]);
+            exit();
+        }
+    }
+    http_response_code(200);
+    echo json_encode(['success' => 'Stock approved and added to inventory officially.']);
     exit();
 }
 
 if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
-    $sql = "SELECT * FROM chemicals WHERE request = 1 ORDER BY id DESC;";
-    $result = mysqli_query($conn, $sql);
+    $sql = "SELECT * FROM chemicals WHERE request = 1 ";
+    $data = [];
+    $type = '';
+    if (isset($_GET['branch'])) {
+        $branch = $_GET['branch'];
+        $sql .= " AND branch = ? ";
+        $data[] = $branch;
+        $type .= 'i';
+    }
+    $sql .= "ORDER BY id DESC;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo "<tr><td scope='row' colspan='5' class='text-center'>Statement preparation failed. Please try again.</td></tr>";
+        exit();
+    }
+    if (!empty($data)) {
+        mysqli_stmt_bind_param($stmt, $type, ...$data);
+    }
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
 
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
             $name = $row["name"];
             $brand = $row["brand"];
-            $level = $row["chemLevel"];
-            $expDate = $row["expiryDate"];
-            $request = $row['request'];
+            $contsize = (int) $row['container_size'];
+            $unit = $row['quantity_unit'];
+            $datereceived = $row['date_received'];
+            $dr = date("F j, Y", strtotime($datereceived));
+            $expiry = $row['expiryDate'];
+            $e = date("F j, Y", strtotime($expiry));
+            $added_by = $row['added_by'];
+            $ab = $added_by === "No Record" ? "User not found." : $added_by;
+            $request = (int) $row['request'];
             ?>
             <tr class="text-center">
-                <td scope="row">
-                    <?=
-                        $request === '1' ? "<i class='bi bi-exclamation-diamond me-2' data-bs-toggle='tooltip' title='For Approval'></i><strong>" . htmlspecialchars($name) . "</strong>" : htmlspecialchars($name);
-                    ?>
+                <td>
+                    <?= htmlspecialchars($id) ?>
                 </td>
+                <td><?= htmlspecialchars($name) ?></td>
                 <td><?= htmlspecialchars($brand) ?></td>
-                <td><?= htmlspecialchars($level) ?></td>
-                <td><?= htmlspecialchars($expDate) ?></td>
+                <td>
+                    <?= htmlspecialchars("$contsize $unit") ?>
+                </td>
+                <td>
+                    <?= htmlspecialchars($dr) ?>
+                </td>
+                <td>
+                    <?= htmlspecialchars($e) ?>
+                </td>
+                <td><?= htmlspecialchars($ab) ?></td>
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
-                        if ($request === "1") {
+                        if ($request === 1) {
                             ?>
-                            <input type="checkbox" class="btn-check" value="<?= $id ?>" name="stocks[]" id="c-<?= $id ?>"
-                                autocomplete="off">
-                            <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i
-                                    class="bi bi-check-circle me-2"></i>Approve</label>
+                            <div class="btn-group">
+                                <input type="checkbox" class="btn-check chkbox-approve" value="<?= htmlspecialchars($id) ?>"
+                                    name="stocks[]" id="c-<?= $id ?>" autocomplete="off">
+                                <label class="btn btn-sidebar btn-outline-dark" for="c-<?= htmlspecialchars($id) ?>"><i
+                                        class="bi bi-check mx-auto"></i></label>
+                            </div>
                             <?php
                         } else {
                             ?>
-                            <p class="text-muted">Approved.</p>
+                            <p class="text-muted">Item approved.</p>
                         <?php } ?>
                     </div>
                 </td>
+                <td>
+                    <?php
+                    if ($request === 1) {
+                        ?>
+                        <div class="btn-group">
+                            <input type="checkbox" class="btn-check chkbox-reject" value="<?= htmlspecialchars($id) ?>"
+                                name="stock_reject[]" id="r-<?= htmlspecialchars($id) ?>" autocomplete="off">
+                            <label class="btn btn-sidebar btn-outline-dark" for="r-<?= htmlspecialchars($id) ?>"><i
+                                    class="bi bi-x mx-auto"></i></label>
+                        </div>
+                        <?php
+                    } else {
+                        ?>
+                        <p class="text-muted">-</p>
+                    <?php } ?>
+                </td>
             </tr>
+
             <?php
         }
     } else {
@@ -321,48 +391,70 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
 }
 
 if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
+    $uid = uniqid();
     ?>
     <div class="add-row-container">
         <hr class="my-2">
         <div class="row mb-2 pe-2">
             <div class="col-lg-3 mb-2">
-                <label for="name" class="form-label fw-light">Chemical Name</label>
-                <input type="text" name="name[]" id="add-name" class="form-control form-add" autocomplete="one-time-code">
+                <label for="name-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Name</label>
+                <input type="text" name="name[]" id="name-<?= htmlspecialchars($uid) ?>" class="form-control form-add"
+                    autocomplete="one-time-code">
             </div>
             <div class="col-lg-3 mb-2">
-                <label for="chemBrand" class="form-label fw-light">Chemical Brand</label>
-                <input type="text" name="chemBrand[]" id="add-chemBrand" class="form-control form-add"
-                    autocomplete="one-time-code">
+                <label for="chemBrand-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Brand</label>
+                <input type="text" name="chemBrand[]" id="chemBrand-<?= htmlspecialchars($uid) ?>"
+                    class="form-control form-add" autocomplete="one-time-code">
             </div>
             <div class="col-lg-2 mb-2">
-                <label for="chemLevel" class="form-label fw-light text-nowrap">Current Chemical Level</label>
-                <input type="text" name="chemLevel[]" id="add-chemLevel" class="form-control form-add"
-                    autocomplete="one-time-code">
+                <label for="containerSize-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Size</label>
+                <input type="text" name="containerSize[]" id="containerSize-<?= htmlspecialchars($uid) ?>"
+                    class="form-control form-add" autocomplete="one-time-code">
             </div>
             <div class="col-lg-2 mb-2">
-                <label for="chemLevel" class="form-label fw-light">Container Size</label>
-                <input type="text" name="containerSize[]" id="add-chemLevel" class="form-control form-add"
+                <label for="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Unit:</label>
+                <select name="chemUnit[]" id="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-select"
                     autocomplete="one-time-code">
+                    <option value="" selected>Choose Item Unit</option>
+                    <option value="mg">mg</option>
+                    <option value="g">g</option>
+                    <option value="kg">kg</option>
+                    <option value="mL">mL</option>
+                    <option value="L">L</option>
+                    <option value="gal">gal</option>
+                    <option value="box">Box</option>
+                    <option value="pc">Piece</option>
+                    <option value="canister">Canister</option>
+                </select>
             </div>
             <div class="col-lg-2 mb-2">
-                <label for="chemLevel" class="form-label fw-light">Container Count</label>
-                <input type="text" name="containerCount[]" id="add-chemLevel" class="form-control form-add"
-                    autocomplete="one-time-code">
+                <label for="containerCount-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item
+                    Count</label>
+                <input type="text" name="containerCount[]" id="containerCount-<?= htmlspecialchars($uid) ?>"
+                    class="form-control form-add" autocomplete="one-time-code">
             </div>
 
         </div>
         <div class="row mb-2">
-            <div class="col-lg-4 mb-2">
-                <label for="expDate" class="form-label fw-light">Date Received</label>
-                <input type="date" name="receivedDate[]" id="add-dateReceived" class="form-control form-add form-date-rec">
+            <div class="col-lg-2 mb-2">
+                <label for="restockThreshold-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Restock
+                    Threshold:</label>
+                <input type="number" name="restockThreshold[]" id="restockThreshold-<?= htmlspecialchars($uid) ?>"
+                    class="form-control" autocomplete="one-time-code">
             </div>
-            <div class="col-lg-4 mb-2">
-                <label for="expDate" class="form-label fw-light">Expiry Date</label>
-                <input type="date" name="expDate[]" id="add-expDate" class="form-control form-add form-date-exp">
+            <div class="col-2 mb-2">
+                <label for="recDate-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Date Received</label>
+                <input type="date" name="receivedDate[]" id="recDate-<?= htmlspecialchars($uid) ?>"
+                    class="form-control form-add form-date-rec">
             </div>
-            <div class="col-4 mb-2">
-                <label for="notes" class="form-label fw-light">Short Note</label>
-                <textarea name="notes[]" id="notes" class="form-control"
+            <div class="col-2 mb-2">
+                <label for="expDate-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Expiry Date</label>
+                <input type="date" name="expDate[]" id="expDate-<?= htmlspecialchars($uid) ?>"
+                    class="form-control form-add form-date-exp">
+            </div>
+            <div class="col-3 mb-2">
+                <label for="notes-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Short Note</label>
+                <textarea name="notes[]" id="notes-<?= htmlspecialchars($uid) ?>" class="form-control"
                     placeholder="Optional short note . . . "></textarea>
             </div>
         </div>
@@ -436,6 +528,22 @@ if (isset($_GET['branchoptions']) && $_GET['branchoptions'] === 'true') {
 
     if (mysqli_num_rows($query) > 0) {
         echo "<option value='' selected>Show All Branch</option>";
+        while ($row = mysqli_fetch_assoc($query)) {
+            $id = $row['id'];
+            $name = $row['name'];
+            $loc = $row['location'];
+            ?>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars("$name ($loc)") ?></option>
+            <?php
+        }
+    }
+}
+if (isset($_GET['add_select_branches']) && $_GET['add_select_branches'] === 'true') {
+    $sql = "SELECT * FROM branches;";
+    $query = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($query) > 0) {
+        echo "<option value='' selected>Select item/s branch</option>";
         while ($row = mysqli_fetch_assoc($query)) {
             $id = $row['id'];
             $name = $row['name'];
@@ -1042,7 +1150,7 @@ if (isset($_POST['return_chemical']) && $_POST['return_chemical'] === 'true') {
 
     // exit();
 
-    if(!$trans_id){
+    if (!$trans_id) {
         http_response_code(400);
         echo "Please select a valid transaction ID associated with the dispatched item.";
         exit();

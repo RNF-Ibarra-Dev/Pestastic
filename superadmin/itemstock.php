@@ -130,9 +130,10 @@ include('tablecontents/tables.php');
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 w-25 px-2 text-light"
                     title="Hide Entries"><i class="bi bi-eye-slash me-2"></i><span id="hideEnText">Hide
                         Entries</span></button> -->
-                <button type="button" id="entriesTableBtn"
+                <button type="button" id="approvemulti"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
-                        class="bi bi-clock-fill me-2"></i>Pending Entries</button>
+                        class="bi bi-clock-fill me-2" data-bs-toggle="modal" data-bs-toggle="tooltip"
+                        data-bs-target="#multiapproveModal" title="Approve multiple stocks"></i>Pending Entries</button>
                 <button type="button" id="restockTableBtn"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
                         class="bi bi-box-fill me-2"></i>Restock Items</button>
@@ -149,10 +150,10 @@ include('tablecontents/tables.php');
                 <button type="button" id="inventorylogbtn"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 px-4 text-light"
                     title="Inventory Logs"><i class="bi bi-file-earmark-text"></i><span id="hideEnText"></button>
-                <button type="button" id="approvemulti"
+                <!-- <button type="button" id="approvemulti"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded py-2 px-4 text-light" data-bs-toggle="modal"
                     data-bs-toggle="tooltip" data-bs-target="#multiapproveModal" title="Approve multiple stocks"><i
-                        class="bi bi-list-check"></i></button>
+                        class="bi bi-list-check"></i></button> -->
                 <button type="button" id="loadChem"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded text-light py-2 px-4" data-bs-toggle="modal"
                     data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
@@ -388,57 +389,6 @@ include('tablecontents/tables.php');
                 </div>
             </div>
 
-            <!-- item entry modal table -->
-            <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="itemEntryModal"
-                tabindex="0">
-                <div class="modal-dialog modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header bg-modal-title">
-                            <h1 class="modal-title fs-5 text-light">
-                                <i class="bi bi-clock-fill me-2"></i>
-                                Item Entries
-                            </h1>
-                            <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
-                                aria-label="Close"><i class="bi bi-x"></i></button>
-                        </div>
-
-                        <div class="modal-body text-dark p-3">
-                            <div class="table-responsive-sm flex-column d-flex justify-content-center">
-                                <table class="table align-middle table-hover w-100" id="approvechemtable">
-                                    <!-- <caption class="fw-light text-muted">
-                                    </caption> -->
-                                    <thead>
-                                        <tr class="text-center align-middle">
-                                            <th class="text-dark" scope="col">Item ID</th>
-                                            <th class="text-dark">Item</th>
-                                            <th class="text-dark">Brand</th>
-                                            <th class="text-dark">Item Size/Volume</th>
-                                            <th class="text-dark">Date Received</th>
-                                            <th class="text-dark">Item Expiry</th>
-                                            <th class="text-dark">Added By</th>
-                                            <th>
-                                                <input type="checkbox" class="btn-check" id="checkall"
-                                                    autocomplete="off">
-                                                <label class="btn fw-bold" for="checkall">Check All <i id="checkicon"
-                                                        class="bi ms-2 bi-check-square"></i></label>
-                                            </th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody id="itemEntryTable" class="table-group-divider text-dark">
-                                    </tbody>
-
-                                </table>
-                                <div id="itemEntriesPagination"></div>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- inventory log modal -->
             <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="inventorylogmodal"
@@ -830,7 +780,7 @@ include('tablecontents/tables.php');
             <!-- add new chemical -->
             <form id="addForm">
                 <div class="row g-2 text-dark">
-                    <div class="modal-lg modal fade text-dark modal-edit" data-bs-backdrop="static" id="addModal"
+                    <div class="modal-xl modal fade text-dark modal-edit" data-bs-backdrop="static" id="addModal"
                         tabindex="-1" aria-labelledby="create" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -914,6 +864,8 @@ include('tablecontents/tables.php');
                                             <button type="button" class="btn btn-grad" id="addMoreChemBtn"><i
                                                     class="bi bi-plus-circle-dotted  me-2"></i> Add More
                                                 Item</button>
+                                            <select name="target_branch" id="add_target_branch"
+                                                class="form-select w-50"></select>
                                         </div>
 
 
@@ -1324,12 +1276,15 @@ include('tablecontents/tables.php');
             </form>
 
             <form id="multiapprove">
-                <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static" id="multiapproveModal"
+                <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="multiapproveModal"
                     tabindex="0" aria-labelledby="confirmAdd" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title">
-                                <h1 class="modal-title fs-5 text-light">Stock Entries</h1>
+                                <h1 class="modal-title fs-5 text-light">
+                                    <i class="bi bi-clock-fill me-1"></i>
+                                    Stock Entries
+                                </h1>
                                 <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x"></i></button>
                             </div>
@@ -1341,15 +1296,24 @@ include('tablecontents/tables.php');
                                             Supervisor.</captio>
                                         <thead>
                                             <tr class="text-center align-middle">
-                                                <th scope="col">Name</th>
+                                                <th scope="col">Item ID</th>
+                                                <th>Name</th>
                                                 <th>Brand</th>
-                                                <th>Level</th>
-                                                <th>Expiry Date</th>
+                                                <th>Item Size/Volume</th>
+                                                <th>Date Received</th>
+                                                <th>Item Expiry</th>
+                                                <th>Added By</th>
                                                 <th>
-                                                    <input type="checkbox" class="btn-check" id="checkall"
+                                                    <input type="checkbox" class="btn-check" id="approveall"
                                                         autocomplete="off">
-                                                    <label class="btn fw-bold" for="checkall">Check All <i
-                                                            id="checkicon" class="bi bi-square ms-2"></i></label>
+                                                    <label class="btn fw-bold" for="approveall">Approve All <i
+                                                            id="approveicon" class="bi bi-square ms-2"></i></label>
+                                                </th>
+                                                <th>
+                                                    <input type="checkbox" class="btn-check" id="checkallreject"
+                                                        autocomplete="off">
+                                                    <label class="btn fw-bold" for="checkallreject">Reject All <i
+                                                            id="rejecticon" class="bi bi-square ms-2"></i></label>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -1376,13 +1340,13 @@ include('tablecontents/tables.php');
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Stock Entry Approval</h1>
+                                <h1 class="modal-title fs-5">Confirmation</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Approve selected
+                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Approve/Reject
                                         entries?
                                         Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
@@ -1392,8 +1356,7 @@ include('tablecontents/tables.php');
                                     </div>
                                 </div>
                                 <div id="passwordHelpBlock" class="form-text">
-                                    Note: Approving entry requests will officially make the chemicals a part of the
-                                    inventory.
+                                    Note: Rejected entries will get deleted, proceed with caution.
                                 </div>
                                 <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
                                     id="approvemulti-errmsg">
@@ -1603,9 +1566,19 @@ include('tablecontents/tables.php');
         });
 
         $(document).on('click', "#loadChem", function () {
-            // flatpickrdate(d);
             $("#addMoreChem").empty();
             $("#addForm")[0].reset();
+
+            $.get(dataurl, {
+                add_select_branches: true
+            })
+                .done(function (d) {
+                    $("#add_target_branch").append(d);
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    alert('There is an error at loading branches. Please try again later.');
+                })
         });
 
         $(document).on('click', '.remove-btn', function () {
@@ -1647,6 +1620,27 @@ include('tablecontents/tables.php');
         });
 
         // const addexpdatee = document.getElementBy
+        function update_checks() {
+            let totalRows = $('tbody#approve-chemtable tr').length;
+
+            let approveChecked = $('tbody#approve-chemtable .chkbox-approve:checked').length;
+            if (approveChecked === totalRows && totalRows > 0) {
+                $('#approveall').prop('checked', true);
+                $('#approveicon').removeClass('bi-square').addClass('bi-check-square');
+            } else {
+                $('#approveall').prop('checked', false);
+                $('#approveicon').removeClass('bi-check-square').addClass('bi-square');
+            }
+
+            let rejectChecked = $('tbody#approve-chemtable .chkbox-reject:checked').length;
+            if (rejectChecked === totalRows && totalRows > 0) {
+                $('#checkallreject').prop('checked', true);
+                $('#rejecticon').removeClass('bi-square').addClass('bi-x-square');
+            } else {
+                $('#checkallreject').prop('checked', false);
+                $('#rejecticon').removeClass('bi-x-square').addClass('bi-square');
+            }
+        }
 
         $(document).on('click', '#approvemulti', async function () {
             $('#multiapprove')[0].reset();
@@ -1654,10 +1648,47 @@ include('tablecontents/tables.php');
             $('#multiapproveModal').modal('show');
         });
 
-        $(document).on('change', '#checkall', function () {
-            $('#checkicon').toggleClass('bi-square bi-check-square');
-            var checked = $(this).prop('checked');
-            $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
+        $(document).on('change', '#approveall', function () {
+            let checked = $(this).prop('checked');
+
+            $('#approveicon').toggleClass('bi-square bi-check-square');
+            $('tbody#approve-chemtable .chkbox-approve').prop('checked', checked);
+
+            if (checked) {
+                $('tbody#approve-chemtable .chkbox-reject').prop('checked', false);
+                $('#checkallreject').prop('checked', false);
+                $('#rejecticon').removeClass('bi-x-square').addClass('bi-square');
+            }
+        });
+
+        // Reject All
+        $(document).on('change', '#checkallreject', function () {
+            let checked = $(this).prop('checked');
+
+            $('#rejecticon').toggleClass('bi-square bi-x-square');
+            $('tbody#approve-chemtable .chkbox-reject').prop('checked', checked);
+
+            if (checked) {
+                $('tbody#approve-chemtable .chkbox-approve').prop('checked', false);
+                $('#approveall').prop('checked', false);
+                $('#approveicon').removeClass('bi-check-square').addClass('bi-square');
+            }
+        });
+
+        $(document).on('change', '.chkbox-approve', function () {
+            if ($(this).prop('checked')) {
+                // Uncheck reject in the same row
+                $(this).closest('tr').find('.chkbox-reject').prop('checked', false);
+            }
+            update_checks();
+        });
+
+        $(document).on('change', '.chkbox-reject', function () {
+            if ($(this).prop('checked')) {
+                // Uncheck approve in the same row
+                $(this).closest('tr').find('.chkbox-approve').prop('checked', false);
+            }
+            update_checks();
         });
 
         async function stock_requests() {
@@ -2805,20 +2836,20 @@ include('tablecontents/tables.php');
 
         });
 
-        $(document).on('click', '#entriesTableBtn', async function () {
-            let table = await modal_table_pagination('tablecontents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination');
-            if (table) {
-                $("#itemEntryModal").modal('show');
-            } else {
-                console.log(table);
-                alert("An error occured loading content. Please try again later.");
-            }
-            $('#itemEntriesPagination').on('click', '.page-link', async function (e) {
-                e.preventDefault();
-                let currentpage = $(this).data('page');
-                await modal_table_pagination('tablecontents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination', currentpage);
-            });
-        });
+        // $(document).on('click', '#entriesTableBtn', async function () {
+        //     let table = await modal_table_pagination('tablecontents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination');
+        //     if (table) {
+        //         $("#itemEntryModal").modal('show');
+        //     } else {
+        //         console.log(table);
+        //         alert("An error occured loading content. Please try again later.");
+        //     }
+        //     $('#itemEntriesPagination').on('click', '.page-link', async function (e) {
+        //         e.preventDefault();
+        //         let currentpage = $(this).data('page');
+        //         await modal_table_pagination('tablecontents/inv.itementries.pagination.php', 'itemEntryTable', 'itemEntriesPagination', currentpage);
+        //     });
+        // });
 
         $(document).on('click', '#restockTableBtn', async function () {
             let table = await modal_table_pagination('tablecontents/inv.itemrestock.pagination.php', 'restockTable', 'restockPagination');

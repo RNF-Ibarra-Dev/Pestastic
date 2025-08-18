@@ -1533,6 +1533,33 @@ function approve_stock($conn, $id)
         ];
     }
 }
+function reject_stocks($conn, $id)
+{
+    $questionmarks = array_fill(0, count($id), '?');
+    try {
+        $sql = "DELETE FROM chemicals WHERE id IN (" . implode(',', $questionmarks) . ");";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception('Stmt Failed' . mysqli_stmt_error($stmt));
+        }
+
+        $ints = str_repeat('i', count($id));
+        mysqli_stmt_bind_param($stmt, $ints, ...$id);
+        mysqli_stmt_execute($stmt);
+
+        if (0 < mysqli_stmt_affected_rows($stmt)) {
+            return ['success' => 'no error'];
+        } else {
+            throw new Exception(mysqli_stmt_error($stmt));
+        }
+    } catch (Exception $e) {
+        return [
+            'msg' => $e->getMessage(),
+            'ids' => 'question marks: ' . json_encode($questionmarks) . 'ids: ' . json_encode($id)
+        ];
+    }
+}
 
 function check_status($conn, $id)
 {
