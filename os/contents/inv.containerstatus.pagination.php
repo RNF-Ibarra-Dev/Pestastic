@@ -33,25 +33,25 @@ $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
-function row_status($conn, $entries = false)
-{
-    $rowCount = "SELECT COUNT(*) FROM chemicals";
+// function row_status($conn, $entries = false)
+// {
+//     $rowCount = "SELECT COUNT(*) FROM chemicals";
 
-    if ($entries) {
-        $rowCount .= "  WHERE request = 0;";
-    } else {
-        $rowCount .= ";";
-    }
+//     if ($entries) {
+//         $rowCount .= "  WHERE request = 0;";
+//     } else {
+//         $rowCount .= ";";
+//     }
 
-    $totalRows = 0;
-    $result = mysqli_query($conn, $rowCount);
-    $row = mysqli_fetch_row($result);
-    $totalRows = $row[0];
+//     $totalRows = 0;
+//     $result = mysqli_query($conn, $rowCount);
+//     $row = mysqli_fetch_row($result);
+//     $totalRows = $row[0];
 
-    $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
+//     $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
 
-    return ['pages' => $totalPages, 'rows' => $totalRows];
-}
+//     return ['pages' => $totalPages, 'rows' => $totalRows];
+// }
 
 
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {

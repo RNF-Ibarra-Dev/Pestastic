@@ -1,9 +1,10 @@
 <?php
+session_start();
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 if (isset($_GET['getChart']) && $_GET['getChart'] == 'status') {
-  $sql = "SELECT transaction_status, COUNT(*) as count FROM transactions GROUP BY transaction_status;";
+  $sql = "SELECT transaction_status, COUNT(*) as count FROM transactions WHERE branch = {$_SESSION['branch']} GROUP BY transaction_status;";
   $result = mysqli_query($conn, $sql);
 
   $status = [];
@@ -18,7 +19,7 @@ if (isset($_GET['getChart']) && $_GET['getChart'] == 'status') {
 }
 
 if (isset($_GET['append']) && $_GET['append'] === 'pendingtrans') {
-  $sql = "SELECT * FROM transactions WHERE transaction_status = 'Pending' ORDER BY id DESC LIMIT 5;";
+  $sql = "SELECT * FROM transactions WHERE transaction_status = 'Pending' AND branch = {$_SESSION['branch']} ORDER BY id DESC LIMIT 5;";
   $result = mysqli_query($conn, $sql);
   $rows = mysqli_num_rows($result);
 
@@ -50,7 +51,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'pendingtrans') {
 }
 
 if (isset($_GET['append']) && $_GET['append'] === 'finalizing_table') {
-  $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing' ORDER BY id DESC LIMIT 5;";
+  $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing' AND branch = {$_SESSION['branch']} ORDER BY id DESC LIMIT 5;";
   $result = mysqli_query($conn, $sql);
   if (mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
@@ -81,7 +82,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'finalizing_table') {
 }
 
 if (isset($_GET['append']) && $_GET['append'] == 'pendingchem') {
-  $sql = "SELECT * FROM chemicals WHERE request = 1 ORDER BY id DESC LIMIT 5;";
+  $sql = "SELECT * FROM chemicals WHERE request = 1 AND branch = {$_SESSION['branch']} ORDER BY id DESC LIMIT 5;";
   $results = mysqli_query($conn, $sql);
   $rows = mysqli_num_rows($results);
 
@@ -105,7 +106,7 @@ if (isset($_GET['append']) && $_GET['append'] == 'pendingchem') {
   }
 }
 if (isset($_GET['append']) && $_GET['append'] == 'lowchemicals') {
-  $sql = "SELECT * FROM chemicals WHERE unop_cont < restock_threshold ORDER BY chemLevel ASC LIMIT 5;";
+  $sql = "SELECT * FROM chemicals WHERE unop_cont < restock_threshold AND branch = {$_SESSION['branch']} ORDER BY chemLevel ASC LIMIT 5;";
   $results = mysqli_query($conn, $sql);
   $rows = mysqli_num_rows($results);
 

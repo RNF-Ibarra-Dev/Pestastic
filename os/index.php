@@ -61,7 +61,7 @@ require("startsession.php");
                             <tr class="text-center align-middle">
                                 <th scope="col">Transaction ID</th>
                                 <th scope="col">Customer Name</th>
-                                <th scope="col"></th>
+                                <th scope="col">View</th>
                             </tr>
                         </thead>
                         <tbody id="pendingtrans" class="text-center align-middle"></tbody>
@@ -100,11 +100,11 @@ require("startsession.php");
                     <table class="table-hover rounded overflow-hidden table">
                         <caption>Check <a href="inventory.php?chem=low"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
-                            to see all low stock items.</caption>
+                            to see all running out items.</caption>
                         <thead>
                             <tr class="text-center align-middle">
                                 <th scope="col">Item</th>
-                                <th scope="col">Container Count</th>
+                                <th scope="col">Container Left</th>
                             </tr>
                         </thead>
                         <tbody id="lowchemicals"></tbody>
@@ -116,8 +116,8 @@ require("startsession.php");
                         <p class="text-center fs-3 w-75 mx-auto">Finalizing Transactions</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
-                        <caption>Check <a href="inventory.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
+                        <caption>Check <a href="transactions.php"
+                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
                             for more.</caption>
                         <thead>
                             <tr class="text-center align-middle">
@@ -203,7 +203,7 @@ require("startsession.php");
             new Chart(ctx, {
                 type: 'pie',
                 data: {
-                    labels: ['Pending', 'Accepted', 'Voided', 'Completed', 'Cancelled', 'Finalizing', 'Dispatched'],
+                    labels: [`Pending: ${data[0]}`, `Accepted: ${data[1]}`, `Voided: ${data[2]}`, `Completed: ${data[3]}`, `Cancelled: ${data[4]}`, `Finalizing: ${data[5]}`, `Dispatched: ${data[6]}`],
                     datasets: [{
                         data: [data[0], data[1], data[2], data[3], data[4], data[5], data[6]],
                         borderWidth: 1,

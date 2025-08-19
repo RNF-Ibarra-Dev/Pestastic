@@ -70,7 +70,7 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
 
         $mail = require __DIR__ . "/../mailer.php";
 
-        $mail->setFrom("noreply@gmail.com");
+        $mail->setFrom("noreply@gmail.com", "Pestastic Inventory");
         $mail->addAddress($email);
         $mail->Subject = "Password Reset";
         $mail->Body = <<<END

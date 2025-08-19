@@ -15,7 +15,7 @@ if (isset($_GET['table']) && $_GET['table'] === 'true') {
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         http_response_code(400);
-        echo "Stmt Failed. Please try again later.";
+        echo "<tr><td scope='row' colspan='6' class='text-center text-dark'>Statement preparation failed.</td></tr>";
         exit();
     }
     mysqli_stmt_bind_param($stmt, 'i', $chemid);
@@ -53,7 +53,7 @@ if (isset($_GET['table']) && $_GET['table'] === 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='7' class='text-center text-dark'>No recorded data.</td></tr>";
+        echo "<tr><td scope='row' colspan='6' class='text-center text-dark'>No recorded data.</td></tr>";
     }
 }
 

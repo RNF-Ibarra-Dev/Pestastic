@@ -22,58 +22,82 @@ if (isset($_POST["submit-tech-edit"])) {
 
 
     if (emptyInputEdit($fname, $lname, $usn, $email) !== false) {
-        header("location: ../superadmin/tech.acc.php?error=incompleteinput");
+        http_response_code(400);
+        echo "Incomplete Input.";
         exit();
     }
 
     if (invalidFirstName($fname) !== false) {
-        header("location: ../superadmin/tech.acc.php?error=invalidfirstname");
+        http_response_code(400);
+        echo "Invalid First Name.";
         exit();
     }
 
     if (invalidLastName($lname) !== false) {
-        header("location: ../superadmin/tech.acc.php?error=invalidlastname");
+        http_response_code(400);
+        echo "Invalid Last Name.";
         exit();
     }
 
     if (invalidUsername($usn) !== false) {
-        header("location: ../superadmin/tech.acc.php?error=invalidusername");
+        http_response_code(400);
+        echo "Invalid Username.";
         exit();
     }
 
     if (invalidEmail($email) !== false) {
-        header("location: ../superadmin/tech.acc.php?error=invalidemail");
+        http_response_code(400);
+        echo "Invalid Email.";
+        exit();
+    }
+
+    if (invalidUsername($usn) !== false) {
+        http_response_code(400);
+        echo "Invalid Username.";
+        exit();
+    }
+
+    if (invalidEmail($email) !== false) {
+        http_response_code(400);
+        echo "Invalid Email.";
         exit();
     }
 
     if (empty($saPwd)) {
         header("location: ../superadmin/tech.acc.php?error=emptymanagerpassword");
+        http_response_code(400);
+        echo "Empty Manager Password.";
         exit();
     }
 
     if (checkExistingAccs($conn, $usn, $email, $id) !== false) {
-        header("location: ../superadmin/tech.acc.php?error=useralreadyexist");
+        http_response_code(400);
+        echo "User Already Exists.";
         exit();
     }
     if (!empty($pwd)) {
         if (pwdMatch($pwd, $pwdRepeat) !== false) {
-            header("location: ../superadmin/tech.acc.php?error=unmatchedpassword");
+            http_response_code(400);
+            echo "Unmatched Password.";
             exit();
         }
     }
     if (employeeIdCheck($conn, $empId, $id) !== false) {
-        header("location: ../superadmin/tech.acc.php?error=existingemployeeid");
+        http_response_code(400);
+        echo "Employee ID already exists.";
         exit();
     }
 
-    if (validate($conn, $saPwd) !== false) {
-        editTechAccount($conn, $id, $fname, $lname, $usn, $email, $pwd, $contactNo, $address, $birthdate, $empId);
-    } else {
-        header("location: ../superadmin/tech.acc.php?error=invalidmanagerpassword");
+    if (!validate($conn, $saPwd)) {
+        http_response_code(400);
+        echo "Wrong password.";
+        exit();
     }
+    $edit = editTechAccount($conn, $id, $fname, $lname, $usn, $email, $pwd, $contactNo, $address, $birthdate, $empId);
+
 }
 
-if (isset($_POST["submit-os-edit"])) {
+if (isset($_POST["configure_os"]) && $_POST['configure_os'] === 'true') {
     $saID = $_SESSION['saID'];
     $id = $_POST["id"];
     $fname = $_POST["fname"];
@@ -89,53 +113,77 @@ if (isset($_POST["submit-os-edit"])) {
     $contactNo = $_POST["contactNo"];
 
     if (emptyInputEdit($fname, $lname, $usn, $email) !== false) {
-        header("location: ../superadmin/os.acc.php?error=incompleteinput");
+        http_response_code(400);
+        echo "Incomplete Input.";
         exit();
     }
 
     if (invalidFirstName($fname) !== false) {
-        header("location: ../superadmin/os.acc.php?error=invalidfirstname");
+        http_response_code(400);
+        echo "Invalid First Name.";
         exit();
     }
 
     if (invalidLastName($lname) !== false) {
-        header("location: ../superadmin/os.acc.php?error=invalidlastname");
+        http_response_code(400);
+        echo "Invalid Last Name.";
         exit();
     }
 
     if (invalidUsername($usn) !== false) {
-        header("location: ../superadmin/os.acc.php?error=invalidusername");
+        http_response_code(400);
+        echo "Invalid Username.";
         exit();
     }
 
     if (invalidEmail($email) !== false) {
-        header("location: ../superadmin/os.acc.php?error=invalidemail");
+        http_response_code(400);
+        echo "Invalid Email.";
         exit();
     }
 
     if (empty($saPwd)) {
-        header("location: ../superadmin/os.acc.php?error=emptymanagerpassword");
+        http_response_code(400);
+        echo "Empty Manager Password.";
         exit();
     }
 
     if (checkExistingAccs($conn, $usn, $email, $id) !== false) {
-        header("location: ../superadmin/os.acc.php?error=useralreadyexist");
+        http_response_code(400);
+        echo "User Already Exists.";
         exit();
     }
     if (!empty($pwd)) {
         if (pwdMatch($pwd, $pwdRepeat) !== false) {
-            header("location: ../superadmin/os.acc.php?error=unmatchedpassword");
+            http_response_code(400);
+            echo "Unmatched Password.";
             exit();
         }
     }
     if (employeeIdCheck($conn, $empId, $id) !== false) {
-        header("location: ../superadmin/os.acc.php?error=existingemployeeid");
+        http_response_code(400);
+        echo "Employee ID already exists.";
         exit();
     }
 
-    if (validate($conn, $saPwd) !== false) {
-        editOSAccount($conn, $id, $fname, $lname, $usn, $email, $pwd, $contactNo, $address, $birthdate, $empId);
+    if (!validate($conn, $saPwd)) {
+        http_response_code(400);
+        echo "Wrong Password.";
+        exit();
+    } 
+
+    $edit = editOSAccount($conn, $id, $fname, $lname, $usn, $email, $pwd, $contactNo, $address, $birthdate, $empId);
+    if(isset($edit['error'])){
+        http_response_code(400);
+        echo $edit['error'];
+        exit();
+    } else if($edit){
+        http_response_code(200);
+        echo json_encode(['success' => "Account updated successfully."]);
+        exit();
     } else {
-        header("location: ../superadmin/os.acc.php?error=invalidmanagerpassword");
+        http_response_code(400);
+        echo "Unknown error occurred." . $edit;
+        exit();
     }
 }

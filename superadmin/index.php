@@ -40,11 +40,12 @@ require("startsession.php");
                 </div>
                 <div class="col bg-light bg-opacity-25 border rounded p-3 pb-0 shadow">
                     <div>
-                        <span class="d-flex flex-row justify-content-center">
-                            <i class="bi bi-clipboard-data fs-3 me-3"></i>
-                            <p class="text-center align-text-center fs-3">
-                                Transactions Status</p>
-                        </span>
+                        <div class="clearfix">
+                            <i
+                                class="bi bi-clipboard-data fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
+                            <p class="text-center align-text-center fs-3 w-75 mx-auto">
+                                Transactions Status Summary</p>
+                        </div>
                         <canvas id="transPie" width="250" height="
                         250"></canvas>
                         <p class="text-muted mt-3">Check <a href="transactions.php"
@@ -53,8 +54,12 @@ require("startsession.php");
                     </div>
                 </div>
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <p class="text-center align-text-center fs-3 mx-auto"><i class="bi bi-exclamation-circle"></i>
-                        Pending Transactions</p>
+                    <div class="clearfix">
+                        <i
+                            class="bi bi-stopwatch fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
+                        <p class="text-center align-text-center fs-3 w-75 mx-auto">
+                            Pending Transactions</p>
+                    </div>
                     <table class="table-hover rounded overflow-hidden table">
                         <caption class="mt-auto">Check <a href="transactions.php"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
@@ -63,10 +68,10 @@ require("startsession.php");
                             <tr class="text-center">
                                 <th scope="col">ID</th>
                                 <th scope="col">Customer</th>
-                                <th scope="col">Actions</th>
+                                <th scope="col">View</th>
                             </tr>
                         </thead>
-                        <tbody id="pendingtrans" class=""></tbody>
+                        <tbody id="pendingtrans" class="text-center align-middle"></tbody>
                     </table>
                 </div>
             </div>
@@ -74,7 +79,11 @@ require("startsession.php");
             <div class="row m-2 gap-2">
 
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <p class="text-center fs-3 mx-auto">Pending Stock Entries</p>
+                    <div class="clearfix">
+                        <i
+                            class="ms-2 fs-3 bi bi-clock float-start fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
+                        <p class="text-center fs-3 mx-auto w-75">Pending Item Entries</p>
+                    </div>
                     <table class="table-hover rounded overflow-hidden table">
                         <caption>Recently requested addition of chemicals. Check <a href="itemstock.php"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
@@ -83,58 +92,49 @@ require("startsession.php");
                             <tr class="text-center">
                                 <th scope="col">Name</th>
                                 <th scope="col">Brand</th>
-                                <th scope="col">Status</th>
+                                <th scope="col">Date Received</th>
                             </tr>
                         </thead>
                         <tbody id="pendingchem" class=""></tbody>
                     </table>
                 </div>
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <p class="text-center fs-3 mx-auto">Low Stock Chemicals</p>
+                    <div class="clearfix">
+                        <i
+                            class="bi bi-exclamation-circle fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
+                        <p class="text-center fs-3 w-75 mx-auto">Running Out Items</p>
+                    </div>
                     <table class="table-hover rounded overflow-hidden table">
                         <caption>Check <a href="itemstock.php?chem=low"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
-                            to see all chemicals low in stock.</caption>
+                            to see all running out items.</caption>
                         <thead>
-                            <tr class="text-center">
-                                <th scope="col">Name</th>
-                                <th scope="col">Brand</th>
-                                <th scope="col">Level</th>
+                            <tr class="text-center align-middle">
+                                <th scope="col">Item</th>
+                                <th scope="col">Container Left</th>
                             </tr>
                         </thead>
                         <tbody id="lowchemicals"></tbody>
                     </table>
                 </div>
                 <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <p class="text-center fs-3 mx-auto">Void Requests</p>
+                    <div class="clearfix">
+                        <i
+                            class="bi bi-arrow-repeat fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
+                        <p class="text-center fs-3 w-75 mx-auto">Finalizing Transactions</p>
+                    </div>
                     <table class="table-hover rounded overflow-hidden table">
                         <caption>Check <a href="transaction.php"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transaction</a>
                             to review and approve void requests.</caption>
                         <thead>
                             <tr class="text-center align-middle">
-                                <th scope="col">ID</th>
+                                <th scope="col">Transaction ID</th>
                                 <th scope="col">Customer Name</th>
-                                <th scope="col">Treatment Date</th>
+                                <th scope="col">View</th>
                             </tr>
                         </thead>
-                        <tbody id="voidreqtable">
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <p class="text-center fs-3 mx-auto">Available Equipment</p>
-                    <table class="table-hover rounded overflow-hidden table">
-                        <caption>Check <a href="equipments.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">equipment</a>
-                            page for more.</caption>
-                        <thead>
-                            <tr class="text-center align-middle">
-                                <th scope="col">Equipment</th>
-                                <th scope="col">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="eqtable">
+                        <tbody id="finalizing_table">
                         </tbody>
                     </table>
                 </div>
@@ -153,10 +153,9 @@ require("startsession.php");
                 await append_table('pendingtrans'),
                 await append_table('pendingchem'),
                 await append_table('lowchemicals'),
-                await append_table('voidreqtable'),
-                await append_table('eqtable')
+                await append_table('finalizing_table'),
             ]);
-        
+
         })
 
         async function append_table(container) {
@@ -216,14 +215,17 @@ require("startsession.php");
             new Chart(ctx, {
                 type: 'pie',
                 data: {
-                    labels: ['Pending', 'Accepted', 'Voided', 'Completed'],
+                    labels: [`Pending: ${data[0]}`, `Accepted: ${data[1]}`, `Voided: ${data[2]}`, `Completed: ${data[3]}`, `Cancelled: ${data[4]}`, `Finalizing: ${data[5]}`, `Dispatched: ${data[6]}`],
                     datasets: [{
-                        data: [data[0], data[1], data[2], data[3]],
+                        data: [data[0], data[1], data[2], data[3], data[4], data[5], data[6]],
                         borderWidth: 1,
                         backgroundColor: [
-                            'rgba(255, 255, 255, 0.30)',
-                            'rgba(255, 255, 255, 0.50)',
-                            'rgba(255, 255, 255, 0.75)',
+                            'rgba(255, 255, 255, 0.14)',
+                            'rgba(255, 255, 255, 0.28)',
+                            'rgba(255, 255, 255, 0.42)',
+                            'rgba(255, 255, 255, 0.56)',
+                            'rgba(255, 255, 255, 0.70)',
+                            'rgba(255, 255, 255, 0.84)',
                             'rgba(255, 255, 255, 1)'
                         ]
                     }]

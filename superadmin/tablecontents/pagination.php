@@ -201,7 +201,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         http_response_code(400);
-        echo "table stmt failed.";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>Statement preparation failed.</td></tr>";
         exit;
     }
 
@@ -315,7 +315,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='7' class='text-center'>No chemicals found.</td></tr>";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>No items found.</td></tr>";
         return false;
     }
 }
@@ -343,7 +343,7 @@ if (isset($_GET['search'])) {
 
     if (!empty($queries)) {
         $sql .= " AND " . implode(" AND ", $queries);
-    } 
+    }
 
     $sql .= " ORDER BY request DESC, id DESC;";
 

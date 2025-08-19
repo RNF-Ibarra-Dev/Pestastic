@@ -73,7 +73,7 @@
     <div class="modal-dialog me-4 w-25 shadow-lg" style="margin-top: 5rem !important;">
         <div class="modal-content text-dark rounded-4 border-0 shadow-lg">
             <div class="modal-header position-relative">
-                <h1 class="modal-title fs-5 mx-auto">Notifications</h1>
+                <h1 class="modal-title fs-5 mx-auto">Alerts</h1>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"
                     style="position: absolute; right: 0.4rem;"></button>
             </div>

@@ -1009,7 +1009,7 @@
                             <div class="modal-body">
                                 <div class="row mb-2">
                                     <label for="confirmapprove-inputpwd" class="form-label fw-light">Cancel Transaction?
-                                        Enter Operation Supervisor
+                                        Enter Manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control"
@@ -1078,7 +1078,7 @@
                                 <div class="row mb-2">
                                     <label for="confirmapprove-inputpwd" class="form-label fw-light">Confirm reschedule
                                         of this transaction?
-                                        Enter Operation Supervisor
+                                        Enter Manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control w-50"
@@ -1146,7 +1146,7 @@
                                 <div class="row mb-2">
                                     <label for="finalizing-inputpwd" class="form-label fw-light">Confirm Finalizing
                                         this transaction?
-                                        Enter Operation Supervisor
+                                        Enter Manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control w-75"
@@ -1215,7 +1215,7 @@
                                 <div class="row mb-2">
                                     <label for="complete-inputpwd" class="form-label fw-light">Mark
                                         this transaction as Completed?
-                                        Enter Operation Supervisor
+                                        Enter Manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control w-75"
@@ -1283,7 +1283,7 @@
                                 <div class="row mb-2">
                                     <label for="complete-inputpwd" class="form-label fw-light">Update transaction to
                                         Dispatch?
-                                        Enter Operation Supervisor
+                                        Enter Manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control w-75"
@@ -2812,7 +2812,6 @@
             let status = $("#sortstatus option:selected").val();
 
             let currentpage = $(this).data('page');
-            console.log(currentpage);
 
             // $('#chemicalTable').empty();
             window.history.pushState(null, "", "?page=" + currentpage);

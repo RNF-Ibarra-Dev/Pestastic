@@ -1,9 +1,10 @@
 <?php
+session_start();
 require_once("../../includes/dbh.inc.php");
 require_once("../../includes/functions.inc.php");
 
 if (isset($_GET['voidreqs']) && $_GET['voidreqs'] === 'true') {
-    $sql = "SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC;";
+    $sql = "SELECT * FROM transactions WHERE void_request = 1 AND branch = {$_SESSION['branch']} ORDER BY id DESC;";
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
 
@@ -45,7 +46,7 @@ if (isset($_GET['voidreqs']) && $_GET['voidreqs'] === 'true') {
 }
 
 if (isset($_GET['table']) && $_GET['table'] == 'table') {
-    $sql = "SELECT * FROM transactions;";
+    $sql = "SELECT * FROM transactions WHERE branch = {$_SESSION['branch']};";
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
 
@@ -108,7 +109,7 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'add') {
 function get_tech($conn, $active = null)
 {
     $active = $active == null ? '' : $active;
-    $sql = 'SELECT * FROM technician';
+    $sql = "SELECT * FROM technician WHERE user_branch = {$_SESSION['branch']}";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -153,7 +154,7 @@ function get_prob($conn, $checked = null)
 function get_chem($conn, $active = null)
 {
     $active = $active == null ? '' : $active;
-    $sql = 'SELECT * FROM chemicals WHERE request = 0 AND chemLevel != 0 ORDER BY id DESC;';
+    $sql = "SELECT * FROM chemicals WHERE request = 0 AND chemLevel != 0 AND branch = {$_SESSION['branch']} ORDER BY id DESC;";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -181,7 +182,7 @@ function get_chem($conn, $active = null)
 function get_chem_edit($conn, $active = 0)
 {
     $active = $active === 0 ? 0 : (int) $active;
-    $sql = 'SELECT * FROM chemicals ORDER BY id DESC;';
+    $sql = "SELECT * FROM chemicals WHERE branch = {$_SESSION['branch']} ORDER BY id DESC;";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -208,7 +209,7 @@ function get_chem_edit($conn, $active = 0)
 }
 function get_more_chem($conn, $status = '')
 {
-    $sql = 'SELECT * FROM chemicals';
+    $sql = "SELECT * FROM chemicals WHERE branch = {$_SESSION['branch']}";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -282,7 +283,7 @@ if (isset($_GET['details']) && $_GET['details'] === 'true') {
     }
     $response = [];
 
-    $sql = "SELECT * FROM transactions WHERE id = ?;";
+    $sql = "SELECT * FROM transactions WHERE id = ? AND branch = {$_SESSION['branch']};";
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         http_response_code(400);
@@ -675,7 +676,7 @@ if (isset($_GET['getunit']) && $_GET['getunit'] === 'true') {
 
 function packages($conn)
 {
-    $sql = "SELECT * FROM packages;";
+    $sql = "SELECT * FROM packages WHERE branch = {$_SESSION['branch']};";
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) > 0) {
@@ -746,7 +747,6 @@ if (isset($_GET['edit']) && $_GET['edit'] === 'treatment-options') {
 }
 
 
-
 if (isset($_GET['edit']) && $_GET['edit'] === 'package') {
     $package_id = $_GET['transId'];
 
@@ -756,7 +756,7 @@ if (isset($_GET['edit']) && $_GET['edit'] === 'package') {
         exit();
     }
 
-    $sql = "SELECT * FROM packages;";
+    $sql = "SELECT * FROM packages WHERE branch = {$_SESSION['branch']};";
     $res = mysqli_query($conn, $sql);
     if (mysqli_num_rows($res) > 0) {
         while ($row = mysqli_fetch_assoc($res)) {
@@ -790,7 +790,7 @@ if (isset($_GET['packagename']) && $_GET['packagename'] === 'true') {
         return "Invalid ID.";
     }
 
-    $sql = "SELECT * FROM packages WHERE id = $id;";
+    $sql = "SELECT * FROM packages WHERE id = $id AND branch = {$_SESSION['branch']};";
     $res = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($res) > 0) {
@@ -817,7 +817,7 @@ function get_warranty_duration($conn, $id)
         exit();
     }
 
-    $sql = "SELECT year_warranty FROM packages WHERE id = $id;";
+    $sql = "SELECT year_warranty FROM packages WHERE id = $id AND branch = {$_SESSION['branch']};";
     $res = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($res) > 0) {
@@ -866,7 +866,7 @@ if (isset($_GET['branchoptions']) && $_GET['branchoptions'] === 'true') {
 }
 
 if (isset($_GET['voidreqbadge']) && $_GET['voidreqbadge'] === 'true') {
-    $sql = "SELECT * FROM transactions WHERE void_request = 1;";
+    $sql = "SELECT * FROM transactions WHERE void_request = 1 AND branch = {$_SESSION['branch']};";
     $query = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($query) > 0) {
@@ -879,7 +879,7 @@ if (isset($_GET['voidreqbadge']) && $_GET['voidreqbadge'] === 'true') {
 if (isset($_GET['count']) && $_GET['count'] === 'true') {
     $status = $_GET['status'];
 
-    $sql = "SELECT COUNT(*) FROM transactions WHERE transaction_status = ?;";
+    $sql = "SELECT COUNT(*) FROM transactions WHERE transaction_status = ? AND branch = {$_SESSION['branch']};";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -899,7 +899,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
 }
 
 if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
-    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing' ORDER BY updated_at DESC LIMIT 5;";
+    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing' AND branch = {$_SESSION['branch']} ORDER BY updated_at DESC LIMIT 5;";
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
 
@@ -942,7 +942,7 @@ if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
     }
 }
 if (isset($_GET['voidrequest']) && $_GET['voidrequest'] === 'true') {
-    $sql = "SELECT * FROM transactions WHERE void_request = 1 ORDER BY updated_at DESC;";
+    $sql = "SELECT * FROM transactions WHERE void_request = 1 AND branch = {$_SESSION['branch']} ORDER BY updated_at DESC;";
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
 
@@ -977,7 +977,7 @@ if (isset($_GET['voidrequest']) && $_GET['voidrequest'] === 'true') {
 if(isset($_GET['notes']) && $_GET['notes'] === 'true'){
     $id = $_GET['id'];
 
-    $sql = "SELECT notes FROM transactions WHERE id = ?;";
+    $sql = "SELECT notes FROM transactions WHERE id = ? AND branch = {$_SESSION['branch']};";
     $stmt = mysqli_stmt_init($conn);
 
     if(!mysqli_stmt_prepare($stmt, $sql)){

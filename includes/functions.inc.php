@@ -412,10 +412,10 @@ function employeeIdCheck($conn, $empId, $id = NULL)
     mysqli_stmt_close($stmt);
 }
 
-function createTechAccount($conn, $firstName, $lastName, $username, $email, $pwd, $contact, $address, $empId, $birthdate)
+function createTechAccount($conn, $firstName, $lastName, $username, $email, $pwd, $contact, $address, $empId, $birthdate, $branch)
 {
 
-    $sql = "INSERT INTO technician (firstName, lastName, username, techEmail, techPwd, techContact, techAddress, techEmpId, techBirthdate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    $sql = "INSERT INTO technician (firstName, lastName, username, techEmail, techPwd, techContact, techAddress, techEmpId, techBirthdate, user_branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         header("location: ../superadmin/create.tech.php?error=stmtfailed");
@@ -424,7 +424,7 @@ function createTechAccount($conn, $firstName, $lastName, $username, $email, $pwd
 
     $hashedPwd = password_hash($pwd, PASSWORD_DEFAULT);
 
-    mysqli_stmt_bind_param($stmt, "sssssssss", $firstName, $lastName, $username, $email, $hashedPwd, $contact, $address, $empId, $birthdate);
+    mysqli_stmt_bind_param($stmt, "sssssssssi", $firstName, $lastName, $username, $email, $hashedPwd, $contact, $address, $empId, $birthdate, $branch);
     mysqli_stmt_execute($stmt);
 
     if (mysqli_stmt_affected_rows($stmt) > 0) {
@@ -434,10 +434,10 @@ function createTechAccount($conn, $firstName, $lastName, $username, $email, $pwd
     }
 }
 
-function createOpSupAccount($conn, $firstName, $lastName, $username, $email, $pwd, $contact, $address, $empId, $birthdate)
+function createOpSupAccount($conn, $firstName, $lastName, $username, $email, $pwd, $contact, $address, $empId, $birthdate, $branch)
 {
 
-    $sql = "INSERT INTO branchadmin (baFName, baLName, baUsn, baEmail, baPwd, baContact, baAddress, baEmpId, baBirthdate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    $sql = "INSERT INTO branchadmin (baFName, baLName, baUsn, baEmail, baPwd, baContact, baAddress, baEmpId, baBirthdate, user_branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         header("location: ../superadmin/create.os.php?error=stmtfailed");
@@ -446,7 +446,7 @@ function createOpSupAccount($conn, $firstName, $lastName, $username, $email, $pw
 
     $hashedPwd = password_hash($pwd, PASSWORD_DEFAULT);
 
-    mysqli_stmt_bind_param($stmt, "sssssssss", $firstName, $lastName, $username, $email, $hashedPwd, $contact, $address, $empId, $birthdate);
+    mysqli_stmt_bind_param($stmt, "sssssssssi", $firstName, $lastName, $username, $email, $hashedPwd, $contact, $address, $empId, $birthdate, $branch);
     mysqli_stmt_execute($stmt);
 
     if (mysqli_stmt_affected_rows($stmt) > 0) {
@@ -2075,22 +2075,31 @@ function deleteTechAccount($conn, $id)
 }
 function deleteOSAccount($conn, $id)
 {
-    $stmt = mysqli_stmt_init($conn);
-    $sql = 'DELETE FROM branchadmin WHERE baID = ?;';
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header('location: ../superadmin/os.acc.php?error=stmtfailed');
-        exit();
+    mysqli_begin_transaction($conn);
+    try {
+        $stmt = mysqli_stmt_init($conn);
+        $sql = 'DELETE FROM branchadmin WHERE baID = ?;';
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("Statement preparation failed");
+        }
+
+        mysqli_stmt_bind_param($stmt, 'i', $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        if(mysqli_stmt_affected_rows($stmt) <= 0) {
+            throw new Exception("Account deletion failed.");
+        }
+
+        mysqli_stmt_close($stmt);
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage()
+        ];
     }
 
-    mysqli_stmt_bind_param($stmt, 'i', $id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    if (!$result) {
-        header('location: ../superadmin/os.acc.php?error=fetchfailed');
-    }
-    mysqli_stmt_close($stmt);
-    header('location: ../superadmin/os.acc.php?success =accountdeleted');
-    exit();
 }
 
 function deleteTransaction($conn, $id)
@@ -2119,7 +2128,7 @@ function deleteTransaction($conn, $id)
 
 function editTechAccount($conn, $id, $firstName, $lastName, $username, $email, $pwd, $contactNo, $address, $birthdate, $empId)
 {
-    // $sql = "UPDATE technician SET firstName= ?, lastName= ?, username= ?, techEmail= ?, techPwd= ? WHERE technicianid = ? ;";
+
     $sql = "UPDATE technician SET firstName= ?, lastName= ?, username= ?, techEmail= ?, techContact = ?, techAddress = ?, techBirthdate = ?, techEmpId = ?";
 
     if (!empty($pwd)) {
@@ -2143,37 +2152,43 @@ function editTechAccount($conn, $id, $firstName, $lastName, $username, $email, $
 
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
-    header("location: ../superadmin/tech.acc.php?error=none");
-    exit();
+    return true;
 }
 function editOSAccount($conn, $id, $firstName, $lastName, $username, $email, $pwd, $contactNo, $address, $birthdate, $empId)
 {
-    // $sql = "UPDATE technician SET firstName= ?, lastName= ?, username= ?, techEmail= ?, techPwd= ? WHERE technicianid = ? ;";
-    $sql = "UPDATE branchadmin SET baFName= ?, baLName= ?, baUsn= ?, baEmail= ?, baContact = ?, baAddress = ?, baBirthdate = ?, baEmpId = ?";
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "UPDATE branchadmin SET baFName= ?, baLName= ?, baUsn= ?, baEmail= ?, baContact = ?, baAddress = ?, baBirthdate = ?, baEmpId = ?";
 
-    if (!empty($pwd)) {
-        $sql .= ", baPwd = ? WHERE baID = ?;";
-    } else {
-        $sql .= " WHERE baID = ?;";
+        if (!empty($pwd)) {
+            $sql .= ", baPwd = ? WHERE baID = ?;";
+        } else {
+            $sql .= " WHERE baID = ?;";
+        }
+
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("Failed to prepare statement");
+        }
+
+        if (!empty($pwd)) {
+            $hashedPwd = password_hash($pwd, PASSWORD_DEFAULT);
+            mysqli_stmt_bind_param($stmt, "sssssssssi", $firstName, $lastName, $username, $email, $contactNo, $address, $birthdate, $empId, $hashedPwd, $id);
+        } else {
+            mysqli_stmt_bind_param($stmt, "ssssssssi", $firstName, $lastName, $username, $email, $contactNo, $address, $birthdate, $empId, $id);
+        }
+
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage()
+        ];
     }
 
-    $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header("location: ../superadmin/os.acc.php?error=stmtfailed");
-        exit();
-    }
-
-    if (!empty($pwd)) {
-        $hashedPwd = password_hash($pwd, PASSWORD_DEFAULT);
-        mysqli_stmt_bind_param($stmt, "sssssssssi", $firstName, $lastName, $username, $email, $contactNo, $address, $birthdate, $empId, $hashedPwd, $id);
-    } else {
-        mysqli_stmt_bind_param($stmt, "ssssssssi", $firstName, $lastName, $username, $email, $contactNo, $address, $birthdate, $empId, $id);
-    }
-
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-    header("location: ../superadmin/os.acc.php?error=none");
-    exit();
 }
 
 
@@ -4052,7 +4067,7 @@ function restock_item($conn, $id, $restock_value, $author, $user_id, $user_role,
     mysqli_begin_transaction($conn);
     try {
         $item_data = get_chemical($conn, $id);
-        if(isset($item_data['error'])){
+        if (isset($item_data['error'])) {
             throw new Exception($item_data['error']);
         }
 
@@ -4076,7 +4091,7 @@ function restock_item($conn, $id, $restock_value, $author, $user_id, $user_role,
         $log_note = "Restocked $restock_value new items. New unopened item count: $new_cc" . $note != '' ? " | User note: '$note'" : '';
 
         $log = log_chemical($conn, $id, "Restock Item", $total_qty, $restock_value, NULL, $user_id, $user_role, $log_note, $branch);
-        if(isset($log['error'])){
+        if (isset($log['error'])) {
             throw new Exception($log['error']);
         }
 

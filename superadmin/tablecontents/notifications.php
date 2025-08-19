@@ -14,7 +14,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
     if ($lsr) {
         $num = mysqli_num_rows($lsr);
         if ($num > 0) {
-            $lchems = $num == 1 ? 'Chemical' : 'Chemicals';
+            $lchems = $num == 1 ? 'Item' : 'Items';
             $response['notif'] .=
                 "<li class='list-group-item p-0'>
             <a href='itemstock.php'
@@ -56,7 +56,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                 <a href='itemstock.php'
                     class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
                     <p class='fw-light mb-0'><i class='bi bi-flask-florence fw-light account-settings-icon'></i>
-                        <span class='text-danger'>$num</span> Chemical $centry needs approval.
+                        <span class='text-danger'>$num</span> Item $centry needs approval.
                     </p>
                 </a>
             </li>";

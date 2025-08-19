@@ -37,31 +37,32 @@ require("startsession.php");
                             Account</h1>
                     </div>
 
-                    <div class="form-floating col-md-6 form-custom mb-2">
-                        <input type="text" name="firstName" class="form-control" id="floatingInput"
+                    <div class="form-floating col-md-4 form-custom mb-2">
+                        <input type="text" name="firstName" class="form-control" id="floatingInput" autocomplete="off"
                             placeholder="First Name...">
-                        <label for="floatingInput">First Name</label>
+                        <label for="floatingInput" class="fw-bold">First Name</label>
                     </div>
 
-                    <div class="form-floating col-md-6 form-custom mb-2">
-                        <input type="text" name="lastName" class="form-control" id="floatingInput"
+                    <div class="form-floating col-md-4 form-custom mb-2">
+                        <input type="text" name="lastName" class="form-control" id="floatingInput" autocomplete="off"
                             placeholder="Last Name...">
-                        <label for="floatingInput">Last Name</label>
+                        <label for="floatingInput" class="fw-bold">Last Name</label>
                     </div>
 
                     <div class="form-floating col-md-4 form-custom mb-2">
-                        <input type="text" name="username" class="form-control" id="floatingInput"
+                        <input type="text" name="username" class="form-control" id="floatingInput" autocomplete="off"
                             placeholder="Username...">
-                        <label for="floatingInput">Username</label>
+                        <label for="floatingInput" class="fw-bold">Username</label>
                     </div>
 
                     <div class="form-floating col-md-4 form-custom mb-2">
-                        <input type="email" name="email" class="form-control" id="floatingInput" placeholder="Email...">
-                        <label for="floatingInput">Email Address</label>
+                        <input type="email" name="email" class="form-control" id="floatingInput" placeholder="Email..."
+                            autocomplete="off">
+                        <label for="floatingInput" class="fw-bold">Email Address</label>
                     </div>
 
                     <div class="form-floating col-md-4 form-custom mb-2">
-                        <select name="account" id="acc" class="form-select bg-transparent py-0 text-light">
+                        <select name="account" id="acc" class="form-select bg-transparent py-0 text-light fw-bold">
                             <option value="" selected class="text-dark">Account Type</option>
                             <option value="os" class="text-dark">Operations Supervisor</option>
                             <option value="tech" class="text-dark">Technician</option>
@@ -69,78 +70,92 @@ require("startsession.php");
                     </div>
 
                     <div class="form-floating col-md-4 form-custom mb-2">
-                        <input type="number" maxlength="11" name="contactNo" class="form-control" id="floatingInput"
-                            placeholder="Contact No...">
-                        <label for="floatingInput">Contact Number</label>
+                        <select name="branch" id="branch" class="form-select bg-transparent py-0 text-light fw-bold">
+                        </select>
                     </div>
 
                     <div class="form-floating col-md-4 form-custom mb-2">
-                        <input type="number" name="empId" class="form-control" id="floatingInput"
-                            placeholder="Employee ID...">
-                        <label for="floatingInput">Employee ID</label>
+                        <input type="number" maxlength="11" name="contactNo" class="form-control" id="contact"
+                            placeholder="Contact No..." autocomplete="off">
+                        <label for="contact" class="fw-bold">Contact Number</label>
                     </div>
 
                     <div class="form-floating col-md-4 form-custom mb-2">
-                        <input type="date" name="birthdate" class="form-control" id="floatingInput"
+                        <input type="number" name="empId" class="form-control" id="empid" placeholder="Employee ID..."
+                            autocomplete="off">
+                        <label for="empid" class="fw-bold">Employee ID</label>
+                    </div>
+
+                    <div class="form-floating col-md-4 form-custom mb-2">
+                        <input type="date" name="birthdate" class="form-control" id="birthdate"
                             placeholder="Employee ID..." value="1930-01-01">
-                        <label for="floatingInput">Birthdate</label>
+                        <label for="birthdate" class="fw-bold">Birthdate</label>
                     </div>
 
                     <div class="form-floating col-md-12 form-custom mb-2">
-                        <input type="text" name="address" class="form-control" id="floatingInput"
-                            placeholder="Address...">
-                        <label for="floatingInput">Address</label>
+                        <input type="text" name="address" class="form-control" id="addess" placeholder="Address..."
+                            autocomplete="off">
+                        <label for="addess" class="fw-bold">Address</label>
                     </div>
 
                     <div class="form-floating col-md-6 form-custom mb-2">
-                        <input type="password" name="pwd" class="form-control" id="floatingPassword"
-                            placeholder="******">
-                        <label for="floatingPassword">Password</label>
+                        <input type="password" name="pwd" class="form-control" id="pwd" placeholder="******"
+                            autocomplete="new-password">
+                        <label for="pwd" class="fw-bold">Password</label>
                     </div>
 
                     <div class="form-floating col-md-6 form-custom mb-2">
-                        <input type="password" name="pwdRepeat" class="form-control" id="floatingPassword"
-                            placeholder="******">
-                        <label for="floatingPassword">Repeat Password</label>
+                        <input type="password" name="pwdRepeat" class="form-control" id="rpwd" placeholder="******"
+                            autocomplete="new-password">
+                        <label for="rpwd" class="fw-bold">Repeat Password</label>
                     </div>
 
-                    <button class="btn btn-form-submit bg-light bg-opacity-75 text-dark" type="submit"><i
-                            class="bi bi-person-add me-2"></i>Create Account</button>
 
 
+                    <button class="btn btn-form-submit bg-light bg-opacity-75 text-dark" type="button"
+                        data-bs-toggle="modal" data-bs-target="#confirm"><i class="bi bi-person-add me-2"></i>Create
+                        Account</button>
 
-                    <?php
-                    // if (isset($_GET["error"])) {
-                    //     if ($_GET["error"] == "emptyinput") {
-                    //         echo "<p class='text-center alert alert-info w-75 mx-auto'>All fields must be filled.</p>";
-                    //     } elseif ($_GET["error"] == "invalidusername") {
-                    //         echo "<p class='text-center alert alert-info w-75 mx-auto'>Username not valid or it might be taken. Choose another username.</p>";
-                    //     } elseif ($_GET["error"] == "invalidfirstname" || $_GET["error"] == "invalidlastname") {
-                    //         echo "<p class='text-center alert alert-info w-75 mx-auto'>Numbers are not allowed for names.</p>";
-                    //     } elseif ($_GET["error"] == "invalidemail") {
-                    //         echo "<p class='text-center alert alert-info w-75 mx-auto'>Email not valid. Choose a valid email.</p>";
-                    //     } elseif ($_GET["error"] == "passwordsdontmatch") {
-                    //         echo "<p class='text-center alert alert-info w-75 mx-auto'>Passwords do not match.</p>";
-                    //     } elseif ($_GET["error"] == "useralreadyexist") {
-                    //         echo "<p class='text-center alert alert-info w-75 mx-auto'>User already exists!</p>";
-                    //     } elseif ($_GET["error"] == "stmtfailed") {
-                    //         echo "<p class='text-center alert alert-info w-75 mx-auto'>Something went wrong, try again.</p>";
-                    //     } elseif ($_GET["error"] == "none") {
-                    //         echo "<p class='text-center alert alert-success w-75 mx-auto'>Account created.</p>";
-                    //     } elseif ($_GET["error"] == "existingemployeeid") {
-                    //         echo "<p class='text-center alert alert-info w-75 mx-auto'>Employee ID already exist.</p>";
-                    //     }
-                    // }
-                    ?>
 
+                    <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="confirm" tabindex="0">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-modal-title text-light">
+                                    <h1 class="modal-title fs-5">Confirm Account Creation</h1>
+                                    <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                        aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row mb-2 d-flex flex-column justify-content-center">
+                                        <label for="complete-inputpwd" class="form-label">Create this account?
+                                            Enter Manager
+                                            <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                        <div class="col-lg-6 mb-2">
+                                            <input type="password" name="manager_pwd" class="form-control w-75"
+                                                id="complete-inputpwd" autocomplete="current-password">
+                                        </div>
+                                    </div>
+                                    <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                        id="alert">
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Go back</button>
+                                    <button type="submit" class="btn btn-grad">Create Account</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
-            <p class='text-center alert alert-info w-75 mx-auto mt-3' id="alert" style="display: none !important;">
-            </p>
-            <p class='text-center alert alert-success w-75 mx-auto mt-3' id="successalert" style="display: none !important;">
+            <p class='text-center alert alert-success w-75 mx-auto mt-3' id="successalert"
+                style="display: none !important;">
             </p>
         </main>
     </div>
+    <?php
+    include("footer.links.php");
+    ?>
     <script>
         const submitUrl = "tablecontents/createacc.php";
 
@@ -157,23 +172,36 @@ require("startsession.php");
 
                 if (create) {
                     $('#createacc')[0].reset();
-                    console.log(create);
                     $('#successalert').html(create.success).removeAttr('display').fadeIn(400).delay(1000).fadeOut(500);
+                    $("#confirm").modal('hide');
                 }
             } catch (error) {
                 console.log(error);
                 console.log(error.responseText);
                 $('#alert').html(error.responseText).removeAttr('display').fadeIn(400).delay(1000).fadeOut(500);
             }
-        })
+        });
 
-        async function check_input() {
+        $(function () {
+            $.get("tablecontents/createacc.php", { branches: 'true' }, function (data) {
+                $('#branch').html(data);
+            }).fail(function (error) {
+                console.error("Error fetching branches:", error);
+                $("#branch").html("<option value='' selected disabled>Error loading branches</option>");
+            });
+        });
 
-        }
+        const today = new Date();
+        const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+        let bday = $('#birthdate');
+        flatpickr(bday, {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+            maxDate: maxDate
+        });
     </script>
-    <?php
-    include("footer.links.php");
-    ?>
+
 
 </body>
 

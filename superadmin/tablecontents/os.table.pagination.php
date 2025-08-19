@@ -1,0 +1,301 @@
+<?php
+require_once "../../includes/dbh.inc.php";
+require_once "../../includes/functions.inc.php";
+
+$pageRows = 8;
+$rowCount = 'SELECT * FROM branchadmin;';
+$countResult = mysqli_query($conn, $rowCount);
+$totalRows = mysqli_num_rows($countResult);
+$totalPages = ceil($totalRows / $pageRows);
+
+if (isset($_GET['ostable']) && $_GET['ostable'] === 'true') {
+    $current = isset($_GET['currentpage']) && is_numeric($_GET['currentpage']) ? $_GET['currentpage'] : 1;
+    $branch = $_GET['branch'] ?? NULL;
+
+    $limitstart = ($current - 1) * $pageRows;
+
+    $sql = "SELECT * FROM branchadmin";
+
+    $data = [];
+    $type = '';
+    if ($branch !== '' && $branch !== NULL) {
+        $data[] = $branch;
+        $type .= 'i';
+        $sql .= " WHERE user_branch = ?";
+    }
+    $sql .= " ORDER BY baID DESC LIMIT $limitstart, $pageRows";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "<tr><td scope='row' colspan='5' class='text-center'>Statement preparation failed.</td></tr>";
+        exit();
+    }
+
+    if (!empty($data)) {
+        mysqli_stmt_bind_param($stmt, $type, ...$data);
+    }
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $baId = $row["baID"];
+            $baFName = $row["baFName"];
+            $baLName = $row["baLName"];
+            $baEmail = $row["baEmail"];
+            $baUsn = $row["baUsn"];
+            $baPwd = $row["baPwd"];
+            $baContact = $row["baContact"];
+            $baEmpId = $row["baEmpId"];
+            $baAddress = $row["baAddress"];
+            $baBirthdate = $row["baBirthdate"];
+            ?>
+            <tr class="text-center">
+                <td scope="row"><?= htmlspecialchars($baFName) ?></td>
+                <td><?= htmlspecialchars($baLName) ?></td>
+                <td><?= htmlspecialchars($baUsn) ?></td>
+                <td><?= htmlspecialchars($baEmpId) ?></td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-sidebar edit-btn" data-edit="<?= htmlspecialchars($baId) ?>">
+                            <i class="bi bi-person-gear me-1"></i>
+                        </button>
+                        <button type="button" class="btn btn-sidebar delete-btn" data-delete="<?= htmlspecialchars($baId) ?>">
+                            <i class="bi bi-person-gear me-1"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            <?php
+        }
+    } else {
+        echo "<tr><td scope='row' colspan='5' class='text-center'>No Operation Supervisor account found.</td></tr>";
+    }
+}
+
+
+function row_status($conn, $ibranch = '')
+{
+    $rowCount = "SELECT COUNT(*) FROM branchadmin";
+    $queries = [];
+
+    if ($ibranch !== '' && $ibranch !== NULL) {
+        $queries[] = "user_branch = ?";
+        $branch = (int) $ibranch;
+    }
+
+    if (!empty($queries)) {
+        $rowCount .= " WHERE " . implode(" AND ", $queries);
+    }
+    // $rowCount .= " AND request = 0 AND chem_location = 'main_storage';";
+    $stmt = mysqli_stmt_init($conn);
+    $totalRows = 0;
+
+    if (!mysqli_stmt_prepare($stmt, $rowCount)) {
+        http_response_code(400);
+        echo "row status stmt failed.";
+        exit;
+    }
+
+    if ($ibranch !== '') {
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_row($res);
+    $totalRows = $row[0];
+
+    $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
+
+    return ['pages' => $totalPages, 'rows' => $totalRows];
+}
+
+if (isset($_GET['pagenav']) && $_GET['pagenav'] === 'true') {
+    $branch = $_GET['branch'];
+
+    if ($branch !== '' && $branch !== NULL) {
+        $rowstatus = row_status($conn, $branch);
+        $totalRows = $rowstatus['rows'];
+        $totalPages = $rowstatus['pages'];
+    } else {
+        $GLOBALS['totalPages'];
+    }
+    ?>
+
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <?php
+            // set active page ex. 1 = first page. Checks if numeric as well.
+            $activepage = isset($_GET['active']) && is_numeric($_GET['active']) ? $_GET['active'] : 1;
+
+            // set next and previous pagination button data
+            $prev = $activepage - 1;
+            $next = $activepage + 1;
+
+            // pagination number limit
+            $pagenolimit = 3;
+
+            // page no where the loop will start. will start at 2 if pagenolimit is 3 so it shows only 2 & 3 at the pagination buttons.
+            $defaultstart = 1;
+
+            // set default page starting number
+            // if active page is bigger than the limit, default page should start at the lesser two numbers of the active page
+            // var_dump($activepage);
+            if ($activepage > $pagenolimit) {
+                $defaultstart = $activepage - ($pagenolimit - 1);
+                // var_dump($defaultstart);
+            } else {
+                $defaultstart = 1;
+                // var_dump($defaultstart);
+            }
+
+            $lastpages = $totalPages;
+            // var_dump($lastpages);
+        
+            ?>
+            <li class="page-item">
+                <a class="page-link" data-page="1" href=""><i class="bi bi-caret-left-fill"></i></a>
+            </li>
+            <li class="page-item">
+                <?php
+                if ($prev > 0) {
+                    ?>
+                    <a class="page-link" data-page="<?= $prev ?>"><i class="bi bi-caret-left"></i></a>
+                    <?php
+                } else { ?>
+                    <a class="page-link" data-page="1"><i class="bi bi-caret-left"></i></a>
+                    <?php
+                }
+                ?>
+            </li>
+            <?php
+            $limitreached = false;
+            for ($currentPage = $defaultstart; $currentPage <= $totalPages; $currentPage++) { ?>
+
+                <li class="page-item <?= $activepage == $currentPage ? 'active' : '' ?>">
+                    <a class="page-link" data-page="<?php echo $currentPage; ?>"
+                        href="<?= $currentPage ?>"><?= $currentPage ?></a>
+                </li>
+
+                <?php
+
+                // will show the last button 
+                if ($currentPage >= $defaultstart + $pagenolimit - 1 && !$limitreached) {
+                    $limitreached = true;
+
+                    if ($currentPage != $lastpages && $currentPage <= $lastpages) {
+                        ?>
+                        <li class="page-item disabled">
+                            <a class="page-link">...</a>
+                        </li>
+
+                        <li class="page-item">
+                            <a class="page-link" data-page="<?= $totalPages ?>"><?= $totalPages ?></a>
+                        </li>
+                        <?php
+                    }
+                    break;
+                }
+            }
+            ?>
+
+            <li class="page-item">
+                <?php
+                if ($next <= $totalPages) {
+                    ?>
+                    <a class="page-link" data-page="<?= $totalPages != 0 ? $next : 1 ?>" href=""><i
+                            class="bi bi-caret-right"></i></a>
+                    <?php
+                } else { ?>
+                    <a class="page-link" data-page="<?= $totalPages != 0 ? $totalPages : 1 ?>"><i
+                            class="bi bi-caret-right"></i></a>
+                    <?php
+                }
+                ?>
+            </li>
+            <li class="page-item">
+                <a class="page-link" data-page="<?= $totalPages != 0 ? $totalPages : 1 ?>" href=""><i
+                        class="bi bi-caret-right-fill"></i></a>
+            </li>
+        </ul>
+    </nav>
+
+    <?php
+
+}
+
+
+
+if (isset($_GET['search'])) {
+    $search = $_GET['search'];
+    $ibranch = $_GET['branch'];
+    $sql = "SELECT * FROM branchadmin WHERE (baID LIKE ? OR baFName LIKE ? OR baLName LIKE ? OR baUsn LIKE ? OR baEmail LIKE ? OR baEmpId LIKE ?)";
+
+    $queries = [];
+    $bt = '';
+    $data = [];
+    if ($ibranch !== '' && $ibranch !== NULL) {
+        $queries[] = "user_branch = ?";
+        $branch = (int) $ibranch;
+        $data[] = $branch;
+        $bt = "i";
+    }
+
+    if (!empty($queries)) {
+        $sql .= " AND " . implode(" AND ", $queries);
+    }
+
+    $sql .= " ORDER BY baID  DESC;";
+
+
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo "<tr><td scope='row' colspan='5' class='text-center'>Statement preparation failed.</td></tr>";
+        exit();
+    }
+
+    $search = "%" . $search . "%";
+    mysqli_stmt_bind_param($stmt, "ssssss$bt", $search, $search, $search, $search, $search, $search, ...$data);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $numrows = mysqli_num_rows($result);
+    // echo $numrows;   
+    if ($numrows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $baId = $row["baID"];
+            $baFName = $row["baFName"];
+            $baLName = $row["baLName"];
+            $baEmail = $row["baEmail"];
+            $baUsn = $row["baUsn"];
+            $baPwd = $row["baPwd"];
+            $baContact = $row["baContact"];
+            $baEmpId = $row["baEmpId"];
+            $baAddress = $row["baAddress"];
+            $baBirthdate = $row["baBirthdate"];
+            ?>
+            <tr class="text-center">
+                <td scope="row"><?= htmlspecialchars($baFName) ?></td>
+                <td><?= htmlspecialchars($baLName) ?></td>
+                <td><?= htmlspecialchars($baUsn) ?></td>
+                <td><?= htmlspecialchars($baEmpId) ?></td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-sidebar me-2 edit-btn" data-edit="<?= htmlspecialchars($baId) ?>">
+                            <i class="bi bi-person-gear me-1"></i>
+                        </button>
+                        <button type="button" class="btn btn-sidebar me-2 delete-btn" data-delete="<?= htmlspecialchars($baId) ?>"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="bi bi-person-gear me-1"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            <?php
+        }
+    } else {
+        echo "<tr><td scope='row' colspan='5' class='text-center'>No account found.</td></tr>";
+    }
+}
