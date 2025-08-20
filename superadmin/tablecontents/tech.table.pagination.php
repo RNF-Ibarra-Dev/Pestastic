@@ -3,7 +3,7 @@ require_once "../../includes/dbh.inc.php";
 require_once "../../includes/functions.inc.php";
 
 $pageRows = 5;
-$rowCount = 'SELECT * FROM branchadmin;';
+$rowCount = 'SELECT * FROM technician;';
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
@@ -14,7 +14,7 @@ if (isset($_GET['ostable']) && $_GET['ostable'] === 'true') {
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT * FROM branchadmin";
+    $sql = "SELECT * FROM technician";
 
     $data = [];
     $type = '';
@@ -23,7 +23,7 @@ if (isset($_GET['ostable']) && $_GET['ostable'] === 'true') {
         $type .= 'i';
         $sql .= " WHERE user_branch = ?";
     }
-    $sql .= " ORDER BY baID DESC LIMIT $limitstart, $pageRows";
+    $sql .= " ORDER BY technicianId DESC LIMIT $limitstart, $pageRows";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -40,27 +40,30 @@ if (isset($_GET['ostable']) && $_GET['ostable'] === 'true') {
     $result = mysqli_stmt_get_result($stmt);
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $baId = $row["baID"];
-            $baFName = $row["baFName"];
-            $baLName = $row["baLName"];
-            $baEmail = $row["baEmail"];
-            $baUsn = $row["baUsn"];
-            $baPwd = $row["baPwd"];
-            $baContact = $row["baContact"];
-            $baEmpId = $row["baEmpId"];
-            $baAddress = $row["baAddress"];
-            $baBirthdate = $row["baBirthdate"];
+            $baId = $row["technicianId"];
+            $firstName = $row["firstName"];
+            $lastName = $row["lastName"];
+            $techEmail = $row["techEmail"];
+            $username = $row["username"];
+            $techPwd = $row["techPwd"];
+            $techContact = $row["techContact"];
+            $techEmpId = $row["techEmpId"];
+            $techAddress = $row["techAddress"];
+            $techBirthdate = $row["techBirthdate"];
             ?>
             <tr class="text-center">
-                <td scope="row"><?= htmlspecialchars($baFName) ?></td>
-                <td><?= htmlspecialchars($baLName) ?></td>
-                <td><?= htmlspecialchars($baUsn) ?></td>
-                <td><?= htmlspecialchars($baEmpId) ?></td>
+                <td scope="row"><?= htmlspecialchars($firstName) ?></td>
+                <td><?= htmlspecialchars($lastName) ?></td>
+                <td><?= htmlspecialchars($username) ?></td>
+                <td><?= htmlspecialchars($techEmpId) ?></td>
                 <td>
                     <div class="d-flex justify-content-center">
                         <button type="button" class="btn btn-sidebar edit-btn" data-edit="<?= htmlspecialchars($baId) ?>">
                             <i class="bi bi-person-fill fs-4 me-1"></i>
                         </button>
+                        <!-- <button type="button" class="btn btn-sidebar info-btn" data-edit="<?= htmlspecialchars($baId) ?>">
+                            <i class="bi bi-person-fill fs-4 me-1"></i>
+                        </button> -->
                         <button type="button" class="btn btn-sidebar delete-btn" data-delete="<?= htmlspecialchars($baId) ?>">
                             <i class="bi bi-person-fill-dash fs-4 me-1"></i>
                         </button>
@@ -77,7 +80,7 @@ if (isset($_GET['ostable']) && $_GET['ostable'] === 'true') {
 
 function row_status($conn, $ibranch = '')
 {
-    $rowCount = "SELECT COUNT(*) FROM branchadmin";
+    $rowCount = "SELECT COUNT(*) FROM technician";
     $queries = [];
 
     if ($ibranch !== '' && $ibranch !== NULL) {
@@ -232,7 +235,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] === 'true') {
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
     $ibranch = $_GET['branch'];
-    $sql = "SELECT * FROM branchadmin WHERE (baID LIKE ? OR baFName LIKE ? OR baLName LIKE ? OR baUsn LIKE ? OR baEmail LIKE ? OR baEmpId LIKE ?)";
+    $sql = "SELECT * FROM technician WHERE (technicianId LIKE ? OR firstName LIKE ? OR lastName LIKE ? OR username LIKE ? OR techEmail LIKE ? OR techEmpId LIKE ?)";
 
     $queries = [];
     $bt = '';
@@ -248,7 +251,7 @@ if (isset($_GET['search'])) {
         $sql .= " AND " . implode(" AND ", $queries);
     }
 
-    $sql .= " ORDER BY baID  DESC;";
+    $sql .= " ORDER BY technicianId  DESC;";
 
 
     $stmt = mysqli_stmt_init($conn);
@@ -265,25 +268,25 @@ if (isset($_GET['search'])) {
     // echo $numrows;   
     if ($numrows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $baId = $row["baID"];
-            $baFName = $row["baFName"];
-            $baLName = $row["baLName"];
-            $baEmail = $row["baEmail"];
-            $baUsn = $row["baUsn"];
-            $baPwd = $row["baPwd"];
-            $baContact = $row["baContact"];
-            $baEmpId = $row["baEmpId"];
-            $baAddress = $row["baAddress"];
-            $baBirthdate = $row["baBirthdate"];
+            $baId = $row["technicianId"];
+            $firstName = $row["firstName"];
+            $lastName = $row["lastName"];
+            $techEmail = $row["techEmail"];
+            $username = $row["username"];
+            $techPwd = $row["techPwd"];
+            $techContact = $row["techContact"];
+            $techEmpId = $row["techEmpId"];
+            $techAddress = $row["techAddress"];
+            $techBirthdate = $row["techBirthdate"];
             ?>
             <tr class="text-center">
-                <td scope="row"><?= htmlspecialchars($baFName) ?></td>
-                <td><?= htmlspecialchars($baLName) ?></td>
-                <td><?= htmlspecialchars($baUsn) ?></td>
-                <td><?= htmlspecialchars($baEmpId) ?></td>
+                <td scope="row"><?= htmlspecialchars($firstName) ?></td>
+                <td><?= htmlspecialchars($lastName) ?></td>
+                <td><?= htmlspecialchars($username) ?></td>
+                <td><?= htmlspecialchars($techEmpId) ?></td>
                 <td>
                     <div class="d-flex justify-content-center">
-                        <button type="button" class="btn btn-sidebar edit-btn" data-edit="<?= htmlspecialchars($baId) ?>">
+                       <button type="button" class="btn btn-sidebar edit-btn" data-edit="<?= htmlspecialchars($baId) ?>">
                             <i class="bi bi-person-fill fs-4 me-1"></i>
                         </button>
                         <button type="button" class="btn btn-sidebar me-2 delete-btn" data-delete="<?= htmlspecialchars($baId) ?>"

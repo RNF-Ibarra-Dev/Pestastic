@@ -3,7 +3,7 @@ session_start();
 require_once "dbh.inc.php";
 require_once "functions.inc.php";
 
-if (isset($_POST["submit-tech-edit"])) {
+if (isset($_POST["configure_tech"]) && $_POST['configure_tech'] === 'true') {
     $saID = $_SESSION['saID'];
     $id = $_POST["id"];
     $fname = $_POST["fname"];
@@ -17,8 +17,6 @@ if (isset($_POST["submit-tech-edit"])) {
     $address = $_POST["address"];
     $birthdate = $_POST['birthdate'];
     $contactNo = $_POST["contactNo"];
-    // $saPwdRepeat = htmlspecialchars($_POST["saPwdRepeat"]);
-
 
 
     if (emptyInputEdit($fname, $lname, $usn, $email) !== false) {
@@ -94,7 +92,19 @@ if (isset($_POST["submit-tech-edit"])) {
         exit();
     }
     $edit = editTechAccount($conn, $id, $fname, $lname, $usn, $email, $pwd, $contactNo, $address, $birthdate, $empId);
-
+    if (isset($edit['error'])) {
+        http_response_code(400);
+        echo $edit['error'];
+        exit();
+    } else if ($edit) {
+        http_response_code(200);
+        echo json_encode(['success' => "Account updated successfully."]);
+        exit();
+    } else {
+        http_response_code(400);
+        echo "Unknown error occurred." . $edit;
+        exit();
+    }
 }
 
 if (isset($_POST["configure_os"]) && $_POST['configure_os'] === 'true') {
@@ -170,14 +180,14 @@ if (isset($_POST["configure_os"]) && $_POST['configure_os'] === 'true') {
         http_response_code(400);
         echo "Wrong Password.";
         exit();
-    } 
+    }
 
     $edit = editOSAccount($conn, $id, $fname, $lname, $usn, $email, $pwd, $contactNo, $address, $birthdate, $empId);
-    if(isset($edit['error'])){
+    if (isset($edit['error'])) {
         http_response_code(400);
         echo $edit['error'];
         exit();
-    } else if($edit){
+    } else if ($edit) {
         http_response_code(200);
         echo json_encode(['success' => "Account updated successfully."]);
         exit();

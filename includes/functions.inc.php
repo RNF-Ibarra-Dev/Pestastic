@@ -2055,23 +2055,29 @@ function deleteChem($conn, $id)
 }
 function deleteTechAccount($conn, $id)
 {
-    $stmt = mysqli_stmt_init($conn);
-    $sql = 'DELETE FROM technician WHERE technicianId = ?;';
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header('location: ../superadmin/tech.acc.php?error=stmtfailed');
-        exit();
-    }
+    mysqli_begin_transaction($conn);
+    try {
+        $stmt = mysqli_stmt_init($conn);
+        $sql = 'DELETE FROM technician WHERE technicianId = ?;';
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("Statement preparation failed. Please try again.");
+        }
 
-    mysqli_stmt_bind_param($stmt, 'i', $id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    // $row = mysqli_fetch_assoc($result);
-    if (!$result) {
-        header('location: ../superadmin/tech.acc.php?error=fetchfailed');
+        mysqli_stmt_bind_param($stmt, 'i', $id);
+        mysqli_stmt_execute($stmt);
+        // $result = mysqli_stmt_get_result($stmt);
+        if (mysqli_stmt_affected_rows($stmt) <= 0) {
+            throw new Exception("Error deleting technician account. Please try again later.");
+        }
+        mysqli_stmt_close($stmt);
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage()
+        ];
     }
-    mysqli_stmt_close($stmt);
-    header('location: ../superadmin/tech.acc.php?success=accountdeleted');
-    exit();
 }
 function deleteOSAccount($conn, $id)
 {
@@ -2086,7 +2092,7 @@ function deleteOSAccount($conn, $id)
         mysqli_stmt_bind_param($stmt, 'i', $id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
-        if(mysqli_stmt_affected_rows($stmt) <= 0) {
+        if (mysqli_stmt_affected_rows($stmt) <= 0) {
             throw new Exception("Account deletion failed.");
         }
 
@@ -2128,31 +2134,38 @@ function deleteTransaction($conn, $id)
 
 function editTechAccount($conn, $id, $firstName, $lastName, $username, $email, $pwd, $contactNo, $address, $birthdate, $empId)
 {
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "UPDATE technician SET firstName= ?, lastName= ?, username= ?, techEmail= ?, techContact = ?, techAddress = ?, techBirthdate = ?, techEmpId = ?";
 
-    $sql = "UPDATE technician SET firstName= ?, lastName= ?, username= ?, techEmail= ?, techContact = ?, techAddress = ?, techBirthdate = ?, techEmpId = ?";
+        if (!empty($pwd)) {
+            $sql .= ", techPwd = ? WHERE technicianId = ?;";
+        } else {
+            $sql .= " WHERE technicianId = ?;";
+        }
 
-    if (!empty($pwd)) {
-        $sql .= ", techPwd = ? WHERE technicianId = ?;";
-    } else {
-        $sql .= " WHERE technicianId = ?;";
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../superadmin/tech.acc.php?error=stmtfailed");
+            exit();
+        }
+
+        if (!empty($pwd)) {
+            $hashedPwd = password_hash($pwd, PASSWORD_DEFAULT);
+            mysqli_stmt_bind_param($stmt, "sssssssssi", $firstName, $lastName, $username, $email, $contactNo, $address, $birthdate, $empId, $hashedPwd, $id);
+        } else {
+            mysqli_stmt_bind_param($stmt, "ssssssssi", $firstName, $lastName, $username, $email, $contactNo, $address, $birthdate, $empId, $id);
+        }
+
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            "error"=> $e->getMessage()
+        ];
     }
-
-    $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header("location: ../superadmin/tech.acc.php?error=stmtfailed");
-        exit();
-    }
-
-    if (!empty($pwd)) {
-        $hashedPwd = password_hash($pwd, PASSWORD_DEFAULT);
-        mysqli_stmt_bind_param($stmt, "sssssssssi", $firstName, $lastName, $username, $email, $contactNo, $address, $birthdate, $empId, $hashedPwd, $id);
-    } else {
-        mysqli_stmt_bind_param($stmt, "ssssssssi", $firstName, $lastName, $username, $email, $contactNo, $address, $birthdate, $empId, $id);
-    }
-
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-    return true;
 }
 function editOSAccount($conn, $id, $firstName, $lastName, $username, $email, $pwd, $contactNo, $address, $birthdate, $empId)
 {

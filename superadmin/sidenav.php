@@ -21,7 +21,7 @@
                 aria-expanded="<?= $page == 'tech.acc.php' || $page == 'os.acc.php' ? 'true' : 'false'; ?>"
                 data-bs-target="#accounts">
                 <i class="bi bi-people me-3"></i>
-                <div class="text-light fw-light fs-6">Manage Accounts</div>
+                <div class="text-light fw-light fs-6">Employee Accounts</div>
                 <i class="bi bi-chevron-compact-left ms-auto me-3 "></i>
             </a>
             <ul id="accounts"

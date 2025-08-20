@@ -71,7 +71,7 @@ require_once("startsession.php");
                 <input type="hidden" name="id" id="id_input">
                 <div class="modal fade text-dark modal-edit" id="editModal" tabindex="-1" aria-labelledby="tech-"
                     aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5" id="tech-">Edit
@@ -83,16 +83,21 @@ require_once("startsession.php");
 
                             </div>
                             <div class="modal-body">
+                                <h1
+                                    class="fs-5 mb-3 text-center bg-secondary text-light fw-bold py-1 rounded w-75 mx-auto bg-opacity-75">
+                                    Primary Information</h1>
                                 <div class="row mb-2">
                                     <div class="col-lg-6 mb-2">
-                                        <label for="fname" class="form-label fw-light">First
+                                        <label for="fname" class="form-label fw-bold">First
                                             Name</label>
-                                        <input type="text" name="fname" class="form-control" id="fname" required>
+                                        <input type="text" name="fname" class="form-control-plaintext" id="fname"
+                                            required>
                                     </div>
                                     <div class="col-lg-6 mb-2">
-                                        <label for="lname" class="form-label fw-light">Last
+                                        <label for="lname" class="form-label fw-bold">Last
                                             Name</label>
-                                        <input type="text" name="lname" class="form-control" id="lname" required>
+                                        <input type="text" name="lname" class="form-control-plaintext" id="lname"
+                                            required>
                                     </div>
                                 </div>
                                 <div class="invalid-feedback mb-2">
@@ -100,70 +105,86 @@ require_once("startsession.php");
                                 </div>
 
                                 <div class="row mb-2">
-                                    <div class="col-lg-4 mb-2">
-                                        <label for="usn" class="form-label fw-light">Username</label>
-                                        <input type="text" name="usn" class="form-control" id="usn" required>
+                                    <div class="col-lg-4 mb-2 d-flex flex-column">
+                                        <label for="birthdate" class="form-label fw-bold">Birthdate</label>
+                                        <p class="my-auto" id="bdate_info"></p>
+                                        <input type="date" name="birthdate" class="form-control-plaintext d-none"
+                                            id="birthdate" required>
+                                    </div>
+                                    <div class="mb-2 col">
+                                        <label for="address" class="form-label fw-bold">Address</label>
+                                        <input type="text" name="address" class="form-control-plaintext" id="address"
+                                            required>
+                                    </div>
+                                </div>
+
+                                <h1
+                                    class="fs-5 mb-3 text-center bg-secondary text-light fw-bold py-1 rounded w-75 mx-auto bg-opacity-75">
+                                    Additional Information</h1>
+                                <div class="row mb-2">
+                                    <div class="col-lg-2 mb-2">
+                                        <label for="usn" class="form-label fw-bold">Username</label>
+                                        <input type="text" name="usn" class="form-control-plaintext" id="usn" required>
                                     </div>
 
-                                    <div class="col-lg-8 mb-2">
-                                        <label for="email" class="form-label fw-light">Email
+                                    <div class="col-lg-4 mb-2">
+                                        <label for="email" class="form-label fw-bold">Email
                                             Address</label>
-                                        <input type="email" name="email" class="form-control" id="email" required>
+                                        <input type="email" name="email" class="form-control-plaintext" id="email"
+                                            required>
                                         <div class="form-text">
                                             Please choose a valid email.
                                         </div>
                                     </div>
-                                </div>
-                                <h1 class="fs-5 mb-3">Additional Information</h1>
-                                <div class="row mb-2">
-                                    <div class="col-lg-4 mb-2">
-                                        <label for="contact-number" class="form-label fw-light">Contact
+                                    <div class="col-lg-3 mb-2">
+                                        <label for="contact-number" class="form-label fw-bold">Contact
                                             Number</label>
-                                        <input type="number" name="contactNo" class="form-control" id="contact-number"
-                                            required>
+                                        <input type="number" name="contactNo" class="form-control-plaintext"
+                                            id="contact-number" required>
                                     </div>
 
-                                    <div class="col-lg-4 mb-2">
-                                        <label for="emp-id" class="form-label fw-light">Employee
+                                    <div class="col-lg-3 mb-2">
+                                        <label for="emp-id" class="form-label fw-bold">Employee
                                             ID</label>
-                                        <input type="number" name="empId" class="form-control" id="emp-id" required>
-                                    </div>
-
-                                    <div class="col-lg-4 mb-2">
-                                        <label for="birthdate" class="form-label fw-light">Birthdate</label>
-                                        <input type="date" name="birthdate" class="form-control" id="birthdate"
+                                        <input type="number" name="empId" class="form-control-plaintext" id="emp-id"
                                             required>
                                     </div>
                                 </div>
-                                <div class="mb-2 col">
-                                    <label for="address" class="form-label fw-light">Address</label>
-                                    <input type="text" name="address" class="form-control" id="address" required>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-lg-6 mb-2">
-                                        <label for="pass" class="form-label fw-light">Password</label>
-                                        <input type="password" name="pass" class="form-control" id="pass">
-                                    </div>
 
-                                    <div class="col-lg-6 mb-2">
-                                        <label for="passrepeat" class="form-label fw-light">Repeat
-                                            Password</label>
-                                        <input type="password" name="pwdRepeat" class="form-control" id="passrepeat">
+
+                                <div id="password_section" class="d-none">
+                                    <h1
+                                        class="fs-5 mb-3 text-center bg-secondary bg-opacity-75 text-light fw-bold py-1 rounded w-75 mx-auto">
+                                        Change Password</h1>
+                                    <div class="row mb-2">
+                                        <div class="col-lg-6 mb-2">
+                                            <label for="pass" class="form-label fw-bold">Password</label>
+                                            <input type="password" name="pass" class="form-control-plaintext" id="pass">
+                                        </div>
+
+                                        <div class="col-lg-6 mb-2">
+                                            <label for="passrepeat" class="form-label fw-bold">Repeat
+                                                Password</label>
+                                            <input type="password" name="pwdRepeat" class="form-control-plaintext"
+                                                id="passrepeat">
+                                        </div>
+                                    </div>
+                                    <div id="passwordHelpBlock" class="form-text">
+                                        To use the same password, kindly leave the password forms blank.
                                     </div>
                                 </div>
-                                <div id="passwordHelpBlock" class="form-text">
-                                    To use the same password, kindly leave the password forms blank.
-                                </div>
-
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-grad" data-bs-target="#modalVerify"
-                                    data-bs-toggle="modal">Proceed</button>
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-grad" id="edit_toggle">Edit</button>
+                                <button type="button" class="btn btn-grad d-none" data-bs-target="#modalVerify"
+                                    data-bs-toggle="modal" id="proceedbtn" disabled>Continue</button>
                             </div>
                         </div>
+
                     </div>
                 </div>
+
 
                 <!-- verification modal (input SA/Manager password) -->
                 <div class="modal fade text-dark modal-edit" id="modalVerify" tabindex="0"
@@ -178,10 +199,10 @@ require_once("startsession.php");
                             <div class="modal-body">
 
                                 <div class="row mb-2">
-                                    <div class="col-lg-6 mb-2">
-                                        <label for="pass" class="form-label fw-light"> Manager
+                                    <div class="col-auto mb-2">
+                                        <label for="pass" class="form-label ">Save changes? Enter Manager
                                             <?= $_SESSION['saUsn'] ?>'s Password</label>
-                                        <input type="password" name="saPwd" class="form-control" id="pass">
+                                        <input type="password" name="saPwd" class="form-control w-50" id="pass">
                                     </div>
                                 </div>
                                 <div id="passwordHelpBlock" class="form-text">
@@ -193,7 +214,8 @@ require_once("startsession.php");
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                    data-bs-target="#editModal">Go back</button>
+                                    data-bs-target="#editModal">Go
+                                    back</button>
                                 <button type="submit" class="btn btn-grad" name="submit-os-edit">Save
                                     changes</button>
                             </div>
@@ -202,7 +224,7 @@ require_once("startsession.php");
                 </div>
             </form>
 
-            <form action="../includes/deleteAcc.inc.php" method="post" id="deleteform">
+            <form id="deleteform">
                 <!-- delete modal -->
                 <div class="modal fade text-dark modal-edit" id="deleteModal" tabindex="0"
                     aria-labelledby="verifyChanges" aria-hidden="true">
@@ -216,7 +238,7 @@ require_once("startsession.php");
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="pass" class="form-label fw-light"> Are you sure you want to
+                                    <label for="pass" class="form-label "> Are you sure you want to
                                         delete this account? Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
@@ -381,7 +403,35 @@ require_once("startsession.php");
             // maxDate: maxAllowedDate
         });
 
+        let toggled = false;
+        function toggle() {
+            let btn_text = $("#edit_toggle").text();
+
+            if (btn_text === 'Edit') {
+                $(this).text("Cancel edit");
+                $("#proceedbtn").toggleClass('d-none').prop('disabled', false);
+                $("#editform #editModal .modal-body input").prop("readonly", false);
+                toggled = true;
+            } else {
+                $(this).text("Edit");
+                $("#proceedbtn").toggleClass('d-none').prop('disabled', true);
+                $("#editform #editModal .modal-body input").prop("readonly", true);
+                toggled = false;
+            }
+            let altformat = $("#birthdate").next();
+            altformat.toggleClass("form-control");
+            $("#editform #editModal .modal-body input").toggleClass("form-control form-control-plaintext");
+            $("#password_section, #bdate_info, #birthdate, input.input[placeholder]").toggleClass("d-none");
+        }
+
+        $("#editform").on('click', '#edit_toggle', function () {
+            toggle();
+        });
+
         $("#os_table").on('click', '.edit-btn', function () {
+            if(toggled){
+                toggle();
+            }
             let id = $(this).data('edit');
             console.log(id);
             $.get(dataurl, {
@@ -397,6 +447,13 @@ require_once("startsession.php");
                 $("#contact-number").val(d.baContact);
                 $("#address").val(d.baAddress);
                 $("#emp-id").val(d.baEmpId);
+                $("#display_name").text(d.baFName);
+
+                var formattedBirthdate = new Date(d.baBirthdate);
+
+                var bd = formattedBirthdate.toLocaleDateString('en-US', { month: "long", day: "2-digit", year: "numeric" })
+                $("#bdate_info").text(bd);
+
 
                 birthdate.setDate(d.baBirthdate);
 

@@ -20,7 +20,7 @@ h1.text-light,
 th.text-light,
 i.text-light,
 .fw-bold.text-light {
-  text-shadow: 0px 1px 5px rgba(255, 255, 255, 0.3) !important;
+  text-shadow: 0px 1px 5px rgba(0, 0, 0, 0.3) !important;
 }
 
 table {
