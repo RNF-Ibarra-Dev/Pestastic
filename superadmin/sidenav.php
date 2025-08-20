@@ -74,7 +74,7 @@
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'account.php' ? 'btn-active' : ''; ?>"
                 href="account.php">
                 <i class="bi bi-person-add me-3"></i>
-                <div class="text-light fw-lighter fs-7">Create Account</div>
+                <div class="text-light fw-lighter fs-7">Create Employee Account</div>
             </a>
         </li>
     </ul>

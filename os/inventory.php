@@ -1920,7 +1920,7 @@ require("startsession.php");
             let id = $(this).data('chem');
             let deets = await get_chem_details(id);
             var details = JSON.parse(deets);
-            console.log(details);
+            // console.log(details);
 
             $('#submitEdit, #toggleEditBtn').attr('disabled', function () {
                 return details.req == 1 ? true : false;

@@ -11,14 +11,18 @@ if (isset($_GET['voidreqs']) && $_GET['voidreqs'] === 'true') {
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
             $customerName = $row['customer_name'];
-            $treatmentDate = $row['treatment_date'];
+            $td = $row['treatment_date'];
+            $treatmentDate = date("F j, Y", strtotime($td));
             $request = $row['void_request'];
+            $branch = get_branch_details($conn, $row['branch']);
+            $branchName = $branch['name'];
             ?>
             <tr class="text-center">
                 <td class="text-dark" scope="row"><button type="button" class="btn btn-sidebar text-dark check-void-req-btn"
                         data-trans-id="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></button></td>
                 <td><?= htmlspecialchars($customerName) ?></td>
                 <td><?= htmlspecialchars($treatmentDate) ?></td>
+                <td><?= htmlspecialchars($branchName) ?></td>
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
@@ -297,7 +301,10 @@ if (isset($_GET['details']) && $_GET['details'] === 'true') {
     // $array = mysqli_fetch_array($result);
 
     if ($row = mysqli_fetch_assoc($result)) {
-        echo json_encode(['success' => $row]);
+        $response = $row;
+        $branch = get_branch_details($conn, $response['branch']);
+        $response['branch'] = $branch;
+        echo json_encode(['success' => $response]);
         mysqli_stmt_close($stmt);
     } else {
         echo json_encode(['type' => 'array', 'message' => 'array error']);

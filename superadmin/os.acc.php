@@ -169,6 +169,11 @@ require_once("startsession.php");
                                                 id="passrepeat">
                                         </div>
                                     </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="showpass">
+                                        <label class="form-check-label text-secondary user-select-none"
+                                            for="showpass">Show Password</label>
+                                    </div>
                                     <div id="passwordHelpBlock" class="form-text">
                                         To use the same password, kindly leave the password forms blank.
                                     </div>
@@ -400,7 +405,7 @@ require_once("startsession.php");
             altFormat: "F j, Y",
             dateFormat: "Y-m-d",
             enableTime: true,
-            // maxDate: maxAllowedDate
+            maxDate: maxAllowedDate
         });
 
         let toggled = false;
@@ -429,8 +434,12 @@ require_once("startsession.php");
         });
 
         $("#os_table").on('click', '.edit-btn', function () {
-            if(toggled){
+            if (toggled) {
                 toggle();
+            }
+            if ($('#showpass').is(':checked')) {
+                $('#showpass').prop('checked', false);
+                $("#password_section input.form-control-plaintext").attr("type", "password");
             }
             let id = $(this).data('edit');
             console.log(id);
@@ -507,6 +516,17 @@ require_once("startsession.php");
                     console.error(e);
                     $("#deleteAlert").text(e.responseText).fadeIn().delay(3000).fadeOut(2000);
                 })
+        });
+        $("#editModal").on('change', '#showpass', function () {
+            let passField = $("#pass");
+            let passRepeatField = $("#passrepeat");
+            if ($(this).is(':checked')) {
+                passField.attr('type', 'text');
+                passRepeatField.attr('type', 'text');
+            } else {
+                passField.attr('type', 'password');
+                passRepeatField.attr('type', 'password');
+            }
         });
     </script>
 </body>

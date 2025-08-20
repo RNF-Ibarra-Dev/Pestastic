@@ -713,7 +713,7 @@ include('tablecontents/tables.php');
                                         <p
                                             class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
                                             Item Count Information</p>
-                                        <div class="row mb-2 d-none user-select-none" id="chemState">
+                                        <div class="row mb-2 user-select-none" id="chemState">
                                             <div class="col-3">
                                                 <p class="fw-medium mb-2">Opened Item Level:</p>
                                                 <p class="ps-2 mb-2" id="openedContainerLevel"></p>
@@ -2269,7 +2269,7 @@ include('tablecontents/tables.php');
             let id = $(this).data('chem');
             let deets = await get_chem_details(id);
             var details = JSON.parse(deets);
-            console.log(details);
+            // console.log(details);
 
             $('#submitEdit, #toggleEditBtn').attr('disabled', function () {
                 return details.req == 1 ? true : false;
@@ -2282,6 +2282,13 @@ include('tablecontents/tables.php');
             } else {
                 $('#expdatewarning').html('').addClass('d-none');
             }
+
+            // let clocation = 'Not defined';
+            // if (details.location == 'main_storage') {
+            //     clocation = "Main Storage";
+            // } else if (details.location == 'dispatched') {
+            //     clocation = "Dispatched";
+            // }
 
             $("#edit-id").val(details.id);
             $('#edit-name').val(details.name);
@@ -2317,6 +2324,9 @@ include('tablecontents/tables.php');
                 }
                 $('#reqalert').html('');
             }
+
+            $("#openedContainerLevel").text(details.level + details.unit);
+            $("#closedContainerCount").text(details.unop_cont + " Container/s");
 
             if (toggled) {
                 toggle();
@@ -3004,6 +3014,7 @@ include('tablecontents/tables.php');
                     $("#restock_err_alert").text(e.responseText).fadeIn().delay(2500).fadeOut();
                 })
         });
+
 
     </script>
 </body>

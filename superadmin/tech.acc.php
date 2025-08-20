@@ -15,7 +15,7 @@ require("startsession.php");
 
 <body class="bg-official text-light">
 
-    <div class="sa-bg container-fluid p-0 h-100 d-flex">
+    <div class="sa-bg container-fluid p-0 min-vh-100 d-flex">
         <!-- sidebar -->
         <?php
         include("sidenav.php");
@@ -153,20 +153,25 @@ require("startsession.php");
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
                                             <label for="pass" class="form-label fw-bold">Password</label>
-                                            <input type="password" name="pass" class="form-control-plaintext" id="pass">
+                                            <input type="password" name="pass" class="form-control-plaintext" id="pass" autocomplete="new-password">
                                         </div>
 
                                         <div class="col-lg-6 mb-2">
                                             <label for="passrepeat" class="form-label fw-bold">Repeat
                                                 Password</label>
                                             <input type="password" name="pwdRepeat" class="form-control-plaintext"
-                                                id="passrepeat">
+                                                id="passrepeat" autocomplete="new-password">
                                         </div>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="showpass">
+                                        <label class="form-check-label text-secondary user-select-none" for="showpass">Show Password</label>
                                     </div>
                                     <div id="passwordHelpBlock" class="form-text">
                                         To use the same password, kindly leave the password forms blank.
                                     </div>
                                 </div>
+
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
@@ -395,7 +400,7 @@ require("startsession.php");
             altFormat: "F j, Y",
             dateFormat: "Y-m-d",
             enableTime: true,
-            // maxDate: maxAllowedDate
+            maxDate: maxAllowedDate
         });
 
         let toggled = false;
@@ -427,6 +432,10 @@ require("startsession.php");
         $("#tech_table").on('click', '.edit-btn', function () {
             if(toggled){
                 toggle();
+            }
+            if($('#showpass').is(':checked')) {
+                $('#showpass').prop('checked', false);
+                $("#password_section input.form-control-plaintext").attr("type", "password");
             }
             let id = $(this).data('edit');
             console.log(id);
@@ -505,7 +514,17 @@ require("startsession.php");
                 })
         });
 
-
+        $("#editModal").on('change', '#showpass', function () {
+            let passField = $("#pass");
+            let passRepeatField = $("#passrepeat");
+            if ($(this).is(':checked')) {
+                passField.attr('type', 'text');
+                passRepeatField.attr('type', 'text');
+            } else {
+                passField.attr('type', 'password');
+                passRepeatField.attr('type', 'password');
+            }
+        });
     </script>
 
 </body>

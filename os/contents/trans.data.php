@@ -575,7 +575,8 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
                         <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
                             id="edit-amountUsed-label">Amount:</label>
                         <input type="number" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $id ?>"
-                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
+                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>"
+                            <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
                     </div>
                     <span class="form-text mt-auto mx-3 mb-2">
                         <?= $unit ?>
@@ -592,7 +593,8 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
     } else {
         $idd = uniqid();
         ?>
-        <p class="alert alert-warning py-2 text-center fw-light w-75 mx-auto">This transaction has no chemicals set. Chemical might be deleted.</p>
+        <p class="alert alert-warning py-2 text-center fw-light w-75 mx-auto">This transaction has no chemicals set. Chemical
+            might be deleted.</p>
         <div class="row" id="row-<?= $idd ?>">
             <div class="col-lg-4 mb-2">
                 <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
@@ -974,13 +976,13 @@ if (isset($_GET['voidrequest']) && $_GET['voidrequest'] === 'true') {
     }
 }
 
-if(isset($_GET['notes']) && $_GET['notes'] === 'true'){
+if (isset($_GET['notes']) && $_GET['notes'] === 'true') {
     $id = $_GET['id'];
 
     $sql = "SELECT notes FROM transactions WHERE id = ? AND branch = {$_SESSION['branch']};";
     $stmt = mysqli_stmt_init($conn);
 
-    if(!mysqli_stmt_prepare($stmt, $sql)){
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
         http_response_code(400);
         echo "stmt failed";
         exit();
@@ -990,7 +992,7 @@ if(isset($_GET['notes']) && $_GET['notes'] === 'true'){
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
-    if($row = mysqli_fetch_row($result)){
+    if ($row = mysqli_fetch_row($result)) {
         http_response_code(200);
         echo json_encode(['notes' => $row]);
         exit();
