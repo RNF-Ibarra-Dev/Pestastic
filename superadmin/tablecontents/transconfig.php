@@ -18,7 +18,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $address = $_POST['add-customerAddress'];
     $treatmentTime = $_POST['add-treatmentTime'];
     $treatment = $_POST['add-treatment'] ?? null;
-    $amtUsed = $_POST['add-amountUsed'] ?? [];    
+    $amtUsed = $_POST['add-amountUsed'] ?? [];
     $t_type = $_POST['add-treatmentType'];
     $package = $_POST['add-package'] ?? null;
     $pstart = $_POST['add-packageStart'] ?? null;
@@ -31,8 +31,59 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $saPwd = $_POST['saPwd'];
     $addedBy = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
+    // http_response_code(400);
+    // echo $package;
+    // exit;
 
-    if ($package != 'none') {
+    // if ($package != 'none') {
+    //     if (!in_array($package, $packageIds)) {
+    //         http_response_code(400);
+    //         echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Package. Please Try Again.']);
+    //         exit();
+    //     }
+    //     $treatment = get_package_treatment($conn, $package);
+    //     if (isset($treatment['error'])) {
+    //         http_response_code(400);
+    //         echo json_encode(['type' => 'invalid_id', 'errorMessage' => $treatment['error']]);
+    //         exit();
+    //     }
+    // } else {
+    //     $package = NULL;
+    // }
+
+    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($problems) || empty($chemUsed) || empty($status) || empty($t_type) || empty($address)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'emptyinput', 'errorMessage' => "All input fields are required."]);
+        exit();
+    }
+
+    // if ($package != 'none') {
+    //     if (empty($session)) {
+    //         http_response_code(400);
+    //         echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Session count is required."]);
+    //         exit();
+    //     }
+    //     if (empty($pstart) || empty($pexp)) {
+    //         http_response_code(400);
+    //         echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Package Warranty Start."]);
+    //         exit();
+    //     }
+    // } else {
+    //     if (empty($treatment)) {
+    //         http_response_code(400);
+    //         echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Treatment Assigned."]);
+    //         exit();
+    //     }
+    // }
+
+    if ($package === 'none' || $package === NULL) {
+        if (empty($treatment)) {
+            http_response_code(400);
+            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Treatment Assigned."]);
+            exit();
+        }
+        $package = NULL;
+    } else {
         if (!in_array($package, $packageIds)) {
             http_response_code(400);
             echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Package. Please Try Again.']);
@@ -44,28 +95,6 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
             echo json_encode(['type' => 'invalid_id', 'errorMessage' => $treatment['error']]);
             exit();
         }
-    }
-
-    // if (!in_array($problems, $allPestProblems)) {
-    //     http_response_code(400);
-    //     echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Pest Problem. Please Try Again.']);
-    //     exit();
-    // }
-
-
-    // if (!in_array($treatment, $allTreatments, true)) {
-    //     http_response_code(400);
-    //     echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Treatment. Please Try Again']);
-    //     exit();
-    // }
-
-    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($problems) || empty($chemUsed) || empty($status) || empty($t_type) || empty($address)) {
-        http_response_code(400);
-        echo json_encode(['type' => 'emptyinput', 'errorMessage' => "All input fields are required."]);
-        exit();
-    }
-
-    if ($package != 'none') {
         if (empty($session)) {
             http_response_code(400);
             echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Session count is required."]);
@@ -74,12 +103,6 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         if (empty($pstart) || empty($pexp)) {
             http_response_code(400);
             echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Package Warranty Start."]);
-            exit();
-        }
-    } else {
-        if (empty($treatment)) {
-            http_response_code(400);
-            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Treatment Assigned."]);
             exit();
         }
     }
@@ -103,7 +126,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
                 exit();
             }
         }
-    } 
+    }
 
     if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
         if (count($amtUsed) !== count($chemUsed)) {

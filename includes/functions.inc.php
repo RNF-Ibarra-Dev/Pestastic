@@ -819,7 +819,7 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
         if (!mysqli_stmt_prepare($transStmt, $transSql)) {
             throw new Exception('Stmt Failed: ' . mysqli_stmt_error($transStmt));
         }
-        mysqli_stmt_bind_param($transStmt, 'ssssssisissssi', $customerName, $address, $treatmentDate, $treatmentTime, $treatment, $status, $package, $type, $session, $note, $pstart, $pend, $addedby, $branch, $addedby);
+        mysqli_stmt_bind_param($transStmt, 'ssssssisissssis', $customerName, $address, $treatmentDate, $treatmentTime, $treatment, $status, $package, $type, $session, $note, $pstart, $pend, $addedby, $branch, $addedby);
         mysqli_stmt_execute($transStmt);
 
         if (mysqli_stmt_affected_rows($transStmt) > 0) {
