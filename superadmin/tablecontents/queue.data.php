@@ -18,25 +18,27 @@ if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
             $customername = $row['customer_name'];
-            $date = $row['treatment_date'];
-            $treatment = $row['treatment'];
+            $td = strtotime($row['treatment_date']);
+            $date = date('F j, Y', $td);
+            $treatment = $row['treatment'] ?? "Outdated treatment. ID not found.";
             $otime = $row['transaction_time'];
+            $address = $row['customer_address'];
             $ntime = strtotime($otime);
             $time = date("h:i A", $ntime);
-?>
+            ?>
             <div class="col">
-                <div class="card bg-white bg-opacity-25 shadow-sm rounded border-0 text-light p-0">
+                <div class="card bg-white bg-opacity-25 shadow-sm rounded border-0 text-light p-0" style="min-height: 26rem !important;">
                     <div class="card-body px-2 border-light pb-0 mx-3">
-                        <h5 class="card-title">Transaction <?= htmlspecialchars($id) ?></h5>
+                        <h5 class="card-title fs-4 text-center fw-bold">Transaction <?= htmlspecialchars($id) ?></h5>
                         <hr>
                         <p class="card-text lh-lg mb-3">
-                            <strong>Customer:</strong> <?= htmlspecialchars($customername) ?><br>
-                            <strong>Address:</strong> N/A <br>
-                            <strong>Treatment Date:</strong> <span
-                                class="ms-1 text-danger-emphasis"><?= htmlspecialchars($date) ?></span><br>
-                            <strong>Time:</strong> <span
-                                class='ms-1 text-danger-emphasis'><?= $otime === "00:00:00" ? "Time not set." : htmlspecialchars($time) ?></span><br>
-                            <strong>Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
+                            <strong class="fw-bold fs-5">Customer:</strong> <?= htmlspecialchars($customername) ?><br>
+                            <strong class="fw-bold fs-5">Address:</strong> <?= htmlspecialchars($address) ?> <br>
+                            <strong class="fw-bold fs-5">Treatment Date:</strong> <span
+                                class="ms-1 "><?= htmlspecialchars($date) ?></span><br>
+                            <strong class="fw-bold fs-5">Time:</strong> <span
+                                class='ms-1 '><?= $otime === "00:00:00" || $otime === NULL ? "Time not set." : htmlspecialchars($time) ?></span><br>
+                            <strong class="fw-bold fs-5">Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
                         </p>
                     </div>
                     <div class="card-footer border-top-0 p-0">
@@ -44,18 +46,18 @@ if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
                             style="--bs-list-group-bg: none !important;">
                             <li class="list-group-item d-flex p-0 m-0">
                                 <button type="button" id="dispatchedtechbtn"
-                                    class="btn btn-sidebar mx-auto w-100 rounded-0 text-light bg-opacity-0"
+                                    class="btn btn-sidebar mx-auto w-100 rounded-0 text-light bg-opacity-0 fw-bold"
                                     data-tech="<?= htmlspecialchars($id) ?>">Assigned Technicians</button>
                             </li>
                             <li class="list-group-item d-flex p-0 m-0">
                                 <button type="button" id="resched"
-                                    class="btn btn-sidebar mx-auto w-100 rounded-0 text-light bg-opacity-0"
+                                    class="btn btn-sidebar mx-auto w-100 rounded-0 text-light bg-opacity-0 fw-bold"
                                     data-resched="<?= htmlspecialchars($id) ?>" data-odate="<?= htmlspecialchars($date) ?>"
                                     data-otime="<?= htmlspecialchars($otime) ?>"><?= $otime === "00:00:00" ? 'Add Time' : 'Reschedule Transaction' ?></button>
                             </li>
                             <li class=" list-group-item d-flex p-0 m-0">
                                 <button type="button" id="cancel"
-                                    class="btn btn-sidebar mx-auto w-100 text-light rounded-top-0 bg-opacity-0"
+                                    class="btn btn-sidebar mx-auto w-100 text-light rounded-top-0 bg-opacity-0 fw-bold"
                                     data-cancel="<?= htmlspecialchars($id) ?>">Cancel Transaction</button>
                             </li>
                         </ul>
@@ -63,62 +65,13 @@ if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
 
                 </div>
             </div>
-        <?php
+            <?php
         }
     } else {
         echo "<h4 class='fw-light mx-auto'>No upcoming transactions.</h4>";
     }
 }
 
-if (isset($_GET['ondispatch']) && $_GET['ondispatch'] === 'true') {
-    $sql = "SELECT * FROM transactions 
-    WHERE treatment_date >= CURDATE() AND (transaction_status = 'Pending' OR transaction_status = 'Accepted') 
-    ORDER BY treatment_date ASC LIMIT 3;";
-    $result = mysqli_query($conn, $sql);
-
-    if (mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $customername = $row['customer_name'];
-            $date = $row['treatment_date'];
-            $treatment = $row['treatment'];
-            $status = $row['transaction_status'];
-        ?>
-            <div class="col">
-                <div class="card bg-white bg-opacity-25 rounded-4 border-0 text-light px-3">
-                    <div class="card-body px-2 border-light ">
-                        <h5 class="card-title align-middle">Transaction
-                            <?= htmlspecialchars($id) ?>
-                            <?= $status === 'Pending' ? "<i class='bi bi-dot text-warning fs-4'></i>" : "<i class='bi bi-dot text-success fs-4'></i>" ?>
-                        </h5>
-                        <hr>
-                        <p class="card-text lh-lg">
-                            <strong>Customer:</strong> <?= htmlspecialchars($customername) ?><br>
-                            <strong>Address:</strong> N/A <br>
-                            <strong>Treatment Date:</strong> <span
-                                class="ms-1 text-danger-emphasis"><?= htmlspecialchars($date) ?></span><br>
-                            <strong>Follow up Date:</strong> Not set<br>
-                            <strong>Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
-                            <strong>Status:</strong>
-                            <?php echo $status == 'Accepted' ? "<span class='text-success'>" . htmlspecialchars($status) . "<i class='bi bi-dot text-success'></i></span>" : "<span class='text-warning'>" . htmlspecialchars($status) . "<i class='bi bi-dot text-warning'></i></span>" ?><br>
-                        </p>
-                        <button type="button" id="dispatchedtechbtn"
-                            class="btn btn-sidebar border-light rounded-pill text-light bg-transparent"
-                            data-tech="<?= htmlspecialchars($id) ?>">Dispatched Technicians</button> <br>
-                        <?php
-                        if ($status === 'Accepted') {
-                            echo "<p class='text-body-secondary mb-0 text-light mt-3 lh-1'><small>Transaction ready and accepted. Dispatch?</small></p>";
-                        } else {
-                            echo "<p class='text-body-secondary mb-0 text-light mt-3 lh-1'><small>Transaction pending. Accept transaction?</small></p>";
-                        }
-                        ?>
-                    </div>
-                </div>
-            </div>
-        <?php
-        }
-    }
-}
 
 if (isset($_GET['dispatched']) && $_GET['dispatched'] === 'true') {
     $id = htmlspecialchars($_GET['transid']);
@@ -135,58 +88,15 @@ if (isset($_GET['dispatched']) && $_GET['dispatched'] === 'true') {
 
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-        ?>
+            ?>
             <li class="list-group-item"><?= htmlspecialchars($row['tech_info']) ?></li>
-        <?php
+            <?php
         }
     } else {
         echo "<li class = 'list-group-item'>No assigned technicians for this transaction.</li>";
     }
 }
 
-if (isset($_GET['getactive']) && $_GET['getactive'] === 'true') {
-    $sql = "SELECT * FROM transactions WHERE treatment_date = CURDATE();";
-    $result = mysqli_query($conn, $sql);
-
-    if (mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $customername = $row['customer_name'];
-            $date = $row['treatment_date'];
-            $treatment = $row['treatment'];
-            $status = $row['transaction_status'];
-        ?>
-            <div class="card bg-white bg-opacity-25 rounded-4 my-auto border-0 text-light px-3">
-                <div class="card-body px-2 border-light ">
-                    <h5 class="card-title align-middle">Transaction
-                        <?= htmlspecialchars($id) ?>
-                        <?= $status === 'Pending' ? "<i class='bi bi-dot text-warning fs-4'></i>" : "<i class='bi bi-dot text-success fs-4'></i>" ?>
-                    </h5>
-                    <hr>
-                    <p class="card-text lh-lg">
-                        <strong>Customer:</strong> <?= htmlspecialchars($customername) ?><br>
-                        <strong>Address:</strong> N/A <br>
-                        <strong>Follow up Date:</strong> Not set<br>
-                        <strong>Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
-                    </p>
-                    <button type="button" id="dispatchedtechbtn"
-                        class="btn btn-sidebar border-light rounded-pill text-light bg-transparent"
-                        data-tech="<?= htmlspecialchars($id) ?>">Assigned Technicians</button> <br>
-
-                </div>
-            </div>
-        <?php
-        }
-    } else {
-        ?>
-        <div class="card bg-white bg-opacity-25 rounded-4 border-0 text-light px-3 mx-auto my-auto">
-            <div class="card-body px-2 border-light">
-                <h5 class="fw-light text-center m-0">No Schedule for Today. Schedule Transaction?</h5>
-            </div>
-        </div>
-        <?php
-    }
-}
 
 
 if (isset($_GET['transactions']) && $_GET['transactions'] === 'true') {
@@ -220,38 +130,48 @@ if (isset($_GET['transactions']) && $_GET['transactions'] === 'true') {
 }
 
 if (isset($_GET['getdata']) && $_GET['getdata'] === 'ongoing') {
-    $sql = "SELECT * FROM transactions WHERE treatment_date = CURDATE();";
+    $sql = "SELECT * FROM transactions WHERE transaction_status = 'dispatched';";
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
+            $address = $row['customer_address'];
             $customername = $row['customer_name'];
             $date = $row['treatment_date'];
-            $treatment = $row['treatment'];
+            $t = $row['treatment'];
+            $tt = get_treatment_details($conn, $t);
+            $treatment = $tt['t_name'];
             $status = $row['transaction_status'];
-        ?>
+            ?>
             <div class="col">
-                <div class="card bg-white bg-opacity-25 rounded border-0 text-light px-3">
-                    <div class="card-body px-2 border-light ">
-                        <h5 class="card-title align-middle">Transaction
+                <div class="card bg-white bg-opacity-25 rounded border-0 text-light" style="min-height: 26rem !important;">
+                    <div class="card-body px-4 border-light ">
+                        <h5 class="card-title fs-4 text-center fw-bold">Transaction
                             <?= htmlspecialchars($id) ?>
                             <?= $status === 'Pending' ? "<i class='bi bi-dot text-warning fs-4'></i>" : "<i class='bi bi-dot text-success fs-4'></i>" ?>
                         </h5>
                         <hr>
                         <p class="card-text lh-lg">
-                            <strong>Customer:</strong> <?= htmlspecialchars($customername) ?><br>
-                            <strong>Address:</strong> N/A <br>
-                            <strong>Follow up Date:</strong> Not set<br>
-                            <strong>Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
+                            <strong class="fw-bold fs-5 me-1">Customer:</strong> <?= htmlspecialchars($customername) ?><br>
+                            <strong class="fw-bold fs-5 me-1">Address:</strong> <?= htmlspecialchars($address) ?> <br>
+                            <strong class="fw-bold fs-5 me-1">Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
                         </p>
-                        <button type="button" id="dispatchedtechbtn"
-                            class="btn btn-sidebar border-light rounded-pill text-light bg-transparent"
-                            data-tech="<?= htmlspecialchars($id) ?>">Dispatched Technicians</button> <br>
                     </div>
+                    <div class="card-footer border-top-0 p-0">
+                        <ul class="list-group list-group-flush d-flex justify-content-center bg-light bg-opacity-25 rounded-bottom"
+                            style="--bs-list-group-bg: none !important;">
+                            <li class="list-group-item d-flex p-0 m-0">
+                                <button type="button" id="dispatchedtechbtn"
+                                    class="btn btn-sidebar mx-auto w-100 rounded-0 text-light fw-bold fs-5 bg-opacity-0"
+                                    data-tech="<?= htmlspecialchars($id) ?>">Dispatched Technicians</button>
+                            </li>
+                        </ul>
+                    </div>
+                   
                 </div>
             </div>
-        <?php
+            <?php
         }
     } else {
         ?>
@@ -277,13 +197,13 @@ if (isset($_GET['techStats']) && $_GET['techStats'] === 'true') {
             $tech = $row['firstName'] . ' ' . $row['lastName'];
             $status = $row['technician_status'];
             $techid = $row['techEmpId'];
-        ?>
+            ?>
             <li class="list-group-item bg-transparent text-light d-flex justify-content-between">
                 <?= htmlspecialchars($tech) . ' - [' . htmlspecialchars($techid) . ']' ?> <span
                     class="<?= $status === 'Available' ? 'text-custom-success' : ($status === 'Unavailable' ? 'text-danger' : ($status === 'On Leave' ? 'text-info' : 'text-warning')) ?>"><?= htmlspecialchars($status) ?><i
                         class="ms-2 bi <?= $status === 'Available' ? 'bi-person-check-fill text-custom-success' : ($status === 'Unavailable' ? 'bi-person-x-fill text-custom-danger' : ($status === 'On Leave' ? 'bi-person-dash-fill text-info' : 'bi-person-fill-gear text-warning')) ?>"></i></span>
             </li>
-        <?php
+            <?php
         }
     } else {
         echo "<li class='list-group-item bg-transparent text-light'>No technicians.</li>";
@@ -291,16 +211,7 @@ if (isset($_GET['techStats']) && $_GET['techStats'] === 'true') {
 }
 
 if (isset($_GET['inc']) && $_GET['inc'] === 'true') {
-    $sql = "SELECT trs.*
-    FROM transactions AS trs
-    WHERE NOT EXISTS
-    (SELECT trans_id FROM transaction_technicians AS tt WHERE tt.trans_id = trs.id)
-    OR NOT EXISTS
-    (SELECT trans_id FROM transaction_problems AS tp WHERE tp.trans_id = trs.id)
-    OR NOT EXISTS
-    (SELECT trans_id FROM transaction_chemicals AS tc WHERE tc.trans_id = trs.id)
-    OR 
-    (treatment_date IS NULL OR customer_name IS NULL OR transaction_time IS NULL);";
+    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Pending';";
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) > 0) {
@@ -308,22 +219,23 @@ if (isset($_GET['inc']) && $_GET['inc'] === 'true') {
             $id = $row['id'];
             $customername = $row['customer_name'];
             $date = $row['treatment_date'];
-            $treatment = $row['treatment'];
+            $t = $row['treatment'];
+            $tt = get_treatment_details($conn, $t);
+            $treatment = $tt['t_name'] ?? "Outdated treatment. ID not found.";
             $otime = $row['transaction_time'];
             $ntime = strtotime($otime);
             $time = date("h:i A", $ntime);
-        ?>
+            ?>
             <div class="col">
                 <div class="card bg-white bg-opacity-25 shadow-sm rounded border-0 text-light p-0">
-                    <div class="card-body px-2 border-light pb-0 mx-3">
-                        <h5 class="card-title">Transaction <?= htmlspecialchars($id) ?></h5>
+                    <div class="card-body px-1 border-light pb-0 mx-3" style="min-height: 18rem !important;">
+                        <h5 class="card-title fs-4 fw-bold text-center">Transaction <?= htmlspecialchars($id) ?></h5>
                         <hr>
-                        <p class="card-text lh-lg mb-3">
-                            <strong>Treatment Date:</strong> <span
-                                class="ms-1 text-danger-emphasis"><?= htmlspecialchars($date) ?></span><br>
-                            <strong>Time:</strong> <span
-                                class='ms-1 text-danger-emphasis'><?= $otime === "00:00:00" ? "Time not set." : htmlspecialchars($time) ?></span><br>
-                            <strong>Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
+                        <p class="card-text lh-lg mb-3 text-wrap">
+                            <strong class="fw-bold fs-5 me-2">Treatment Date:</strong><?= htmlspecialchars($date) ?><br>
+                            <strong
+                                class="fw-bold fs-5 me-2">Time:</strong><?= $otime === "00:00:00" ? "Time not set." : htmlspecialchars($time) ?><br>
+                            <strong class="fw-bold fs-5 me-2">Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
                         </p>
                     </div>
                     <div class="card-footer border-top-0 p-0">
@@ -331,7 +243,8 @@ if (isset($_GET['inc']) && $_GET['inc'] === 'true') {
                             style="--bs-list-group-bg: none !important;">
                             <li class="list-group-item d-flex p-0 m-0">
                                 <button type="button" id="reviewBtn"
-                                    class="btn btn-sidebar mx-auto w-100 rounded-0 text-light bg-opacity-0"><a class="link-underline-opacity-0 link-underline link-light"
+                                    class="btn btn-sidebar mx-auto w-100 rounded-0 text-light fw-bold fs-5 bg-opacity-0"><a
+                                        class="link-underline-opacity-0 link-underline link-light"
                                         href="transactions.php?openmodal=true&id=<?= htmlspecialchars($id) ?>">Review
                                         Transaction</a></button>
                             </li>
@@ -339,7 +252,7 @@ if (isset($_GET['inc']) && $_GET['inc'] === 'true') {
                     </div>
                 </div>
             </div>
-<?php
+            <?php
         }
     } else {
         echo "<div class='bg-light bg-opacity-25 rounded shadow-sm'><h5 class='fw-light m-0 px-4 py-2'>No Unassigned Transactions.</h5></div>";

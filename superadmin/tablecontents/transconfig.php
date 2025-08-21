@@ -31,50 +31,12 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $saPwd = $_POST['saPwd'];
     $addedBy = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
-    // http_response_code(400);
-    // echo $package;
-    // exit;
-
-    // if ($package != 'none') {
-    //     if (!in_array($package, $packageIds)) {
-    //         http_response_code(400);
-    //         echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Package. Please Try Again.']);
-    //         exit();
-    //     }
-    //     $treatment = get_package_treatment($conn, $package);
-    //     if (isset($treatment['error'])) {
-    //         http_response_code(400);
-    //         echo json_encode(['type' => 'invalid_id', 'errorMessage' => $treatment['error']]);
-    //         exit();
-    //     }
-    // } else {
-    //     $package = NULL;
-    // }
 
     if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($problems) || empty($chemUsed) || empty($status) || empty($t_type) || empty($address)) {
         http_response_code(400);
         echo json_encode(['type' => 'emptyinput', 'errorMessage' => "All input fields are required."]);
         exit();
     }
-
-    // if ($package != 'none') {
-    //     if (empty($session)) {
-    //         http_response_code(400);
-    //         echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Session count is required."]);
-    //         exit();
-    //     }
-    //     if (empty($pstart) || empty($pexp)) {
-    //         http_response_code(400);
-    //         echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Package Warranty Start."]);
-    //         exit();
-    //     }
-    // } else {
-    //     if (empty($treatment)) {
-    //         http_response_code(400);
-    //         echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Treatment Assigned."]);
-    //         exit();
-    //     }
-    // }
 
     if ($package === 'none' || $package === NULL) {
         if (empty($treatment)) {

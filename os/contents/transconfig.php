@@ -42,16 +42,33 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     // add created by
     $addedBy = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
-    if ($package != 'none') {
+    if ($package === 'none' || $package === NULL) {
+        if (empty($treatment)) {
+            http_response_code(400);
+            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Treatment Assigned."]);
+            exit();
+        }
+        $package = NULL;
+    } else {
         if (!in_array($package, $packageIds)) {
             http_response_code(400);
-            echo 'Invalid Package. Please Try Again.';
+            echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Package. Please Try Again.']);
             exit();
         }
         $treatment = get_package_treatment($conn, $package);
         if (isset($treatment['error'])) {
             http_response_code(400);
-            echo $treatment['error'];
+            echo json_encode(['type' => 'invalid_id', 'errorMessage' => $treatment['error']]);
+            exit();
+        }
+        if (empty($session)) {
+            http_response_code(400);
+            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Session count is required."]);
+            exit();
+        }
+        if (empty($pstart) || empty($pexp)) {
+            http_response_code(400);
+            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Package Warranty Start."]);
             exit();
         }
     }
@@ -66,26 +83,6 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         http_response_code(400);
         echo "All input fields are required.";
         exit();
-    }
-
-    if ($package !== 'none') {
-        if (empty($session)) {
-            http_response_code(400);
-            echo "Session count is required." . $package;
-            exit();
-        }
-        if (empty($pstart) || empty($pexp)) {
-            http_response_code(400);
-            echo "Missing Package Warranty Start.";
-            exit();
-        }
-    } else {
-        if (empty($treatment)) {
-            http_response_code(400);
-            echo "Missing Treatment Assigned.";
-            exit();
-        }
-        $package = null;
     }
 
 
@@ -196,7 +193,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         echo "All input fields are required.";
         exit();
     }
-    
+
     $oStatus = check_status($conn, $transId);
     if ($status === 'Pending' || $status === 'Cancelled' || $status === 'Accepted') {
         $today = date("Y-m-d");
@@ -205,7 +202,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
             echo "Invalid treatment date.";
             exit();
         }
-        if($status === 'Cancelled' && $oStatus === 'Pending'){
+        if ($status === 'Cancelled' && $oStatus === 'Pending') {
             http_response_code(400);
             echo "Transaction should be approved first before cancelling treatment date.";
             exit();

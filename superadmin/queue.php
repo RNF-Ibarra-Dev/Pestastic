@@ -46,7 +46,7 @@ require("startsession.php");
         }
 
         #cardcontainer,
-        #incompleteTransactions, 
+        #incompleteTransactions,
         #ongoing {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
@@ -69,38 +69,43 @@ require("startsession.php");
             <?php include('navbar.php'); ?>
             <!-- content -->
 
+            <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2">
+                <h1 class="fs-1 text-light mb-0 fw-bold text-center">Transaction Queue</h1>
+            </div>
 
+            <div class="row row-col-2 gap-3 px-3 m-0 d-flex justify-content-center">
 
-            <div class="row row-col-2 m-0 d-flex justify-content-around">
                 <!-- calendar -->
-                <div class="col-4 bg-light bg-opacity-25 border border-light rounded mt-2 shadow-sm d-flex flex-column pb-3">
-                    <div class="bg-light bg-opacity-25 my-2 p-2 shadow-sm rounded-pill">
-                        <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0"><i
-                                class="bi bi-file-earmark-text me-2 "></i>
+                <div class="col-3 mt-2 px-0">
+                    <div class="bg-light bg-opacity-25 mb-3 py-2 shadow-sm rounded-3">
+                        <h4
+                            class="fw-light text-center d-flex align-items-center fw-bold fs-2 justify-content-center m-0">
+                            <i class="bi bi-file-earmark-text me-2 "></i>
                             Ongoing Transactions</h4>
                     </div>
 
-                    <div class="d-flex flex-nowrap rounded-3" id="ongoingContainer">
-                        <div class="flex-grow-1 d-flex flex-nowrap gap-4 p-4 align-items-center" id="ongoing">
+                    <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25" id="ongoingContainer">
+                        <div class="flex-grow-1 d-flex flex-nowrap gap-4 px-4 mb-4 mt-2 align-items-center" id="ongoing">
                         </div>
                     </div>
                 </div>
 
                 <!-- upcoming -->
-                <div class="col-7 bg-light bg-opacity-25 border border-light rounded mt-2 shadow-sm">
-                    <div class="m-2 d-flex border-light bg-light bg-opacity-25 shadow-sm p-2 align-middle rounded-pill">
-                        <button type="button" class="btn btn-sidebar rounded-pill me-2 text-light">
+                <div class="col-auto flex-grow-1 mt-2 px-0">
+                    <div class="mb-3 d-flex border-light bg-light bg-opacity-25 shadow-sm py-2 align-middle rounded-3">
+                        <button type="button" class="btn btn-sidebar rounded-3 ms-2 text-light">
                             <i class="bi bi-sort-up h5 m-0 d-flex align-items-center" id='sortrecent'></i>
                         </button>
-                        <h4 class="fw-light m-0 justify-content-center flex-grow-1 d-flex align-items-center"><i
-                                class="bi bi-journal me-2"></i>
+                        <h4
+                            class="fw-light m-0 justify-content-center flex-grow-1 fw-bold fs-2 d-flex align-items-center">
+                            <i class="bi bi-journal fs-2 me-2"></i>
                             Upcoming
                             Transactions</h5>
                             <div style="width: 35px !important;" class="m-0 p-0"></div>
                     </div>
-                    <div class="d-flex flex-nowrap rounded-3" id="queuecontainer">
+                    <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25" id="queuecontainer">
 
-                        <div class=" d-flex flex-nowrap w-75 row row-cols-1 row-cols-md-3 g-4 mt-2 mb-4 px-4 align-items-center"
+                        <div class=" d-flex flex-nowrap w-75 row row-cols-1 row-cols-md-3 gap-4 mt-2 mb-4 px-4 align-items-center"
                             id="cardcontainer">
                             <!-- ajax -->
                         </div>
@@ -110,20 +115,22 @@ require("startsession.php");
 
 
             <div class="container-fluid">
-                <div class="row d-flex justify-content-around">
-                    <div class="col-7 bg-light bg-opacity-25 border border-light rounded shadow-sm my-3">
-                        <div class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm">
-                            <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0"><i
+                <div class="row d-flex justify-content-center gap-3 px-3">
+
+                    <div class="col-auto d-flex flex-column flex-grow-1 mb-3 px-0">
+                        <div class="bg-light bg-opacity-25 my-3 p-2 rounded-3 shadow-sm">
+                            <h4 class="fw-bold fs-2 text-center d-flex align-items-center justify-content-center m-0"><i
                                     class="bi bi-calendar-week me-2"></i>Weekly
                                 Transactions</h5>
                         </div>
-                        <div class="container bg-light bg-opacity-25 rounded shadow-sm">
-                            <div id="upcoming"></div>
+                        <div class="px-3 d-flex align-content-center flex-grow-1 bg-light bg-opacity-25 rounded shadow-sm">
+                            <div id="upcoming" class="flex-grow-1 h-75"></div>
                         </div>
                     </div>
-                    <div class="col-4 bg-light bg-opacity-25 border border-light rounded shadow-sm my-3">
-                        <div class="bg-light bg-opacity-25 shadow-sm rounded-pill p-2 my-2">
-                            <h4 class="fw-light justify-content-center m-0 d-flex align-items-center"><i
+
+                    <div class="col-4 mb-3 px-0">
+                        <div class="bg-light bg-opacity-25 shadow-sm rounded-3 py-2 my-3">
+                            <h4 class="fw-bold justify-content-center m-0 d-flex align-items-center fs-2"><i
                                     class="bi bi-calendar-date me-2"></i>Transaction
                                 Calendar
                             </h4>
@@ -134,7 +141,7 @@ require("startsession.php");
             </div>
 
             <div class="container-fluid">
-                <div class="row d-flex justify-content-around">
+                <div class="row d-flex justify-content-center px-3">
                     <!-- <div class="col-4 bg-light bg-opacity-25 border border-light rounded overflow-hidden shadow-sm">
                         <div
                             class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm d-flex justify-content-between">
@@ -151,15 +158,17 @@ require("startsession.php");
                             style="height: 15rem !important"></div>
                     </div> -->
 
-                    <div class="col-7 bg-light bg-opacity-25 border border-light d-flex flex-column rounded pb-3 shadow-sm">
+                    <div
+                        class="col-auto flex-grow-1 mx-3 p-0">
                         <div
-                            class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm d-flex justify-content-center">
-                            <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0"><i
-                                    class="bi bi-journal-minus me-2"></i> Pending Transactions</h4>
+                            class="bg-light bg-opacity-25 mb-3 py-2 rounded-3 shadow-sm d-flex justify-content-center">
+                            <h4 class="fw-light text-center text-center align-middle fs-2 fw-bold m-0"><i
+                                    class="bi bi-journal-minus me-2 align-middle"></i> Pending Transactions</h4>
                         </div>
 
-                        <div class="d-flex flex-nowrap rounded flex-grow-1" id="incTransContainer">
-                            <div id="incompleteTransactions" class="my-auto d-flex flex-nowrap justify-content-start gap-4 px-4"></div>
+                        <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25 p-3 flex-grow-1" id="incTransContainer">
+                            <div id="incompleteTransactions"
+                                class="my-auto d-flex flex-nowrap justify-content-start gap-4 px-4"></div>
                         </div>
                     </div>
                 </div>
@@ -319,7 +328,7 @@ require("startsession.php");
         const submitUrl = "tablecontents/queue.config.php";
 
         let asc = false;
-        $(document).on('click', '#sortrecent', async function() {
+        $(document).on('click', '#sortrecent', async function () {
             if (asc === false) {
                 $('#sortrecent').removeClass('bi-sort-up').addClass('bi-sort-down');
                 asc = true;
@@ -345,12 +354,12 @@ require("startsession.php");
         //     console.log($(this).serialize());
         // });
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             let techStatBtnWidth = $("#sortTechStatus").outerWidth();
             $('#techStatBtnFiller').attr("style", `width: ${techStatBtnWidth}px !important`);
         });
 
-        $(document).ready(async function() {
+        $(document).ready(async function () {
             await load_cards();
             await click_drag('queuecontainer');
             await click_drag('incTransContainer');
@@ -397,7 +406,7 @@ require("startsession.php");
                     extraParams: {
                         transactions: 'true'
                     },
-                    failure: function(e) {
+                    failure: function (e) {
                         alert('Transaction event fetch failed.');
                         console.log(e);
                     },
@@ -432,14 +441,14 @@ require("startsession.php");
                         transactions: 'true',
                         data: 'titleonly'
                     },
-                    failure: function(e) {
+                    failure: function (e) {
                         alert('Transaction event fetch failed.');
                         console.log(e);
                     },
                     color: '#00000033',
                     textColor: 'white'
                 },
-                eventContent: function(arg) {
+                eventContent: function (arg) {
                     return {
                         html: arg.event.title
                     };
@@ -453,11 +462,11 @@ require("startsession.php");
 
         });
 
-        $(async function() {
+        $(async function () {
             let status = ['Available', 'Dispatched', 'Unavailable', 'On Leave', 'none'];
             // const totalStatus = 4; 
             statusNum = 0;
-            $(document).on('click', '#sortTechStatus', async function() {
+            $(document).on('click', '#sortTechStatus', async function () {
                 load_technician_status(status[statusNum]);
                 // console.log(status[statusNum]);
                 if (statusNum >= 4) {
@@ -492,7 +501,7 @@ require("startsession.php");
             }
         }
 
-        $(document).on('click', '#cancel', async function() {
+        $(document).on('click', '#cancel', async function () {
             let id = $(this).data('cancel');
             $('#cancelIdDisplay').html(id);
             $('#cancelId').attr('value', id);
@@ -501,7 +510,7 @@ require("startsession.php");
 
 
 
-        $(document).on('submit', '#reschedForm', async function(e) {
+        $(document).on('submit', '#reschedForm', async function (e) {
             e.preventDefault();
             try {
                 const resched = await $.ajax({
@@ -522,7 +531,7 @@ require("startsession.php");
             }
         });
 
-        $(document).on('submit', '#cancelForm', async function(e) {
+        $(document).on('submit', '#cancelForm', async function (e) {
             e.preventDefault();
             try {
                 const cancel = await $.ajax({
@@ -550,7 +559,7 @@ require("startsession.php");
             dateFormat: "Y-m-d",
             minDate: new Date().fp_incr(1),
             disable: [
-                function(date) {
+                function (date) {
                     return (date.getDay() === 0 || date.getDay() === 6);
                 }
             ],
@@ -568,7 +577,7 @@ require("startsession.php");
             maxTime: "15:00"
         });
 
-        $(document).on('click', '#resched', async function() {
+        $(document).on('click', '#resched', async function () {
             let id = $(this).data('resched');
             let time = $(this).data('otime');
             let date = $(this).data('odate');
@@ -589,7 +598,7 @@ require("startsession.php");
             }
 
             $('#reschedModal').modal('show');
-            $(document).on('hidden-bs-modal', '#reschedModal', function() {
+            $(document).on('hidden-bs-modal', '#reschedModal', function () {
                 reschedTime.clear();
                 reschedDate.clear();
             });
@@ -635,7 +644,7 @@ require("startsession.php");
 
 
 
-        $(document).on('click', '#dispatchedtechbtn', async function() {
+        $(document).on('click', '#dispatchedtechbtn', async function () {
             let id = $(this).data('tech');
             $('#deployedtransid').html(id);
             const deploy = await deployed_tech(id);
@@ -644,7 +653,7 @@ require("startsession.php");
             // }
         });
 
-        $(document).on('hidden.bs.modal', '#technicians', function() {
+        $(document).on('hidden.bs.modal', '#technicians', function () {
             $('#technicianscont').empty();
         });
 
@@ -711,15 +720,15 @@ require("startsession.php");
         }
 
 
-        $(function() {
+        $(function () {
             let delay = null;
 
-            $('#searchbar').keyup(function() {
+            $('#searchbar').keyup(function () {
                 clearTimeout(delay);
                 $('#cardcontainer').empty();
                 $('#loader').attr('style', 'display: block !important');
 
-                delay = setTimeout(async function() {
+                delay = setTimeout(async function () {
                     var search = $('#searchbar').val();
                     try {
                         const searcheq = await $.ajax({
