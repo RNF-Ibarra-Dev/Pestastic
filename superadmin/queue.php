@@ -73,7 +73,7 @@ require("startsession.php");
 
             <div class="row row-col-2 m-0 d-flex justify-content-around">
                 <!-- calendar -->
-                <div class="col-4 bg-dark bg-opacity-25 border border-dark rounded mt-2 shadow-sm d-flex flex-column pb-3">
+                <div class="col-4 bg-light bg-opacity-25 border border-light rounded mt-2 shadow-sm d-flex flex-column pb-3">
                     <div class="bg-light bg-opacity-25 my-2 p-2 shadow-sm rounded-pill">
                         <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0"><i
                                 class="bi bi-file-earmark-text me-2 "></i>
@@ -87,7 +87,7 @@ require("startsession.php");
                 </div>
 
                 <!-- upcoming -->
-                <div class="col-7 bg-dark bg-opacity-25 border border-dark rounded mt-2 shadow-sm">
+                <div class="col-7 bg-light bg-opacity-25 border border-light rounded mt-2 shadow-sm">
                     <div class="m-2 d-flex border-light bg-light bg-opacity-25 shadow-sm p-2 align-middle rounded-pill">
                         <button type="button" class="btn btn-sidebar rounded-pill me-2 text-light">
                             <i class="bi bi-sort-up h5 m-0 d-flex align-items-center" id='sortrecent'></i>
@@ -111,7 +111,7 @@ require("startsession.php");
 
             <div class="container-fluid">
                 <div class="row d-flex justify-content-around">
-                    <div class="col-7 bg-dark bg-opacity-25 border border-dark rounded shadow-sm my-3">
+                    <div class="col-7 bg-light bg-opacity-25 border border-light rounded shadow-sm my-3">
                         <div class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm">
                             <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0"><i
                                     class="bi bi-calendar-week me-2"></i>Weekly
@@ -121,7 +121,7 @@ require("startsession.php");
                             <div id="upcoming"></div>
                         </div>
                     </div>
-                    <div class="col-4 bg-dark bg-opacity-25 border border-dark rounded shadow-sm my-3">
+                    <div class="col-4 bg-light bg-opacity-25 border border-light rounded shadow-sm my-3">
                         <div class="bg-light bg-opacity-25 shadow-sm rounded-pill p-2 my-2">
                             <h4 class="fw-light justify-content-center m-0 d-flex align-items-center"><i
                                     class="bi bi-calendar-date me-2"></i>Transaction
@@ -135,7 +135,7 @@ require("startsession.php");
 
             <div class="container-fluid">
                 <div class="row d-flex justify-content-around">
-                    <div class="col-4 bg-dark bg-opacity-25 border border-dark rounded overflow-hidden shadow-sm">
+                    <!-- <div class="col-4 bg-light bg-opacity-25 border border-light rounded overflow-hidden shadow-sm">
                         <div
                             class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm d-flex justify-content-between">
                             <button type="button" class="btn btn-sidebar rounded-pill me-2 text-light"
@@ -149,9 +149,9 @@ require("startsession.php");
                         </div>
                         <div class="list-group list-group-flush d-flex overflow-auto" id="technicianStatus"
                             style="height: 15rem !important"></div>
-                    </div>
+                    </div> -->
 
-                    <div class="col-7 bg-dark bg-opacity-25 border border-dark d-flex flex-column rounded pb-3 shadow-sm">
+                    <div class="col-7 bg-light bg-opacity-25 border border-light d-flex flex-column rounded pb-3 shadow-sm">
                         <div
                             class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm d-flex justify-content-center">
                             <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0"><i
@@ -167,7 +167,7 @@ require("startsession.php");
 
             <!-- <div class="container-fluid">
                 <div class="row d-flex justify-content-around">
-                    <div class="col-4 bg-dark bg-opacity-25 border border-dark d-flex flex-column rounded pb-3 shadow-sm">
+                    <div class="col-4 bg-light bg-opacity-25 border border-light d-flex flex-column rounded pb-3 shadow-sm">
 
                     </div>
                 </div>

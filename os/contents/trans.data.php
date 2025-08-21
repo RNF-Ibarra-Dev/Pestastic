@@ -297,7 +297,20 @@ if (isset($_GET['details']) && $_GET['details'] === 'true') {
     // $array = mysqli_fetch_array($result);
 
     if ($row = mysqli_fetch_assoc($result)) {
-        echo json_encode(['success' => $row]);
+        $response = $row;
+        $ttime = strtotime($row['transaction_time']);
+        $tdate = strtotime($row['treatment_date']);
+        $pstart = strtotime($row['pack_start']);
+        $pend = strtotime($row['pack_exp']);
+        $trans_time = date("H:i A", $ttime);
+        $trans_date = date("F j, Y", $tdate);
+        $package_start = date("F j, Y", $pstart);
+        $package_end = date("F j, Y", $pend);
+        $response['trans_time'] = $trans_time;
+        $response['trans_date'] = $trans_date;
+        $response['package_start'] = $package_start;
+        $response['package_end'] = $package_end;
+        echo json_encode(['success' => $response]);
         mysqli_stmt_close($stmt);
     } else {
         echo json_encode(['type' => 'array', 'message' => 'array error']);

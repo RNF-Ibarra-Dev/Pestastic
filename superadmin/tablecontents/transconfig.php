@@ -18,6 +18,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $address = $_POST['add-customerAddress'];
     $treatmentTime = $_POST['add-treatmentTime'];
     $treatment = $_POST['add-treatment'] ?? null;
+    $amtUsed = $_POST['add-amountUsed'] ?? [];    
     $t_type = $_POST['add-treatmentType'];
     $package = $_POST['add-package'] ?? null;
     $pstart = $_POST['add-packageStart'] ?? null;
@@ -102,7 +103,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
                 exit();
             }
         }
-    }
+    } 
 
     if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
         if (count($amtUsed) !== count($chemUsed)) {

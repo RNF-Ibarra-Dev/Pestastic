@@ -4,7 +4,7 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 5;
-$rowCount = "SELECT * FROM chemicals WHERE request = 1 AND branch = {$_SESSION['branch']};";
+$rowCount = "SELECT * FROM chemicals WHERE request = 1;";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);

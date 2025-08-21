@@ -404,7 +404,6 @@ require_once("startsession.php");
             altInput: true,
             altFormat: "F j, Y",
             dateFormat: "Y-m-d",
-            enableTime: true,
             maxDate: maxAllowedDate
         });
 

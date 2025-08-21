@@ -303,6 +303,18 @@ if (isset($_GET['details']) && $_GET['details'] === 'true') {
     if ($row = mysqli_fetch_assoc($result)) {
         $response = $row;
         $branch = get_branch_details($conn, $response['branch']);
+        $ttime = strtotime($row['transaction_time']);
+        $tdate = strtotime($row['treatment_date']);
+        $pstart = strtotime($row['pack_start']);
+        $pend = strtotime($row['pack_exp']);
+        $trans_time = date("H:i A", $ttime);
+        $trans_date = date("F j, Y", $tdate);
+        $package_start = date("F j, Y", $pstart);
+        $package_end = date("F j, Y", $pend);
+        $response['trans_time'] = $trans_time;
+        $response['trans_date'] = $trans_date;
+        $response['package_start'] = $package_start;
+        $response['package_end'] = $package_end;
         $response['branch'] = $branch;
         echo json_encode(['success' => $response]);
         mysqli_stmt_close($stmt);

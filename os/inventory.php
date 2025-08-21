@@ -640,7 +640,7 @@ require("startsession.php");
             <!-- edit chemical -->
             <form id="editChemForm">
                 <div class="row g-2 text-dark">
-                    <div class="modal fade text-dark modal-edit" id="editModal" tabindex="-1" aria-labelledby="edit"
+                    <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="editModal" tabindex="-1" aria-labelledby="edit"
                         aria-hidden="true">
                         <div class="modal-dialog modal-xl modal-dialog-scrollable">
                             <div class="modal-content">
@@ -765,7 +765,7 @@ require("startsession.php");
                 </div>
 
                 <!-- edit confirmation -->
-                <div class="modal fade text-dark modal-edit" id="confirmEdit" tabindex="0"
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="confirmEdit" tabindex="0"
                     aria-labelledby="verifyChanges" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -1254,7 +1254,7 @@ require("startsession.php");
             <!-- delete modal -->
             <form id="deleteForm">
                 <input type="hidden" id="delChemId" name="chemid">
-                <div class="modal fade text-dark modal-edit" id="deleteModal" tabindex="0"
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="deleteModal" tabindex="0"
                     aria-labelledby="verifyChanges" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">

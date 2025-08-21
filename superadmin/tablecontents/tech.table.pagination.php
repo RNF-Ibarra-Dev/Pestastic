@@ -59,13 +59,10 @@ if (isset($_GET['ostable']) && $_GET['ostable'] === 'true') {
                 <td>
                     <div class="d-flex justify-content-center">
                         <button type="button" class="btn btn-sidebar edit-btn" data-edit="<?= htmlspecialchars($baId) ?>">
-                            <i class="bi bi-person-fill fs-4 me-1"></i>
+                            <i class="bi bi-person-fill fs-4"></i>
                         </button>
-                        <!-- <button type="button" class="btn btn-sidebar info-btn" data-edit="<?= htmlspecialchars($baId) ?>">
-                            <i class="bi bi-person-fill fs-4 me-1"></i>
-                        </button> -->
                         <button type="button" class="btn btn-sidebar delete-btn" data-delete="<?= htmlspecialchars($baId) ?>">
-                            <i class="bi bi-person-fill-dash fs-4 me-1"></i>
+                            <i class="bi bi-person-fill-dash fs-4"></i>
                         </button>
                     </div>
                 </td>
@@ -287,11 +284,11 @@ if (isset($_GET['search'])) {
                 <td>
                     <div class="d-flex justify-content-center">
                        <button type="button" class="btn btn-sidebar edit-btn" data-edit="<?= htmlspecialchars($baId) ?>">
-                            <i class="bi bi-person-fill fs-4 me-1"></i>
+                            <i class="bi bi-person-fill fs-4"></i>
                         </button>
                         <button type="button" class="btn btn-sidebar me-2 delete-btn" data-delete="<?= htmlspecialchars($baId) ?>"
                             data-bs-toggle="modal" data-bs-target="#deleteModal">
-                            <i class="bi bi-person-fill-dash fs-4 me-1"></i>
+                            <i class="bi bi-person-fill-dash fs-4"></i>
                         </button>
                     </div>
                 </td>

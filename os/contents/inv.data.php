@@ -362,7 +362,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
             $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals WHERE expiryDate < CURDATE()";
             break;
         case "entries":
-            $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals WHERE request = 1";
+            $sql = "SELECT COUNT(*) FROM chemicals WHERE request = 1";
             break;
         case "available":
             $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals WHERE chemLevel > 0 AND request = 0";
@@ -371,7 +371,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
             $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals WHERE chem_location = 'dispatched'";
             break;
         case "out-of-stock":
-            $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals WHERE chemLevel = 0 AND unop_cont = 0;";
+            $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals WHERE chemLevel = 0 AND unop_cont = 0";
             break;
         default:
             http_response_code(400);
