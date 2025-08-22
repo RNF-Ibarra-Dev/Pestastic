@@ -28,7 +28,8 @@ if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
             $time = date("h:i A", $ntime);
             ?>
             <div class="col">
-                <div class="card bg-white bg-opacity-25 shadow-sm rounded border-0 text-light p-0" style="min-height: 26rem !important;">
+                <div class="card bg-white bg-opacity-25 shadow-sm rounded border-0 text-light p-0"
+                    style="min-height: 26rem !important;">
                     <div class="card-body px-2 border-light pb-0 mx-3">
                         <h5 class="card-title fs-4 text-center fw-bold">Transaction <?= htmlspecialchars($id) ?></h5>
                         <hr>
@@ -74,6 +75,44 @@ if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
 }
 
 
+if (isset($_GET['dispatched_items']) && $_GET['dispatched_items'] === 'true') {
+    $id = $_GET['id'];
+
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo "Invalid transaction ID is passed.";
+        exit();
+    }
+
+
+    $sql = "SELECT * FROM transaction_chemicals WHERE trans_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "Prepared statement failed. Please try again later.";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($res) > 0) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            $item = $row['chem_brand'];
+            $item_id = $row['chem_id'];
+            $item_deets = get_chemical($conn, $item_id);
+            $unit = $item_deets['quantity_unit'];
+            $value = $row['amt_used'];
+            ?>
+            <li class="list-group-item fs-5"><?= "$item ($value$unit)" ?></li>
+            <?php
+        }
+    } else {
+        echo "<span class='text-center fw-medium my-3'>No item found within this transaction ID.</span>";
+    }
+}
+
 if (isset($_GET['dispatched']) && $_GET['dispatched'] === 'true') {
     $id = htmlspecialchars($_GET['transid']);
     $sql = "SELECT * FROM transaction_technicians WHERE trans_id = ? ;";
@@ -90,11 +129,11 @@ if (isset($_GET['dispatched']) && $_GET['dispatched'] === 'true') {
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             ?>
-            <li class="list-group-item"><?= htmlspecialchars($row['tech_info']) ?></li>
+            <li class="list-group-item fs-5"><?= htmlspecialchars($row['tech_info']) ?></li>
             <?php
         }
     } else {
-        echo "<li class = 'list-group-item'>No assigned technicians for this transaction.</li>";
+        echo "<span class = 'text-center fw-medium my-3'>No assigned technicians for this transaction.</span>";
     }
 }
 
@@ -172,7 +211,7 @@ if (isset($_GET['getdata']) && $_GET['getdata'] === 'ongoing') {
                                     class="btn btn-sidebar mx-auto w-100 rounded-0 text-light fw-bold fs-5 bg-opacity-0"
                                     data-tech="<?= htmlspecialchars($id) ?>">Dispatched Technicians</button>
                             </li>
-                             <li class="list-group-item d-flex p-0 m-0">
+                            <li class="list-group-item d-flex p-0 m-0">
                                 <button type="button" id="reviewBtn"
                                     class="btn btn-sidebar mx-auto w-100 rounded-0 text-light fw-bold fs-5 bg-opacity-0"><a
                                         class="link-underline-opacity-0 link-underline link-light"
@@ -181,7 +220,7 @@ if (isset($_GET['getdata']) && $_GET['getdata'] === 'ongoing') {
                             </li>
                         </ul>
                     </div>
-                   
+
                 </div>
             </div>
             <?php
@@ -236,23 +275,25 @@ if (isset($_GET['inc']) && $_GET['inc'] === 'true') {
             $tt = get_treatment_details($conn, $t);
             $treatment = $tt['t_name'] ?? "Outdated treatment. ID not found.";
             $otime = $row['transaction_time'];
-            
+
             $ntime = strtotime($otime);
             $time = date("h:i A", $ntime);
             $by = $row['submitted_by'] ?? "No record found.";
             $cat = date("F j, Y  | h:i A", strtotime($row['created_at']));
+            $treatmentType = $row['treatment_type'];
             ?>
             <div class="col">
                 <div class="card bg-white bg-opacity-25 shadow-sm rounded border-0 text-light p-0">
-                    <div class="card-body px-1 border-light pb-0 mx-3" style="min-height: 18rem !important;">
+                    <div class="card-body px-1 border-light pb-0 mx-3">
                         <h5 class="card-title fs-4 fw-bold text-center">Transaction <?= htmlspecialchars($id) ?></h5>
                         <hr>
                         <p class="card-text lh-lg mb-3 text-wrap">
                             <strong class="fw-bold fs-5 me-2">Customer:</strong><?= htmlspecialchars($customername) ?><br>
                             <strong class="fw-bold fs-5 me-2">Scheduled Date:</strong><?= htmlspecialchars($date) ?><br>
-                            <strong
-                                class="fw-bold fs-5 me-2">Scheduled Time:</strong><?= $otime === "00:00:00" ? "Time not set." : htmlspecialchars($time) ?><br>
+                            <strong class="fw-bold fs-5 me-2">Scheduled
+                                Time:</strong><?= $otime === "00:00:00" ? "Time not set." : htmlspecialchars($time) ?><br>
                             <strong class="fw-bold fs-5 me-2">Treatment:</strong> <?= htmlspecialchars($treatment) ?><br>
+                            <strong class="fw-bold fs-5 me-2">Treatment Type:</strong> <?= htmlspecialchars($treatmentType) ?><br>
                             <strong class="fw-bold fs-5 me-2">Submitted By:</strong> <?= htmlspecialchars($by) ?><br>
                             <strong class="fw-bold fs-5 me-2">Submitted At:</strong> <?= htmlspecialchars($cat) ?><br>
                         </p>
@@ -278,3 +319,4 @@ if (isset($_GET['inc']) && $_GET['inc'] === 'true') {
     }
     exit();
 }
+

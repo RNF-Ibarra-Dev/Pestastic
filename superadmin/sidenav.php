@@ -8,10 +8,10 @@
     <hr>
     <ul class=" navbar-nav align-content-start">
         <li class="nav-item">
-            <a class="nav-link btn btn-sidebar my-1 text-light fw-light fs-6 ps-2 <?= $page == 'index.php' ? 'btn-active' : ''; ?>"
+            <a class="nav-link btn btn-sidebar my-1 text-light fw-medium fs-5 ps-2 <?= $page == 'index.php' ? 'btn-active' : ''; ?>"
                 href="index.php">
-                <i class="bi bi-house me-3"></i>
-                <div class="text-light fw-light fs-6">Dashboard</div>
+                
+                <div class="text-light fw-medium fs-5"><i class="bi <?= $page == 'index.php' ? "bi-house-fill color-accent" : "bi-house" ?> me-3"></i>Dashboard</div>
             </a>
         </li>
         <!-- Manage accounts dropdown -->
@@ -20,8 +20,8 @@
                 data-bs-toggle="collapse"
                 aria-expanded="<?= $page == 'tech.acc.php' || $page == 'os.acc.php' ? 'true' : 'false'; ?>"
                 data-bs-target="#accounts">
-                <i class="bi bi-people me-3"></i>
-                <div class="text-light fw-light fs-6">Employee Accounts</div>
+                
+                <div class="text-light fw-medium fs-5"><i class="bi <?= $page == 'tech.acc.php' || $page == 'os.acc.php' ? "bi-people-fill color-accent" : "bi-people" ?> me-3"></i>Employee Accounts</div>
                 <i class="bi bi-chevron-compact-left ms-auto me-3 "></i>
             </a>
             <ul id="accounts"
@@ -29,15 +29,15 @@
                 <li class="nav-item">
                     <a class="nav-link btn btn-sidebar my-1 ps-3 <?= $page == 'tech.acc.php' ? 'btn-active-dropdown' : ''; ?>"
                         href="tech.acc.php">
-                        <i class="bi bi-person-badge me-3"></i>
-                        <div class="text-light fw-lighter fs-7">Technicians</div>
+                       
+                        <div class="text-light fw-medium fs-5"> <i class="bi <?= $page == 'tech.acc.php' ? "bi-person-badge-fill color-accent" : "bi-person-badge" ?> me-3"></i>Technicians</div>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link btn btn-sidebar my-1 ps-3 <?= $page == 'os.acc.php' ? 'btn-active-dropdown' : ''; ?>"
                         href="os.acc.php">
-                        <i class="bi bi-person-badge me-3"></i>
-                        <div class="text-light fw-lighter fs-7">Operations Supervisors</div>
+                        
+                        <div class="text-light fw-medium fs-5"><i class="bi <?= $page == 'os.acc.php' ? "bi-person-badge-fill color-accent" : "bi-person-badge" ?> me-3"></i>Operations Supervisors</div>
                     </a>
                 </li>
             </ul>
@@ -45,36 +45,36 @@
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 p-2 <?= $page == 'itemstock.php' ? 'btn-active' : ''; ?>"
                 href="itemstock.php">
-                <i class="bi bi-boxes me-3"></i>
-                <div class="text-light fw-lighter fs-7">Inventory</div>
+                
+                <div class="text-light fw-medium fs-5"><i class="bi <?= $page == 'itemstock.php' ? "bi-box-seam-fill color-accent" : "bi-box-seam" ?> me-3"></i>Inventory</div>
             </a>
         </li>
         <!-- <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'equipments.php' ? 'btn-active' : ''; ?>"
                 href="equipments.php">
                 <i class="bi bi-tools me-3"></i>
-                <div class="text-light fw-lighter fs-7">Equipment</div>
+                <div class="text-light fw-medium fs-5">Equipment</div>
             </a>
         </li> -->
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'queue.php' ? 'btn-active' : ''; ?>"
                 href="queue.php">
-                <i class="bi bi-list me-3"></i>
-                <div class="text-light fw-lighter fs-7">Queue</div>
+                
+                <div class="text-light fw-medium fs-5"><i class="bi bi-list <?= $page == 'queue.php' ? "color-accent" : "" ?> me-3"></i>Queue</div>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'transactions.php' ? 'btn-active' : ''; ?>"
                 href="transactions.php">
-                <i class="bi bi-file-text me-3"></i>
-                <div class="text-light fw-lighter fs-7">Transactions</div>
+                
+                <div class="text-light fw-medium fs-5"><i class="bi <?= $page == 'transactions.php' ? "bi-file-text-fill color-accent" : "bi-file-text" ?> me-3"></i>Transactions</div>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'account.php' ? 'btn-active' : ''; ?>"
                 href="account.php">
-                <i class="bi bi-person-add me-3"></i>
-                <div class="text-light fw-lighter fs-7">Create Employee Account</div>
+                
+                <div class="text-light fw-medium fs-5"><i class="bi <?= $page == 'account.php' ? "bi-person-fill-add color-accent" : "bi-person-add" ?> me-3"></i>Create Employee Account</div>
             </a>
         </li>
     </ul>

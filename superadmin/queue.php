@@ -55,6 +55,10 @@ require("startsession.php");
             -ms-user-select: none;
             user-select: none;
         }
+
+        #incompleteTransactions .col .card {
+            min-height: 30rem !important;
+        }
     </style>
 </head>
 
@@ -93,8 +97,8 @@ require("startsession.php");
                 <!-- upcoming -->
                 <div class="col-auto flex-grow-1 mt-2 px-0">
                     <div class="mb-3 d-flex border-light bg-light bg-opacity-25 shadow-sm py-2 align-middle rounded-3">
-                        <button type="button" class="btn btn-sidebar rounded-3 ms-2 text-light">
-                            <i class="bi bi-sort-up h5 m-0 d-flex align-items-center" id='sortrecent'></i>
+                        <button type="button" class="btn btn-sidebar rounded-3 ms-2 text-light" id='sortrecent'>
+                            <i class="bi bi-sort-up h5 m-0 d-flex align-items-center"></i>
                         </button>
                         <h4
                             class="fw-light m-0 justify-content-center flex-grow-1 fw-bold fs-2 d-flex align-items-center">
@@ -219,7 +223,7 @@ require("startsession.php");
                                 class="bi text-light bi-x-lg"></i></button>
                     </div>
                     <div class="modal-body">
-                        <h5 class="fw-bold">Assigned Technicians:</h5>
+                        <h5 class="fw-bold fs-4">Assigned Technicians:</h5>
                         <ul class="list-group list-group-flush" id="technicianscont"></ul>
                     </div>
                     <!-- <button type="button" class="w-50 ms-auto rounded-top-0 rounded-start-0 btn btn-grad" data-bs-dismiss="modal">Close</button> -->
@@ -229,7 +233,7 @@ require("startsession.php");
             </div>
         </div>
         <!-- items -->
-        <div class="modal fade text-dark modal-edit" id="items" tabindex="-1" aria-labelledby="create"
+        <div class="modal fade text-dark modal-edit" id="itemsModal" tabindex="-1" aria-labelledby="create"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
@@ -239,8 +243,8 @@ require("startsession.php");
                         <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                 class="bi text-light bi-x-lg"></i></button>
                     </div>
-                    <div class="modal-body">
-                        <h5 class="fw-bold">Items Dispatched:</h5>
+                    <div class="modal-body ">
+                        <h5 class="fw-bold fs-4">Dispatched Items:</h5>
                         <ul class="list-group list-group-flush" id="items"></ul>
                     </div>
                     <!-- <div class="modal-footer">
@@ -353,12 +357,12 @@ require("startsession.php");
         let asc = false;
         $(document).on('click', '#sortrecent', async function () {
             if (asc === false) {
-                $('#sortrecent').removeClass('bi-sort-up').addClass('bi-sort-down');
+                $('#sortrecent > i').removeClass('bi-sort-up').addClass('bi-sort-down');
                 asc = true;
                 await load_cards(true);
                 return asc;
             } else {
-                $('#sortrecent').removeClass('bi-sort-down').addClass('bi-sort-up');
+                $('#sortrecent > i').removeClass('bi-sort-down').addClass('bi-sort-up');
                 asc = false;
                 await load_cards(false);
                 return asc;
@@ -781,7 +785,21 @@ require("startsession.php");
         });
 
         $(document).on('click', '.items-btn', function(){
-            let
+            let trans_id = $(this).data('item');
+            console.log(trans_id);
+
+            $.get(dataUrl, {
+                dispatched_items: true,
+                id: trans_id
+            }, function(d){
+                $("#items").empty();
+                $("#items").append(d);
+                $("#itemsModal").modal('show');
+            }, 'html')
+            .fail(function(e){
+                alert("There seems to be an error fetching the dispatched items. Please try again later.");
+                console.log(e);
+            });
         })
     </script>
 </body>

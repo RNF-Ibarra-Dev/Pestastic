@@ -8,6 +8,13 @@
   --btn-bg-dropdown-color: rgba(87, 154, 146, 0.2);
   --btn-bg-color: rgba(113, 187, 178, 0.2);
   --night-bg-color: #16404d;
+
+  /* --bs-light-rgb: rgb(255, 255, 255) !important; */
+}
+
+
+.text-light{
+  color: rgb(246, 246, 246) !important;
 }
 
 .text-shadow,
@@ -17,6 +24,14 @@ th.text-light,
 i.text-light,
 .fw-bold.text-light {
   text-shadow: 0px 1px 5px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* .horizontal-inset-shadow{
+  box-shadow: inset 1px 0px 10px rgba(0, 0, 0, 0.4) !important;
+} */
+
+.color-accent{
+  color: #fcb217 !important;
 }
 
 table {
