@@ -76,7 +76,7 @@ require("startsession.php");
             <div class="row row-col-2 gap-3 px-3 m-0 d-flex justify-content-center">
 
                 <!-- calendar -->
-                <div class="col-3 mt-2 px-0">
+                <div class="col-4 mt-2 px-0">
                     <div class="bg-light bg-opacity-25 mb-3 py-2 shadow-sm rounded-3">
                         <h4
                             class="fw-light text-center d-flex align-items-center fw-bold fs-2 justify-content-center m-0">
@@ -115,8 +115,8 @@ require("startsession.php");
 
 
             <div class="container-fluid">
-                <div class="row d-flex justify-content-center gap-3 px-3">
-
+                <div class="row row-cols-2 d-flex justify-content-center gap-3 px-3">
+<!-- 
                     <div class="col-auto d-flex flex-column flex-grow-1 mb-3 px-0">
                         <div class="bg-light bg-opacity-25 my-3 p-2 rounded-3 shadow-sm">
                             <h4 class="fw-bold fs-2 text-center d-flex align-items-center justify-content-center m-0"><i
@@ -125,6 +125,20 @@ require("startsession.php");
                         </div>
                         <div class="px-3 d-flex align-content-center flex-grow-1 bg-light bg-opacity-25 rounded shadow-sm">
                             <div id="upcoming" class="flex-grow-1 h-75"></div>
+                        </div>
+                    </div> -->
+
+                    <div
+                        class="col flex-grow-1 py-3 px-0">
+                        <div
+                            class="bg-light bg-opacity-25 mb-3 py-2 rounded-3 shadow-sm d-flex justify-content-center">
+                            <h4 class="fw-light text-center text-center align-middle fs-2 fw-bold m-0"><i
+                                    class="bi bi-journal-minus me-2"></i> Pending Transactions</h4>
+                        </div>
+
+                        <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25 p-3 flex-grow-1" style="min-height: 35rem !important;" id="incTransContainer">
+                            <div id="incompleteTransactions"
+                                class="my-auto d-flex flex-nowrap justify-content-start gap-4 px-4"></div>
                         </div>
                     </div>
 
@@ -135,7 +149,7 @@ require("startsession.php");
                                 Calendar
                             </h4>
                         </div>
-                        <div class="bg-light shadow-sm bg-opacity-25 rounded p-2" id="calendar"></div>
+                        <div class="bg-light shadow-sm bg-opacity-25 rounded p-2" id="calendar" style="min-height: 35rem;"></div>
                     </div>
                 </div>
             </div>
@@ -158,19 +172,7 @@ require("startsession.php");
                             style="height: 15rem !important"></div>
                     </div> -->
 
-                    <div
-                        class="col-auto flex-grow-1 mx-3 p-0">
-                        <div
-                            class="bg-light bg-opacity-25 mb-3 py-2 rounded-3 shadow-sm d-flex justify-content-center">
-                            <h4 class="fw-light text-center text-center align-middle fs-2 fw-bold m-0"><i
-                                    class="bi bi-journal-minus me-2 align-middle"></i> Pending Transactions</h4>
-                        </div>
-
-                        <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25 p-3 flex-grow-1" id="incTransContainer">
-                            <div id="incompleteTransactions"
-                                class="my-auto d-flex flex-nowrap justify-content-start gap-4 px-4"></div>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
 
@@ -214,15 +216,36 @@ require("startsession.php");
                         <h1 class="modal-title fs-5">Assigned Technicians for Transaction <span
                                 id="deployedtransid"></span></h1>
                         <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
-                                class="bi text-light bi-x"></i></button>
+                                class="bi text-light bi-x-lg"></i></button>
                     </div>
                     <div class="modal-body">
-                        <h5 class="fw-light">Assigned Technicians:</h5>
+                        <h5 class="fw-bold">Assigned Technicians:</h5>
                         <ul class="list-group list-group-flush" id="technicianscont"></ul>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                    <!-- <button type="button" class="w-50 ms-auto rounded-top-0 rounded-start-0 btn btn-grad" data-bs-dismiss="modal">Close</button> -->
+                    <!-- <div class="modal-footer">
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        <!-- items -->
+        <div class="modal fade text-dark modal-edit" id="items" tabindex="-1" aria-labelledby="create"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header bg-modal-title text-light">
+                        <h1 class="modal-title fs-5">Recorded Items Dispatched<span
+                                id="deployedtransid"></span></h1>
+                        <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                class="bi text-light bi-x-lg"></i></button>
                     </div>
+                    <div class="modal-body">
+                        <h5 class="fw-bold">Items Dispatched:</h5>
+                        <ul class="list-group list-group-flush" id="items"></ul>
+                    </div>
+                    <!-- <div class="modal-footer">
+                        <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -365,7 +388,7 @@ require("startsession.php");
             await click_drag('incTransContainer');
             await click_drag('ongoingContainer')
             await fetch_data('ongoing');
-            await load_technician_status();
+            // await load_technician_status();
             await load_incomplete_transactions();
         });
 
@@ -419,87 +442,87 @@ require("startsession.php");
                 },
             });
 
-            var upcomingid = document.getElementById('upcoming');
-            var transCalendar = new FullCalendar.Calendar(upcomingid, {
-                initialView: 'dayGridWeek',
-                hiddenDays: [0],
-                dayHeaderFormat: {
-                    weekday: 'short',
-                    day: 'numeric',
-                    omitCommas: true
-                },
-                headerToolbar: {
-                    start: 'prev',
-                    center: 'title',
-                    end: 'next'
-                },
-                handleWindowResize: true,
-                events: {
-                    url: dataUrl,
-                    method: 'GET',
-                    extraParams: {
-                        transactions: 'true',
-                        data: 'titleonly'
-                    },
-                    failure: function (e) {
-                        alert('Transaction event fetch failed.');
-                        console.log(e);
-                    },
-                    color: '#00000033',
-                    textColor: 'white'
-                },
-                eventContent: function (arg) {
-                    return {
-                        html: arg.event.title
-                    };
-                },
-                height: 250
-            });
+            // var upcomingid = document.getElementById('upcoming');
+            // var transCalendar = new FullCalendar.Calendar(upcomingid, {
+            //     initialView: 'dayGridWeek',
+            //     hiddenDays: [0],
+            //     dayHeaderFormat: {
+            //         weekday: 'short',
+            //         day: 'numeric',
+            //         omitCommas: true
+            //     },
+            //     headerToolbar: {
+            //         start: 'prev',
+            //         center: 'title',
+            //         end: 'next'
+            //     },
+            //     handleWindowResize: true,
+            //     events: {
+            //         url: dataUrl,
+            //         method: 'GET',
+            //         extraParams: {
+            //             transactions: 'true',
+            //             data: 'titleonly'
+            //         },
+            //         failure: function (e) {
+            //             alert('Transaction event fetch failed.');
+            //             console.log(e);
+            //         },
+            //         color: '#00000033',
+            //         textColor: 'white'
+            //     },
+            //     eventContent: function (arg) {
+            //         return {
+            //             html: arg.event.title
+            //         };
+            //     },
+            //     height: 250
+            // });
 
-            transCalendar.render();
+            // transCalendar.render();
             calendar.render();
 
 
         });
 
-        $(async function () {
-            let status = ['Available', 'Dispatched', 'Unavailable', 'On Leave', 'none'];
-            // const totalStatus = 4; 
-            statusNum = 0;
-            $(document).on('click', '#sortTechStatus', async function () {
-                load_technician_status(status[statusNum]);
-                // console.log(status[statusNum]);
-                if (statusNum >= 4) {
-                    statusNum = 0;
-                } else {
-                    statusNum++;
-                }
-                return statusNum;
-            });
-        })
+        // $(async function () {
+        //     let status = ['Available', 'Dispatched', 'Unavailable', 'On Leave', 'none'];
+        //     // const totalStatus = 4; 
+        //     statusNum = 0;
+        //     $(document).on('click', '#sortTechStatus', async function () {
+        //         load_technician_status(status[statusNum]);
+        //         // console.log(status[statusNum]);
+        //         if (statusNum >= 4) {
+        //             statusNum = 0;
+        //         } else {
+        //             statusNum++;
+        //         }
+        //         return statusNum;
+        //     });
+        // })
 
 
-        async function load_technician_status(sort = 'none') {
-            try {
-                const techStat = await $.ajax({
-                    method: 'GET',
-                    url: dataUrl,
-                    dataType: 'html',
-                    data: {
-                        techStats: 'true',
-                        sort: sort
-                    }
-                });
+        // async function load_technician_status(sort = 'none') {
+        //     try {
+        //         const techStat = await $.ajax({
+        //             method: 'GET',
+        //             url: dataUrl,
+        //             dataType: 'html',
+        //             data: {
+        //                 techStats: 'true',
+        //                 sort: sort
+        //             }
+        //         });
 
-                if (techStat) {
-                    $('#technicianStatus').empty();
-                    $('#technicianStatus').html(techStat);
-                    return true;
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        }
+        //         if (techStat) {
+        //             $('#technicianStatus').empty();
+        //             $('#technicianStatus').html(techStat);
+        //             return true;
+        //         }
+        //     } catch (error) {
+        //         console.log(error);
+        //     }
+        // }
 
         $(document).on('click', '#cancel', async function () {
             let id = $(this).data('cancel');
@@ -756,6 +779,10 @@ require("startsession.php");
             });
 
         });
+
+        $(document).on('click', '.items-btn', function(){
+            let
+        })
     </script>
 </body>
 

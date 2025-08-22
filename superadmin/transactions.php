@@ -2199,7 +2199,7 @@
 
                     $('#edit-status').val(d.transaction_status);
 
-                  
+
                     $('#edit-addMoreChem').attr('data-status', d.transaction_status);
 
                     let tname = treatment_name(d.treatment);
@@ -3097,6 +3097,26 @@
             altInput: true
         });
 
+        $(document).on("submit", "#reschedForm", async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            await $.ajax({
+                method: "POST",
+                url: submitUrl,
+                dataType: 'json',
+                data: $(this).serialize() + "&reschedule=true"
+            })
+                .done(async function (d) {
+                    show_toast(d.success);
+                    $("#reschedForm")[0].reset();
+                    $("#reschedConfirm").modal('hide');
+                    await loadpage(1, $("#sortstatus").val());
+                })
+                .fail(function (e) {
+                    $("#reschedAlert").fadeIn(400).html(e.responseText).delay(2000).fadeOut(1000);
+                    console.log(e);
+                })
+        });
         // $(document).ready(function () {
         //     // Prevent right-click
         //     $(document).on("contextmenu", function (event) {

@@ -1,14 +1,10 @@
 :root {
-  --main-bg-color: linear-gradient(
-    135deg,
-    rgba(71, 138, 126, 1) 40%,
-    rgba(112, 89, 18, 1) 84%
-  );
-  --secondary-bg-color: linear-gradient(
-    90deg,
-    rgba(71, 138, 126, 1) 30%,
-    rgba(173, 138, 28, 1) 84%
-  );
+  --main-bg-color: linear-gradient(135deg,
+      rgba(71, 138, 126, 1) 40%,
+      rgba(112, 89, 18, 1) 84%);
+  --secondary-bg-color: linear-gradient(90deg,
+      rgba(71, 138, 126, 1) 30%,
+      rgba(173, 138, 28, 1) 84%);
   --btn-bg-dropdown-color: rgba(87, 154, 146, 0.2);
   --btn-bg-color: rgba(113, 187, 178, 0.2);
   --night-bg-color: #16404d;
@@ -70,6 +66,7 @@ form {
   border: 1px solid #16404d !important;
   background-color: #bababa !important;
 }
+
 #chemicallogmodal input.form-check-input:checked,
 #addTransaction input.form-check-input:checked,
 #viewEditForm input.form-check-input:checked,
@@ -90,6 +87,7 @@ form {
 #chemicallogmodal .nav-tabs .nav-link {
   color: #7f7f7f !important;
 }
+
 #chemicallogmodal .nav-tabs .nav-link.active {
   color: #000 !important;
 }
@@ -137,7 +135,7 @@ nav ul li a:hover {
   color: #fff !important;
 }
 
-.active > .page-link,
+.active>.page-link,
 .page-link.active {
   border: none !important;
   background: rgba(113, 187, 178, 0.3) !important;
@@ -151,24 +149,18 @@ body {
   /* overflow-y: scroll; */
   background-repeat: no-repeat !important;
   background: #263442;
-  background: -webkit-linear-gradient(
-    90deg,
-    rgba(38, 52, 66, 1) 0%,
-    rgba(57, 118, 129, 1) 49%,
-    rgba(44, 62, 80, 1) 100%
-  );
-  background: -moz-linear-gradient(
-    90deg,
-    rgba(38, 52, 66, 1) 0%,
-    rgba(57, 118, 129, 1) 49%,
-    rgba(44, 62, 80, 1) 100%
-  );
-  background: linear-gradient(
-    90deg,
-    rgba(38, 52, 66, 1) 0%,
-    rgba(57, 118, 129, 1) 49%,
-    rgba(44, 62, 80, 1) 100%
-  );
+  background: -webkit-linear-gradient(90deg,
+      rgba(38, 52, 66, 1) 0%,
+      rgba(26, 36, 23, 1) 49%,
+      rgba(44, 62, 80, 1) 100%);
+  background: -moz-linear-gradient(90deg,
+      rgba(38, 52, 66, 1) 0%,
+      rgba(26, 36, 23, 1) 49%,
+      rgba(44, 62, 80, 1) 100%);
+  background: linear-gradient(90deg,
+      rgba(38, 52, 66, 1) 0%,
+      rgba(26, 36, 23, 1) 49%,
+      rgba(44, 62, 80, 1) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#263442", endColorstr="#2C3E50", GradientType=1);
 }
 
@@ -225,11 +217,11 @@ body {
 ::-webkit-scrollbar-thumb {
   /* border-radius: 10px; */
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  background-color: #0d495b;
+  background-color: #abcba2;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #146778;
+  background-color: #1a2417;
 }
 
 .hstack .form-select option {
@@ -270,22 +262,18 @@ input:focus {
 
 .bg-dash {
   background: #3d451f;
-  background: linear-gradient(
-    290deg,
-    rgba(61, 69, 31, 1) 0%,
-    rgba(26, 33, 41, 1) 44%,
-    rgba(23, 46, 6, 1) 100%
-  );
+  background: linear-gradient(290deg,
+      rgba(61, 69, 31, 1) 0%,
+      rgba(26, 36, 23, 1) 44%,
+      rgba(23, 46, 6, 1) 100%);
 }
 
 .bg-official {
   background: #3d451f;
-  background: linear-gradient(
-    290deg,
-    rgba(61, 69, 31, 1) 0%,
-    rgba(26, 33, 41, 1) 44%,
-    rgba(23, 46, 6, 1) 100%
-  );
+  background: linear-gradient(290deg,
+      rgba(61, 69, 31, 1) 0%,
+      rgba(26, 36, 23, 1) 44%,
+      rgba(23, 46, 6, 1) 100%);
 }
 
 .img-round {
@@ -311,22 +299,18 @@ input:focus {
 }
 
 .bg-official-login {
-  background: #263442;
-  background: radial-gradient(
-    circle,
-    rgba(38, 52, 66, 1) 0%,
-    rgba(64, 89, 44, 1) 57%,
-    rgba(44, 62, 80, 1) 100%
-  );
+  background: #3d451f;
+  background: linear-gradient(290deg,
+      rgba(61, 69, 31, 1) 0%,
+      rgba(26, 36, 23, 1) 44%,
+      rgba(23, 46, 6, 1) 100%);
 }
 
 .bg-modal-title {
   background: #233b0f;
-  background: linear-gradient(
-    290deg,
-    rgba(35, 59, 15, 1) 0%,
-    rgba(26, 33, 41, 1) 100%
-  );
+  background: linear-gradient(290deg,
+      rgba(35, 59, 15, 1) 0%,
+      rgba(26, 33, 41, 1) 100%);
 }
 
 .text-light.bi.bi-x::before {
@@ -338,12 +322,10 @@ input:focus {
 }
 
 .btn-grad {
-  background-image: linear-gradient(
-    to right,
-    #172E06 0%,
-    #a2b16a 51%,
-    #172E06 100%
-  );
+  background-image: linear-gradient(to right,
+      #172E06 0%,
+      #a2b16a 51%,
+      #172E06 100%);
 }
 
 .btn-grad {
@@ -407,30 +389,24 @@ input[type="number"] {
 
 .bg-modal {
   background: rgb(227, 207, 147);
-  background: -moz-linear-gradient(
-    0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 11%,
-    rgba(13, 73, 91, 1) 58%,
-    rgba(2, 21, 34, 1) 86%,
-    rgba(1, 2, 17, 1) 95%
-  );
-  background: -webkit-linear-gradient(
-    0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 11%,
-    rgba(13, 73, 91, 1) 58%,
-    rgba(2, 21, 34, 1) 86%,
-    rgba(1, 2, 17, 1) 95%
-  );
-  background: linear-gradient(
-    0deg,
-    rgba(227, 207, 147, 1) 0%,
-    rgba(106, 145, 103, 1) 11%,
-    rgba(13, 73, 91, 1) 58%,
-    rgba(2, 21, 34, 1) 86%,
-    rgba(1, 2, 17, 1) 95%
-  );
+  background: -moz-linear-gradient(0deg,
+      rgba(227, 207, 147, 1) 0%,
+      rgba(106, 145, 103, 1) 11%,
+      rgba(13, 73, 91, 1) 58%,
+      rgba(2, 21, 34, 1) 86%,
+      rgba(1, 2, 17, 1) 95%);
+  background: -webkit-linear-gradient(0deg,
+      rgba(227, 207, 147, 1) 0%,
+      rgba(106, 145, 103, 1) 11%,
+      rgba(13, 73, 91, 1) 58%,
+      rgba(2, 21, 34, 1) 86%,
+      rgba(1, 2, 17, 1) 95%);
+  background: linear-gradient(0deg,
+      rgba(227, 207, 147, 1) 0%,
+      rgba(106, 145, 103, 1) 11%,
+      rgba(13, 73, 91, 1) 58%,
+      rgba(2, 21, 34, 1) 86%,
+      rgba(1, 2, 17, 1) 95%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e3cf93", endColorstr="#010211", GradientType=1);
   /* opacity: 0.5; */
 }
@@ -443,12 +419,12 @@ input[type="number"] {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.form-floating.form-custom > .form-control {
+.form-floating.form-custom>.form-control {
   background: transparent !important;
 }
 
-.form-floating.form-custom > label,
-.form-floating.form-custom > input {
+.form-floating.form-custom>label,
+.form-floating.form-custom>input {
   color: #fff !important;
 }
 
@@ -467,7 +443,7 @@ input[type="number"] {
   color: rgba(255, 255, 255, 0.6) !important;
 }
 
-.form-floating.form-custom > label::after {
+.form-floating.form-custom>label::after {
   background-color: transparent !important;
   color: #fff !important;
 }
@@ -613,7 +589,7 @@ table.os-table {
   border-bottom-right-radius: 0.5rem;
 }
 
-#activecontainer > .flatpickr-calendar.animate.inline {
+#activecontainer>.flatpickr-calendar.animate.inline {
   height: 90% !important;
   margin: auto auto;
 }
@@ -651,7 +627,7 @@ table.os-table {
   background-color: #9f9f9f;
 }
 
-.fc .fc-button-group > .fc-button,
+.fc .fc-button-group>.fc-button,
 .fc .fc-button-primary,
 .fc .fc-button-primary:disabled,
 .fc .fc-button-primary {
@@ -664,7 +640,7 @@ table.os-table {
   border: none !important;
 }
 
-.fc .fc-button-group > .fc-button:hover,
+.fc .fc-button-group>.fc-button:hover,
 .fc .fc-button:not(:disabled):hover {
   background: #ffffff87;
   border: 1px solid white;
