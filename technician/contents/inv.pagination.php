@@ -1,18 +1,18 @@
 <?php
+session_start();
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
-$pageRows = 10;
-$rowCount = 'SELECT * FROM chemicals';
+$pageRows = 5;
+$rowCount = 'SELECT * FROM chemicals WHERE request = 0 AND chem_location = "main_storage";';
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
-
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
     ?>
 
-<nav aria-label="Page navigation">
+    <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
             <?php
             // set active page ex. 1 = first page. Checks if numeric as well.
@@ -41,7 +41,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
             $lastpages = $totalPages;
             // var_dump($lastpages);
-
+        
             ?>
             <li class="page-item">
                 <a class="page-link" data-page="1" href=""><i class="bi bi-caret-left-fill"></i></a>
@@ -50,12 +50,12 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
             <li class="page-item">
                 <?php
                 if ($prev > 0) {
-                ?>
+                    ?>
                     <a class="page-link" data-page="<?= $prev ?>"><i class="bi bi-caret-left"></i></a>
-                <?php
+                    <?php
                 } else { ?>
                     <a class="page-link" data-page="1"><i class="bi bi-caret-left"></i></a>
-                <?php
+                    <?php
                 }
                 ?>
             </li>
@@ -75,7 +75,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
                     $limitreached = true;
 
                     if ($currentPage != $lastpages && $currentPage <= $lastpages) {
-                ?>
+                        ?>
                         <li class="page-item disabled">
                             <a class="page-link">...</a>
                         </li>
@@ -83,7 +83,7 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
                         <li class="page-item">
                             <a class="page-link" data-page="<?= $totalPages ?>"><?= $totalPages ?></a>
                         </li>
-            <?php
+                        <?php
                     }
                     break;
                 }
@@ -93,12 +93,12 @@ if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
             <li class="page-item">
                 <?php
                 if ($next <= $totalPages) {
-                ?>
+                    ?>
                     <a class="page-link" data-page="<?= $next ?>" href=""><i class="bi bi-caret-right"></i></a>
-                <?php
+                    <?php
                 } else { ?>
                     <a class="page-link" data-page="<?= $totalPages ?>"><i class="bi bi-caret-right"></i></a>
-                <?php
+                    <?php
                 }
                 ?>
             </li>
@@ -115,8 +115,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT * FROM chemicals LIMIT " . $limitstart
-        . ", " . $pageRows . ";";
+    $sql = "SELECT * FROM chemicals WHERE request = 0 AND chem_location = 'main_storage' AND branch = {$_SESSION['branch']} ORDER BY id DESC LIMIT $limitstart, $pageRows;";
 
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
@@ -128,25 +127,106 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $brand = $row["brand"];
             $level = $row["chemLevel"];
             $expDate = $row["expiryDate"];
+            $request = (int) $row['request'];
+            $now = date("Y-m-d");
+            $exp = date_create($expDate);
+            $remcom = $row['unop_cont'];
+            $dr = $row['date_received'];
+            $date_received = date_create($dr);
+            $contsize = $row['container_size'];
+            $unit = $row['quantity_unit'];
+            $threshold = $row['restock_threshold'];
+            $opened_container = $level > 0 ? 1 : 0;
+            $cur_location = $row['chem_location'];
+            if ($request === 1) {
+                $location = "Stock Entry";
+            } else if ($cur_location === 'main_storage') {
+                $location = "Main Storage";
+            } else if ($cur_location === 'dispatched') {
+                $location = "Dispatched";
+            } else {
+                $location = "Unknown";
+            }
+            $stock_qty = $remcom + ($level > 0 ? 1 : 0);
             ?>
             <tr class="text-center">
-                <td scope="row"><?= htmlspecialchars($name) ?></td>
-                <td><?= htmlspecialchars($brand) ?></td>
-                <td><?= $level <= 0 ? ' 0ml - Out of Stock' : htmlspecialchars($level) . 'ml'; ?></td>
-                <td><?= htmlspecialchars($expDate) ?></td>
+                <td scope="row"><?php
+                if ($cur_location === 'dispatched') {
+                    echo htmlspecialchars("Dispatched Chemical ID: $id");
+                } else {
+                    echo htmlspecialchars($id);
+                }
+                ?></td>
+                <td>
+                    <?php
+                    if ($request === 1) {
+                        ?>
+                        <i class="bi bi-exclamation-diamond text-warning" data-bs-toggle="tooltip" title="Pending Entry"></i><br>
+                        <span class="fw-bold"><?= htmlspecialchars("Item pending for entry: $name ($brand)") ?></span>
+                        <?php
+                    } else {
+                        echo htmlspecialchars("$name ($brand)");
+                    }
+                    ?>
+                </td>
+                <td><?= htmlspecialchars($stock_qty) ?></td>
+                <td>
+                    <?= htmlspecialchars(date_format($date_received, "F j, Y")) ?>
+                </td>
+                <td>
+                    <?php
+                    if ($request === 0) {
+                        if ($stock_qty <= $threshold) {
+                            echo "<span class='bg-warning px-2 py-1 bg-opacity-25 badge rounded-pill'>Running Out</span>";
+                        } else {
+                            echo "<span class='bg-custom-success px-2 py-1 badge rounded-pill'>Good</span>";
+                        }
+                    } else {
+                        echo "<span class='bg-info px-2 py-1 bg-opacity-25 badge rounded-pill'>Pending Entry</span>";
+                    }
+                    ?>
+                </td>
+                <td><?= htmlspecialchars($location) ?></td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <?php
+                        if ($cur_location === 'main_storage') {
+                            echo '<button type="button" class="btn btn-sidebar dispatchbtn border-0" ' . ($request === 1 ? 'disabled' : "data-dispatch='$id'") . '><i class="bi bi-truck-flatbed text-success"></i></button>';
+                        } else if ($cur_location === 'dispatched') {
+                            echo '<button type="button" class="btn btn-sidebar returnbtn border-0" ' . ($request === 1 ? 'disabled' : "data-return='$id'") . '><i class="bi bi-box-arrow-in-left text-info"></i></button>';
+                        }
+                        ?>
+                        <button type="button" id="editbtn" class="btn btn-sidebar editbtn border-0" data-chem="<?= $id ?>"><i
+                                class="bi bi-info-circle"></i></button>
+                    </div>
+                </td>
             </tr>
+
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='4' class='text-center'>Your search does not exist.</td></tr>";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>No items found.</td></tr>";
     }
+    exit();
 }
 
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
-    $sql = "SELECT * FROM chemicals WHERE name LIKE '%" . $search . "%' OR brand LIKE '%" . $search . "%' OR chemLevel LIKE '%" . $search . "%' OR expiryDate LIKE '%" . $search . "%'" ;
+    // $entries = $_GET['entries'];
 
-    $result = mysqli_query($conn, $sql);
+    $sql = "SELECT * FROM chemicals WHERE (id LIKE ? OR name LIKE ? OR brand LIKE ? OR chemLevel LIKE ? OR expiryDate LIKE ?) AND branch = ?";
+
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo "<tr><td scope='row' colspan='7' class='text-center'>Error. Search stmt failed.</td></tr>";
+        exit();
+    }
+    $branch = (int) $_SESSION['branch'];
+
+    $search = "%" . $search . "%";
+    mysqli_stmt_bind_param($stmt, "sssssi", $search, $search, $search, $search, $search, $branch);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $numrows = mysqli_num_rows($result);
     // echo $numrows;   
     if ($numrows > 0) {
@@ -156,20 +236,85 @@ if (isset($_GET['search'])) {
             $brand = $row["brand"];
             $level = $row["chemLevel"];
             $expDate = $row["expiryDate"];
-        ?>
-            <tr>
-                <td scope="row"><?= htmlspecialchars($name) ?></td>
-                <td><?= htmlspecialchars($brand) ?></td>
-                <td><?= htmlspecialchars($level) ?> ml</td>
-                <td><?= htmlspecialchars($expDate) ?></td>
-               
+            $request = (int) $row['request'];
+            $now = date("Y-m-d");
+            $exp = date_create($expDate);
+            $remcom = $row['unop_cont'];
+            $dr = $row['date_received'];
+            $date_received = date_create($dr);
+            $contsize = $row['container_size'];
+            $unit = $row['quantity_unit'];
+            $threshold = $row['restock_threshold'];
+            $opened_container = $level > 0 ? 1 : 0;
+            $cur_location = $row['chem_location'];
+            if ($request === 1) {
+                $location = "Stock Entry";
+            } else if ($cur_location === 'main_storage') {
+                $location = "Main Storage";
+            } else if ($cur_location === 'dispatched') {
+                $location = "Dispatched";
+            } else {
+                $location = "Unknown";
+            }
+            $stock_qty = $remcom + ($level > 0 ? 1 : 0);
+            ?>
+            <tr class="text-center">
+                <td scope="row"><?php
+                if ($cur_location === 'dispatched') {
+                    echo htmlspecialchars("Dispatched Chemical ID: $id");
+                } else {
+                    echo htmlspecialchars($id);
+                }
+                ?></td>
+                <td>
+                    <?php
+                    if ($request === 1) {
+                        ?>
+                        <i class="bi bi-exclamation-diamond text-warning" data-bs-toggle="tooltip" title="Pending Entry"></i><br>
+                        <span class="fw-bold"><?= htmlspecialchars("Item pending for entry: $name ($brand)") ?></span>
+                        <?php
+                    } else {
+                        echo htmlspecialchars("$name ($brand)");
+                    }
+                    ?>
+                </td>
+                <td><?= htmlspecialchars($stock_qty) ?></td>
+                <td>
+                    <?= htmlspecialchars(date_format($date_received, "F j, Y")) ?>
+                </td>
+                <td>
+                    <?php
+                    if ($request === 0) {
+                        if ($stock_qty <= $threshold) {
+                            echo "<span class='bg-warning px-2 py-1 bg-opacity-25 badge rounded-pill'>Running Out</span>";
+                        } else {
+                            echo "<span class='bg-custom-success px-2 py-1 badge rounded-pill'>Good</span>";
+                        }
+                    } else {
+                        echo "<span class='bg-info px-2 py-1 bg-opacity-25 badge rounded-pill'>Pending Entry</span>";
+                    }
+                    ?>
+                </td>
+                <td><?= htmlspecialchars($location) ?></td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <?php
+                        if ($cur_location === 'main_storage') {
+                            echo '<button type="button" class="btn btn-sidebar dispatchbtn border-0" ' . ($request === 1 ? 'disabled' : "data-dispatch='$id'") . '><i class="bi bi-truck-flatbed text-success"></i></button>';
+                        } else if ($cur_location === 'dispatched') {
+                            echo '<button type="button" class="btn btn-sidebar returnbtn border-0" ' . ($request === 1 ? 'disabled' : "data-return='$id'") . '><i class="bi bi-box-arrow-in-left text-info"></i></button>';
+                        }
+                        ?>
+                        <button type="button" id="editbtn" class="btn btn-sidebar editbtn border-0" data-chem="<?= $id ?>"><i
+                                class="bi bi-info-circle"></i></button>
+                    </div>
+                </td>
             </tr>
 
             <?php
         }
     } else {
-        // echo json_encode(['']);
-        echo "<tr><td scope='row' colspan='4' class='text-center'>Your search does not exist.</td></tr>";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>Your search does not exist. {$_SESSION['branch']}</td></tr>";
     }
 }
 ?>

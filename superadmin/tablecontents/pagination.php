@@ -318,6 +318,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
         echo "<tr><td scope='row' colspan='7' class='text-center'>No items found.</td></tr>";
         return false;
     }
+    exit();
 }
 
 if (isset($_GET['search'])) {
