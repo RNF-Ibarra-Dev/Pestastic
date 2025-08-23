@@ -7,7 +7,7 @@ require("startsession.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager - Pestastic Inventory</title>
+    <title>Manager | Pestastic Inventory</title>
     <?php
     include("header.links.php");
     ?>
@@ -32,43 +32,43 @@ require("startsession.php");
             <!-- information container -->
 
 
+            <div class="mx-2 bg-light bg-opacity-25  rounded-3 p-3 shadow">
+                <h1 class="text-center display-6 fw-medium">Welcome back Manager <span class="text-capitalize ">
+                        <?= $_SESSION['saUsn'] . $_SESSION['saID'] ?></span>
+                </h1>
+            </div>
             <div class="row m-2 gap-2">
-                <div class="col-5 bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <h1 class=" display-6 mx-auto">Welcome back Manager <strong style="text-transform: capitalize;">
-                            <?= $_SESSION['saUsn'] . $_SESSION['saID'] ?></strong>
-                    </h1>
-                </div>
-                <div class="col bg-light bg-opacity-25 border rounded p-3 pb-0 shadow">
+                <div class="col bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
                     <div>
                         <div class="clearfix">
                             <i
-                                class="bi bi-clipboard-data fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
-                            <p class="text-center align-text-center fs-3 w-75 mx-auto">
-                                Transactions Status Summary</p>
+                                class="bi bi-clipboard-data-fill  fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
+                            <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
+                                Transactions Status</p>
                         </div>
-                        <canvas id="transPie" width="250" height="
-                        250"></canvas>
-                        <p class="text-muted mt-3">Check <a href="transactions.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
+                        <canvas id="transPie"
+                            style="max-height: 30rem !important;"></canvas>
+                        <p class="text-light fw-light mt-3">Check <a href="transactions.php"
+                                class="color-accent link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
                             to display all transactions.</p>
                     </div>
                 </div>
-                <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
+                <div class="col bg-light bg-opacity-25  rounded-3 p-3 shadow d-flex flex-column">
                     <div class="clearfix">
                         <i
-                            class="bi bi-stopwatch fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
-                        <p class="text-center align-text-center fs-3 w-75 mx-auto">
-                            Pending Transactions</p>
+                            class="bi bi-stopwatch-fill  fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
+                        <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
+                            Pending Status Transactions</p>
                     </div>
-                    <table class="table-hover rounded overflow-hidden table">
-                        <caption class="mt-auto">Check <a href="transactions.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
+                    <table class="table-hover rounded-3 overflow-hidden table my-auto">
+                        <caption class="mt-auto text-light fw-light">Check <a href="transactions.php"
+                                class="color-accent link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
                             for more. Click approve to accept transaction.</caption>
                         <thead>
                             <tr class="text-center">
-                                <th scope="col">ID</th>
-                                <th scope="col">Customer</th>
-                                <th scope="col">View</th>
+                                <th scope="col" class="fs-5 fw-bold">ID</th>
+                                <th scope="col" class="fs-5 fw-bold">Customer</th>
+                                <th scope="col" class="fs-5 fw-bold">View</th>
                             </tr>
                         </thead>
                         <tbody id="pendingtrans" class="text-center align-middle"></tbody>
@@ -77,61 +77,60 @@ require("startsession.php");
             </div>
 
             <div class="row m-2 gap-2">
-
-                <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
+                <div class="col bg-light bg-opacity-25  rounded-3 p-3 shadow">
                     <div class="clearfix">
                         <i
-                            class="ms-2 fs-3 bi bi-clock float-start fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
-                        <p class="text-center fs-3 mx-auto w-75">Pending Item Entries</p>
+                            class="ms-2 fs-3 bi bi-clock-fill  float-start fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
+                        <p class="text-center fs-3 mx-auto w-75 fw-medium">Pending Item Entries</p>
                     </div>
-                    <table class="table-hover rounded overflow-hidden table">
-                        <caption>Recently requested addition of chemicals. Check <a href="itemstock.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
+                    <table class="table-hover rounded-3 overflow-hidden table">
+                        <caption class="fw-light text-light">Recently requested addition of chemicals. Check <a href="itemstock.php"
+                                class="color-accent link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
                             page for more.</caption>
                         <thead>
                             <tr class="text-center">
-                                <th scope="col">Name</th>
-                                <th scope="col">Brand</th>
-                                <th scope="col">Date Received</th>
+                                <th scope="col" class="fs-5 fw-bold">Name</th>
+                                <th scope="col" class="fs-5 fw-bold">Brand</th>
+                                <th scope="col" class="fs-5 fw-bold">Date Received</th>
                             </tr>
                         </thead>
                         <tbody id="pendingchem" class=""></tbody>
                     </table>
                 </div>
-                <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
+                <div class="col bg-light bg-opacity-25  rounded-3 p-3 shadow">
                     <div class="clearfix">
                         <i
-                            class="bi bi-exclamation-circle fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
-                        <p class="text-center fs-3 w-75 mx-auto">Running Out Items</p>
+                            class="bi bi-exclamation-circle  fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
+                        <p class="text-center fw-medium fs-3 w-75 mx-auto">Running Out Items</p>
                     </div>
-                    <table class="table-hover rounded overflow-hidden table">
-                        <caption>Check <a href="itemstock.php?chem=low"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
+                    <table class="table-hover rounded-3 overflow-hidden table">
+                        <caption class="text-light">Check <a href="itemstock.php?chem=low"
+                                class="color-accent link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
                             to see all running out items.</caption>
                         <thead>
                             <tr class="text-center align-middle">
-                                <th scope="col">Item</th>
-                                <th scope="col">Container Left</th>
+                                <th scope="col" class="fw-bold fs-5">Item</th>
+                                <th scope="col" class="fw-bold fs-5">Container Left</th>
                             </tr>
                         </thead>
                         <tbody id="lowchemicals"></tbody>
                     </table>
                 </div>
-                <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
+                <div class="col bg-light bg-opacity-25  rounded-3 p-3 shadow">
                     <div class="clearfix">
                         <i
-                            class="bi bi-arrow-repeat fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
-                        <p class="text-center fs-3 w-75 mx-auto">Finalizing Transactions</p>
+                            class="bi bi-arrow-repeat  fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
+                        <p class="text-center fw-medium fs-3 w-75 mx-auto">Finalizing Transactions</p>
                     </div>
-                    <table class="table-hover rounded overflow-hidden table">
-                        <caption>Check <a href="transaction.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transaction</a>
+                    <table class="table-hover rounded-3 overflow-hidden table">
+                        <caption class="text-light">Check <a href="transaction.php"
+                                class="color-accent link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transaction</a>
                             to review and approve void requests.</caption>
                         <thead>
                             <tr class="text-center align-middle">
-                                <th scope="col">Transaction ID</th>
-                                <th scope="col">Customer Name</th>
-                                <th scope="col">View</th>
+                                <th scope="col" class="fw-bold fs-5">Transaction ID</th>
+                                <th scope="col" class="fw-bold fs-5">Customer Name</th>
+                                <th scope="col" class="fw-bold fs-5">View</th>
                             </tr>
                         </thead>
                         <tbody id="finalizing_table">
@@ -218,7 +217,7 @@ require("startsession.php");
                     labels: [`Pending: ${data[0]}`, `Accepted: ${data[1]}`, `Voided: ${data[2]}`, `Completed: ${data[3]}`, `Cancelled: ${data[4]}`, `Finalizing: ${data[5]}`, `Dispatched: ${data[6]}`],
                     datasets: [{
                         data: [data[0], data[1], data[2], data[3], data[4], data[5], data[6]],
-                        borderWidth: 1,
+                        Width: 1,
                         backgroundColor: [
                             'rgba(255, 255, 255, 0.14)',
                             'rgba(255, 255, 255, 0.28)',

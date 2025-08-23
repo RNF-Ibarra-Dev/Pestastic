@@ -34,6 +34,10 @@ i.text-light,
   color: #fcb217 !important;
 }
 
+.bg-color-accent{
+  background-color: #fcb217 !important;
+}
+
 table {
   min-height: 24rem !important;
 }

@@ -5,8 +5,7 @@
                 class="mx-auto my-2 img-fluid" style="max-height: 5rem">
         </a>
     </div>
-    <hr>
-    <ul class=" navbar-nav align-content-start">
+    <ul class="mt-3 navbar-nav align-content-start">
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 text-light fw-medium fs-5 ps-2 <?= $page == 'index.php' ? 'btn-active' : ''; ?>"
                 href="index.php">
@@ -51,7 +50,7 @@
         </li>
         <!-- <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'equipments.php' ? 'btn-active' : ''; ?>"
-                href="equipments.php">
+                href=".php">
                 <i class="bi bi-tools me-3"></i>
                 <div class="text-light fw-medium fs-5">Equipment</div>
             </a>

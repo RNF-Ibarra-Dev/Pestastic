@@ -37,7 +37,7 @@ if (isset($_SESSION['saUsn'])) {
     <main class="w-100 h-100 d-flex p-4">
         <div class="container border row rounded-end-pill mx-auto my-auto bg-light bg-opacity-25 ps-0 shadow-lg">
             <div class="col d-flex bg-dark bg-opacity-25 flex-column py-2">
-                <p class="fs-2 mb-4 fw-light text-light text-center">Pestastic Inventory Management</p>
+                <p class="fs-1 mb-4 fw-bold text-light text-center">Pestastic Inventory Management</p>
                 <svg id="services_svg__Layer_1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" viewBox="-99 301.8 413 185.6"
                     xml:space="preserve">
