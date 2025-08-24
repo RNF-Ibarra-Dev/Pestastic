@@ -2323,60 +2323,6 @@ require("startsession.php");
 
 
 
-        async function get_chem_log(id) {
-            // console.log(id);
-            return $.ajax({
-                method: 'GET',
-                url: urldata,
-                data: {
-                    chemLog: true,
-                    id: id
-                },
-                dataType: 'json'
-            }).done(async function (data) {
-                console.log(data);
-
-                if (data.success) {
-                    let d = JSON.parse(data.success);
-                    $(".log-chem-id").val(d.id);
-                    $(".chem-name").val(d.name);
-                    // $(".qty-unit").text(' - ' + d.quantity_unit);
-                    $("#main_qty_unit").val(d.quantity_unit);
-
-                    await qty_unit_options(d.quantity_unit, "adjust_qty_unit");
-
-                    $("#adjust-curlevel").text(d.chemLevel + '/' + d.container_size + d.quantity_unit + ' (' + d.unop_cont + ' container/s left.)');
-                    $("#adjust-dispatched").text(d.chem_location === 'dispatched' ? "Item dispatched." : "Item available.");
-
-                    if (!$("#wholecontainercheck").prop('checked')) {
-                        $("#adjust-containerinput").hide();
-                        $("#adjust-containerinput input").prop('disabled', true);
-                        $("#adjust-qty").prop('disabled', false);
-                    }
-                    $('#wholecontainercheck').on('change', function () {
-                        if ($(this).prop('checked')) {
-                            $("#adjust-containerinput").show();
-                            $("#adjust-containerinput input").prop('disabled', false);
-                            $("#adjust-qty").prop('disabled', true);
-                            $("#adjust_qty_unit").prop('disabled', true);
-                        } else {
-                            $("#adjust-containerinput").hide();
-                            $("#adjust-containerinput input").prop('disabled', true);
-                            $("#adjust-qty").prop('disabled', false);
-                            $("#adjust_qty_unit").prop('disabled', false);
-                        }
-                    })
-
-
-                } else {
-                    alert('Unknown Error. Please try again later.');
-                }
-            })
-                .fail(function (e) {
-                    console.log(e);
-                })
-        }
-
         // $(document).on('click', '.log-chem-btn', function () {
         //     let id = $(this).data('chem');
         //     get_chem_log(id);

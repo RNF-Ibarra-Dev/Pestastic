@@ -45,15 +45,6 @@
                             <span class="secondary-body-text fw-light text-muted">Change Password | Change Name</span>
                         </a>
                     </li>
-                    <li class="list-group-item p-0 rounded-bottom-4">
-                        <a href="contents.php"
-                            class="nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center flex-column justify-content-center gap rounded-bottom-4">
-                            <i class="bi bi-gear fs-5 account-settings-icon"></i>
-                            <span class="fs-5">Content</span>
-                            <span class="secondary-body-text fw-light text-muted">Treatments | Customer Problems |
-                                Branches</span>
-                        </a>
-                    </li>
                 </ul>
                 <ul class="list-group">
                     <li class="list-group-item p-0 rounded-4">
@@ -91,7 +82,7 @@
 <script>
     $(document).ready(async function () {
         $.ajax({
-            url: 'tablecontents/notifications.php',
+            url: 'contents/notifications.php',
             method: 'GET',
             dataType: 'json',
             data: {

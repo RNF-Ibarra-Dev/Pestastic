@@ -113,7 +113,7 @@ require("startsession.php");
                 </div>
             </div>
 
-            <div class="hstack gap-2 my-3 mx-3">
+            <div class="hstack gap-2 my-2 mx-3">
                 <button type="button" id="entriesTableBtn"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
                         class="bi bi-clock-fill me-2"></i>Pending Entries</button>
@@ -125,10 +125,157 @@ require("startsession.php");
                         class="bi bi-truck-flatbed me-2"></i>Dispatched Items</button>
                 <input class="form-control form-custom rounded-pill me-auto py-2 px-3 text-light"
                     placeholder="Search . . ." id="searchbar" name="search" autocomplete="one-time-code">
-                <button type="button" id="loadChem"
-                    class="btn btn-sidebar bg-light bg-opacity-25 rounded text-light py-2 px-4" data-bs-toggle="modal"
-                    data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
-                        class="bi bi-plus-square"></i></button>
+
+            </div>
+
+            <!-- edit/view modal (viewonly modal for technician) -->
+            <div class="row g-2 text-dark">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="editModal" tabindex="-1"
+                    aria-labelledby="edit" aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Item Details<span class="text-secondary mx-2">|</span>Edit Item
+                                </h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                        class="bi text-light bi-x"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- <input type="hidden" name="edit" value="edit-chemical"> -->
+                                <input type="hidden" name="edit-id" id="edit-id" class="form-control">
+                                <p
+                                    class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                    Main Item Information</p>
+
+                                <div class="row mb-2">
+
+                                    <div class="col-lg-3 mb-2">
+                                        <label for="edit-name" class="form-label fw-medium">Item Name:</label>
+                                        <input type="text" name="edit-name" id="edit-name"
+                                            class="ps-2 form-control-plaintext" readonly autocomplete="off">
+                                    </div>
+                                    <div class="col-lg-3 mb-2">
+                                        <label for="edit-chemBrand" class="form-label fw-medium">Item
+                                            Brand:</label>
+                                        <input type="text" name="edit-chemBrand" id="edit-chemBrand"
+                                            class="ps-2 form-control-plaintext" readonly autocomplete="off">
+                                    </div>
+                                    <div class="col-lg-2 mb-2">
+                                        <label for="edit-contSize" class="form-label fw-medium">Item
+                                            Size:</label>
+                                        <input type="number" name="edit-containerSize" id="edit-contSize"
+                                            class="form-control-plaintext ps-2" readonly autocomplete="one-time-code">
+                                    </div>
+                                    <div class="col-lg-2 mb-2">
+                                        <label for="view-chemUnit" class="form-label fw-medium">Item
+                                            Unit:</label>
+                                        <p id="view-chemUnit" class=" ps-2"></p>
+                                        <select name="edit-chemUnit" id="edit-chemUnit" class="form-select d-none"
+                                            disabled autocomplete="one-time-code">
+                                            <option value="" selected>Choose Item Unit</option>
+                                            <option value="mg">mg</option>
+                                            <option value="g">g</option>
+                                            <option value="kg">kg</option>
+                                            <option value="mL">mL</option>
+                                            <option value="L">L</option>
+                                            <option value="gal">gal</option>
+                                            <option value="box">Box</option>
+                                            <option value="pc">Piece</option>
+                                            <option value="canister">Canister</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2 mb-2">
+                                        <label for="edit-restockThreshold" class="form-label fw-medium">Restock
+                                            Threshold:</label>
+                                        <input type="number" name="edit-restockThreshold" id="edit-restockThreshold"
+                                            class="form-control-plaintext ps-2" readonly autocomplete="one-time-code">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-3 mb-2">
+                                        <label for="edit-dateReceived" class="form-label fw-medium">Date
+                                            Received:</label>
+                                        <input type="date" name="edit-receivedDate" id="edit-dateReceived"
+                                            class="ps-2 form-control-plaintext form-add form-date" disabled>
+                                    </div>
+                                    <div class="col-3 mb-2">
+                                        <label for="edit-expDate" class="form-label fw-medium">Expiry Date:</label>
+                                        <input type="date" name="edit-expDate" id="edit-expDate"
+                                            class="ps-2 form-control-plaintext form-date" autocomplete="off" disabled>
+                                        <p class="fw-light text-center alert alert-warning py-1 px-3 d-none"
+                                            id="expdatewarning"></p>
+                                    </div>
+                                    <div class="col-3 mb-2">
+                                        <label for="edit-notes" class="form-label fw-medium">Short Note:</label>
+                                        <textarea name="edit-notes" id="edit-notes" style="resize: none !important;"
+                                            class="ps-2 form-control-plaintext" readonly></textarea>
+                                    </div>
+                                </div>
+
+                                <div id="chemState">
+                                    <p
+                                        class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
+                                        Item Count Information</p>
+                                    <div class="row mb-2 user-select-none">
+                                        <div class="col-3">
+                                            <p class="fw-medium mb-2">Opened Item Level:</p>
+                                            <p class="ps-2 mb-2" id="openedContainerLevel"></p>
+                                        </div>
+                                        <div class="col-3">
+                                            <p class="fw-medium mb-2">Closed Item Count:</p>
+                                            <p class="ps-2 mb-2" id="closedContainerCount"></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="col fw-light alert alert-primary py-3 w-50 mx-auto d-none text-center"
+                                    id="reqalert"></p>
+                                <div class="row mb-2">
+                                    <span class="text-body-secondary text-muted" id="addinfo"></span>
+                                    <span class="text-body-secondary text-muted" id="updateinfo"></span>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- edit confirmation -->
+            <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="confirmEdit" tabindex="0"
+                aria-labelledby="verifyChanges" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5" id="verifyChanges">Save Changes</h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal" aria-label="Close"><i
+                                    class="bi bi-x text-light"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-2">
+                                <label for="pass" class="form-label fw-light">Change item information? Enter manager
+                                    <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
+                                <div class="col-lg-6 mb-2">
+                                    <input type="password" name="baPwd" class="form-control" id="pwd">
+                                </div>
+                            </div>
+                            <p class='text-center alert alert-info p-1 py-3 w-50 mx-auto my-0'
+                                style="display: none !important;" id="incPass"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-target="#editModal"
+                                data-bs-toggle="modal">Go back</button>
+                            <button type="submit" class="btn btn-grad" id="saveChanges" disabled-id="edit-confirm"
+                                disabled-name="delete">Edit Item</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <form id="restockForm">
@@ -535,7 +682,7 @@ require("startsession.php");
                                             <div class="col-lg-3 mb-2">
                                                 <label for="adjust-user" class="form-label fw-medium">User:</label>
                                                 <p id="adjust-user" class="mt-1 mb-0 text-capitalize">
-                                                    <?= $_SESSION['fname'] . ' ' . $_SESSION['lname'] ?>
+                                                    <?= $_SESSION['firstName'] . ' ' . $_SESSION['lastName'] ?>
                                                 </p>
                                             </div>
                                             <div class="col-lg-3 mb-2">
@@ -632,7 +779,7 @@ require("startsession.php");
             </div>
 
             <div class="table-responsive-sm d-flex justify-content-center">
-                <table class="table align-middle table-hover m-3 os-table w-100 text-light">
+                <table class="table align-middle table-hover mx-3 my-2 os-table w-100 text-light">
                     <caption class="text-light">Items with <i class="bi bi-exclamation-diamond"></i> are pending for
                         approval by the
                         Manager.</caption>
@@ -783,6 +930,47 @@ require("startsession.php");
             }
         }
 
+        async function loadpagination2(pageno) {
+            try {
+                return $.ajax({
+                    type: 'GET',
+                    url: 'contents/state.pagination.php',
+                    data: {
+                        pagenav: 'true',
+                        active: pageno
+                    },
+                    success: async function (res) {
+                        $('#table2pagination').empty();
+                        $('#table2pagination').append(res);
+                        // window.history.pushState(null, "", "?page=" + pageno);
+                    }
+                });
+
+            } catch (error) {
+                alert(error);
+            }
+        }
+        async function loadpagination3(pageno) {
+            try {
+                return $.ajax({
+                    type: 'GET',
+                    url: 'contents/inv.containerstatus.pagination.php',
+                    data: {
+                        pagenav: 'true',
+                        active: pageno
+                    },
+                    success: async function (res) {
+                        $('#containerReportPagination').empty();
+                        $('#containerReportPagination').append(res);
+                        // window.history.pushState(null, "", "?page=" + pageno);
+                    }
+                });
+
+            } catch (error) {
+                alert(error);
+            }
+        }
+
         async function loadtable(page) {
             try {
                 return $.ajax({
@@ -806,23 +994,85 @@ require("startsession.php");
             }
         }
 
+        async function loadtable2(page) {
+            $.ajax({
+                method: 'GET',
+                url: 'contents/state.pagination.php',
+                data: {
+                    table: 'true',
+                    currentpage: page
+                },
+                dataType: 'html'
+            })
+                .done(async function (d) {
+                    $("#chemStateTable").empty();
+                    $("#chemStateTable").append(d);
+                })
+                .fail(async function (e) {
+                    alert('There was a problem fetching the data of a table. Please try again later.');
+                    console.log(e);
+                })
+        }
+
+        async function loadtable3(page) {
+            $.ajax({
+                method: 'GET',
+                url: 'contents/inv.containerstatus.pagination.php',
+                data: {
+                    table: 'true',
+                    currentpage: page
+                },
+                dataType: 'html'
+            })
+                .done(async function (d) {
+                    $("#containerReportTable").empty();
+                    $("#containerReportTable").append(d);
+                })
+                .fail(async function (e) {
+                    alert('There was a problem fetching the data of a table. Please try again later.');
+                    console.log(e);
+                })
+        }
+
+
         $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
             let currentpage = $(this).data('page');
             await loadpage(currentpage);
         })
 
-        async function loadpage(page) {
+        async function loadpage(page = 1) {
             await loadtable(page);
             await loadpagination(page);
+            await loadpagination2(page);
+            await loadtable2(page);
+            await loadtable3(page);
+            await loadpagination3(page);
+            overview_display();
         }
 
-        async function loadpage(page = 1) {
-            await Promise.all([
-                await loadtable(page),
-                await loadpagination(page)
-            ])
-        }
+        $('#pagination').on('click', '.page-link', async function (e) {
+            e.preventDefault();
+
+            let currentpage = $(this).data('page');
+            await loadtable(currentpage);
+            await loadpagination(currentpage);
+        })
+
+        $('#table2pagination').on('click', '.page-link', async function (e) {
+            e.preventDefault();
+            let currentpage = $(this).data('page');
+            await loadtable2(currentpage);
+            await loadpagination2(currentpage);
+        })
+
+        $('#containerReportPagination').on('click', '.page-link', async function (e) {
+            e.preventDefault();
+            let currentpage = $(this).data('page');
+            await loadtable3(currentpage);
+            await loadpagination3(currentpage);
+        })
+
 
         $(function () {
             let timeout = null;
@@ -863,6 +1113,81 @@ require("startsession.php");
             });
         });
 
+        $(function () {
+            let timeout = null;
+
+            $('#searchChemUsedSummary').keyup(function () {
+                clearTimeout(timeout);
+                $('#chemStateTable').empty();
+                $('#loader2').show();
+
+                timeout = setTimeout(async function () {
+                    var search = $('#searchChemUsedSummary').val();
+                    await $.ajax({
+                        url: "contents/state.pagination.php",
+                        type: 'GET',
+                        dataType: 'html',
+                        data: {
+                            search: search,
+                        }
+                    })
+                        .done(async function (searchChem) {
+                            $('#loader2').attr('style', 'display: none !important;');
+                            if (search !== '') {
+                                $('#table2pagination').hide();
+                                $('#chemStateTable').empty();
+                                $('#chemStateTable').append(searchChem);
+                            } else {
+                                await loadtable2(1);
+                                await loadpagination2(1);
+                                $('#table2pagination').show();
+                            }
+                        })
+                        .fail(function (e) {
+                            $("#chemStateTable").html("<tr><td scope='row' colspan='8' class='text-center'>Search Failed. Please Try again later.</td></tr>")
+                        });
+                }, 250);
+            });
+        });
+
+        $(function () {
+            let timeout = null;
+
+            $('#searchContainerStatus').keyup(function () {
+                clearTimeout(timeout);
+                $('#containerReportTable').empty();
+                $('#containerReportLoader').show();
+
+                timeout = setTimeout(async function () {
+                    var search = $('#searchContainerStatus').val();
+                    await $.ajax({
+                        url: "contents/inv.containerstatus.pagination.php",
+                        type: 'GET',
+                        dataType: 'html',
+                        data: {
+                            search: search,
+                        }
+                    })
+                        .done(async function (searchChem) {
+                            $('#containerReportLoader').attr('style', 'display: none !important;');
+                            if (search !== '') {
+                                $('#containerReportPagination').hide();
+                                $('#containerReportTable').empty();
+                                $('#containerReportTable').append(searchChem);
+                            } else {
+                                await loadtable3(1);
+                                await loadpagination3(1);
+                                $('#containerReportPagination').show();
+                            }
+                        })
+                        .fail(function (e) {
+                            $("#containerReportTable").html("<tr><td scope='row' colspan='8' class='text-center'>Search Failed. Please Try again later.</td></tr>")
+                        });
+                }, 250);
+            });
+        });
+
+
         function get_overview_count(container, branch) {
             $.get(urldata, {
                 count: true,
@@ -889,7 +1214,7 @@ require("startsession.php");
             get_overview_count('out-of-stock');
         }
 
-        
+
 
         async function load_other_table(url, tbody_id, page = 1) {
             try {
@@ -1012,6 +1337,250 @@ require("startsession.php");
                 let currentpage = $(this).data('page');
                 await modal_table_pagination('contents/inv.dispatcheditems.pagination.php', 'dispatchedTable', 'dispatchedTablePagination', currentpage);
             });
+        });
+
+        async function get_chem_details(id) {
+            return $.get(urldata, {
+                id: id,
+                chemDetails: 'true'
+            })
+                .done(function (d, s) {
+                    console.log(d);
+                    return d;
+                })
+                .fail(function (e) {
+                    console.log(e);
+                })
+        }
+
+        let toggled = false;
+
+        function toggle() {
+            $('#submitEdit').toggleClass('d-none');
+            $('#view-chemUnit, #edit-chemUnit, #view-location, #edit-location').toggleClass('d-none');
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount, #edit-restockThreshold').attr('readonly', function (i, a) {
+                return a ? false : true;
+            });
+            $("#edit-expDate, #edit-dateReceived, #edit-chemUnit").attr('disabled', function (i, a) {
+                return a ? false : true;
+            });
+
+            $("#toggleEditBtn").html(function (i, a) {
+                return a.includes('Close Edit') ? 'Edit' : 'Close Edit';
+            });
+            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived, #edit-contSize, #edit-containerCount, #edit-restockThreshold').toggleClass('form-control-plaintext form-control');
+
+            return toggled = toggled ? false : true;
+        }
+
+        $(document).on('click', '.editbtn', async function () {
+            let id = $(this).data('chem');
+            let deets = await get_chem_details(id);
+            var details = JSON.parse(deets);
+
+            $('#submitEdit, #toggleEditBtn').attr('disabled', function () {
+                return details.req == 1 ? true : false;
+            });
+
+            var today = new Date();
+            var exp = new Date(details.expDate);
+            if (exp <= today) {
+                $("#expdatewarning").html('Caution. Item Expired.').toggleClass('d-none');
+            } else {
+                $('#expdatewarning').html('').addClass('d-none');
+            }
+
+            let clocation = 'Not defined';
+            if (details.location == 'main_storage') {
+                clocation = "Main Storage";
+            } else if (details.location == 'dispatched') {
+                clocation = "Dispatched";
+            }
+
+            $("#edit-id").val(details.id);
+            $('#edit-name').val(details.name);
+            $('#edit-chemBrand').val(details.brand);
+            $('#edit-chemLevel').val(details.level);
+            $('#edit-contSize').val(details.container_size);
+            $('#edit-containerCount').val(details.unop_cont);
+            $('#edit-dateReceived').val(details.daterec);
+            $('#edit-expDate').val(details.expDate);
+            $('#edit-notes').val(details.notes);
+            $('#edit-chemUnit').val(details.unit);
+            $('#edit-restockThreshold').val(details.threshold);
+            $('#view-chemUnit').text(details.unit);
+            $('#addinfo').html(function () {
+                return details.addby === 'No Record' ? 'Added at: ' + details.addat : 'Added at: ' + details.addat + ' by ' + details.addby;
+            });
+            $('#updateinfo').html(function () {
+                return details.upby === 'No Update Record' ? 'Updated at: ' + details.upat : 'Updated at: ' + details.upat + ' by ' + details.upby;
+            });
+
+            $("#openedContainerLevel").text(details.level + details.unit);
+            $("#closedContainerCount").text(details.unop_cont + " Container/s");
+
+            let reqAlertStatus = $('#reqalert').hasClass('d-none');
+            let chemstate = $("#chemState").hasClass('d-none');
+            if (details.req == 1) {
+                $('#reqalert').removeClass('d-none').html('This item is pending for approval by the Manager. You can only view the details of this item.').fadeIn(750);
+                $('#chemState').addClass('d-none');
+            } else {
+                if (!reqAlertStatus) {
+                    $('#reqalert').addClass('d-none');
+                }
+                if (chemstate) {
+                    $('#chemState').removeClass('d-none');
+                }
+                $('#reqalert').html('');
+            }
+
+            $('#editModal').modal('show');
+
+        });
+
+        $('#adjust-logtype').on('change', function () {
+            if ($(this).val() === 'other') {
+                $("#ltothers").toggleClass('d-none');
+                $("#ltothers input").prop('disabled', false);
+            } else {
+                if (!$("#ltothers").hasClass('d-none')) {
+                    $("#ltothers").addClass('d-none');
+                    $("#ltothers input").prop('disabled', true);
+                }
+            }
+        });
+
+        async function load_chem_log_history(id, currentpage) {
+            return $.get('contents/inv.itemloghistory.pagination.php', {
+                table: true,
+                chemid: id,
+                currentpage: currentpage
+            })
+                .done(function (data) {
+                    $('#chemicallogmodal .modal-body #chemicalhistorylogtable').empty();
+                    $('#chemicallogmodal .modal-body #chemicalhistorylogtable').append(data);
+                })
+                .fail(function (e) {
+                    console.error(e);
+                    $('#chemicallogmodal .modal-body .tab-pane.fade').html('<p class="text-center text-danger">Error loading item log.</p>');
+                });
+        }
+
+        async function load_item_history_pagination(id, page) {
+            return $.get("contents/inv.itemloghistory.pagination.php", {
+                pagenav: true,
+                active: page,
+                id: id
+            }, function (d) {
+                $("#chem_log_pagination").empty();
+                $("#chem_log_pagination").append(d);
+            }, 'html')
+                .fail(function (e) {
+                    console.log(e);
+                    $('#chem_log_pagination').html('<p class="text-center text-danger">Error loading pagination.</p>');
+                })
+        }
+
+        async function item_history(id, page = 1) {
+            try {
+                await load_chem_log_history(id, page);
+                await load_item_history_pagination(id, page);
+            } catch (e) {
+                console.log(e);
+                alert("An error has occured loading item history. Please try again later.");
+            }
+        }
+
+        async function setup_pagination_event(id) {
+            $("#chem_log_pagination").off('click', '.page-link');
+            $('#chem_log_pagination').on('click', '.page-link', async function (e) {
+                e.preventDefault();
+                let currentpage = $(this).data('page');
+                await item_history(id, currentpage);
+            });
+        }
+
+        async function qty_unit_options(current_unit, select_id) {
+            $.get(urldata, {
+                qty_unit_options: true,
+                current_unit: current_unit
+            },
+                async function (d) {
+                    $(`select#${select_id}`).empty();
+                    $(`select#${select_id}`).append(d);
+                },
+                'html'
+            )
+                .fail(function (e) {
+                    alert("Error in loading quantity unit options. Please refresh the page and try again.");
+                    console.log(e);
+                });
+        }
+
+        async function get_chem_log(id) {
+            return $.ajax({
+                method: 'GET',
+                url: urldata,
+                data: {
+                    chemLog: true,
+                    id: id
+                },
+                dataType: 'json'
+            }).done(async function (data) {
+                // console.log(data);
+
+                if (data.success) {
+                    let d = JSON.parse(data.success);
+                    $(".log-chem-id").val(d.id);
+                    $(".chem-name").val(d.name);
+                    // $(".qty-unit").text(' - ' + d.quantity_unit);
+                    $("#main_qty_unit").val(d.quantity_unit);
+
+                    await qty_unit_options(d.quantity_unit, "adjust_qty_unit");
+
+                    $("#adjust-curlevel").text(d.chemLevel + '/' + d.container_size + d.quantity_unit + ' (' + d.unop_cont + ' container/s left.)');
+                    $("#adjust-dispatched").text(d.chem_location === 'dispatched' ? "Item dispatched." : "Item available.");
+
+                    if (!$("#wholecontainercheck").prop('checked')) {
+                        $("#adjust-containerinput").hide();
+                        $("#adjust-containerinput input").prop('disabled', true);
+                        $("#adjust-qty").prop('disabled', false);
+                    }
+                    $('#wholecontainercheck').on('change', function () {
+                        if ($(this).prop('checked')) {
+                            $("#adjust-containerinput").show();
+                            $("#adjust-containerinput input").prop('disabled', false);
+                            $("#adjust-qty").prop('disabled', true);
+                            $("#adjust_qty_unit").prop('disabled', true);
+                        } else {
+                            $("#adjust-containerinput").hide();
+                            $("#adjust-containerinput input").prop('disabled', true);
+                            $("#adjust-qty").prop('disabled', false);
+                            $("#adjust_qty_unit").prop('disabled', false);
+                        }
+                    })
+
+
+                } else {
+                    alert('Unknown Error. Please try again later.');
+                }
+            })
+                .fail(function (e) {
+                    console.log(e);
+                })
+        }
+
+        $(document).on('click', '.log-chem-btn', async function () {
+            let id = $(this).data('chem');
+            try {
+                await item_history(id);
+                await setup_pagination_event(id);
+                await get_chem_log(id);
+                $('#chemicallogmodal').modal('show');
+
+            } catch (error) {
+                console.error(error);
+            }
         });
 
     </script>

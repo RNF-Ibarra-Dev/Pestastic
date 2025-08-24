@@ -10,7 +10,7 @@ $rowCount = "SELECT
                 brand,
                 quantity_unit AS unit,
                 container_size,
-                (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
+                SUM(unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
                 SUM(CASE
                     WHEN chem_location = 'main_storage' THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
                     ELSE 0
@@ -28,31 +28,10 @@ $rowCount = "SELECT
             GROUP BY
                 name, brand, container_size
             ORDER BY
-                id";
+                name, brand";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
-
-// function row_status($conn, $entries = false)
-// {
-//     $rowCount = "SELECT COUNT(*) FROM chemicals";
-
-//     if ($entries) {
-//         $rowCount .= "  WHERE request = 0;";
-//     } else {
-//         $rowCount .= ";";
-//     }
-
-//     $totalRows = 0;
-//     $result = mysqli_query($conn, $rowCount);
-//     $row = mysqli_fetch_row($result);
-//     $totalRows = $row[0];
-
-//     $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
-
-//     return ['pages' => $totalPages, 'rows' => $totalRows];
-// }
-
 
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
@@ -190,16 +169,13 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 AND expiryDate > NOW()
                 AND branch = {$_SESSION['branch']}
             GROUP BY
-                name, brand, quantity_unit, container_size 
+                name, brand, quantity_unit, container_size
             ORDER BY
                 name, brand
             DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
-
-
-    // echo "<caption class='text-light'>List of all shit.</caption>";
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
@@ -259,7 +235,7 @@ if (isset($_GET['search'])) {
                 brand,
                 quantity_unit AS unit,
                 container_size,
-                (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
+                SUM(unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
                 SUM(CASE
                     WHEN chem_location = 'main_storage' THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
                     ELSE 0
