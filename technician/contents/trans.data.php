@@ -36,11 +36,11 @@ function get_tech($conn, $active = null, $disabled = null)
         $name = $row['firstName'] . ' ' . $row['lastName'];
         $empId = $row['techEmpId'];
 
-?>
+        ?>
         <option value="<?= $id ?>" <?= $id == $active ? 'selected' : '' ?><?= $id == $disabled ? 'disabled' : '' ?>>
             <?= $name . ' | Technician ' . $empId ?>
         </option>
-    <?php
+        <?php
     }
 }
 function get_chem($conn, $active = null, $disabled = null)
@@ -63,11 +63,11 @@ function get_chem($conn, $active = null, $disabled = null)
         $brand = $row['brand'];
         $name = $row['name'];
         $level = $row['chemLevel'];
-    ?>
-        <option value="<?= $id ?>" <?= $level <= 0 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?> <?= $id == $disabled ? 'disabled' : '' ?>>
+        ?>
+        <option value="<?= $id ?>" <?= $level <= 0 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?>         <?= $id == $disabled ? 'disabled' : '' ?>>
             <?= $name . " | " . $brand . " | " . $level . "ml " . $id ?>
         </option>
-    <?php
+        <?php
     }
 }
 
@@ -85,11 +85,11 @@ function get_prob($conn, $checked = null, $disabled = null)
     while ($row = mysqli_fetch_assoc($result)) {
         $id = $row['id'];
         $problem = $row['problems'];
-    ?>
+        ?>
         <input type="checkbox" value="<?= $id ?>" name="pest_problems[]" class="btn-check" id="add-<?= $id ?>"
-            autocomplete="off" <?= in_array($problem, $checked) ? 'checked' : '' ?> <?= $id == $disabled ? 'disabled' : '' ?>>
+            autocomplete="off" <?= in_array($problem, $checked) ? 'checked' : '' ?>         <?= $id == $disabled ? 'disabled' : '' ?>>
         <label class="btn" for="add-<?= $id ?>"><?= $problem ?></label>
-    <?php
+        <?php
     }
 }
 
@@ -110,7 +110,7 @@ if (isset($_GET['row']) && $_GET['row'] == 'tech') {
 
     if ($numRows > 0) {
 
-    ?>
+        ?>
         <div class="mb-3 inline-flex row" id="techRow">
             <div class="col-lg-6 d-flex">
                 <select id="edit-technicianName" name="addTechnician[]" class="form-select me-2"
@@ -124,16 +124,16 @@ if (isset($_GET['row']) && $_GET['row'] == 'tech') {
             </div>
 
         </div>
-    <?php
+        <?php
 
         mysqli_stmt_close($stmt);
         exit();
     } else {
-    ?>
+        ?>
         <div class="mb-2 d-inline-flex w-50" id="techRow-">
             <p class="fw-light text-muted">Technicians do not exist. Please contact the developer.</p>
         </div>
-    <?php
+        <?php
         mysqli_stmt_close($stmt);
         exit();
     }
@@ -168,7 +168,7 @@ if (isset($_GET['row']) && $_GET['row'] === 'chem') {
         </div>
 
     </div>
-<?php
+    <?php
     exit();
 }
 
@@ -192,12 +192,12 @@ if (isset($_GET['fetchdetails']) && $_GET['fetchdetails'] == 'true') {
         mysqli_stmt_close($stmt);
     } else {
         http_response_code(400);
-        echo json_encode(['error'=> 'NO RETURNED ROW']);
+        echo json_encode(['error' => 'NO RETURNED ROW']);
         mysqli_stmt_close($stmt);
     }
 }
 
-if (isset($_GET['fetch']) && $_GET['fetch'] === 'technicians'){
+if (isset($_GET['fetch']) && $_GET['fetch'] === 'technicians') {
     $transId = $_GET['transId'];
 
     $sql = "SELECT * FROM transaction_technicians WHERE trans_id = ?;";
@@ -303,3 +303,146 @@ if (isset($_GET['fetch']) && $_GET['fetch'] == 'chemical') {
     }
 }
 
+if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] === 'finalize' || $_GET['getChem'] === 'complete' || $_GET['getChem'] === 'dispatch')) {
+    $transId = $_GET['transId'];
+    $status = $_GET['status'];
+
+    $sql = "SELECT * FROM transaction_chemicals WHERE trans_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'stmt', 'message' => mysqli_stmt_error($stmt)]);
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $transId);
+    mysqli_stmt_execute($stmt);
+    $results = mysqli_stmt_get_result($stmt);
+    $numRows = mysqli_num_rows($results);
+
+
+    if ($numRows > 0) {
+        while ($row = mysqli_fetch_assoc($results)) {
+            $id = $row['chem_id'];
+            $amtUsed = $row['amt_used'];
+            $unit = get_unit($conn, $id);
+
+            ?>
+            <div class="row" id="row-<?= $id ?>">
+                <div class="col-lg-4 mb-2">
+                    <label for="edit-chemBrandUsed-<?= $id ?>" class="form-label fw-light">Chemical
+                        Used:</label>
+                    <select id="edit-chemBrandUsed-<?= $id ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
+                        <?php get_chem_edit($conn, $id); ?>
+                    </select>
+                </div>
+
+                <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
+                    <div class="d-flex flex-column">
+                        <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
+                            id="edit-amountUsed-label">Amount:</label>
+                        <input type="number" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $id ?>"
+                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>"
+                            <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
+                    </div>
+                    <span class="form-text mt-auto mx-3 mb-2">
+                        <?= $unit ?>
+                    </span>
+                    <button type="button" data-row-id="<?= $id ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
+                            class="bi bi-dash-circle text-light"></i></button>
+                </div>
+
+            </div>
+            <?php
+        }
+        mysqli_stmt_close($stmt);
+        exit();
+    } else {
+        $idd = uniqid();
+        ?>
+        <p class="alert alert-warning py-2 text-center fw-light w-75 mx-auto">This transaction has no chemicals set. Chemical
+            might be deleted.</p>
+        <div class="row" id="row-<?= $idd ?>">
+            <div class="col-lg-4 mb-2">
+                <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
+                    Used:</label>
+                <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
+                    <?php get_chem($conn); ?>
+                </select>
+            </div>
+
+            <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
+                <div class="d-flex flex-column">
+                    <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light"
+                        id="edit-amountUsed-label">Amount:</label>
+                    <input type="number" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $idd ?>"
+                        class="form-control form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
+                </div>
+                <span class="form-text mt-auto mx-3 mb-2">
+                    -
+                </span>
+                <button type="button" data-row-id="<? $idd ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
+                        class="bi bi-dash-circle text-light"></i></button>
+            </div>
+        </div>
+        <?php
+        mysqli_stmt_close($stmt);
+        exit();
+    }
+}
+
+
+if (isset($_GET['notes']) && $_GET['notes'] === 'true') {
+    $id = $_GET['id'];
+
+    $sql = "SELECT notes FROM transactions WHERE id = ? AND branch = {$_SESSION['branch']};";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "stmt failed";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if ($row = mysqli_fetch_row($result)) {
+        http_response_code(200);
+        echo json_encode(['notes' => $row]);
+        exit();
+    }
+}
+
+if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
+
+    $status = (string) $_GET['status'];
+
+    $idd = uniqid();
+    ?>
+    <div class="row" id="row-<?= $idd ?>">
+        <div class="col-lg-4 mb-2">
+            <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
+                Used:</label>
+            <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
+                <?php get_chem($conn); ?>
+            </select>
+        </div>
+
+        <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
+            <div class="d-flex flex-column">
+                <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light">Amount:</label>
+                <input type="number" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $idd ?>"
+                    class="form-control form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? '' : 'disabled' ?>>
+            </div>
+            <!-- change this line to select -->
+            <span class="form-text mt-auto ms-2 mb-2">
+                -
+            </span>
+            <button type="button" data-row-id="<?= $idd ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
+                    class="bi bi-dash-circle text-light"></i></button>
+        </div>
+    </div>
+    <?php
+    exit();
+}

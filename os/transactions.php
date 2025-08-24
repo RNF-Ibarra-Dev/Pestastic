@@ -142,7 +142,7 @@
             <div class="table-responsive-sm d-flex justify-content-center">
                 <table class="table align-middle table-hover m-3 mt-2 os-table w-100 text-light">
                     <caption class="text-light text-muted">List of all transactions. For easy transaction progress,
-                        click the status badges..</caption>
+                        click the status badges.</caption>
                     <thead class="text-center">
                         <tr>
                             <th scope="row">Transaction ID</th>
@@ -2998,8 +2998,8 @@
             let status = $("#sortstatus option:selected").val();
 
             let currentpage = $(this).data('page');
-            console.log(currentpage);
-            window.history.pushState(null, "", "?page=" + currentpage);
+            // console.log(currentpage);
+            // window.history.pushState(null, "", "?page=" + currentpage);
             await loadpage(currentpage, status);
         });
 

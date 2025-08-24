@@ -183,10 +183,10 @@ function get_chem($conn, $active = null)
         <?php
     }
 }
-function get_chem_edit($conn, $active = null)
+function get_chem_edit($conn, $active = 0)
 {
-    $active = $active == null ? '' : $active;
-    $sql = 'SELECT * FROM chemicals WHERE request = 0 AND chemLevel > 0 ORDER BY id DESC;';
+    $active = $active === 0 ? 0 : (int) $active;
+    $sql = "SELECT * FROM chemicals WHERE branch = {$_SESSION['branch']} ORDER BY id DESC;";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -198,22 +198,22 @@ function get_chem_edit($conn, $active = null)
     echo "<hr class='dropdown-divider'>";
 
     while ($row = mysqli_fetch_assoc($result)) {
-        $id = $row['id'];
+        $id = (int) $row['id'];
         $brand = $row['brand'];
         $name = $row['name'];
         $level = $row['chemLevel'];
-        $req = $row['request'];
+        $req = (int) $row['request'];
         $unit = $row['quantity_unit'];
         ?>
-        <option value="<?= htmlspecialchars($id) ?>" <?= $id == $active ? 'selected' : '' ?>>
-            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level$unit") ?>
+        <option value="<?= htmlspecialchars($id) ?>" <?= $id === $active ? 'selected' : '' ?>>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level $unit") . ' ' . ($req === 1 ? '(Under Review)' : '') ?>
         </option>
         <?php
     }
 }
-function get_more_chem($conn, $status): void
+function get_more_chem($conn, $status = '')
 {
-    $sql = 'SELECT * FROM chemicals';
+    $sql = "SELECT * FROM chemicals WHERE branch = {$_SESSION['branch']}";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {

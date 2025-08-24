@@ -11,11 +11,6 @@ require("startsession.php");
     <title>Technician | Transactions</title>
     <?php include('header.links.php'); ?>
 
-    <style>
-        select option {
-            background: rgb(17 71 84);
-        }
-    </style>
 </head>
 
 <body class="bg-official text-light">
@@ -29,38 +24,141 @@ require("startsession.php");
             <?php include('navbar.php'); ?>
             <!-- content -->
 
-            <div class="hstack gap-3 mt-3 mx-4">
-                <input class="form-control form-custom me-auto p-2 text-light" type="search"
-                    placeholder="Search transactions. . ." id="searchbar" autocomplete="one-time-code">
-                <div class="vr"></div>
-                <select class="form-select select-transparent text-light w-25"
-                    style="background: transparent !important;" id="sortstatus" aria-label="Default select example">
-                    <option value='' selected>Status</option>
+            <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2 ">
+                <h1 class="display-6 text-light mb-0 fw-medium text-center">Manage Transactions</h1>
+            </div>
+            <div class="d-flex gap-2 my-2 mx-3 user-select-none text-center">
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-alarm-fill bg-warning bg-opacity-75 pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">Pending</p>
+                    </div>
+                    <p class="fw-light mb-0 ">Pending transactions that needs to be approved by either Operations
+                        Supervisor or Manager.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_pending"></p>
+                </div>
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-clipboard-check-fill bg-custom-success bg-opacity-25 pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">
+                            Accepted
+                        </p>
+                    </div>
+                    <p class=" mb-0 ">Accepted transactions that is at standby until dispatched at a
+                        specific date.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_accepted"></p>
+                </div>
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-truck-flatbed  bg-warning bg-opacity-50 pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">
+                            Dispatched
+                        </p>
+                    </div>
+                    <p class=" mb-0 ">Transactions that are currently being carried out.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_dispatched"></p>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-calendar2-check-fill  bg-info bg-opacity-50 pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">
+                            Completed
+                        </p>
+                    </div>
+                    <p class=" mb-0 ">Reviewed and approved as finished.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_completed"></p>
+                </div>
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-clipboard-x-fill  bg-danger bg-opacity-50 pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">
+                            Voided
+                        </p>
+                    </div>
+                    <p class=" mb-0 ">Voided transactions cancelled due to a specific cause.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_voided"></p>
+                </div>
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-arrow-repeat  bg-primary bg-opacity-50 pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">
+                            Finalizing
+                        </p>
+                    </div>
+                    <p class=" mb-0 ">Transactions marked done by Technicians.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_finalizing"></p>
+                </div>
+                <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
+                    <div class="clearfix">
+                        <i
+                            class="float-start bi bi-calendar2-x-fill  bg-secondary pt-1 pb-2 px-4 rounded-pill shadow-sm "></i>
+                        <p class="fs-5 fw-bold mx-auto w-50 mb-0">
+                            Cancelled
+                        </p>
+                    </div>
+                    <p class=" mb-0 ">Cancelled transaction schedules.</p>
+                    <p class="fs-4 fw-bold mb-0 mt-auto" id="count_cancelled"></p>
+                </div>
+
+            </div>
+
+            <div class="hstack gap-2 mt-2 mx-3">
+                <select
+                    class="form-select select-transparent bg-light bg-opacity-25 rounded py-2 border-0 h-100 text-light w-25 "
+                    id="sortstatus" aria-label="Default select example">
+                    <option value='' selected>Show All Status</option>
                     <option value="Pending">Pending</option>
                     <option value="Accepted">Accepted</option>
+                    <option value="Dispatched">Dispatched</option>
+                    <option value="Finalizing">Finalizing</option>
                     <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
                     <option value="Voided">Voided</option>
                 </select>
-                <button type="button" id="logtransbtn" class="btn btn-sidebar text-light py-3 px-4"
-                    data-bs-toggle="modal" data-bs-target="#logtransactions"><i class="bi bi-plus-square"></i></button>
+                <input class="form-control form-custom me-auto py-2 align-middle px-3 rounded-pill text-light "
+                    placeholder="Search transactions . . ." id="searchbar" name="searchTrans"
+                    autocomplete="one-time-code">
+                <button type="button" id="recentlyCompleted" data-bs-target="#finalizetransactionmodal"
+                    data-bs-toggle="modal"
+                    class="btn w-50 rounded btn-sidebar bg-light bg-opacity-25 border-0 text-light py-2 px-1 "><i
+                        class="bi bi-calendar2-check me-2"></i>Finalizing Transactions</button>
+                <button type="button" id="requestvoidbtn" data-bs-target="#requestedvoidtransactions"
+                    data-bs-toggle="modal"
+                    class="btn w-50 rounded btn-sidebar bg-light bg-opacity-25 border-0 text-light py-2 px-1 "><i
+                        class="bi bi-file-earmark-x me-2"></i>Requested Void Transactions</button>
+                <div class="vr"></div>
+                <button type="button" id="addbtn" title="Add Transaction"
+                    class="btn btn-sidebar rounded border-0 bg-light bg-opacity-25 text-light py-2 px-3 "
+                    disabled-data-bs-toggle="modal" disabled-data-bs-target="#addModal"><i
+                        class="bi bi-file-earmark-plus"></i></button>
             </div>
+
 
             <!-- table -->
             <div class="table-responsive-sm d-flex justify-content-center">
-                <table class="table text-center align-middle table-hover m-4 os-table w-100 text-light">
-                    <thead>
+                <table class="table align-middle table-hover m-3 mt-2 os-table w-100 text-light">
+                    <caption class="text-light text-muted">List of all transactions. For easy transaction progress,
+                        click the status badges.</caption>
+                    <thead class="text-center">
                         <tr>
-                            <th scope="col">Transaction ID</th>
+                            <th scope="row">Transaction ID</th>
+                            <th>Customer Name</th>
                             <th>Treatment Date</th>
                             <th>Treatment</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-
-                    <tbody id="inventorytable">
-                        <!-- ajax chem table -->
-                    </tbody>
+                    <!-- table -->
+                    <tbody id="table"></tbody>
                 </table>
             </div>
 
@@ -232,6 +330,74 @@ require("startsession.php");
                 </div>
             </form>
 
+            <!-- finalizing shortcut -->
+            <form id="finalizeForm">
+                <input type="hidden" name="finalizeid" id="finalizeid">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="finalizeModal" tabindex="-1"
+                    aria-labelledby="create" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Finalize Transaction</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                        class="bi text-light bi-x"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="p-0 m-0 mb-2" id="finalize-chemBrandUsed"></div>
+                                <button type="button" id="finalize-addMoreChem"
+                                    class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
+                                    <p class="fw-light m-0 me-2">Add Chemical</p><i
+                                        class="bi bi-plus-circle text-light"></i>
+                                </button>
+
+                                <label for="finalizenotes" class="fw-light my-2">Note:</label>
+                                <textarea name="note" class="form-control w-50" id="finalizeNotes" cols="1"
+                                    placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
+                                <button type="button" data-bs-target="#finalconfirm" data-bs-toggle="modal"
+                                    class="btn btn-grad">Proceed</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="finalconfirm" tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Finalize Transaction Confirmation</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="finalizing-inputpwd" class="form-label fw-light">Confirm Finalizing
+                                        this transaction?
+                                        Enter Operation Supervisor
+                                        <?= $_SESSION['username'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="baPwd" class="form-control w-75"
+                                            id="finalizing-inputpwd">
+                                    </div>
+                                </div>
+                                <p class="text-body-secondary fw-light">Note. This will only be set to finalizing status
+                                    and is
+                                    up for review yet.</p>
+                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                    id="finalizingAlert">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#finalizeModal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Finalize</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
 
             <!-- details modal -->
             <div class="modal modal-lg fade text-dark modal-edit" id="details" tabindex="-1" aria-labelledby="create"
@@ -349,8 +515,8 @@ require("startsession.php");
                 });
 
                 if (table) {
-                    $('#inventorytable').empty();
-                    $('#inventorytable').append(table);
+                    $('#table').empty();
+                    $('#table').append(table);
                 }
             } catch (error) {
                 alert('refresh');
@@ -380,20 +546,12 @@ require("startsession.php");
             }
         }
 
-        $('#pagination').on('click', '.page-link', async function(e) {
+        $('#pagination').on('click', '.page-link', async function (e) {
             e.preventDefault();
             let status = $("#sortstatus option:selected").val();
             let currentpage = $(this).data('page');
-            console.log(currentpage);
-
-            // $('#chemicalTable').empty();
-            window.history.pushState(null, "", "?page=" + currentpage);
-            // await load_paginated_table(currentpage);
-
-            // $('#pagination').empty();
-            // await loadpagination(currentpage);
             await loadpage(currentpage, status);
-        })
+        });
 
         async function loadpage(defpage = 1, status = '') {
             await load_table(defpage, status);
@@ -403,24 +561,24 @@ require("startsession.php");
 
         // console.log(status);
 
-        $("#sortstatus").on('change', async function() {
+        $("#sortstatus").on('change', async function () {
             let status = $("#sortstatus option:selected").val();
             $("#searchbar").val('');
             if (status != '') {
                 await loadpage(1, status);
-            } else{
+            } else {
                 await loadpage();
             }
         })
 
 
-        $(document).ready(async function() {
+        $(document).ready(async function () {
             await loadpage();
         });
 
         // modal related data fetch
 
-        $(document).on('click', '#logtransbtn', async function() {
+        $(document).on('click', '#logtransbtn', async function () {
             try {
                 const load = await Promise.all([
                     await fetch_something('addTechnician', 'tech'),
@@ -460,10 +618,10 @@ require("startsession.php");
             }
         }
 
-        $(document).on('click', '#addMoreTech', async function() {
+        $(document).on('click', '#addMoreTech', async function () {
             await add_row('addTechContainer', 'tech');
         })
-        $(document).on('click', '#addMoreChem', async function() {
+        $(document).on('click', '#addMoreChem', async function () {
             await add_row('add-chemContainer', 'chem', null);
         })
 
@@ -511,26 +669,26 @@ require("startsession.php");
             }
         }
 
-        $(document).on('click', '#deleterow', async function() {
+        $(document).on('click', '#deleterow', async function () {
             let row = $(this).closest('div.row');
             row.remove();
             // $(this).parent().remove();
             console.log('tech row removed');
         })
 
-        $(document).on('click', '#deleteChemRow', async function() {
+        $(document).on('click', '#deleteChemRow', async function () {
             let row = $(this).closest('div.row');
             row.remove();
             console.log('chem row removed');
         })
 
-        $('#logtransaction').on('shown.bs.modal', function() {
+        $('#logtransaction').on('shown.bs.modal', function () {
             $('#add-technicianName').prop('disabled', true);
         })
 
         // submit log
         const submit = "contents/trans.submit.php";
-        $('#logtransaction').on('submit', async function(e) {
+        $('#logtransaction').on('submit', async function (e) {
             // $('#add-technicianName').prop('disabled', false);
             e.preventDefault();
             const data = $(this).serializeArray();
@@ -561,7 +719,7 @@ require("startsession.php");
 
         // details
 
-        $(document).on('click', '#tableDetails', async function(e) {
+        $(document).on('click', '#tableDetails', async function (e) {
             e.preventDefault();
             let transId = $(this).data('trans-id');
             await view_details(transId);
@@ -633,15 +791,15 @@ require("startsession.php");
 
 
         // search
-        $(function() {
+        $(function () {
             let delay = null;
 
-            $('#searchbar').keyup(function() {
+            $('#searchbar').keyup(function () {
                 clearTimeout(delay);
                 $('#table').empty();
                 $('#loader').removeClass('visually-hidden');
 
-                delay = setTimeout(async function() {
+                delay = setTimeout(async function () {
                     var search = $('#searchbar').val();
                     var sort = $('#sortstatus').val();
                     try {
@@ -656,9 +814,10 @@ require("startsession.php");
                         });
                         if (searchtransaction) {
                             if (!search == '') {
-                                $('#inventorytable').empty();
+                                $('#table').empty();
                                 $('#loader').addClass('visually-hidden');
-                                $('#inventorytable').append(searchtransaction);
+                                $('#table').append(searchtransaction);
+                                $('#pagination').empty();
                             } else {
                                 $('#loader').addClass('visually-hidden');
                                 await loadpage(1, sort);
@@ -670,6 +829,82 @@ require("startsession.php");
                 }, 250);
             });
 
+        });
+
+        $(document).ready(function () {
+            $('#table').on('mouseenter', '.dispatched-btn', function () {
+                $(this).html('Finalize Transaction');
+            });
+            $('#table').on('mouseleave', '.dispatched-btn', function () {
+                $(this).html('Dispatched');
+            });
+            $('#table').on('mouseenter', '.cancel-btn', function () {
+                $(this).html('Reschedule');
+            });
+            $('#table').on('mouseleave', '.cancel-btn', function () {
+                $(this).html('Cancelled');
+            });
+        });
+
+        async function get_chemical_brand(method, transId = null, status = null) {
+            try {
+                const brand = await $.ajax({
+                    type: 'GET',
+                    url: dataurl,
+                    data: {
+                        getChem: method,
+                        transId: transId,
+                        status: status
+                    }
+                });
+
+                if (brand) {
+                    $(`#${method}-chemBrandUsed`).empty();
+                    $(`#${method}-chemBrandUsed`).append(brand);
+                }
+            } catch (error) {
+                alert('get chem: ' + error);
+            }
+        }
+
+
+
+        $("#table").on('click', '.dispatched-btn', async function () {
+            let id = $(this).data('dispatched-id');
+            console.log(id);
+            $("#finalizeid").val(id);
+            await get_chemical_brand('finalize', id, "Dispatched");
+            $.get(dataurl, {
+                notes: true,
+                id: id
+            }, function (d) {
+                $("#finalizeNotes").val(d.notes);
+            }, 'json')
+                .fail(function (e) {
+                    console.log(e);
+                })
+            $("#finalizeModal").modal('show');
+        });
+
+        $("#finalizeForm").on('click', "#finalize-addMoreChem", function () {
+            $.get(dataurl, {
+                addrow: 'true',
+                status: 'Finalizing'
+            }, function (data) {
+                $("#finalize-chemBrandUsed").append(data);
+                // console.log(data);
+            }, 'html');
+
+        });
+        $("#finalizeForm").on('click', '#finalize-chemBrandUsed button', async function () {
+            let row = $(this).closest('div.row');
+            let length = $('#finalize-chemBrandUsed').children('.row').length;
+            if (length === 1) {
+                alert('One or more chemicals are required in order to proceed.');
+                // console.log($('#finalize-chemBrandUsed'));
+            } else {
+                row.remove();
+            }
         });
     </script>
 </body>
