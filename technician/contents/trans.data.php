@@ -172,6 +172,131 @@ if (isset($_GET['row']) && $_GET['row'] === 'chem') {
     exit();
 }
 
+if (isset($_GET['details']) && $_GET['details'] === 'true') {
+    $id = htmlspecialchars($_GET['transId']);
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'id', 'message' => 'Invalid ID.']);
+        exit();
+    }
+    $response = [];
+
+    $sql = "SELECT * FROM transactions WHERE id = ? AND branch = {$_SESSION['branch']};";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'stmt', 'message' => mysqli_stmt_error($stmt)]);
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    // $array = mysqli_fetch_array($result);
+
+    if ($row = mysqli_fetch_assoc($result)) {
+        $response = $row;
+        $ttime = strtotime($row['transaction_time']);
+        $tdate = strtotime($row['treatment_date']);
+        $pstart = strtotime($row['pack_start']);
+        $pend = strtotime($row['pack_exp']);
+        $trans_time = date("H:i A", $ttime);
+        $trans_date = date("F j, Y", $tdate);
+        $package_start = date("F j, Y", $pstart);
+        $package_end = date("F j, Y", $pend);
+        $response['trans_time'] = $trans_time;
+        $response['trans_date'] = $trans_date;
+        $response['package_start'] = $package_start;
+        $response['package_end'] = $package_end;
+        echo json_encode(['success' => $response]);
+        mysqli_stmt_close($stmt);
+    } else {
+        echo json_encode(['type' => 'array', 'message' => 'array error']);
+        mysqli_stmt_close($stmt);
+        exit();
+    }
+    exit();
+}
+
+if (isset($_GET['treatmentname']) && $_GET['treatmentname'] === 'true') {
+    $id = $_GET['id'];
+    $sql = "SELECT t_name FROM treatments WHERE id = $id";
+    $res = mysqli_query($conn, $sql);
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
+            return $row['t_name'];
+        }
+    } else {
+        return "Invalid ID.";
+    }
+}
+
+if (isset($_GET['packagename']) && $_GET['packagename'] === 'true') {
+    $id = $_GET['id'];
+
+    if ($id == 'none') {
+        echo "No Valid Package.";
+        exit();
+    }
+
+    if (!ctype_digit($id)) {
+        http_response_code(400);
+        return "Invalid ID.";
+    }
+
+    $sql = "SELECT * FROM packages WHERE id = $id AND branch = {$_SESSION['branch']};";
+    $res = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
+            $id = $row['id'];
+            $name = $row['name'];
+            $sessions = $row['session_count'];
+            $warranty = $row['year_warranty'];
+
+            echo htmlspecialchars($name) . ' ' . htmlspecialchars($sessions) . ' Sessions w/ ' . htmlspecialchars($warranty) . ' years warranty.';
+            exit();
+        }
+    } else {
+        echo "No Valid Package.";
+        exit();
+    }
+}
+
+if (isset($_GET['getTechList']) && $_GET['getTechList'] == 'true') {
+    $transId = $_GET['transId'];
+
+    $sql = "SELECT * FROM transaction_technicians WHERE trans_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'stmt', 'message' => mysqli_stmt_error($stmt)]);
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $transId);
+    mysqli_stmt_execute($stmt);
+    $results = mysqli_stmt_get_result($stmt);
+    $numRows = mysqli_num_rows($results);
+
+    if ($numRows > 0) {
+        while ($row = mysqli_fetch_assoc($results)) {
+            $technician = $row['tech_info'];
+
+            ?>
+            <li class="list-group-item"><?= $technician ?></li>
+            <?php
+        }
+        mysqli_stmt_close($stmt);
+        exit();
+    } else {
+        ?>
+        <li class="list-group-item">Technician not set. Please contact administration.</li>
+        <?php
+        mysqli_stmt_close($stmt);
+        exit();
+    }
+}
+
 if (isset($_GET['fetchdetails']) && $_GET['fetchdetails'] == 'true') {
     $transId = $_GET['transId'];
     $sql = "SELECT * FROM transactions WHERE id = ?;";
@@ -263,6 +388,35 @@ if (isset($_GET['fetch']) && $_GET['fetch'] === 'pestproblems') {
         <?php
         mysqli_stmt_close($stmt);
         exit();
+    }
+}
+
+function get_chem_edit($conn, $active = 0)
+{
+    $active = $active === 0 ? 0 : (int) $active;
+    $sql = "SELECT * FROM chemicals WHERE branch = {$_SESSION['branch']} ORDER BY id DESC;";
+    $result = mysqli_query($conn, $sql);
+
+    if (!$result) {
+        echo 'Error fetching chem data' . mysqli_error($conn);
+        return;
+    }
+
+    echo "<option value='#' selected>Select Chemical</option>";
+    echo "<hr class='dropdown-divider'>";
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $id = (int) $row['id'];
+        $brand = $row['brand'];
+        $name = $row['name'];
+        $level = $row['chemLevel'];
+        $req = (int) $row['request'];
+        $unit = $row['quantity_unit'];
+        ?>
+        <option value="<?= htmlspecialchars($id) ?>" <?= $id === $active ? 'selected' : '' ?>>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level $unit") . ' ' . ($req === 1 ? '(Under Review)' : '') ?>
+        </option>
+        <?php
     }
 }
 
@@ -445,4 +599,183 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
     </div>
     <?php
     exit();
+}
+
+if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
+    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing' AND branch = {$_SESSION['branch']} ORDER BY updated_at DESC LIMIT 5;";
+    $result = mysqli_query($conn, $sql);
+    $rows = mysqli_num_rows($result);
+
+    if ($rows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $customerName = $row['customer_name'];
+            $treatmentDate = $row['treatment_date'];
+            $td = date('F j, Y', strtotime($treatmentDate));
+            $updatedat = $row['updated_at'];
+            $ua = date("h:i A", strtotime($updatedat));
+            $request = $row['void_request'];
+            $upby = $row['updated_by'];
+            $cby = $row['created_by'];
+            ?>
+            <tr class="text-center">
+                <td class="text-dark" scope="row"><button type="button" class="btn btn-sidebar text-dark finalize-peek-trans-btn"
+                        data-trans-id="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></button></td>
+                <td class="text-dark"><?= htmlspecialchars($customerName) ?></td>
+                <td class="text-dark"><?= htmlspecialchars($td) ?></td>
+                <td class="text-dark">
+                    <?= $upby === "No User" && $cby === "No User" ? htmlspecialchars("No Recorded User.") : ($upby === $cby ? htmlspecialchars($upby) : ($upby !== 'No User' ? htmlspecialchars($upby) : htmlspecialchars($cby))) ?>
+                </td>
+                <td class="text-dark"><?= htmlspecialchars($ua) ?></td>
+            </tr>
+
+
+            <?php
+        }
+    } else {
+        echo "<tr><td scope='row' colspan='6' class='text-center text-dark'>No finalizing transactions.</td></tr>";
+    }
+}
+
+if (isset($_GET['voidrequest']) && $_GET['voidrequest'] === 'true') {
+    $sql = "SELECT * FROM transactions WHERE void_request = 1 AND branch = {$_SESSION['branch']} ORDER BY updated_at DESC;";
+    $result = mysqli_query($conn, $sql);
+    $rows = mysqli_num_rows($result);
+
+    if ($rows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $customerName = $row['customer_name'];
+            $treatmentDate = $row['treatment_date'];
+            $td = date('F j, Y', strtotime($treatmentDate));
+            $request = $row['void_request'];
+            $upby = $row['updated_by'];
+            $cby = $row['created_by'];
+            $requested_at = $row['updated_at'];
+            $ra = date('F j, Y h:i A', strtotime($requested_at));
+            ?>
+            <tr class="text-center">
+                <td class="text-dark" scope="row"><button type="button" class="btn btn-sidebar text-dark check-void-req-btn"
+                        data-trans-id="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></button></td>
+                <td class="text-dark"><?= htmlspecialchars($customerName) ?></td>
+                <td class="text-dark"><?= htmlspecialchars($upby) ?></td>
+                <td class="text-dark"><?= htmlspecialchars($ra) ?></td>
+            </tr>
+
+            <?php
+        }
+    } else {
+        echo "<tr><td scope='row' colspan='5' class='text-center'>No Void Requests.</td></tr>";
+    }
+}
+
+
+if (isset($_GET['view']) && $_GET['view'] == 'treatment') {
+    $treatmentid = $_GET['transId'];
+    $sql = "SELECT t_name FROM treatments WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo json_encode(['type' => 'stmt', 'message' => mysqli_stmt_error($stmt)]);
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $treatmentid);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    $numRows = mysqli_num_rows($result);
+
+    if ($numRows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $treatment = $row['t_name'];
+
+            ?>
+            <li class="list-group-item"><?= $treatment ?></li>
+            <?php
+        }
+        mysqli_stmt_close($stmt);
+        exit();
+    } else {
+        ?>
+        <li class="list-group-item">Treatment not set. Please contact administration.</li>
+        <?php
+        mysqli_stmt_close($stmt);
+        exit();
+    }
+}
+
+if (isset($_GET['view']) && $_GET['view'] == 'probCheckbox') {
+    $transId = $_GET['transId'];
+
+    $sql = "SELECT pest_problems.problems FROM pest_problems INNER JOIN transaction_problems ON pest_problems.id = transaction_problems.problem_id WHERE transaction_problems.trans_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo json_encode(['type' => 'stmt', 'message' => mysqli_stmt_error($stmt)]);
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $transId);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    $numRows = mysqli_num_rows($result);
+
+    if ($numRows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $problems = $row['problems'];
+
+            ?>
+            <li class="list-group-item"><?= $problems ?></li>
+            <?php
+        }
+        mysqli_stmt_close($stmt);
+        exit();
+    } else {
+        ?>
+        <li class="list-group-item">Pest problems are not set. Please contact administration.</li>
+        <?php
+        mysqli_stmt_close($stmt);
+        exit();
+    }
+}
+
+if (isset($_GET['view']) && $_GET['view'] == 'chemUsed') {
+    $transId = $_GET['transId'];
+
+    $sql = "SELECT chem_brand, amt_used, chem_id FROM transaction_chemicals WHERE trans_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo json_encode(['type' => 'stmt', 'message' => mysqli_stmt_error($stmt)]);
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $transId);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    $numRows = mysqli_num_rows($result);
+
+    if ($numRows > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $chemUsed = $row['chem_brand'];
+            $chemId = $row['chem_id'];
+            $amtUsed = $row['amt_used'];
+            $unit = $unit = get_unit($conn, $chemId);
+            ;
+
+            ?>
+            <li class="list-group-item mb-2"><strong>Chemical:</strong> <?= $chemUsed ?><br><strong>Amount used:
+                </strong><?= $amtUsed != 0 ? "$amtUsed $unit" : 'Amount Pending' ?></li>
+            <?php
+        }
+        mysqli_stmt_close($stmt);
+        exit();
+    } else {
+        ?>
+        <li class="list-group-item">No chemical found. Chemical might be deleted.</li>
+        <?php
+        mysqli_stmt_close($stmt);
+        exit();
+    }
 }

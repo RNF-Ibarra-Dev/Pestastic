@@ -84,13 +84,13 @@ if (isset($_GET['search'])) {
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
-                        $status === 'Pending' ? "<span class='w-50 text-light badge rounded-pill text-bg-warning bg-opacity-25 py-2'>Pending</span>" :
-                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-50 py-2'>$status</span>" :
-                            ($status === 'Finalizing' ? "<span class='badge rounded-pill text-bg-primary bg-opacity-50 w-50 py-2'>$status</span>" :
-                                ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-50 py-2'>$status</span>" :
-                                    ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-50 py-2'>$status</span>" :
-                                        ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge shadow rounded-pill border border-light border-opacity-50 btn btn-sidebar text-bg-secondary bg-opacity-50 w-50 py-2'>$status</span>" :
-                                            ($status === 'Dispatched' ? "<span data-dispatched-id='$id' class='dispatched-btn btn shadow border border-light border-opacity-50 btn-sidebar badge rounded-pill btn btn-sidebar text-bg-warning text-light bg-opacity-50 w-50 py-2'>$status</span>" : $status))))))
+                        $status === 'Pending' ? "<span class='w-50 text-light badge rounded-pill text-bg-warning bg-opacity-25 py-2 text-wrap'>Pending</span>" :
+                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-50 py-2 text-wrap'>$status</span>" :
+                            ($status === 'Finalizing' ? "<span class='badge rounded-pill text-bg-primary bg-opacity-50 w-50 py-2 text-wrap'>$status</span>" :
+                                ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-50 py-2 text-wrap'>$status</span>" :
+                                    ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-50 py-2 text-wrap'>$status</span>" :
+                                        ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge shadow-sm rounded-pill border text-wrap border-light border-opacity-50 btn btn-sidebar text-bg-secondary bg-opacity-50 w-50 py-2'>$status</span>" :
+                                            ($status === 'Dispatched' ? "<span data-dispatched-id='$id' class='dispatched-btn btn shadow-sm border text-wrap border-light border-opacity-50 btn-sidebar badge rounded-pill btn btn-sidebar text-bg-warning text-light bg-opacity-50 w-50 py-2'>$status</span>" : $status))))))
 
                         ?>
                 </td>
@@ -335,13 +335,13 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td><?= htmlspecialchars($t_name) ?></td>
                 <td>
                     <?=
-                        $status === 'Pending' ? "<span id='pendingbtn' class='w-50 text-light badge rounded-pill text-bg-warning bg-opacity-25 py-2'>Pending</span>" :
-                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-50 py-2'>$status</span>" :
-                            ($status === 'Finalizing' ? "<span class='badge rounded-pill text-bg-primary bg-opacity-50 w-50 py-2'>$status</span>" :
-                                ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-50 py-2'>$status</span>" :
-                                    ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-50 py-2'>$status</span>" :
-                                        ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn shadow badge rounded-pill border border-light border-opacity-50 btn btn-sidebar text-bg-secondary bg-opacity-50 w-50 py-2'>$status</span>" :
-                                            ($status === 'Dispatched' ? "<span data-dispatched-id='$id' class='dispatched-btn btn btn-sidebar border border-light border-opacity-50 badge shadow rounded-pill btn btn-sidebar text-bg-warning text-light bg-opacity-50 w-50 py-2'>$status</span>" : $status))))))
+                        $status === 'Pending' ? "<span id='pendingbtn' class='w-50 text-light badge rounded-pill text-bg-warning bg-opacity-25 py-2 text-wrap'>Pending</span>" :
+                        ($status === 'Accepted' ? "<span class='badge rounded-pill text-bg-success bg-opacity-50 w-50 py-2 text-wrap'>$status</span>" :
+                            ($status === 'Finalizing' ? "<span class='badge rounded-pill text-bg-primary bg-opacity-50 w-50 py-2 text-wrap'>$status</span>" :
+                                ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-50 py-2 text-wrap'>$status</span>" :
+                                    ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-50 py-2 text-wrap'>$status</span>" :
+                                        ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn shadow-sm badge rounded-pill border text-wrap border-light border-opacity-50 btn btn-sidebar text-bg-secondary bg-opacity-50 w-50 py-2'>$status</span>" :
+                                            ($status === 'Dispatched' ? "<span data-dispatched-id='$id' class='dispatched-btn btn btn-sidebar border text-wrap border-light border-opacity-50 badge shadow-sm rounded-pill btn btn-sidebar text-bg-warning text-light bg-opacity-50 w-50 py-2'>$status</span>" : $status))))))
 
                         ?>
                 </td>
