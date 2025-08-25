@@ -186,7 +186,7 @@ function get_chem($conn, $active = null)
 function get_chem_edit($conn, $active = 0)
 {
     $active = $active === 0 ? 0 : (int) $active;
-    $sql = "SELECT * FROM chemicals WHERE branch = {$_SESSION['branch']} ORDER BY id DESC;";
+    $sql = "SELECT * FROM chemicals ORDER BY id DESC;";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -213,7 +213,7 @@ function get_chem_edit($conn, $active = 0)
 }
 function get_more_chem($conn, $status = '')
 {
-    $sql = "SELECT * FROM chemicals WHERE branch = {$_SESSION['branch']}";
+    $sql = "SELECT * FROM chemicals";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -909,6 +909,8 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
     echo $row[0];
     exit();
 }
+
+
 
 
 if (isset($_GET['getunit']) && $_GET['getunit'] === 'true') {

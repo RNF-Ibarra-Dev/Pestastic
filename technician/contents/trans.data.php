@@ -5,23 +5,80 @@ require_once('../../includes/functions.inc.php');
 
 
 // get/fetch
-if (isset($_GET['getsmt']) && $_GET['getsmt'] === 'tech') {
-    $tech = $_GET['active'];
-    get_tech($conn, $tech);
-} else if (isset($_GET['getProb']) && $_GET['getProb'] === 'true') {
+if (isset($_GET['getChem']) && $_GET['getChem'] == 'add') {
+    // $activeChem = $_GET['active'];
+    get_chem($conn);
+} else if (isset($_GET['getTech']) && $_GET['getTech'] == 'true') {
+    $active = $_GET['active'];
+    get_tech($conn, $active);
+} else if (isset($_GET['getProb']) && $_GET['getProb'] == 'true') {
+    $checked = $_GET['checked'];
+    get_prob($conn, $checked);
+} else if (isset($_GET['getMoreChem']) && $_GET['getMoreChem'] == 'true') {
+    $status = $_GET['status'];
+    get_more_chem($conn, $status);
+} else if (isset($_GET['addMoreTech']) && $_GET['addMoreTech'] == 'true') {
+    $rowNum = $_GET['techRowNum'];
     $active = isset($_GET['active']) ? $_GET['active'] : null;
-    $disabled = isset($_GET['disabled']) ? $_GET['disabled'] : null;
-    get_prob($conn, $active, $disabled);
-} else if (isset($_GET['getsmt']) && $_GET['getsmt'] === 'chem') {
-    $active = isset($_GET['active']) ? $_GET['active'] : null;
-    $disabled = isset($_GET['disabled']) ? $_GET['disabled'] : null;
-    get_chem($conn, $active, $disabled);
+    add_more_tech($conn, $rowNum, $active);
 }
 
-function get_tech($conn, $active = null, $disabled = null)
+function add_more_tech($conn, $num, $active)
+{
+
+    ?>
+    <div class="row mb-2">
+        <div class="dropdown-center d-flex col-lg-6 mb-2" id="row-<?= $num ?>">
+            <select id="add-technicianName" name="add-technicianName[]" class="form-select"
+                aria-label="Default select example">
+                <?= get_tech($conn, $active); ?>
+            </select>
+        </div>
+        <div class="col-2 p-0">
+            <button type="button" id="deleteTech" class="btn btn-grad py-1 px-3"><i
+                    class="bi bi-dash-circle text-light text-align-middle"></i></button>
+        </div>
+    </div>
+    <?php
+}
+
+
+function get_more_chem($conn, $status = '')
+{
+    $sql = "SELECT * FROM chemicals WHERE branch = {$_SESSION['branch']}";
+    $result = mysqli_query($conn, $sql);
+
+    if (!$result) {
+        echo 'Error fetching chem data' . mysqli_error($conn);
+        return;
+    }
+    $id = uniqid();
+    ?>
+    <div class="row mb-2 addmorechem-row">
+        <div class="col-lg-6 dropdown-center d-flex flex-column">
+            <select id="add-chemBrandUsed-<?= $id ?>" name="add_chemBrandUsed[]" class="form-select chem-brand-select">
+                <?= get_chem($conn); ?>
+                <!-- chem ajax -->
+            </select>
+        </div>
+        <div class="col-lg-6 mb-2 ps-0 d-flex justify-content-evenly">
+            <div class="d-flex flex-column">
+                <input type="number" maxlength="4" id="add-amountUsed-<?= $id ?>"
+                    class="form-control amt-used-input form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? "name='add-amountUsed[]'" : 'disabled' ?>>
+            </div>
+            <span class="form-text mt-2 mb-auto">-
+            </span>
+            <button type="button" id="deleteChem<?= $id ?>" class="delete-chem-row btn btn-grad mb-auto py-2 px-3"><i
+                    class="bi bi-dash-circle text-light"></i></button>
+        </div>
+    </div>
+    <?php
+}
+
+function get_tech($conn, $active = null)
 {
     $active = $active == null ? '' : $active;
-    $sql = 'SELECT * FROM technician';
+    $sql = "SELECT * FROM technician WHERE user_branch = {$_SESSION['branch']}";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -37,17 +94,15 @@ function get_tech($conn, $active = null, $disabled = null)
         $empId = $row['techEmpId'];
 
         ?>
-        <option value="<?= $id ?>" <?= $id == $active ? 'selected' : '' ?><?= $id == $disabled ? 'disabled' : '' ?>>
-            <?= $name . ' | Technician ' . $empId ?>
-        </option>
+        <option value="<?= $id ?>" <?= $id == $active ? 'selected' : '' ?>><?= $name . ' | Technician ' . $empId ?></option>
         <?php
     }
 }
-function get_chem($conn, $active = null, $disabled = null)
+
+function get_chem($conn, $active = null)
 {
     $active = $active == null ? '' : $active;
-    $disabled = $disabled == null ? '' : $disabled;
-    $sql = 'SELECT * FROM chemicals';
+    $sql = "SELECT * FROM chemicals WHERE request = 0 AND chemLevel != 0 AND branch = {$_SESSION['branch']} ORDER BY id DESC;";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -62,16 +117,18 @@ function get_chem($conn, $active = null, $disabled = null)
         $id = $row['id'];
         $brand = $row['brand'];
         $name = $row['name'];
-        $level = $row['chemLevel'];
+        $level = (int) $row['chemLevel'];
+        $req = (int) $row['request'];
+        $unit = $row['quantity_unit'];
         ?>
-        <option value="<?= $id ?>" <?= $level <= 0 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?>         <?= $id == $disabled ? 'disabled' : '' ?>>
-            <?= $name . " | " . $brand . " | " . $level . "ml " . $id ?>
+        <option value="<?= htmlspecialchars($id) ?>" <?= $id == $active ? 'selected' : '' ?>>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level $unit") ?>
         </option>
         <?php
     }
 }
 
-function get_prob($conn, $checked = null, $disabled = null)
+function get_prob($conn, $checked = null)
 {
     $checked = $checked == null ? [] : $checked;
     $sql = "SELECT * FROM pest_problems ORDER BY id ASC";
@@ -87,7 +144,7 @@ function get_prob($conn, $checked = null, $disabled = null)
         $problem = $row['problems'];
         ?>
         <input type="checkbox" value="<?= $id ?>" name="pest_problems[]" class="btn-check" id="add-<?= $id ?>"
-            autocomplete="off" <?= in_array($problem, $checked) ? 'checked' : '' ?>         <?= $id == $disabled ? 'disabled' : '' ?>>
+            autocomplete="off" <?= in_array($problem, $checked) ? 'checked' : '' ?>>
         <label class="btn" for="add-<?= $id ?>"><?= $problem ?></label>
         <?php
     }
@@ -116,7 +173,7 @@ if (isset($_GET['row']) && $_GET['row'] == 'tech') {
                 <select id="edit-technicianName" name="addTechnician[]" class="form-select me-2"
                     aria-label="Default select example">
                     <?php
-                    get_tech($conn, false, $disabled);
+                    get_tech($conn, false);
                     ?>
                 </select>
                 <button type="button" id="deleterow" class="btn btn-grad mt-auto py-2 px-3"><i
@@ -778,4 +835,131 @@ if (isset($_GET['view']) && $_GET['view'] == 'chemUsed') {
         mysqli_stmt_close($stmt);
         exit();
     }
+}
+
+if (isset($_GET['getunit']) && $_GET['getunit'] === 'true') {
+    $chemId = $_GET['chemid'];
+    if (!is_numeric($chemId)) {
+        http_response_code(400);
+        echo "Invalid Chemical ID.";
+        exit();
+    }
+    $unit = get_unit($conn, $chemId);
+    if (isset($unit['error'])) {
+        http_response_code(400);
+        echo $unit['error'];
+        exit();
+    } else {
+        echo $unit;
+        exit();
+    }
+
+}
+
+if (isset($_GET['count']) && $_GET['count'] === 'true') {
+    $status = $_GET['status'];
+
+    $sql = "SELECT COUNT(*) FROM transactions WHERE transaction_status = ? AND branch = {$_SESSION['branch']};";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "stmt error";
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "s", $status);
+    mysqli_stmt_execute($stmt);
+
+    $res = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_row($res);
+
+    echo $row[0];
+    exit();
+}
+
+function packages($conn)
+{
+    $sql = "SELECT * FROM packages WHERE branch = {$_SESSION['branch']};";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $name = $row['name'];
+            $sessions = $row['session_count'];
+            $warranty = $row['year_warranty'];
+            ?>
+            <option value="<?= $id ?>">
+                <?= htmlspecialchars($name) . ' | ' . htmlspecialchars($warranty) . " Years Warranty" . ($sessions != 1 ? " | (" . htmlspecialchars($sessions) . " Sessions) " : '') ?>
+            </option>
+            <?php
+        }
+    } else {
+        ?>
+        <option disabled>No Current Package.</option>
+        <?php
+    }
+}
+
+if (isset($_GET['packages']) && $_GET['packages'] === 'true') {
+    ?>
+    <option value="none">None</option>
+    <?php
+    packages($conn);
+}
+
+if (isset($_GET['treatments']) && $_GET['treatments'] === 'true') {
+    $sql = "SELECT * FROM treatments;";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $n = $row['t_name'];
+            ?>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($n) ?></option>
+            <?php
+        }
+    }
+}
+
+
+function get_warranty_duration($conn, $id)
+{
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo json_encode(["error" => "Invalid ID. ID passed: $id"]);
+        exit();
+    }
+
+    $sql = "SELECT year_warranty FROM packages WHERE id = $id AND branch = {$_SESSION['branch']};";
+    $res = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($res) > 0) {
+        if ($row = mysqli_fetch_assoc($res)) {
+            return $row['year_warranty'];
+        }
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'No data to retuurn.']);
+        exit();
+    }
+}
+
+
+if (isset($_POST['pack_exp']) && $_POST['pack_exp'] === 'true') {
+    $date = $_POST['date'];
+    $id = $_POST['pid'];
+
+    $duration = get_warranty_duration($conn, $id);
+
+    if (isset($duration['error'])) {
+        http_response_code(400);
+        return $duration['error'];
+    }
+
+    $fdate = date("F j, Y", strtotime($date . "+ $duration years"));
+    echo $fdate;
+    exit();
 }

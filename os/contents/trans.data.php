@@ -857,7 +857,7 @@ if (isset($_POST['pack_exp']) && $_POST['pack_exp'] === 'true') {
         return $duration['error'];
     }
 
-    $fdate = date("Y-m-d", strtotime($date . "+ $duration years"));
+    $fdate = date("F j, Y", strtotime($date . "+ $duration years"));
 
     echo $fdate;
     exit();

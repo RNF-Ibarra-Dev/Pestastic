@@ -163,125 +163,219 @@ require("startsession.php");
             </div>
 
 
+
             <!-- modals -->
-            <form id="logtransaction">
-                <div class="row g-2 text-dark">
-                    <div class="modal modal-lg fade text-dark modal-edit" id="logtransactions" tabindex="-1"
+            <form id="addTransaction">
+                <div class="row g-2 text-dark m-0">
+                    <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="addModal" tabindex="-1"
                         aria-labelledby="create" aria-hidden="true">
-                        <div class="modal-dialog">
+                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
-                                    <h1 class="modal-title fs-5">Log New Transaction</h1>
+                                    <h1 class="modal-title fs-5">Add New Transaction</h1>
                                     <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                             class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p class="fs-6 fw-light text-muted">Provide the details of the transaction below.
-                                    </p>
+                                    <p
+                                        class="fw-medium mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Customer Information</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
                                             <label for="add-customerName" class="form-label fw-light">Customer Name
                                             </label>
                                             <input type="text" name="add-customerName" id="add-customerName"
-                                                class="form-control form-add" autocomplete="one-time-code">
+                                                class="form-control form-add" placeholder="Enter name"
+                                                autocomplete="one-time-code">
+                                            <!-- <p class="text-body-secondary text-muted fw-light">Note: Include full customer name</p> -->
                                         </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="dropdown-center col-lg-6 mb-2">
-                                            <label for="addTechnician" class="form-label fw-light">Choose
-                                                Technicians
+                                        <div class="col-lg-6 mb-2">
+                                            <label for="add-customerAddress" class="form-label fw-light">Customer Full
+                                                Address
                                             </label>
-                                            <select id="addTechnician" disabled name="addTechnician[]" not-size="2"
-                                                class="form-select" aria-label="Default select example">
-                                            </select>
+                                            <textarea name="add-customerAddress" id="add-customerAddress"
+                                                class="form-control form-add" rows="1"
+                                                placeholder="e.g B20 L64 Garnet Street Lee Grove 4 Mandaluyong, Metro Manila"></textarea>
                                         </div>
                                     </div>
-
-                                    <div id="addTechContainer" class="p-0 m-0 mb-2"></div>
-
-
-                                    <button type="button" id="addMoreTech" class="btn btn-grad mt-auto py-1 px-3"><i
-                                            class="bi bi-plus-circle text-light me-2"></i>Add More Technician</button>
 
 
                                     <hr class="my-2">
 
+                                    <p
+                                        class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Treatment Information
+                                    </p>
+
                                     <div class="row mb-2">
 
-                                        <div class="col-lg-6 mb-2">
+                                        <div class="col-lg-3 mb-2">
                                             <label for="add-treatmentDate" class="form-label fw-light">Treatment
                                                 Date</label>
-                                            <input type="date" name="add-treatmentDate" id="add-treatmentDate"
-                                                min="2025-01-01" class="form-control form-add">
+                                            <input name="add-treatmentDate" placeholder="--/--/--"
+                                                id="add-treatmentDate" class="form-control form-add">
+                                        </div>
+                                        <div class="col-lg-3 mb-2">
+                                            <label for="add-treatmentTime" class="form-label fw-light">Treatment
+                                                Time</label>
+                                            <input name="add-treatmentTime" id="add-treatmentTime" placeholder="--:--"
+                                                class="form-control form-add" autocomplete="address-line3">
                                         </div>
 
                                         <div class="col-lg-6 mb-2">
                                             <label for="add-treatment" class="form-label fw-light">Treatment</label>
-                                            <select name="add-treatment" id="add-treatment" class="form-select">
-                                                <option value="#" selected>Select Treatment</option>
-                                                <option value="Follow-up Crawling Insects Control">Follow-up Crawling
-                                                    Insects Control</option>
-                                                <option value="Crawling Insects Control">Crawling Insects Control
-                                                </option>
-                                                <option value="Termite Control">Termite Control</option>
-                                                <option value="Wooden Structures Treatment">Wooden Structures Treatment
-                                                </option>
-                                                <option value="Termite Powder Application">Termite Powder Application
-                                                </option>
-                                                <option value="Soil Injection">Soil Injection</option>
+                                            <select name="add-treatment" name="add-treatment" id="add-treatment"
+                                                class="form-select">
+                                                <option value="" selected>Select Treatment</option>
+                                                <div id="add-treatmentContainer"></div>
                                             </select>
                                         </div>
 
                                     </div>
 
                                     <div class="row mb-2">
+                                        <div class="col-lg-4">
+                                            <label for="add-treatmentType" class="form-label fw-light">Treatment
+                                                Type</label>
+                                            <select name="add-treatmentType" id="add-treatmentType" class="form-select">
+                                                <option value="" selected>Select Treatment Type</option>
+                                                <option value="General Treatment">General Treatment
+                                                </option>
+                                                <option value="Follow-up Treatment">Follow-up Treatment
+                                                </option>
+                                                <option value="Quarterly Treatment">Quarterly Treatment</option>
+                                                <option value="Monthly Treatment">Monthly Treatment
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <label for="add-package" class="form-label fw-light">Package</label>
+                                            <select name="add-package" id="add-package" class="form-select">
+                                                <div id="packageSelectContainer"></div>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-3 mb-2">
+                                            <label for="add-packageStart"
+                                                class="form-label fw-light text-nowrap">Package Warranty
+                                                Start</label>
+                                            <input placeholder="--/--/--" id="add-packageStart" name="add-packageStart"
+                                                class="form-control form-add" disabled>
+                                        </div>
+                                        <div class="col-lg-3 mb-2">
+                                            <label for="add-packageExpiry" class="form-label fw-light">Package
+                                                Expiry</label>
+                                            <input placeholder="--/--/--" class="fw-light form-control"
+                                                name="add-packageExpiry" id="add-packageExpiry" readonly disabled>
+                                        </div>
+
+                                        <div class="col-lg-3">
+                                            <label for="add-session" class="form-label fw-light text-nowrap">Session
+                                                Number</label>
+                                            <input type="number" name="add-session" class="form-control form-add"
+                                                id="add-session" placeholder="e.g. 2" autocomplete="one-time-code"
+                                                disabled>
+                                        </div>
+                                    </div>
+
+                                    <hr class="mb-2 mt-0">
+
+                                    <p
+                                        class="fw-medium mt-3 mb-2 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        Additional
+                                        Information
+                                    </p>
+
+                                    <div class="row mb-2">
 
                                         <div class="col-lg-12 mb-2">
-                                            <label for="add-pestproblem" class="form-label fw-light">Pest
+                                            <label for="add-probCheckbox" class="form-label fw-light">Pest
                                                 Problem</label>
-                                            <div id="add-pestproblem" name="add-pestproblem"
+                                            <div id="add-probCheckbox" name="add-probCheckbox"
                                                 class="d-flex gap-2 align-items-center justify-content-evenly flex-wrap">
                                                 <!-- pest problems ajax append here -->
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="row mb-2" did="row">
+                                    <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
-                                            <label for="add-chem" class="form-label fw-light">Chemical
+                                            <label for="add-chemBrandUsed" class="form-label fw-light">Chemical
                                                 Used</label>
-                                            <select id="add-chem" name="addChem[]" class="form-select">
+                                            <select id="add-chemBrandUsed" name="add_chemBrandUsed[]"
+                                                class="form-select chem-brand-select">
                                                 <!-- chem ajax -->
                                             </select>
-
+                                            <!-- <div class="form-check mt-auto">
+                                                <input class="form-check-input whole-container-chk" type="checkbox"
+                                                    value="" id="add-whole-chk">
+                                                <label class="form-check-label" for="add-whole-chk">
+                                                    Whole Container
+                                                </label>
+                                            </div> -->
                                         </div>
-                                        <div class="col-lg-4 mb-2 ps-0">
-                                            <label for="add-amountUsed" class="form-label fw-light">Amount
-                                                Used</label>
-                                            <div class="d-flex flex-row">
-                                                <input type="number" name="amountUsed[]" maxlength="4"
-                                                    id="add-amountUsed" class="form-control form-add me-3"
-                                                    autocomplete="one-time-code">
-                                                <span id="passwordHelpInline" class="form-text align-self-center">
-                                                    /ml
-                                                </span>
+                                        <div class="col-lg-6 mb-2 ps-0 d-flex justify-content-evenly">
+                                            <div class="d-flex flex-column">
+                                                <label for="add-amountUsed" class="form-label fw-light">Amount
+                                                    Used</label>
+                                                <input type="number" maxlength="4" id="add-amountUsed"
+                                                    name="add-amountUsed[]"
+                                                    class="form-control amt-used-input form-add me-3"
+                                                    autocomplete="one-time-code" disabled>
                                             </div>
+                                            <span class="form-text mt-auto mb-2">-</span>
+                                            <button type="button" id="addMoreChem"
+                                                class="btn btn-grad mt-auto py-2 px-3"><i
+                                                    class="bi bi-plus-circle text-light"></i></button>
                                         </div>
                                     </div>
-
-                                    <div class="p-0 m-0 mb-2" id="add-chemContainer">
+                                    <div class="mb-2" id="add-chemContainer">
                                         <!-- template add chemical -->
                                     </div>
-                                    <button type="button" id="addMoreChem" class="btn btn-grad mt-auto py-1 px-3"><i
-                                            class="bi bi-plus-circle text-light me-2"></i>Add More Chemicals</button>
+                                    <p class="alert alert-warning py-1 mt-1 w-50 mx-auto text-center amt-used-alert"
+                                        style="display: none;"></p>
 
+                                    <div class="row mb-2">
+                                        <div class="dropdown-center col-lg-6 mb-2">
+                                            <label for="add-technicianName" class="form-label fw-light">Technicians
+                                            </label>
+                                            <select id="add-technicianName" name="add-technicianName[]" not-size="2"
+                                                class="form-select" aria-label="Default select example">
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 mb-2 d-flex gap-1 p-0 justify-content-start">
+                                            <button type="button" id="addMoreTech"
+                                                class="btn btn-grad mt-auto py-1 px-3"><i
+                                                    class="bi bi-plus-circle text-light"></i></button>
+                                        </div>
+                                    </div>
 
-                                    <p class="fw-light text-muted mt-2">Transaction will be marked as pending. Please be
-                                        patient.</p>
+                                    <div id="addTechContainer" class="row mb-2"></div>
+                                    <div class="row mb-2 ">
+                                        <div class="col-lg-6">
+                                            <label for="add-status" class="form-label fw-light">Status</label>
+                                            <select name="add-status" id="add-status" class="form-select">
+                                                <option value="" selected>Select Status</option>
+                                                <option value="Pending">Pending</option>
+                                                <option value="Accepted">Accepted</option>
+                                                <option value="Finalizing">Finalizing</option>
+                                                <option value="Dispatched">Dispatched</option>
+                                                <option value="Completed">Completed</option>
+                                                <option value="Cancelled">Cancelled</option>
+                                                <option value="Voided">Voided </option>
+                                            </select>
+                                            <p class="alert alert-warning py-1 mt-2" style="display: none !important;">
+                                            </p>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label for="add-notes" class="form-label fw-light">Additional Notes</label>
+                                            <textarea name="add-notes" id="add-notes" placeholder=". . ."
+                                                class="form-control" rows="1"></textarea>
+                                        </div>
+                                    </div>
 
-                                    <!-- <div class="row mb-2">
-                                        
-                                    </div> -->
                                     <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
                                         id="emptyInput"></p>
                                 </div>
@@ -289,15 +383,15 @@ require("startsession.php");
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
                                     <button type="button" class="btn btn-grad" disabled-id="submitAdd"
                                         data-bs-toggle="modal" data-bs-target="#confirmAdd">Proceed &
-                                        Submit</button>
+                                        Confirm</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- add confirmation -->
-                <div class="modal fade text-dark modal-edit" id="confirmAdd" tabindex="0" aria-labelledby="confirmAdd"
-                    aria-hidden="true">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="confirmAdd" tabindex="0"
+                    aria-labelledby="confirmAdd" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
@@ -307,23 +401,19 @@ require("startsession.php");
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="addPwd" class="form-label fw-light">Submit transaction? Enter your
-                                        password to proceed.</label>
+                                    <label for="addPwd" class="form-label fw-light">Add transaction? Enter manager
+                                        <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
-                                        <input type="password" name="techPwd" class="form-control" id="addPwd">
+                                        <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
                                 </div>
                                 <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 visually-hidden'
                                     id="add-alert"></p>
-                                <!-- <div id="passwordHelpBlock" class="form-text">
-                                Note: deletion of chemicals are irreversible.
-                            </div> -->
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-grad" data-bs-target="#logtransactions"
+                                <button type="button" class="btn btn-grad" data-bs-target="#addModal"
                                     data-bs-toggle="modal">Go back</button>
-                                <button type="submit" class="btn btn-grad" id="submitAdd">Submit Transaction
-                                    Request</button>
+                                <button type="submit" class="btn btn-grad" id="submitAdd">Add Transaction</button>
                             </div>
                         </div>
                     </div>
@@ -399,95 +489,53 @@ require("startsession.php");
                 </div>
             </form>
 
-            <form id="finalizetransactionform">
-                <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static"
-                    id="finalizetransactionmodal" tabindex="0" aria-labelledby="confirmAdd" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-scrollable">
-                        <div class="modal-content">
-                            <div class="modal-header bg-modal-title">
-                                <h1 class="modal-title fs-5 text-light">Transactions Completion</h1>
-                                <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
-                                    aria-label="Close"><i class="bi bi-x"></i></button>
+            <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static"
+                id="finalizetransactionmodal" tabindex="0" aria-labelledby="confirmAdd" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title">
+                            <h1 class="modal-title fs-5 text-light">Transactions Completion</h1>
+                            <button type="button" class="btn ms-auto p-0 text-light" data-bs-dismiss="modal"
+                                aria-label="Close"><i class="bi bi-x"></i></button>
+                        </div>
+
+                        <div class="modal-body text-dark p-3">
+                            <div class="table-responsive-sm  d-flex justify-content-center">
+                                <table class="table align-middle table-hover w-100" id="approvechemtable">
+                                    <caption class="fw-light text-muted">List of recently finished transactions
+                                        marked by technicians. Select the transaction number ID to view transaction.
+                                    </caption>
+                                    <thead>
+                                        <tr class="text-center align-middle">
+                                            <th class="text-dark" scope="col">Transaction ID</th>
+                                            <th class="text-dark">Customer Name</th>
+                                            <th class="text-dark">Treatment Date</th>
+                                            <th class="text-dark">Updated By</th>
+                                            <th class="text-dark">Updated At</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="finalizetranstable" class="table-group-divider">
+                                        <tr>
+                                            <td scope='row' colspan='6' class='text-center'>
+                                                <div class='spinner-grow text-secondary' role='status'><span
+                                                        class='visually-hidden'>Loading...</span></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
                             </div>
+                        </div>
 
-                            <div class="modal-body text-dark p-3">
-                                <div class="table-responsive-sm  d-flex justify-content-center">
-                                    <table class="table align-middle table-hover w-100" id="approvechemtable">
-                                        <caption class="fw-light text-muted">List of recently finished transactions
-                                            marked by technicians. Select the transaction number ID to view transaction.
-                                        </caption>
-                                        <thead>
-                                            <tr class="text-center align-middle">
-                                                <th class="text-dark" scope="col">Transaction ID</th>
-                                                <th class="text-dark">Customer Name</th>
-                                                <th class="text-dark">Treatment Date</th>
-                                                <th class="text-dark">Updated By</th>
-                                                <th class="text-dark">Updated At</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody id="finalizetranstable" class="table-group-divider">
-                                            <tr>
-                                                <td scope='row' colspan='6' class='text-center'>
-                                                    <div class='spinner-grow text-secondary' role='status'><span
-                                                            class='visually-hidden'>Loading...</span></div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                    data-bs-target="#finalizeconfirm">Continue</button>
-                            </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="finalizeconfirm"
-                    tabindex="0">
-                    <input type="hidden" name="trans[]" id="finalizesingletransinput" disabled>
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Complete Transaction</h1>
-                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
-                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row mb-2">
-                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Approve Selected
-                                        Transactions?
-                                        Enter manager
-                                        <?= $_SESSION['baUsn'] ?>'s password to proceed.</label>
-                                    <div class="col-lg-6 mb-2">
-                                        <input type="password" name="baPwd" class="form-control"
-                                            id="confirmapprove-inputpwd">
-                                    </div>
-                                </div>
-                                <div id="passwordHelpBlock" class="form-text">
-                                    Note: No one will be able to edit a completed transaction. This
-                                    action
-                                    cannot be undone.
-                                </div>
-                                <p class="text-center alert alert-info mt-2 mb-0 w-75 mx-auto" style="display: none;"
-                                    id="finalizealert">
-                                </p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                    data-bs-target="#finalizetransactionmodal" id='finalizebackbtn'>Go Back</button>
-                                <button type="submit" class="btn btn-grad">Finalize
-                                    Transaction</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
+
 
             <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static"
                 id="requestedvoidtransactions" tabindex="0" aria-hidden="true">
@@ -533,6 +581,73 @@ require("startsession.php");
                     </div>
                 </div>
             </div>
+
+            <form id="reschedForm">
+                <input type="hidden" name="reschedid" id="reschedId">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="reschedModal" tabindex="-1"
+                    aria-labelledby="create" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Reschedule Cancelled Transaction</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                        class="bi text-light bi-x"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="rescheddate" class="form-label">Select New Schedule</label>
+                                        <input type="date" name="reschedDate" class="form-control" id="reschedDate">
+                                    </div>
+                                    <div class="col">
+                                        <label for="reschedTime" class="form-label">Select New Time:</label>
+                                        <input type="text" name="reschedTime" class="form-control" id="reschedTime">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
+                                <button type="button" data-bs-target="#reschedConfirm" data-bs-toggle="modal"
+                                    class="btn btn-grad">Proceed</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="reschedConfirm" tabindex="0">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Reschedule Transaction Confirmation</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Confirm reschedule
+                                        of this transaction?
+                                        Enter Operation Supervisor
+                                        <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="baPwd" class="form-control w-50"
+                                            id="confirmapprove-inputpwd">
+                                    </div>
+                                </div>
+                                <p class="text-body-secondary">Note. After setting new time and schedule, this
+                                    transaction will be marked as Accepted.</p>
+                                <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
+                                    id="reschedAlert">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#reschedModal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Reschedule</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
 
             <!-- details modal -->
             <div class="row g-2 text-dark m-0">
@@ -871,12 +986,57 @@ require("startsession.php");
 
         </main>
 
+        <!-- toast -->
+        <div class="toast-container m-2 me-3 bottom-0 end-0 position-fixed">
+            <div class="toast align-items-center" role="alert" id="toast" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body text-dark ps-4 text-success-emphasis" id="toastmsg">
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
     </div>
     <?php include('footer.links.php'); ?>
 
     <script>
+
+        function get_overview_count(container) {
+            $.get(dataurl, {
+                count: true,
+                status: container
+            })
+                .done(function (d) {
+                    // console.log(d);
+                    $(`#count_${container}`).empty();
+                    $(`#count_${container}`).append(d);
+                })
+                .fail(function (e) {
+                    console.log(e);
+                })
+        }
+
+        function get_counts() {
+            get_overview_count('pending');
+            get_overview_count('accepted');
+            get_overview_count('completed');
+            get_overview_count('voided');
+            get_overview_count('cancelled');
+            get_overview_count('finalizing');
+            get_overview_count('dispatched');
+        }
+
+        function show_toast(message) {
+            $('#toastmsg').html(message);
+            var toastid = $('#toast');
+            var toast = new bootstrap.Toast(toastid);
+            toast.show();
+        }
         const dataurl = 'contents/trans.data.php';
         const tablecontent = 'contents/trans.pagination.php';
+        const submiturl = 'contents/trans.config.php';
 
         const tech = <?= $_SESSION['techId'] ?>;
         console.log(tech);
@@ -937,7 +1097,7 @@ require("startsession.php");
         async function loadpage(defpage = 1, status = '') {
             await load_table(defpage, status);
             await load_pagination_buttons(defpage, status);
-
+            get_counts();
         }
 
         // console.log(status);
@@ -999,12 +1159,41 @@ require("startsession.php");
             }
         }
 
-        $(document).on('click', '#addMoreTech', async function () {
-            await add_row('addTechContainer', 'tech');
-        })
+        // $(document).on('click', '#addMoreTech', async function () {
+        //     await add_row('addTechContainer', 'tech');
+        // })
+        // $(document).on('click', '#addMoreChem', async function () {
+        //     await add_row('add-chemContainer', 'chem', null);
+        // })
+
+        async function add_used_chem(status = '') {
+            // let rowNum = num;
+            try {
+                const addMoreUsed = await $.ajax({
+                    type: 'GET',
+                    url: dataurl,
+                    dataType: 'html',
+                    data: {
+                        getMoreChem: 'true',
+                        status: status
+                    }
+                });
+
+                if (addMoreUsed) {
+                    $('#add-chemContainer').append(addMoreUsed);
+                    // console.log('add more chem success');
+                }
+            } catch (error) {
+                alert(error);
+            }
+        }
+
         $(document).on('click', '#addMoreChem', async function () {
-            await add_row('add-chemContainer', 'chem', null);
+            let sts = $(this).data('status');
+            console.log(sts);
+            await add_used_chem(sts);
         })
+
 
         async function add_row(container, data, disabled = tech) {
             try {
@@ -1068,7 +1257,6 @@ require("startsession.php");
         })
 
         // submit log
-        const submit = "contents/trans.submit.php";
         $('#logtransaction').on('submit', async function (e) {
             // $('#add-technicianName').prop('disabled', false);
             e.preventDefault();
@@ -1079,7 +1267,7 @@ require("startsession.php");
                 const logtrans = await $.ajax({
                     type: 'POST',
                     dataType: 'json',
-                    url: submit,
+                    url: submiturl,
                     data: $(this).serialize() + "&submitlog=true" + `&addTechnician[]=${tech}` + "&status=Pending"
                 })
 
@@ -1569,6 +1757,329 @@ require("startsession.php");
                 console.log(error);
             }
         }
+
+
+        $("#table").on('click', '.cancel-btn, .resched-btn', function () {
+            let id = $(this).data('cancelled-id');
+            // console.log(id);
+            $("#reschedId").val(id);
+            $("#reschedModal").modal('show');
+        })
+
+
+        $(document).on("submit", "#reschedForm", async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+            await $.ajax({
+                method: "POST",
+                url: submiturl,
+                dataType: 'json',
+                data: $(this).serialize() + "&reschedule=true"
+            })
+                .done(async function (d) {
+                    show_toast(d.success);
+                    $("#reschedForm")[0].reset();
+                    $("#reschedConfirm").modal('hide');
+                    await loadpage(1, $("#sortstatus").val());
+                })
+                .fail(function (e) {
+                    $("#reschedAlert").fadeIn(400).html(e.responseText).delay(2000).fadeOut(1000);
+                    console.log(e);
+                })
+        });
+
+
+        let reschedDatee = document.getElementById('reschedDate');
+        reschedDate = flatpickr(reschedDatee, {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+            minDate: new Date().fp_incr(1)
+        });
+
+        let reschedTimee = document.getElementById('reschedTime');
+        reschedTime = flatpickr(reschedTimee, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: false,
+            altFormat: "h:i K",
+            altInput: true
+        });
+
+        async function get_problems(form, checked = null) {
+            // if (typeof transId == 'undefined') transId = null;
+            $(`#${form}-probCheckbox`).empty();
+            try {
+                const prob = await $.ajax({
+                    type: 'GET',
+                    url: dataurl,
+                    dataType: 'html',
+                    data: {
+                        getProb: 'true',
+                        checked: checked
+                    }
+                });
+
+                if (prob) {
+                    $(`#${form}-probCheckbox`).append(prob);
+                    console.log('get problems success.');
+                }
+            } catch {
+                alert('get problem error');
+            }
+        }
+
+        async function get_technician(form, activeTech) {
+            if (typeof activeTech == 'undefined') activeTech = null;
+
+            try {
+                $(`#${form}-technicianName`).empty();
+                const tech = await $.ajax({
+                    type: 'GET',
+                    url: dataurl,
+                    data: {
+                        getTech: 'true',
+                        active: activeTech
+                    }
+                });
+
+                if (tech) {
+                    $(`#${form}-technicianName`).append(tech);
+                    console.log('success');
+                    console.log(activeTech);
+                }
+            } catch (error) {
+                alert('tech: ' + error);
+            }
+        }
+
+        async function add_more_tech() {
+            let num = 2;
+
+            $('#addMoreTech', '#addModal').off('click').on('click', async function () {
+                // console.log('tite' + num);
+                await get_more_tech(num);
+                num++;
+                console.log('tech add number: ' + num);
+            });
+
+        }
+
+        async function get_more_tech(num) {
+            try {
+                const addTech = await $.ajax({
+                    type: 'GET',
+                    url: dataurl,
+                    dataType: 'html',
+                    data: {
+                        addMoreTech: 'true',
+                        techRowNum: num
+                    }
+                });
+
+                if (addTech) {
+                    $('#addTechContainer').append(addTech);
+                } else {
+                    console.log('add tech append failed');
+                }
+            } catch (error) {
+                alert('Adding more technician error: ' + JSON.stringify(error));
+            }
+        }
+
+        async function add_packages() {
+            try {
+                const package = await $.ajax({
+                    method: 'GET',
+                    url: dataurl,
+                    dataType: 'html',
+                    data: "packages=true"
+                });
+
+                if (package) {
+                    $('#packageSelectContainer').empty();
+                    $('#packageSelectContainer').html(package);
+                }
+            } catch (error) {
+                console.log(error);
+                console.log(error.responseText);
+            }
+        }
+
+        async function treatments(form) {
+            try {
+                $.get(dataurl, "treatments=true", function (data) {
+                    $(`#${form}-treatmentContainer`).empty();
+                    $(`#${form}-treatmentContainer`).html(data);
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        $(document).on('click', '#addbtn', async function () {
+            let form = 'add';
+            try {
+                const load = await Promise.all([
+                    get_chemical_brand(form),
+                    get_technician(form),
+                    get_problems(form),
+                    // add_more_chem(),
+                    add_more_tech(),
+                    add_packages(),
+                    treatments(form)
+                ]);
+                if (load) {
+
+                    $('#add-session').attr('disabled', true);
+                    $('#add-treatment').attr('disabled', false);
+                    $("#add-packageStart, #add-packageStart + input[readonly='readonly']").attr('disabled', true);
+                    $('#add-packageExpiry').attr('disabled', true);
+
+                    $('#addTransaction')[0].reset();
+                    $('#addTechContainer').empty();
+                    $('#add-chemContainer').empty();
+                    $('#addModal').modal('show');
+                }
+
+            } catch (error) {
+                console.log('add get error.')
+            }
+        });
+
+        $('#addTransaction').on('submit', async function (e) {
+            e.preventDefault();
+            let status = $("#sortstatus").val();
+            // console.log($(this).serialize());
+            try {
+                const trans = await $.ajax({
+                    type: 'POST',
+                    url: submiturl,
+                    data: $(this).serialize() + "&addSubmit=true",
+                    dataType: 'json'
+                });
+
+                if (trans.success) {
+                    await loadpage(1, status);
+                    $('#confirmAdd').modal('hide');
+                    $('#addTransaction')[0].reset();
+                    show_toast(trans.success);
+                }
+                if (trans) {
+                    console.log(trans);
+                }
+
+            } catch (error) {
+                console.log(error);
+                $("#add-alert").removeClass('visually-hidden').html(error.responseText).hide().fadeIn(400).delay(2000).fadeOut(1000);
+            }
+        })
+
+        $(document).on('click', '#deleteTech', async function () {
+            let rowId = $(this).data('row-id');
+            let row = $('#addTechContainer').length;
+            if (row === 0) {
+                alert('Transaction should have at least one technician.');
+            } else {
+                $(this).parent().parent().remove();
+            }
+        })
+
+        $(document).on('click', '#deleteChem, .delete-chem-row', function () {
+            $(this).parent().parent().remove();
+        });
+
+        $(document).on('change', 'select.form-select.chem-brand-select', function () {
+            let span = $(this).closest('.row').find('span');
+
+            $.get(dataurl, {
+                getunit: 'true',
+                chemid: $(this).val()
+            })
+                .done(function (d) {
+                    span.text(d);
+                })
+                .fail(function (err) {
+                    console.log(err);
+                    $span.text('-');
+                });
+        });
+
+        let aps, at, a_s, ae;
+        $(document).on('change', '#add-package', function () {
+            let package = $(this).val();
+            // console.log(package);
+            if (package === 'none') {
+                aps = $('#add-packageStart').val();
+                a_s = $('#add-session').val();
+                ae = $('#add-packageExpiry').val();
+                $('#add-session').attr('disabled', true).val('');
+                $('#add-treatment').attr('disabled', false).val(at);
+                $("#add-packageStart, #add-packageStart + input[readonly='readonly']").attr('disabled', true).val('');
+                $('#add-packageExpiry').attr('disabled', true).val('');
+            } else {
+                at = $('#add-treatment').val();
+                $('#add-session').attr('disabled', false).val(a_s);
+                $('#add-treatment').attr('disabled', true).val('');
+                $("#add-packageStart, #add-packageStart + input[readonly='readonly']").attr('disabled', false).val(aps);
+                $('#add-packageExpiry').attr('disabled', false).val(ae);
+            }
+        });
+
+        let apd = $('#add-packageStart');
+        addPackageDate = flatpickr(apd, {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d"
+        });
+
+        async function compute_package_expiry(date, packId) {
+            return $.post(dataurl, {
+                date: date,
+                pack_exp: 'true',
+                pid: packId
+            }, function (data) {
+                // alert(data);
+                return data;
+            })
+                .fail(function (err) {
+                    console.log(err);
+                })
+        }
+
+        $(document).on('change', '#add-packageStart', async function (e) {
+            let package_id = $('#add-package').val();
+            if (!$.isNumeric(package_id)) {
+                alert('Please Select a package! Invalid package ID.');
+            } else {
+                let date = $(this).val();
+                let exp = await compute_package_expiry(date, package_id);
+                $('#add-packageExpiry').empty();
+                $('#add-packageExpiry').val(exp);
+                // alert(exp);
+            }
+        });
+
+        let adddate = $('#add-treatmentDate');
+        addDate = flatpickr(adddate, {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+            minDate: new Date().fp_incr(1),
+            setDate: 'today'
+            // enableTime: true
+        });
+
+        let addtime = $('#add-treatmentTime');
+        addTime = flatpickr(addtime, {
+            altInput: true,
+            altFormat: "h:i K",
+            dateFormat: "h:i",
+            enableTime: true,
+            noCalendar: true,
+            setDate: '8:00'
+        });
     </script>
 </body>
 

@@ -1366,8 +1366,8 @@
 
         let apd = $('#add-packageStart');
         addPackageDate = flatpickr(apd, {
-            // altInput: true,
-            // altFormat: "F j, Y",
+            altInput: true,
+            altFormat: "F j, Y",
             dateFormat: "Y-m-d"
         });
 
@@ -1533,8 +1533,8 @@
 
         let adddate = $('#add-treatmentDate');
         addDate = flatpickr(adddate, {
-            // altInput: true,
-            // altFormat: "F j, Y",
+            altInput: true,
+            altFormat: "F j, Y",
             dateFormat: "Y-m-d",
             minDate: new Date().fp_incr(1),
             setDate: 'today'
@@ -1677,7 +1677,7 @@
                 status: container
             })
                 .done(function (d) {
-                    console.log(d);
+                    // console.log(d);
                     $(`#count_${container}`).empty();
                     $(`#count_${container}`).append(d);
                 })
@@ -2740,13 +2740,13 @@
                 ae = $('#add-packageExpiry').val();
                 $('#add-session').attr('disabled', true).val('');
                 $('#add-treatment').attr('disabled', false).val(at);
-                $('#add-packageStart').attr('disabled', true).val('');
+                $("#add-packageStart, #add-packageStart + input[readonly='readonly']").attr('disabled', true).val('');
                 $('#add-packageExpiry').attr('disabled', true).val('');
             } else {
                 at = $('#add-treatment').val();
                 $('#add-session').attr('disabled', false).val(a_s);
                 $('#add-treatment').attr('disabled', true).val('');
-                $('#add-packageStart').attr('disabled', false).val(aps);
+                $("#add-packageStart, #add-packageStart + input[readonly='readonly']").attr('disabled', false).val(aps);
                 $('#add-packageExpiry').attr('disabled', false).val(ae);
             }
         });
@@ -2760,38 +2760,36 @@
         });
 
         // submit
-        $(function () {
-            $('#addTransaction').on('submit', async function (e) {
-                e.preventDefault();
-                let status = $("#sortstatus").val();
-                console.log($(this).serialize());
-                try {
-                    const trans = await $.ajax({
-                        type: 'POST',
-                        url: submitUrl,
-                        data: $(this).serialize() + "&addSubmit=true",
-                        dataType: 'json'
-                    });
+        $('#addTransaction').on('submit', async function (e) {
+            e.preventDefault();
+            let status = $("#sortstatus").val();
+            // console.log($(this).serialize());
+            try {
+                const trans = await $.ajax({
+                    type: 'POST',
+                    url: submitUrl,
+                    data: $(this).serialize() + "&addSubmit=true",
+                    dataType: 'json'
+                });
 
-                    if (trans.success) {
-                        // console.log(trans.success);
-                        // console.log(trans.iterate);
-                        await loadpage(1, status);
-                        $('#confirmAdd').modal('hide');
-                        $('#addTransaction')[0].reset();
-                        // $('#tableAlert').removeClass('visually-hidden').html(trans.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
-                        show_toast(trans.success);
-                    }
-                    if (trans) {
-                        console.log(trans);
-                    }
-
-                } catch (error) {
-                    console.log(error);
-                    $("#add-alert").removeClass('visually-hidden').html(error.responseText).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                if (trans.success) {
+                    // console.log(trans.success);
+                    // console.log(trans.iterate);
+                    await loadpage(1, status);
+                    $('#confirmAdd').modal('hide');
+                    $('#addTransaction')[0].reset();
+                    // $('#tableAlert').removeClass('visually-hidden').html(trans.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
+                    show_toast(trans.success);
                 }
-            })
-        });
+                if (trans) {
+                    console.log(trans);
+                }
+
+            } catch (error) {
+                console.log(error);
+                $("#add-alert").removeClass('visually-hidden').html(error.responseText).hide().fadeIn(400).delay(2000).fadeOut(1000);
+            }
+        })
 
         // edit section
         $(document).on('click', '#confirmUpdate', function () {
