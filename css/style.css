@@ -16,8 +16,21 @@
   /* --bs-light-rgb: rgb(255, 255, 255) !important; */
 }
 
+.bg-warning.bg-opacity-50.rounded-pill,
+.text-bg-warning.bg-opacity-50.rounded-pill{
+  background-color: rgba(255, 181, 85, 0.75) !important;
+}
+
 input::placeholder, textarea::placeholder{
   color:#878787 !important;
+}
+
+.form-floating input::placeholder, .form-floating textarea::placeholder{
+  color: rgba(0, 0, 0, 0) !important;
+}
+
+.btn-active{
+    border-right: #fcb217 solid 1px;
 }
 
 p, th{

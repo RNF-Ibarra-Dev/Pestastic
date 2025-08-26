@@ -517,7 +517,7 @@ if (isset($_POST['finalsingletransact']) && $_POST['finalsingletransact'] === 't
         exit();
     }
 
-    $finalize = finalize_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['saID'], $notes, $_SESSION['user_role']);
+    $finalize = finalize_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['saID'], $notes, $_SESSION['user_role'], $author);
     if (isset($finalize['error'])) {
         http_response_code(400);
         echo $finalize['error'];

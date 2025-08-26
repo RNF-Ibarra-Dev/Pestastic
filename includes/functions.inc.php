@@ -3056,7 +3056,7 @@ function get_chemical($conn, $id)
     }
 }
 
-function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $note, $role)
+function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $note, $role, $upby)
 {
     mysqli_begin_transaction($conn);
     try {
@@ -3068,12 +3068,12 @@ function finalize_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
         // set new status
         $status = "Finalizing";
 
-        $sql = "UPDATE transactions SET transaction_status = ?, notes = ? WHERE id = ?;";
+        $sql = "UPDATE transactions SET transaction_status = ?, notes = ?, updated_by = ?, updated_at = NOW() WHERE id = ?;";
         $stmt = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($stmt, $sql)) {
             throw new Exception("stmt failed.");
         }
-        mysqli_stmt_bind_param($stmt, 'ssi', $status, $note, $transid);
+        mysqli_stmt_bind_param($stmt, 'sssi', $status, $note, $upby, $transid);
         mysqli_stmt_execute($stmt);
 
         if (!mysqli_stmt_affected_rows($stmt) > 0) {

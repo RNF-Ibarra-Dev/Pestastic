@@ -110,7 +110,7 @@
                             Finalizing
                         </p>
                     </div>
-                    <p class=" mb-0 ">Transactions marked done by Technicians.</p>
+                    <p class=" mb-0 ">Transactions marked done after dispatch.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_finalizing"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">

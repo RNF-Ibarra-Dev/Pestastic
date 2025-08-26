@@ -93,7 +93,7 @@ require("startsession.php");
                             Finalizing
                         </p>
                     </div>
-                    <p class=" mb-0 ">Transactions marked done by Technicians.</p>
+                    <p class=" mb-0 ">Transactions marked done after dispatch.</p>
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_finalizing"></p>
                 </div>
                 <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
@@ -258,8 +258,8 @@ require("startsession.php");
 
                                     <div class="row">
                                         <div class="col-lg-3 mb-2">
-                                            <label for="add-packageStart"
-                                                class="form-label fw-bold text-nowrap">Package Warranty
+                                            <label for="add-packageStart" class="form-label fw-bold text-nowrap">Package
+                                                Warranty
                                                 Start</label>
                                             <input placeholder="--/--/--" id="add-packageStart" name="add-packageStart"
                                                 class="form-control form-add" disabled>
@@ -359,14 +359,9 @@ require("startsession.php");
                                             <select name="add-status" id="add-status" class="form-select">
                                                 <option value="" selected>Select Status</option>
                                                 <option value="Pending">Pending</option>
-                                                <option value="Accepted">Accepted</option>
-                                                <option value="Finalizing">Finalizing</option>
-                                                <option value="Dispatched">Dispatched</option>
-                                                <option value="Completed">Completed</option>
-                                                <option value="Cancelled">Cancelled</option>
-                                                <option value="Voided">Voided </option>
                                             </select>
-                                            <p class="alert alert-warning py-1 mt-2" style="display: none !important;">
+                                            <p class="alert alert-warning py-1 mt-2 fw-light text-center">
+                                                Technicians can only add transactions up for pending.
                                             </p>
                                         </div>
                                         <div class="col-lg-6">
@@ -443,6 +438,9 @@ require("startsession.php");
                                 <label for="finalizenotes" class="fw-bold my-2">Note:</label>
                                 <textarea name="note" class="form-control w-50" id="finalizeNotes" cols="1"
                                     placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
+
+                                <p class="alert alert-warning px-1 w-50 mt-2 mb-0 text-center mx-auto fw-light">Note to put only the amount used during the dispatch.</p>
+
                             </div>
                             <div class="modal-footer">
                                 <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
@@ -463,18 +461,16 @@ require("startsession.php");
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="finalizing-inputpwd" class="form-label fw-light">Confirm Finalizing
-                                        this transaction?
-                                        Enter Operation Supervisor
-                                        <?= $_SESSION['username'] ?>'s password to proceed.</label>
+                                    <label for="finalizing-inputpwd" class="form-label fw-light">Finished dispatchment?
+                                        Enter Technician
+                                        <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control w-75"
                                             id="finalizing-inputpwd">
                                     </div>
                                 </div>
                                 <p class="text-body-secondary fw-light">Note. This will only be set to finalizing status
-                                    and is
-                                    up for review yet.</p>
+                                    which is up for review.</p>
                                 <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
                                     id="finalizingAlert">
                                 </p>
@@ -2102,6 +2098,32 @@ require("startsession.php");
                 $("#dispatch-chemBrandUsed").append(data);
             }, 'html');
 
+        });
+
+        $(document).on('submit', '#finalizeForm', async function (e) {
+            e.preventDefault();
+            let status = $('#sortstatus').val();
+            // console.log($(this).serialize());
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                data: $(this).serialize() + "&finalsingletransact=true",
+                url: submiturl
+            })
+                .done(function (d) {
+                    if (d.success) {
+                        loadpage(1, status);
+                        show_toast(d.success);
+                        $("#finalizeForm")[0].reset();
+                        $("#finalconfirm").modal('hide');
+                    } else {
+                        alert('Unknown error occured');
+                    }
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $("#finalizingAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                })
         });
     </script>
 </body>

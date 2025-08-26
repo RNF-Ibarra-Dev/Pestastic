@@ -227,7 +227,7 @@ if (isset($_GET['getdata']) && $_GET['getdata'] === 'ongoing') {
         }
     } else {
         ?>
-        <div class="card bg-white bg-opacity-25 rounded border-0 text-light px-3 my-auto align-self-center">
+        <div class="card bg-white bg-opacity-25 rounded mx-auto border-0 text-light px-3 my-auto align-self-center">
             <h5 class="fw-light text-center m-0 p-4">No Dispatched Transactions yet.</h5>
         </div>
         <?php
@@ -315,7 +315,7 @@ if (isset($_GET['inc']) && $_GET['inc'] === 'true') {
             <?php
         }
     } else {
-        echo "<div class='bg-light bg-opacity-25 rounded shadow-sm'><h5 class='fw-light m-0 px-4 py-2'>No Unassigned Transactions.</h5></div>";
+        echo "<div class='bg-light mx-auto bg-opacity-25 rounded shadow-sm'><h5 class='fw-light m-0 px-4 py-2'>No Unassigned Transactions.</h5></div>";
     }
     exit();
 }

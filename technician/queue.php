@@ -8,7 +8,7 @@ require("startsession.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager - Pestastic Queue</title>
+    <title>Technician | Pestastic Queue</title>
     <?php include('header.links.php'); ?>
     <style>
         #queuecontainer,
@@ -77,7 +77,7 @@ require("startsession.php");
                 <h1 class="fs-1 text-light mb-0 fw-bold text-center">Transaction Queue</h1>
             </div>
 
-            <div class="row row-col-2 gap-3 px-3 m-0 d-flex justify-content-center">
+            <div class="row row-cols-2 gap-3 px-3 m-0 d-flex justify-content-center">
 
                 <!-- calendar -->
                 <div class="col-4 mt-2 px-0">
@@ -85,17 +85,20 @@ require("startsession.php");
                         <h4
                             class="fw-light text-center d-flex align-items-center fw-bold fs-2 justify-content-center m-0">
                             <i class="bi bi-file-earmark-text me-2 "></i>
-                            Ongoing Transactions</h4>
+                            Ongoing Transactions
+                        </h4>
                     </div>
 
-                    <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25" id="ongoingContainer">
-                        <div class="flex-grow-1 d-flex flex-nowrap gap-4 px-4 mb-4 mt-2 align-items-center" id="ongoing">
+                    <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25" id="ongoingContainer"
+                        style="min-height: 32rem !important;">
+                        <div class="flex-grow-1 d-flex flex-nowrap gap-4 px-4 mb-4 mt-2 align-items-center"
+                            id="ongoing">
                         </div>
                     </div>
                 </div>
 
                 <!-- upcoming -->
-                <div class="col-auto flex-grow-1 mt-2 px-0">
+                <div class="col flex-grow-1 mt-2 px-0">
                     <div class="mb-3 d-flex border-light bg-light bg-opacity-25 shadow-sm py-2 align-middle rounded-3">
                         <button type="button" class="btn btn-sidebar rounded-3 ms-2 text-light" id='sortrecent'>
                             <i class="bi bi-sort-up h5 m-0 d-flex align-items-center"></i>
@@ -107,7 +110,8 @@ require("startsession.php");
                             Transactions</h5>
                             <div style="width: 35px !important;" class="m-0 p-0"></div>
                     </div>
-                    <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25" id="queuecontainer">
+                    <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25"
+                        style="min-height: 32rem !important;" id="queuecontainer">
 
                         <div class=" d-flex flex-nowrap w-75 row row-cols-1 row-cols-md-3 gap-4 mt-2 mb-4 px-4 align-items-center"
                             id="cardcontainer">
@@ -120,29 +124,17 @@ require("startsession.php");
 
             <div class="container-fluid">
                 <div class="row row-cols-2 d-flex justify-content-center gap-3 px-3">
-<!-- 
-                    <div class="col-auto d-flex flex-column flex-grow-1 mb-3 px-0">
-                        <div class="bg-light bg-opacity-25 my-3 p-2 rounded-3 shadow-sm">
-                            <h4 class="fw-bold fs-2 text-center d-flex align-items-center justify-content-center m-0"><i
-                                    class="bi bi-calendar-week me-2"></i>Weekly
-                                Transactions</h5>
-                        </div>
-                        <div class="px-3 d-flex align-content-center flex-grow-1 bg-light bg-opacity-25 rounded shadow-sm">
-                            <div id="upcoming" class="flex-grow-1 h-75"></div>
-                        </div>
-                    </div> -->
 
-                    <div
-                        class="col flex-grow-1 py-3 px-0">
-                        <div
-                            class="bg-light bg-opacity-25 mb-3 py-2 rounded-3 shadow-sm d-flex justify-content-center">
+                    <div class="col flex-grow-1 py-3 px-0">
+                        <div class="bg-light bg-opacity-25 mb-3 py-2 rounded-3 shadow-sm d-flex justify-content-center">
                             <h4 class="fw-light text-center text-center align-middle fs-2 fw-bold m-0"><i
                                     class="bi bi-journal-minus me-2"></i> Pending Transactions</h4>
                         </div>
 
-                        <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25 p-3 flex-grow-1" style="min-height: 35rem !important;" id="incTransContainer">
+                        <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25 p-3 flex-grow-1"
+                            style="min-height: 35rem !important;" id="incTransContainer">
                             <div id="incompleteTransactions"
-                                class="my-auto d-flex flex-nowrap justify-content-start gap-4 px-4"></div>
+                                class="my-auto d-flex flex-nowrap justify-content-start mx-auto gap-4 px-4"></div>
                         </div>
                     </div>
 
@@ -153,7 +145,8 @@ require("startsession.php");
                                 Calendar
                             </h4>
                         </div>
-                        <div class="bg-light shadow-sm bg-opacity-25 rounded p-2" id="calendar" style="min-height: 35rem;"></div>
+                        <div class="bg-light shadow-sm bg-opacity-25 rounded p-2" id="calendar"
+                            style="min-height: 35rem;"></div>
                     </div>
                 </div>
             </div>
@@ -176,7 +169,7 @@ require("startsession.php");
                             style="height: 15rem !important"></div>
                     </div> -->
 
-                    
+
                 </div>
             </div>
 
@@ -238,8 +231,7 @@ require("startsession.php");
             <div class="modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header bg-modal-title text-light">
-                        <h1 class="modal-title fs-5">Recorded Items Dispatched<span
-                                id="deployedtransid"></span></h1>
+                        <h1 class="modal-title fs-5">Recorded Items Dispatched<span id="deployedtransid"></span></h1>
                         <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                 class="bi text-light bi-x-lg"></i></button>
                     </div>
@@ -254,18 +246,17 @@ require("startsession.php");
             </div>
         </div>
 
-        <div class="modal fade text-dark modal-edit" id="reschedModal" tabindex="-1" aria-labelledby="create"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header bg-modal-title text-light">
-                        <h1 class="modal-title fs-5">Reschedule Transaction <span id="reschedtransid"></span></h1>
-                        <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
-                                class="bi text-light bi-x"></i></button>
-                    </div>
-                    <form id="reschedForm">
+        <form id="reschedForm">
+            <div class="modal fade text-dark modal-edit" id="reschedModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="create"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Reschedule Transaction <span id="reschedtransid"></span></h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                    class="bi text-light bi-x"></i></button>
+                        </div>
                         <div class="modal-body">
-
                             <input type="hidden" name="reschedid" id="reschedId">
                             <label for="rescheddate" class="form-label">Select New Schedule</label>
                             <input type="date" name="reschedDate" class="form-control w-50" id="reschedDate">
@@ -273,17 +264,43 @@ require("startsession.php");
                             <label for="reschedTime" class="form-label">Select Time:</label>
                             <input type="text" name="reschedTime" class="form-control w-50" id="reschedTime">
                             <div class="form-text ms-1">Select time between 9:00 AM and 3:00 PM.</div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Cancel</button>
+                            <button type="button" data-bs-target="#confirm_resched" data-bs-toggle="modal"
+                                class="btn btn-grad">Continue</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal fade text-dark modal-edit" id="confirm_resched" tabindex="-1" data-bs-backdrop="static" aria-labelledby="create"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5">Reschedule Transaction <span id="reschedtransid"></span></h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                    class="bi text-light bi-x"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <label for="resched_pwd" class="form-label">Reschedule transaction? Enter<?= $_SESSION['techUsn'] ?>'s
+                                password to continue.'</label>
+                            <input type="password" class="form-control w-50" name="pwd" id="resched_pwd">
+
                             <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 mt-3' style="display: none;"
                                 id="reschedalert"></p>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-grad">Reschedule Transaction</button>
+                            <button type="button" data-bs-target="#reschedModal" data-bs-toggle="modal"
+                                class="btn btn-grad">Go Back</button>
+                            <button type="submit" class="btn btn-grad">Reschedule</button>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
 
-        </div>
+            </div>
+        </form>
 
         <div class="modal fade text-dark modal-edit" id="cancelModal" tabindex="-1" aria-labelledby="create"
             aria-hidden="true">
@@ -298,7 +315,7 @@ require("startsession.php");
                         <div class="modal-body">
                             <input type="hidden" name="cancelIdName" id="cancelId">
                             <label for="cancelPass" class="form-label">Cancel this transaction? Enter
-                                <?= $_SESSION['saUsn'] ?>'s password to proceed</label>
+                                <?= $_SESSION['techUsn'] ?>'s password to proceed</label>
                             <input type="password" name="cancelPass" class="form-control w-50" id="cancelPass">
                             <div class="form-text ms-1">Cancelling Transaction is undoable, continue?</div>
                             <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 mt-3' style="display: none;"
@@ -351,8 +368,8 @@ require("startsession.php");
     ?>
 
     <script>
-        const dataUrl = "tablecontents/queue.data.php";
-        const submitUrl = "tablecontents/queue.config.php";
+        const dataUrl = "contents/queue.data.php";
+        const submitUrl = "contents/queue.config.php";
 
         let asc = false;
         $(document).on('click', '#sortrecent', async function () {
@@ -368,18 +385,6 @@ require("startsession.php");
                 return asc;
             }
         });
-
-        // $(document).on('click', '#reviewBtn', async function () {
-        //     let id = $(this).data('review');
-        //     $('#reviewIdInput').attr("value", id);
-        //     $('#reviewId').html(id);
-        //     $('#reviewModal').modal('show');
-        // });
-
-        // $(document).on('submit', '#reviewForm', async function(e){
-        //     e.preventDefault();
-        //     console.log($(this).serialize());
-        // });
 
         $(document).ready(function () {
             let techStatBtnWidth = $("#sortTechStatus").outerWidth();
@@ -550,7 +555,7 @@ require("startsession.php");
                 if (resched) {
                     await show_toast(resched.success);
                     await load_cards();
-                    $('#reschedModal').modal('hide');
+                    $('#confirm_resched').modal('hide');
                 }
             } catch (error) {
                 let err = error.responseText;
@@ -599,9 +604,7 @@ require("startsession.php");
         reschedTime = flatpickr(reschedTimee, {
             enableTime: true,
             noCalendar: true,
-            dateFormat: "H:i",
-            minTime: "9:00",
-            maxTime: "15:00"
+            dateFormat: "H:i"
         });
 
         $(document).on('click', '#resched', async function () {
@@ -784,22 +787,22 @@ require("startsession.php");
 
         });
 
-        $(document).on('click', '.items-btn', function(){
+        $(document).on('click', '.items-btn', function () {
             let trans_id = $(this).data('item');
             console.log(trans_id);
 
             $.get(dataUrl, {
                 dispatched_items: true,
                 id: trans_id
-            }, function(d){
+            }, function (d) {
                 $("#items").empty();
                 $("#items").append(d);
                 $("#itemsModal").modal('show');
             }, 'html')
-            .fail(function(e){
-                alert("There seems to be an error fetching the dispatched items. Please try again later.");
-                console.log(e);
-            });
+                .fail(function (e) {
+                    alert("There seems to be an error fetching the dispatched items. Please try again later.");
+                    console.log(e);
+                });
         })
     </script>
 </body>
