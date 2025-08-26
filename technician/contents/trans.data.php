@@ -625,6 +625,7 @@ if (isset($_GET['notes']) && $_GET['notes'] === 'true') {
     }
 }
 
+
 if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
 
     $status = (string) $_GET['status'];
@@ -657,7 +658,6 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
     <?php
     exit();
 }
-
 if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
     $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing' AND branch = {$_SESSION['branch']} ORDER BY updated_at DESC LIMIT 5;";
     $result = mysqli_query($conn, $sql);

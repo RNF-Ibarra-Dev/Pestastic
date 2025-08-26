@@ -638,9 +638,10 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
     }
 }
 
+
 if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
 
-    $status = $_GET['status'];
+    $status = (string) $_GET['status'];
 
     $idd = uniqid();
     ?>
@@ -648,7 +649,7 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
         <div class="col-lg-4 mb-2">
             <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
                 Used:</label>
-            <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select">
+            <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
                 <?php get_chem($conn); ?>
             </select>
         </div>
@@ -656,12 +657,12 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
         <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
                 <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light">Amount:</label>
-                <input type="number" <?= $status != 'Accepted' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
-                    id="edit-amountUsed-<?= $idd ?>" class="form-control form-add me-3" autocomplete="one-time-code"
-                    <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
+                <input type="number" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $idd ?>"
+                    class="form-control form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? '' : 'disabled' ?>>
             </div>
-            <span id="passwordHelpInline" class="form-text mt-auto mb-2">
-                /ml
+            <!-- change this line to select -->
+            <span class="form-text mt-auto ms-2 mb-2">
+                -
             </span>
             <button type="button" data-row-id="<?= $idd ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
                     class="bi bi-dash-circle text-light"></i></button>

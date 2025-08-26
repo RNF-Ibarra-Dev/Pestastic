@@ -16,6 +16,21 @@
   /* --bs-light-rgb: rgb(255, 255, 255) !important; */
 }
 
+input::placeholder, textarea::placeholder{
+  color:#878787 !important;
+}
+
+p, th{
+  user-select: none !important;
+}
+
+label.fw-bold, label.fw-light{
+  font-size: 1.15rem !important;
+  font-weight: 600 !important;
+  color: #313131 !important;
+  user-select: none !important;
+}
+
 button[type="button"][data-bs-dismiss="modal"][aria-label="close"] {
   background-color: #bababa !important;
   padding: 2px 1px;

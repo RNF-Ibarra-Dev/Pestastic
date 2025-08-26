@@ -45,30 +45,30 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     if ($package === 'none' || $package === NULL) {
         if (empty($treatment)) {
             http_response_code(400);
-            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Treatment Assigned."]);
+            echo "Missing Treatment Assigned.";
             exit();
         }
         $package = NULL;
     } else {
         if (!in_array($package, $packageIds)) {
             http_response_code(400);
-            echo json_encode(['type' => 'invalid_array', 'errorMessage' => 'Invalid Package. Please Try Again.']);
+            echo 'Invalid Package. Please Try Again.';
             exit();
         }
         $treatment = get_package_treatment($conn, $package);
         if (isset($treatment['error'])) {
             http_response_code(400);
-            echo json_encode(['type' => 'invalid_id', 'errorMessage' => $treatment['error']]);
+            echo $treatment['error'];
             exit();
         }
         if (empty($session)) {
             http_response_code(400);
-            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Session count is required."]);
+            echo "Session count is required.";
             exit();
         }
         if (empty($pstart) || empty($pexp)) {
             http_response_code(400);
-            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Package Warranty Start."]);
+            echo "Missing Package Warranty Start.";
             exit();
         }
     }

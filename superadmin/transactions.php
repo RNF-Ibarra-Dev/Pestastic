@@ -1434,7 +1434,7 @@
         addTime = flatpickr(addtime, {
             altInput: true,
             altFormat: "h:i K",
-            dateFormat: "h:i",
+            dateFormat: "H:i",
             enableTime: true,
             noCalendar: true,
             setDate: '8:00'
@@ -2080,6 +2080,16 @@
 
         })
 
+        $(document).on('click', "#modalcancelbtn", function () {
+            let id = $('#view-transId').val();
+            // console.log(id);
+            $('#transidinputcancel').val(id);
+            $('#cancelscheduledform').on('hidden.bs.modal', function () {
+                $("#cancelscheduledform")[0].reset();
+
+            });
+        });
+
         async function view_transaction(transId) {
             try {
                 const details = await $.ajax({
@@ -2355,7 +2365,7 @@
             }
         })
 
-        $(document).on('click', 'button.ef-del-btn.btn.btn-grad', async function () {
+        $("#viewEditForm").on('click', 'button.ef-del-btn.btn.btn-grad', async function () {
             let rowId = $(this).data('row-id');
             let row = $('#edit-chemBrandUsed > div').length;
             if (row === 1) {

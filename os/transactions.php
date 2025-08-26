@@ -1545,7 +1545,7 @@
         addTime = flatpickr(addtime, {
             altInput: true,
             altFormat: "h:i K",
-            dateFormat: "h:i",
+            dateFormat: "H:i",
             enableTime: true,
             noCalendar: true,
             setDate: '8:00'
@@ -2615,7 +2615,7 @@
         //     }
         // });
 
-        $(document).on('click', '#edit-chemBrandUsed button.ef-del-btn.btn.btn-grad', async function () {
+        $("#viewEditForm").on('click', '#edit-chemBrandUsed button.ef-del-btn.btn.btn-grad', async function () {
             let rowId = $(this).data('row-id');
             let row = $('#edit-chemBrandUsed > div').length;
             if (row === 1) {

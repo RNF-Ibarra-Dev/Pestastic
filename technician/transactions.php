@@ -15,7 +15,7 @@ require("startsession.php");
 
 <body class="bg-official text-light">
 
-    <div class="sa-bg container-fluid p-0 h-100 d-flex">
+    <div class="sa-bg container-fluid p-0 min-vh-100 d-flex">
         <!-- sidebar -->
         <?php include('sidenav.php'); ?>
         <!-- main content -->
@@ -182,15 +182,15 @@ require("startsession.php");
                                         Customer Information</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
-                                            <label for="add-customerName" class="form-label fw-light">Customer Name
+                                            <label for="add-customerName" class="form-label fw-bold">Customer Name
                                             </label>
                                             <input type="text" name="add-customerName" id="add-customerName"
                                                 class="form-control form-add" placeholder="Enter name"
                                                 autocomplete="one-time-code">
-                                            <!-- <p class="text-body-secondary text-muted fw-light">Note: Include full customer name</p> -->
+                                            <!-- <p class="text-body-secondary text-muted fw-bold">Note: Include full customer name</p> -->
                                         </div>
                                         <div class="col-lg-6 mb-2">
-                                            <label for="add-customerAddress" class="form-label fw-light">Customer Full
+                                            <label for="add-customerAddress" class="form-label fw-bold">Customer Full
                                                 Address
                                             </label>
                                             <textarea name="add-customerAddress" id="add-customerAddress"
@@ -210,20 +210,20 @@ require("startsession.php");
                                     <div class="row mb-2">
 
                                         <div class="col-lg-3 mb-2">
-                                            <label for="add-treatmentDate" class="form-label fw-light">Treatment
+                                            <label for="add-treatmentDate" class="form-label fw-bold">Treatment
                                                 Date</label>
                                             <input name="add-treatmentDate" placeholder="--/--/--"
                                                 id="add-treatmentDate" class="form-control form-add">
                                         </div>
                                         <div class="col-lg-3 mb-2">
-                                            <label for="add-treatmentTime" class="form-label fw-light">Treatment
+                                            <label for="add-treatmentTime" class="form-label fw-bold">Treatment
                                                 Time</label>
                                             <input name="add-treatmentTime" id="add-treatmentTime" placeholder="--:--"
                                                 class="form-control form-add" autocomplete="address-line3">
                                         </div>
 
                                         <div class="col-lg-6 mb-2">
-                                            <label for="add-treatment" class="form-label fw-light">Treatment</label>
+                                            <label for="add-treatment" class="form-label fw-bold">Treatment</label>
                                             <select name="add-treatment" name="add-treatment" id="add-treatment"
                                                 class="form-select">
                                                 <option value="" selected>Select Treatment</option>
@@ -235,7 +235,7 @@ require("startsession.php");
 
                                     <div class="row mb-2">
                                         <div class="col-lg-4">
-                                            <label for="add-treatmentType" class="form-label fw-light">Treatment
+                                            <label for="add-treatmentType" class="form-label fw-bold">Treatment
                                                 Type</label>
                                             <select name="add-treatmentType" id="add-treatmentType" class="form-select">
                                                 <option value="" selected>Select Treatment Type</option>
@@ -249,7 +249,7 @@ require("startsession.php");
                                             </select>
                                         </div>
                                         <div class="col-lg-8">
-                                            <label for="add-package" class="form-label fw-light">Package</label>
+                                            <label for="add-package" class="form-label fw-bold">Package</label>
                                             <select name="add-package" id="add-package" class="form-select">
                                                 <div id="packageSelectContainer"></div>
                                             </select>
@@ -259,20 +259,20 @@ require("startsession.php");
                                     <div class="row">
                                         <div class="col-lg-3 mb-2">
                                             <label for="add-packageStart"
-                                                class="form-label fw-light text-nowrap">Package Warranty
+                                                class="form-label fw-bold text-nowrap">Package Warranty
                                                 Start</label>
                                             <input placeholder="--/--/--" id="add-packageStart" name="add-packageStart"
                                                 class="form-control form-add" disabled>
                                         </div>
                                         <div class="col-lg-3 mb-2">
-                                            <label for="add-packageExpiry" class="form-label fw-light">Package
+                                            <label for="add-packageExpiry" class="form-label fw-bold">Package
                                                 Expiry</label>
                                             <input placeholder="--/--/--" class="fw-light form-control"
                                                 name="add-packageExpiry" id="add-packageExpiry" readonly disabled>
                                         </div>
 
                                         <div class="col-lg-3">
-                                            <label for="add-session" class="form-label fw-light text-nowrap">Session
+                                            <label for="add-session" class="form-label fw-bold text-nowrap">Session
                                                 Number</label>
                                             <input type="number" name="add-session" class="form-control form-add"
                                                 id="add-session" placeholder="e.g. 2" autocomplete="one-time-code"
@@ -291,7 +291,7 @@ require("startsession.php");
                                     <div class="row mb-2">
 
                                         <div class="col-lg-12 mb-2">
-                                            <label for="add-probCheckbox" class="form-label fw-light">Pest
+                                            <label for="add-probCheckbox" class="form-label fw-bold">Pest
                                                 Problem</label>
                                             <div id="add-probCheckbox" name="add-probCheckbox"
                                                 class="d-flex gap-2 align-items-center justify-content-evenly flex-wrap">
@@ -302,7 +302,7 @@ require("startsession.php");
 
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
-                                            <label for="add-chemBrandUsed" class="form-label fw-light">Chemical
+                                            <label for="add-chemBrandUsed" class="form-label fw-bold">Chemical
                                                 Used</label>
                                             <select id="add-chemBrandUsed" name="add_chemBrandUsed[]"
                                                 class="form-select chem-brand-select">
@@ -318,7 +318,7 @@ require("startsession.php");
                                         </div>
                                         <div class="col-lg-6 mb-2 ps-0 d-flex justify-content-evenly">
                                             <div class="d-flex flex-column">
-                                                <label for="add-amountUsed" class="form-label fw-light">Amount
+                                                <label for="add-amountUsed" class="form-label fw-bold">Amount
                                                     Used</label>
                                                 <input type="number" maxlength="4" id="add-amountUsed"
                                                     name="add-amountUsed[]"
@@ -339,7 +339,7 @@ require("startsession.php");
 
                                     <div class="row mb-2">
                                         <div class="dropdown-center col-lg-6 mb-2">
-                                            <label for="add-technicianName" class="form-label fw-light">Technicians
+                                            <label for="add-technicianName" class="form-label fw-bold">Technicians
                                             </label>
                                             <select id="add-technicianName" name="add-technicianName[]" not-size="2"
                                                 class="form-select" aria-label="Default select example">
@@ -355,7 +355,7 @@ require("startsession.php");
                                     <div id="addTechContainer" class="row mb-2"></div>
                                     <div class="row mb-2 ">
                                         <div class="col-lg-6">
-                                            <label for="add-status" class="form-label fw-light">Status</label>
+                                            <label for="add-status" class="form-label fw-bold">Status</label>
                                             <select name="add-status" id="add-status" class="form-select">
                                                 <option value="" selected>Select Status</option>
                                                 <option value="Pending">Pending</option>
@@ -370,7 +370,7 @@ require("startsession.php");
                                             </p>
                                         </div>
                                         <div class="col-lg-6">
-                                            <label for="add-notes" class="form-label fw-light">Additional Notes</label>
+                                            <label for="add-notes" class="form-label fw-bold">Additional Notes</label>
                                             <textarea name="add-notes" id="add-notes" placeholder=". . ."
                                                 class="form-control" rows="1"></textarea>
                                         </div>
@@ -436,11 +436,11 @@ require("startsession.php");
                                 <div class="p-0 m-0 mb-2" id="finalize-chemBrandUsed"></div>
                                 <button type="button" id="finalize-addMoreChem"
                                     class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
-                                    <p class="fw-light m-0 me-2">Add Chemical</p><i
+                                    <p class="fw-bold m-0 me-2">Add Chemical</p><i
                                         class="bi bi-plus-circle text-light"></i>
                                 </button>
 
-                                <label for="finalizenotes" class="fw-light my-2">Note:</label>
+                                <label for="finalizenotes" class="fw-bold my-2">Note:</label>
                                 <textarea name="note" class="form-control w-50" id="finalizeNotes" cols="1"
                                     placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
                             </div>
@@ -674,7 +674,7 @@ require("startsession.php");
                                 <div class="row mb-2">
 
                                     <div class="col-lg-6 mb-2">
-                                        <label for="view-transId" class="form-label fw-light">Transaction ID:
+                                        <label for="view-transId" class="form-label fw-bold">Transaction ID:
                                         </label>
                                         <input type="text" name="edit-transId" id="view-transId"
                                             class="form-control-plaintext form-add" readonly
@@ -683,7 +683,7 @@ require("startsession.php");
 
                                     <div class="col-lg-6 mb-2">
 
-                                        <label for="view-customerName" class="form-label fw-light">Customer Name:
+                                        <label for="view-customerName" class="form-label fw-bold">Customer Name:
                                         </label>
                                         <!-- remove readonly in edit mode -->
                                         <input type="text" name="edit-customerName" id="view-customerName"
@@ -696,13 +696,13 @@ require("startsession.php");
                                 <div class="row mb-2">
 
                                     <div class="col-lg-6 mb-2" id='view-addCont'>
-                                        <label for='view-address' class="form-label fw-light">Address:</label>
+                                        <label for='view-address' class="form-label fw-bold">Address:</label>
                                         <textarea type="text" id="view-address" class="form-control-plaintext form-add"
                                             readonly style="resize: none !important;"></textarea>
                                     </div>
 
                                     <div class="col-lg-6 mb-2 d-none" id='edit-addCont'>
-                                        <label for='edit-address' class="form-label fw-light">Address:</label>
+                                        <label for='edit-address' class="form-label fw-bold">Address:</label>
                                         <textarea type="text" name="edit-address" id="edit-address"
                                             class="form-control form-add"></textarea>
                                     </div>
@@ -721,12 +721,12 @@ require("startsession.php");
                                     <!-- treatment -->
                                     <div class="col-lg-4 mb-2">
                                         <!-- left side -- treatments in view -->
-                                        <label for="view-treatment" class="form-label fw-light"
+                                        <label for="view-treatment" class="form-label fw-bold"
                                             id="view-treatment-label">Treatment:</label>
                                         <ul class="list-group list-group-flush" id="view-treatment"></ul>
 
                                         <!-- left side -- treatments in edit -->
-                                        <label for="edit-treatment" class="form-label fw-light visually-hidden"
+                                        <label for="edit-treatment" class="form-label fw-bold visually-hidden"
                                             id="edit-treatment-label">Treatment</label>
                                         <select name="edit-treatment" id="edit-treatment"
                                             class="form-select visually-hidden">
@@ -737,7 +737,7 @@ require("startsession.php");
                                         </select>
                                     </div>
                                     <div class="col-lg-3">
-                                        <label for="edit-treatmentType" class="form-label fw-light">Treatment
+                                        <label for="edit-treatmentType" class="form-label fw-bold">Treatment
                                             Type:</label>
                                         <p id="view-treatmentType" class="ps-3"></p>
                                         <select name="edit-treatmentType" id="edit-treatmentType"
@@ -755,7 +755,7 @@ require("startsession.php");
 
                                     <!-- right side -->
                                     <div class="col-lg-3 mb-2">
-                                        <label for="view-treatmentDate" class="form-label fw-light">Treatment
+                                        <label for="view-treatmentDate" class="form-label fw-bold">Treatment
                                             Date:</label>
                                         <input type="text" name="edit-treatmentDate" id="view-treatmentDate"
                                             class="form-control form-add d-none">
@@ -763,7 +763,7 @@ require("startsession.php");
                                     </div>
 
                                     <div class="col-lg-2 mb-2">
-                                        <label for="view-treatmentTime" class="form-label fw-light">Treatment
+                                        <label for="view-treatmentTime" class="form-label fw-bold">Treatment
                                             Time:</label>
                                         <input type="text" name="edit-treatmentTime" id="view-treatmentTime"
                                             class="form-control form-add d-none">
@@ -775,14 +775,14 @@ require("startsession.php");
                                     <div class="col-lg-6 mb-2">
                                         <!-- left side -- view of customer pest problems -->
                                         <label for="view-probCheckbox" id="view-probCheckbox-label"
-                                            class="form-label fw-light">Customer's Pest
+                                            class="form-label fw-bold">Customer's Pest
                                             Problems:</label>
                                         <ul class="list-group list-group-flush" id="view-probCheckbox"></ul>
                                     </div>
 
                                     <div class="col-lg-12 mb-2 visually-hidden" id="row-pestProblems">
                                         <!-- whole row -- edit of customer pest problems-->
-                                        <label for="edit-probCheckbox" class="form-label fw-light">Customer's Pest
+                                        <label for="edit-probCheckbox" class="form-label fw-bold">Customer's Pest
                                             Problems:</label>
                                         <div id="edit-probCheckbox" name="edit-probCheckbox"
                                             class="d-flex gap-2 align-items-center justify-content-evenly flex-wrap">
@@ -794,7 +794,7 @@ require("startsession.php");
                                 <div class="row mb-2">
 
                                     <div class="col-lg-6">
-                                        <label for="edit-package" class="form-label fw-light">Package:</label>
+                                        <label for="edit-package" class="form-label fw-bold">Package:</label>
                                         <p id="view-package" class="ps-3"></p>
                                         <select name="edit-package" class="form-select d-none" id="edit-package-select">
                                             <option value="none">None</option>
@@ -802,19 +802,19 @@ require("startsession.php");
                                         </select>
                                     </div>
                                     <div class="col-lg-2">
-                                        <label for="edit-session" class="form-label text-nowrap fw-light">Session
+                                        <label for="edit-session" class="form-label text-nowrap fw-bold">Session
                                             number:</label>
                                         <input type="text" class="form-control-plaintext ps-3" id="edit-session"
                                             name="edit-session" readonly>
                                     </div>
                                     <div class="col-lg-2">
-                                        <label for="view-start" class="form-label fw-light">Warranty
+                                        <label for="view-start" class="form-label fw-bold">Warranty
                                             Start:</label>
                                         <input class="form-control ps-3 d-none" placeholder="--/--/--" id="view-start">
                                         <p id="view_wstart" class="ps-3 mt-2 mb-0"></p>
                                     </div>
                                     <div class="col-lg-2">
-                                        <label for="view-expiry" class="form-label text-nowrap fw-light">Warranty
+                                        <label for="view-expiry" class="form-label text-nowrap fw-bold">Warranty
                                             Expiry:</label>
                                         <input class="form-control-plaintext d-none ps-3" placeholder="--/--/--"
                                             id="view-expiry" readonly>
@@ -839,14 +839,14 @@ require("startsession.php");
                                     <div class="col-lg-6 mb-2" id="view-chemUsedContainer">
                                         <!-- left side -- view -->
                                         <label for="view-chemUsed" id="view-chemUsed-label"
-                                            class="form-label fw-light">Chemicals
+                                            class="form-label fw-bold">Chemicals
                                             Used:</label>
                                         <ul class="list-group list-group-flush" id="view-chemUsed"></ul>
                                     </div>
 
                                     <!-- right side -- view -->
                                     <div class="col-lg-6 mb-2" id="view-status-col">
-                                        <label for="view-status" class="form-label mb-0 fw-light p-0">Transaction
+                                        <label for="view-status" class="form-label mb-0 fw-bold p-0">Transaction
                                             Status:</label>
                                         <p class="fw-light ps-3" id="view-status">
                                         </p>
@@ -867,110 +867,87 @@ require("startsession.php");
 
                                 <div class="row mb-2">
                                     <div class="col-lg-6">
-                                        <!-- edit technician choices/select, toggle visually-hidden when edit is on -->
-                                        <label for='edit-technicianName' id="edit-technicianName-label"
-                                            class="form-label fw-light visually-hidden">Edit Technician/s:</label>
-
-                                        <!-- container -- ajax -- append -->
-                                        <div class="d-flex flex-column m-0 p-0 visually-hidden"
-                                            id="edit-technicianName">
-                                        </div>
-
-                                        <!-- add button -->
-                                        <div class="w-50 d-flex visually-hidden" id="techaddbtn">
-                                            <button type="button" id="edit-addTech"
-                                                class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
-                                                <p class="fw-light m-0 me-3">Add Technician</p><i
-                                                    class="bi bi-plus-circle text-light"></i>
-                                            </button>
-                                        </div>
-
                                         <div class="dropdown-center col-lg-6 mb-2">
                                             <!-- list technician when in view mode. Handled in ajax -->
                                             <label for="view-technicians" id="view-technicians-label"
-                                                class="form-label fw-light">Technician/s:
+                                                class="form-label fw-bold">Technician/s:
                                             </label>
                                             <ul class="list-group list-group-flush" id="view-technicians"></ul>
                                         </div>
 
                                     </div>
                                     <div class="col-lg-6 mb-2" id="view-noteContainer">
-                                        <label for="view-note" class="form-label fw-light">Additional
+                                        <label for="view-note" class="form-label fw-bold">Additional
                                             Notes:</label>
                                         <p class="ps-3 fw-light" id="view-note"></p>
                                     </div>
-                                    <div class="col-lg-6 mb-2 d-none" id="edit-noteContainer">
-                                        <label for="edit-note" class="form-label fw-light">Additional
-                                            Notes:</label>
-                                        <textarea class="fw-light form-control" name="edit-note"
-                                            id="edit-note"></textarea>
-                                    </div>
-
                                 </div>
 
                                 <div class="p-0 m-0 mb-2" id="edit-chemContainer">
                                     <!-- template add chemical -->
                                 </div>
 
-
-                                <div class="row mb-2 d-none" id="edit-status-col">
-                                    <!-- edit -->
-                                    <div class="col-lg-6 d-flex flex-column">
-                                        <label for="edit-status" class="form-label" id='label-edit-status'>Transaction
-                                            Status:</label>
-                                        <select name="edit-status" id="edit-status" class="form-select ">
-                                            <option value="" selected>Select Status</option>
-                                            <option value="Pending">Pending</option>
-                                            <option value="Accepted">Accepted</option>
-                                            <option value="Dispatched">Dispatched</option>
-                                            <option value="Finalizing">Finalizing</option>
-                                            <option value="Completed">Completed</option>
-                                            <option value="Cancelled">Cancelled</option>
-                                        </select>
-                                        <p class="alert alert-warning py-1 mt-2" style="display: none !important;">
-                                        </p>
-                                    </div>
-
-                                </div>
-
                                 <p id="transvoidalert" class="alert alert-danger py-2 text-center w-50 mx-auto mb-0">
                                 </p>
 
-                                <!-- toggle visually hidden when edit -->
                                 <p class="mb-0 mt-4" id='metadata'><small id=view-time class="text-muted"></small>
                                 </p>
-
-                                <div class="row mt-3 mb-2 mx-auto g-2 d-flex justify-content-evenly visually-hidden"
-                                    id="editbtns">
-                                    <button type="button" class="btn btn-grad" style="width: 45% !important;"
-                                        id="confirmUpdate" data-bs-target="#confirmation" data-bs-toggle="modal">Update
-                                        Transaction</button>
-                                    <button type="button" class="btn btn-grad" style="width: 45% !important;"
-                                        id="confirmDelete" data-bs-toggle="modal" data-bs-target="#confirmation">Delete
-                                        Transaction</button>
-                                </div>
                             </div>
 
                             <!-- footer -->
                             <div class="modal-footer">
                                 <div class="m-0 p-0 me-auto d-flex gap-2">
                                     <button type="button" class="btn mt-auto btn-grad" data-bs-toggle="modal"
-                                        data-bs-target="#voidrequestmodal" id="requestvoidbtn">Request Void
-                                        Transaction</button>
-                                    <button type="button" class="btn btn-grad" id="modalcancelbtn"
-                                        data-bs-toggle="modal" data-bs-target="#cancelscheduledmodal">Cancel
-                                        Scheduled
+                                        data-bs-target="#voidrequestmodal">Request Void
                                         Transaction</button>
                                 </div>
                                 <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close
                                     Details</button>
-                                <button type="button" class="btn btn-grad" id="editbtn">Edit/Delete
-                                    Transaction</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <form id="voidrequestform">
+                <input type="hidden" name="transid" id="voidreqid">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="voidrequestmodal"
+                    tabindex="0">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Void Request Confirmation</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Send request to
+                                        void
+                                        transaction?
+                                        Enter Operation Supervisor
+                                        <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="baPwd" class="form-control"
+                                            id="confirmapprove-inputpwd">
+                                    </div>
+                                </div>
+                                <div id="passwordHelpBlock" class="form-text">
+                                    Note: This might take a while for the Manager to process. Please be patient.
+                                </div>
+                                <p class="text-center alert alert-info w-75 mx-auto mb-0 mt-2" style="display: none"
+                                    id="voidalert">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    data-bs-target="#details-modal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Send Request</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
 
 
             <div class="d-flex justify-content-center mb-5" style="display: none !important;" id="loader">
@@ -1594,6 +1571,34 @@ require("startsession.php");
             }
         }
 
+        $(document).on('click', '#voidrequestmodal', function () {
+            let id = $('#view-transId').val();
+            $("#voidreqid").val(id);
+        })
+
+
+        $(document).on('submit', "#voidrequestform", async function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+
+            $.ajax({
+                method: "POST",
+                url: submiturl,
+                dataType: 'json',
+                data: $(this).serialize() + "&submitvoidreq=true"
+            })
+                .done(async function (d) {
+                    show_toast(d.success);
+                    $("#voidrequestform")[0].reset();
+                    $("#voidrequestmodal").modal('hide');
+                    await loadpage(1, $("#sortstatus").val());
+                })
+                .fail(function (e) {
+                    $("#voidalert").fadeIn(400).html(e.responseText).delay(2000).fadeOut(1000);
+                    // console.log(e);
+                })
+        })
+
         function get_package_name(id) {
             $.get(dataurl, `packagename=true&id=${id}`)
                 .done(function (data) {
@@ -1951,7 +1956,7 @@ require("startsession.php");
         $('#addTransaction').on('submit', async function (e) {
             e.preventDefault();
             let status = $("#sortstatus").val();
-            // console.log($(this).serialize());
+            console.log($(this).serialize());
             try {
                 const trans = await $.ajax({
                     type: 'POST',
@@ -2075,10 +2080,28 @@ require("startsession.php");
         addTime = flatpickr(addtime, {
             altInput: true,
             altFormat: "h:i K",
-            dateFormat: "h:i",
+            dateFormat: "H:i",
             enableTime: true,
             noCalendar: true,
             setDate: '8:00'
+        });
+
+        $(document).on('focusout', 'form input, form select, form textarea', function () {
+            if ($(this).val() == '' || $(this).val() == '#') {
+                $(this).addClass('border border-danger');
+            } else {
+                $(this).removeClass('border border-danger');
+            }
+        });
+
+        $("#dispatchForm").on('click', "#dispatch-addMoreChem", function () {
+            $.get(dataurl, {
+                addrow: 'true',
+                status: 'Dispatched'
+            }, function (data) {
+                $("#dispatch-chemBrandUsed").append(data);
+            }, 'html');
+
         });
     </script>
 </body>

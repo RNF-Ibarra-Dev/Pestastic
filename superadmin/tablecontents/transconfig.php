@@ -323,7 +323,7 @@ if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
 
     if (empty($trans) || empty($pwd)) {
         http_response_code(400);
-        echo json_encode(['error' => 'Empty Inputs.']);
+        echo 'Empty Inputs.';
         exit();
     }
 
@@ -335,7 +335,7 @@ if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
 
     if (!validate($conn, $pwd)) {
         http_response_code(400);
-        echo json_encode(['error' => 'Wrong Password.']);
+        echo 'Wrong Password.';
         exit();
     }
 
@@ -343,7 +343,7 @@ if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
 
     if (isset($voidreq['msg'])) {
         http_response_code(400);
-        echo json_encode(['error' => $voidreq['msg'] . $voidreq['id']]);
+        echo $voidreq['msg'] . $voidreq['id'];
         exit();
     }
 
