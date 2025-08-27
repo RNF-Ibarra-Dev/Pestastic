@@ -23,18 +23,53 @@ require("startsession.php");
             <?php include('navbar.php'); ?>
             <!-- content -->
 
-            <div class="mx-2 bg-light bg-opacity-25 rounded p-3 shadow">
+            <div class="mx-2 bg-light bg-opacity-25 rounded p-3 shadow user-select-none">
                 <h1 class="fw-medium text-center display-6">Welcome Operations Manager<strong
                         style="text-transform: capitalize;">
                         <?= $_SESSION['fname'] . ' ' . $_SESSION['lname'] ?></strong>
                 </h1>
             </div>
-            <div class="row m-2 gap-2">
-                <div class="col bg-light rounded-3 bg-opacity-25">a</div>
-                <div class="col bg-light rounded-3 bg-opacity-25">a</div>
-                <div class="col bg-light rounded-3 bg-opacity-25">s</div>
-                <div class="col bg-light rounded-3 bg-opacity-25">ss</div>
-                <div class="col bg-light rounded-3 bg-opacity-25">d</div>
+            <div class="row m-2 gap-2 user-select-none">
+                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3 justify-content-around">
+                    <i
+                        class="bi bi-box-fill flex-grow-0 my-auto shadow-sm fs-4 bg-success bg-opacity-50 py-2 px-3 rounded-circle align-middle text-center"></i>
+                    <div class="d-flex flex-column">
+                        <p class="fw-bold fs-5">Available in stock items</p>
+                        <span id="avail_item_count" class="fw-medium fs-5"></span>
+                    </div>
+                </div>
+                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3 justify-content-around">
+                    <i
+                        class="bi bi-geo-alt-fill flex-grow-0 my-auto shadow-sm fs-4 bg-color-accent bg-opacity-25 py-2 px-3 rounded-circle align-middle text-center"></i>
+                    <div class="d-flex flex-column">
+                        <p class="fw-bold fs-5">Dispatched Technicians</p>
+                        <span id="dispatched_tech" class="fw-medium fs-5"></span>
+                    </div>
+                </div>
+                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3 justify-content-around">
+                    <i
+                        class="bi bi-calendar2-check-fill flex-grow-0 my-auto shadow-sm fs-4 bg-info bg-opacity-50 py-2 px-3 rounded-circle align-middle text-center"></i>
+                    <div class="d-flex flex-column">
+                        <p class="fw-bold fs-5">Weekly Transactions</p>
+                        <span id="weekly_completed" class="fw-medium fs-5"></span>
+                    </div>
+                </div>
+                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3 justify-content-around">
+                    <i
+                        class="bi bi-exclamation-triangle-fill flex-grow-0 my-auto shadow-sm fs-4 bg-warning bg-opacity-50 py-2 px-3 rounded-circle align-middle text-center"></i>
+                    <div class="d-flex flex-column">
+                        <p class="fw-bold fs-5">Urgent Restocks</p>
+                        <span id="urgent_restocks" class="fw-medium fs-5"></span>
+                    </div>
+                </div>
+                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3 justify-content-around">
+                    <i
+                        class="bi bi-journal-bookmark-fill flex-grow-0 my-auto shadow-sm fs-4 bg-danger bg-opacity-50 py-2 px-3 rounded-circle align-middle text-center"></i>
+                    <div class="d-flex flex-column">
+                        <p class="fw-bold fs-5">Current Approvals</p>
+                        <span id="today_pending" class="fw-medium fs-5"></span>
+                    </div>
+                </div>
             </div>
             <div class="row m-2 gap-2">
                 <div class="col bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
@@ -99,7 +134,8 @@ require("startsession.php");
                 </div>
                 <div class="col bg-light bg-opacity-25  rounded p-3 shadow">
                     <div class="clearfix">
-                        <i class="bi bi-exclamation-circle fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
+                        <i
+                            class="bi bi-exclamation-circle fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
                         <p class="text-center fw-medium fs-3 w-75 mx-auto">Running Out Items</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
@@ -117,7 +153,8 @@ require("startsession.php");
                 </div>
                 <div class="col bg-light bg-opacity-25  rounded p-3 shadow">
                     <div class="clearfix">
-                        <i class="bi bi-arrow-repeat fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
+                        <i
+                            class="bi bi-arrow-repeat fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
                         <p class="text-center fw-medium fs-3 w-75 mx-auto">Finalizing Transactions</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
@@ -148,7 +185,23 @@ require("startsession.php");
             await append_table('pendingchem');
             await append_table('lowchemicals');
             await append_table('finalizing_table');
+            await get_count('avail_item_count');
+            await get_count('dispatched_tech');
+            await get_count('weekly_completed');
+            await get_count('urgent_restocks');
+            await get_count('today_pending');
         })
+
+        async function get_count(container) {
+            return $.get(dataurl, { count: container }, function (d) {
+                $(`#${container}`).empty();
+                $(`#${container}`).append(d);
+            }, 'html')
+                .fail(function (e) {
+                    alert(`Failed to append data to ${container} container.`);
+                    console.log(e);
+                })
+        }
 
         async function append_table(container) {
             try {

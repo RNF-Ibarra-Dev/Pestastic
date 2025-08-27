@@ -70,10 +70,10 @@ i.text-light,
 .color-accent {
   color: #fcb217 !important;
 }
-
 .bg-color-accent {
-  background-color: #fcb217 !important;
+  background-color: #fcb217;
 }
+
 
 table {
   min-height: 24rem !important;
