@@ -113,7 +113,7 @@ require("startsession.php");
                     <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25"
                         style="min-height: 32rem !important;" id="queuecontainer">
 
-                        <div class=" d-flex flex-nowrap w-75 row row-cols-1 row-cols-md-3 gap-4 mt-2 mb-4 px-4 align-items-center"
+                        <div class=" d-flex flex-nowrap w-75 row row-cols-1 row-cols-md-3 gap-4 mt-2 mb-4 px-4 align-items-center mx-auto"
                             id="cardcontainer">
                             <!-- ajax -->
                         </div>

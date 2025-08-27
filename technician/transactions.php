@@ -439,7 +439,8 @@ require("startsession.php");
                                 <textarea name="note" class="form-control w-50" id="finalizeNotes" cols="1"
                                     placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
 
-                                <p class="alert alert-warning px-1 w-50 mt-2 mb-0 text-center mx-auto fw-light">Note to put only the amount used during the dispatch.</p>
+                                <p class="alert alert-warning px-1 w-50 mt-2 mb-0 text-center mx-auto fw-light">Note to
+                                    put only the amount used during the dispatch.</p>
 
                             </div>
                             <div class="modal-footer">
@@ -1053,7 +1054,7 @@ require("startsession.php");
                 if (pagination) {
                     $('#pagination').empty();
                     $('#pagination').append(pagination);
-                    window.history.pushState(null, "", "?page=" + page);
+                    // window.history.pushState(null, "", "?page=" + page);
                 }
             } catch (error) {
                 console.log(error);
@@ -1108,6 +1109,21 @@ require("startsession.php");
             }
 
         });
+
+        <?php
+        if (isset($_GET['openmodal']) && $_GET['openmodal'] === 'true') {
+            ?>
+            let id = <?= $_GET['id']; ?>;
+            view_transaction(id);
+            $('#details-modal').on('hidden.bs.modal', function (e) {
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.delete('openmodal');
+                currentUrl.searchParams.delete('id');
+                window.history.pushState(null, "", currentUrl.pathname + currentUrl.search);
+            });
+            <?php
+        }
+        ?>
 
         async function fetch_something(container, data, activeTech = tech) {
             try {

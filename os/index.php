@@ -23,34 +23,39 @@ require("startsession.php");
             <?php include('navbar.php'); ?>
             <!-- content -->
 
+            <div class="mx-2 bg-light bg-opacity-25 rounded p-3 shadow">
+                <h1 class="fw-medium text-center display-6">Welcome Operations Manager<strong
+                        style="text-transform: capitalize;">
+                        <?= $_SESSION['fname'] . ' ' . $_SESSION['lname'] ?></strong>
+                </h1>
+            </div>
             <div class="row m-2 gap-2">
-                <div class="col-5 bg-light bg-opacity-25 border rounded p-3 shadow">
-                    <h1 class=" display-6 mx-auto">Welcome Operations Manager<br><strong
-                            style="text-transform: capitalize;">
-                            <?= $_SESSION['fname'] . ' ' . $_SESSION['lname'] ?></strong>
-                    </h1>
-                    <p class="fs-3"></p>
-                </div>
-                <div class="col bg-light bg-opacity-25 border rounded p-3 pb-0 shadow">
+                <div class="col bg-light rounded-3 bg-opacity-25">a</div>
+                <div class="col bg-light rounded-3 bg-opacity-25">a</div>
+                <div class="col bg-light rounded-3 bg-opacity-25">s</div>
+                <div class="col bg-light rounded-3 bg-opacity-25">ss</div>
+                <div class="col bg-light rounded-3 bg-opacity-25">d</div>
+            </div>
+            <div class="row m-2 gap-2">
+                <div class="col bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
                     <div>
                         <div class="clearfix">
                             <i
-                                class="bi bi-clipboard-data fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
-                            <p class="text-center align-text-center fs-3 w-75 mx-auto">
+                                class="bi bi-clipboard-data-fill fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
+                            <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
                                 Transactions Status Summary</p>
                         </div>
-                        <canvas id="transPie" width="250" height="
-                        250"></canvas>
+                        <canvas id="transPie" style="max-height: 30rem !important;"></canvas>
                         <p class="text-muted mt-3">Check <a href="transactions.php"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
                             to display all transactions.</p>
                     </div>
                 </div>
-                <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
+                <div class="col bg-light bg-opacity-25  rounded p-3 shadow">
                     <div class="clearfix">
                         <i
-                            class="bi bi-stopwatch fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
-                        <p class="text-center align-text-center fs-3 w-75 mx-auto">
+                            class="bi bi-stopwatch-fill fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
+                        <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
                             Pending Transactions</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
@@ -72,11 +77,11 @@ require("startsession.php");
 
             <div class="row m-2 gap-2">
 
-                <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
+                <div class="col bg-light bg-opacity-25  rounded p-3 shadow">
                     <div class="clearfix">
                         <i
-                            class="ms-2 fs-3 bi bi-clock float-start fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
-                        <p class="text-center fs-3 mx-auto w-75">Pending Item Entries</p>
+                            class="ms-2 fs-3 bi bi-clock-fill float-start fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
+                        <p class="text-center fw-medium fs-3 mx-auto w-75">Pending Item Entries</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
                         <caption>Recently requested addition of chemicals. Check <a href="inventory.php"
@@ -92,10 +97,10 @@ require("startsession.php");
                         <tbody id="pendingchem" class=""></tbody>
                     </table>
                 </div>
-                <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
+                <div class="col bg-light bg-opacity-25  rounded p-3 shadow">
                     <div class="clearfix">
-                        <i class="bi bi-exclamation-circle fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
-                        <p class="text-center fs-3 w-75 mx-auto">Running Out Items</p>
+                        <i class="bi bi-exclamation-circle fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
+                        <p class="text-center fw-medium fs-3 w-75 mx-auto">Running Out Items</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
                         <caption>Check <a href="inventory.php?chem=low"
@@ -110,10 +115,10 @@ require("startsession.php");
                         <tbody id="lowchemicals"></tbody>
                     </table>
                 </div>
-                <div class="col bg-light bg-opacity-25 border rounded p-3 shadow">
+                <div class="col bg-light bg-opacity-25  rounded p-3 shadow">
                     <div class="clearfix">
-                        <i class="bi bi-arrow-repeat fs-4 border shadow-sm float-start bg-dark bg-opacity-25 px-2 rounded py-1"></i>
-                        <p class="text-center fs-3 w-75 mx-auto">Finalizing Transactions</p>
+                        <i class="bi bi-arrow-repeat fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
+                        <p class="text-center fw-medium fs-3 w-75 mx-auto">Finalizing Transactions</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
                         <caption>Check <a href="transactions.php"

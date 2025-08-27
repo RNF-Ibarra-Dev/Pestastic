@@ -35,7 +35,7 @@ require("startsession.php");
                             <i
                                 class="bi bi-clipboard-data-fill  fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
                             <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
-                                Transactions Status</p>
+                                Transactions Status Summary</p>
                         </div>
                         <canvas id="transPie" style="max-height: 30rem !important;"></canvas>
                         <p class="text-light fw-light mt-3">Check <a href="transactions.php"
