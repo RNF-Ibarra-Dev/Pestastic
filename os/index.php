@@ -30,41 +30,41 @@ require("startsession.php");
                 </h1>
             </div>
             <div class="row m-2 gap-2 user-select-none">
-                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3 justify-content-around">
+                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3">
                     <i
-                        class="bi bi-box-fill flex-grow-0 my-auto shadow-sm fs-4 bg-success bg-opacity-50 py-2 px-3 rounded-circle align-middle text-center"></i>
+                        class="me-4 ms-2 bi bi-box-fill flex-grow-0 my-auto shadow-sm fs-4 bg-success bg-opacity-50 py-2 px-3 rounded-circle align-middle text-center"></i>
                     <div class="d-flex flex-column">
                         <p class="fw-bold fs-5">Available in stock items</p>
                         <span id="avail_item_count" class="fw-medium fs-5"></span>
                     </div>
                 </div>
-                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3 justify-content-around">
+                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3">
                     <i
-                        class="bi bi-geo-alt-fill flex-grow-0 my-auto shadow-sm fs-4 bg-color-accent bg-opacity-25 py-2 px-3 rounded-circle align-middle text-center"></i>
+                        class="me-4 ms-2 bi bi-geo-alt-fill flex-grow-0 my-auto shadow-sm fs-4 bg-color-accent bg-opacity-25 py-2 px-3 rounded-circle align-middle text-center"></i>
                     <div class="d-flex flex-column">
                         <p class="fw-bold fs-5">Dispatched Technicians</p>
                         <span id="dispatched_tech" class="fw-medium fs-5"></span>
                     </div>
                 </div>
-                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3 justify-content-around">
+                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3">
                     <i
-                        class="bi bi-calendar2-check-fill flex-grow-0 my-auto shadow-sm fs-4 bg-info bg-opacity-50 py-2 px-3 rounded-circle align-middle text-center"></i>
+                        class="me-4 ms-2 bi bi-calendar2-check-fill flex-grow-0 my-auto shadow-sm fs-4 bg-info bg-opacity-50 py-2 px-3 rounded-circle align-middle text-center"></i>
                     <div class="d-flex flex-column">
                         <p class="fw-bold fs-5">Weekly Transactions</p>
                         <span id="weekly_completed" class="fw-medium fs-5"></span>
                     </div>
                 </div>
-                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3 justify-content-around">
+                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3">
                     <i
-                        class="bi bi-exclamation-triangle-fill flex-grow-0 my-auto shadow-sm fs-4 bg-warning bg-opacity-50 py-2 px-3 rounded-circle align-middle text-center"></i>
+                        class="me-4 ms-2 bi bi-exclamation-triangle-fill flex-grow-0 my-auto shadow-sm fs-4 bg-warning bg-opacity-50 py-2 px-3 rounded-circle align-middle text-center"></i>
                     <div class="d-flex flex-column">
                         <p class="fw-bold fs-5">Urgent Restocks</p>
                         <span id="urgent_restocks" class="fw-medium fs-5"></span>
                     </div>
                 </div>
-                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3 justify-content-around">
+                <div class="col bg-light rounded-3 bg-opacity-25 d-flex py-3">
                     <i
-                        class="bi bi-journal-bookmark-fill flex-grow-0 my-auto shadow-sm fs-4 bg-danger bg-opacity-50 py-2 px-3 rounded-circle align-middle text-center"></i>
+                        class="me-4 ms-2 bi bi-journal-bookmark-fill flex-grow-0 my-auto shadow-sm fs-4 bg-danger bg-opacity-50 py-2 px-3 rounded-circle align-middle text-center"></i>
                     <div class="d-flex flex-column">
                         <p class="fw-bold fs-5">Current Approvals</p>
                         <span id="today_pending" class="fw-medium fs-5"></span>
@@ -81,6 +81,20 @@ require("startsession.php");
                                 Transactions Status Summary</p>
                         </div>
                         <canvas id="transPie" style="max-height: 30rem !important;"></canvas>
+                        <p class="text-muted mt-3">Check <a href="transactions.php"
+                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
+                            to display all transactions.</p>
+                    </div>
+                </div>
+                <div class="col bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
+                    <div class="d-flex flex-column h-100">
+                        <div class="clearfix">
+                            <i
+                                class="bi bi-box-fill fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
+                            <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
+                                Most Item Used (Weekly)</p>
+                        </div>
+                        <canvas id="item_trend" style="min-height: 25rem !important;" class="my-auto"></canvas>
                         <p class="text-muted mt-3">Check <a href="transactions.php"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
                             to display all transactions.</p>
@@ -240,12 +254,13 @@ require("startsession.php");
                 if (chartData) {
                     data = JSON.parse(chartData);
                     console.log(data);
-                    create_chart('transPie', data.count);
+                    create_chart('transPie', data);
                 }
             } catch (error) {
                 console.log(error.responseText);
             }
         }
+
 
         const transPie = $('#transPie');
         console.log(transPie);
@@ -261,9 +276,9 @@ require("startsession.php");
             new Chart(ctx, {
                 type: 'pie',
                 data: {
-                    labels: [`Pending: ${data[0]}`, `Accepted: ${data[1]}`, `Voided: ${data[2]}`, `Completed: ${data[3]}`, `Cancelled: ${data[4]}`, `Finalizing: ${data[5]}`, `Dispatched: ${data[6]}`],
+                    labels: [...data.status],
                     datasets: [{
-                        data: [data[0], data[1], data[2], data[3], data[4], data[5], data[6]],
+                        data: [...data.count],
                         borderWidth: 1,
                         backgroundColor: [
                             'rgba(255, 255, 255, 0.14)',
@@ -294,6 +309,91 @@ require("startsession.php");
                 }
             });
         }
+
+        function fetch_bar(container) {
+            $.get(dataurl, { bar: container }, function (d) {
+                create_bar(container, d);
+            }, 'json')
+                .fail(function (e) {
+                    alert(`Failed to fetch bar chart ${container}.`);
+                    console.log(e);
+                });
+        }
+
+        const itemTrend = $("#item_trend");
+
+        function create_bar(canvasid, data) {
+            const ctx = $(`#${canvasid}`);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [...data.brand],
+                    datasets: [{
+                        data: [...data.count],
+                        borderWidth: 0.8,
+                        backgroundColor: [
+                            'rgba(255, 255, 255, 0.98)',
+                            'rgba(255, 255, 255, 0.84)',
+                            'rgba(255, 255, 255, 0.70)',
+                            'rgba(255, 255, 255, 0.56)',
+                            'rgba(255, 255, 255, 0.42)',
+                            'rgba(255, 255, 255, 0.28)',
+
+                        ],
+                        borderColor: '#fff',
+                        borderRadius: 5,
+                        barThickness: 30
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            bodyColor: 'white',
+                            titleColor: 'white',
+                            yAlign: 'right',
+                            bodyAlign: 'center',
+                            titleAlign: 'center',
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            displayColors: false
+                        },
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#fff',
+                                // minRotation: 90
+                                stepSize: 1
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.8)',
+                                borderWidth: 1,
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.8)',
+                                borderWidth: 1
+                            },
+                            ticks: {
+                                color: '#fff',
+                            },
+                        }
+                    },
+
+                }
+            })
+        }
+
+        $(function () {
+            fetch_bar('item_trend');
+        })
+
     </script>
 </body>
 

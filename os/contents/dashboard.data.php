@@ -18,6 +18,31 @@ if (isset($_GET['getChart']) && $_GET['getChart'] == 'status') {
   echo json_encode(['status' => $status, 'count' => $count]);
 }
 
+if (isset($_GET['bar']) && $_GET['bar'] === 'item_trend') {
+  $sql = "SELECT 
+            tc.chem_brand as brand,
+            COUNT(*) as count 
+          FROM transaction_chemicals tc 
+          JOIN chemicals c ON (c.id = tc.chem_id)
+          JOIN transactions t ON (t.id = tc.trans_id)
+          WHERE (t.updated_at BETWEEN CURDATE() - INTERVAL 7 DAY AND NOW())
+            AND t.branch = {$_SESSION['branch']}
+          GROUP BY tc.chem_brand 
+          ORDER BY count DESC 
+          LIMIT 6;";
+  $result = mysqli_query($conn, $sql);
+
+  $brand = [];
+  $count = [];
+
+  while ($row = mysqli_fetch_assoc($result)) {
+    $brand[] = $row['brand'];
+    $count[] = $row['count'];
+  }
+
+  echo json_encode(['brand' => $brand, 'count' => $count]);
+}
+
 if (isset($_GET['append']) && $_GET['append'] === 'pendingtrans') {
   $sql = "SELECT * FROM transactions WHERE transaction_status = 'Pending' AND branch = {$_SESSION['branch']} ORDER BY id DESC LIMIT 5;";
   $result = mysqli_query($conn, $sql);
@@ -131,7 +156,7 @@ if (isset($_GET['append']) && $_GET['append'] == 'lowchemicals') {
 }
 
 
-if(isset($_GET['count']) && $_GET['count'] === 'avail_item_count'){
+if (isset($_GET['count']) && $_GET['count'] === 'avail_item_count') {
   $sql = "SELECT COUNT(*) FROM chemicals WHERE request = 0 AND chem_location = 'main_storage' AND unop_cont > 0 AND chemLevel > 0 AND branch = {$_SESSION['branch']};";
   $res = mysqli_query($conn, $sql);
 
@@ -139,7 +164,7 @@ if(isset($_GET['count']) && $_GET['count'] === 'avail_item_count'){
   exit();
 }
 
-if(isset($_GET['count']) && $_GET['count'] === 'dispatched_tech'){
+if (isset($_GET['count']) && $_GET['count'] === 'dispatched_tech') {
   $sql = "SELECT COUNT(*) FROM transaction_technicians tt JOIN transactions t ON tt.trans_id = t.id WHERE t.transaction_status = 'Finalizing' AND t.branch = {$_SESSION['branch']};";
   $res = mysqli_query($conn, $sql);
 
@@ -147,7 +172,7 @@ if(isset($_GET['count']) && $_GET['count'] === 'dispatched_tech'){
   exit();
 }
 
-if(isset($_GET['count']) && $_GET['count'] === 'weekly_completed'){
+if (isset($_GET['count']) && $_GET['count'] === 'weekly_completed') {
   $sql = "SELECT COUNT(*) FROM transactions WHERE (updated_at BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE()) AND transaction_status = 'Completed' AND branch = {$_SESSION['branch']};";
   $res = mysqli_query($conn, $sql);
 
@@ -155,7 +180,7 @@ if(isset($_GET['count']) && $_GET['count'] === 'weekly_completed'){
   exit();
 }
 
-if(isset($_GET['count']) && $_GET['count'] === 'urgent_restocks'){
+if (isset($_GET['count']) && $_GET['count'] === 'urgent_restocks') {
   $sql = "SELECT COUNT(*) FROM chemicals WHERE (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) < restock_threshold  AND branch = {$_SESSION['branch']};";
   $res = mysqli_query($conn, $sql);
 
@@ -163,7 +188,7 @@ if(isset($_GET['count']) && $_GET['count'] === 'urgent_restocks'){
   exit();
 }
 
-if(isset($_GET['count']) && $_GET['count'] === 'today_pending'){
+if (isset($_GET['count']) && $_GET['count'] === 'today_pending') {
   $sql = "SELECT COUNT(*) FROM transactions WHERE (transaction_status = 'Pending' OR transaction_status = 'Finalizing') AND branch = {$_SESSION['branch']};";
   $res = mysqli_query($conn, $sql);
 
