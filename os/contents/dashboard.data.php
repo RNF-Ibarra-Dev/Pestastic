@@ -30,6 +30,22 @@ if (isset($_GET['bar']) && $_GET['bar'] === 'item_trend') {
           GROUP BY tc.chem_brand 
           ORDER BY count DESC 
           LIMIT 6;";
+  // $sql = "SELECT 
+  //           CONCAT(
+  //               'Week ',
+  //               FLOOR((DAY(t.updated_at) - 1) / 7) + 1,
+  //               ' of ',
+  //               MONTHNAME(t.updated_at)
+  //           ) AS week,
+  //           SUM(tc.amt_used) AS total_used
+  //         FROM transaction_chemicals tc
+  //         JOIN transactions t ON (t.id = tc.trans_id)
+  //         WHERE YEAR(t.updated_at) = YEAR(CURDATE()) 
+  //           AND MONTH(t.updated_at) = MONTH(CURDATE())
+  //           AND t.branch = {$_SESSION['branch']}
+  //         GROUP BY week
+  //         ORDER BY MIN(t.updated_at);
+  //         ";
   $result = mysqli_query($conn, $sql);
 
   $brand = [];

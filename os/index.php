@@ -92,7 +92,7 @@ require("startsession.php");
                             <i
                                 class="bi bi-box-fill fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
                             <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
-                                Most Item Used (Weekly)</p>
+                                Most Item Used (Last 7 days)</p>
                         </div>
                         <canvas id="item_trend" style="min-height: 25rem !important;" class="my-auto"></canvas>
                         <p class="text-muted mt-3">Check <a href="transactions.php"
