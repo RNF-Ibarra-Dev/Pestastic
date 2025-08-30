@@ -16,20 +16,39 @@ if (isset($_GET['getChart']) && $_GET['getChart'] == 'status') {
   }
 
   echo json_encode(['status' => $status, 'count' => $count]);
+  mysqli_close($conn);
+  exit();
+}
+
+if (isset($_GET['line']) && $_GET['line'] === 'yearly_completion') {
+  $sql = "SELECT
+            DATE_FORMAT(t.updated_at, '%M') AS month,
+            COUNT(*) AS counts
+          FROM
+            transactions t
+          WHERE
+            YEAR(t.updated_at) = YEAR(NOW())
+          AND	
+            t.transaction_status = 'Completed'
+          GROUP BY
+            month
+          order by
+            month ASC;";
+  $result = mysqli_query($conn, $sql);
+  $months = [];
+  $counts = [];
+
+  while ($row = mysqli_fetch_assoc($result)) {
+    $months[] = $row['month'];
+    $counts[] = $row['counts'];
+  }
+
+  echo json_encode(['months' => $months, 'counts' => $counts]);
+  mysqli_close($conn);
+  exit();
 }
 
 if (isset($_GET['bar']) && $_GET['bar'] === 'item_trend') {
-  // $sql = "SELECT 
-  //           tc.chem_brand as brand,
-  //           COUNT(*) as count 
-  //         FROM transaction_chemicals tc 
-  //         JOIN chemicals c ON (c.id = tc.chem_id)
-  //         JOIN transactions t ON (t.id = tc.trans_id)
-  //         WHERE (t.updated_at BETWEEN CURDATE() - INTERVAL 7 DAY AND NOW())
-  //           AND t.branch = {$_SESSION['branch']}
-  //         GROUP BY tc.chem_brand 
-  //         ORDER BY count DESC 
-  //         LIMIT 6;";
   $sql = "SELECT 
               WEEK(t.updated_at, 1) - WEEK(DATE_FORMAT(t.updated_at, '%Y-%m-01'), 1) + 1 AS week_of_month,
               COUNT(*) AS total_count
@@ -56,13 +75,13 @@ if (isset($_GET['bar']) && $_GET['bar'] === 'item_trend') {
 
   $weeks = [];
   $counts = [];
-  foreach($week_count as $week => $count){
+  foreach ($week_count as $week => $count) {
     $weeks[] = "Week $week";
     $counts[] = $count;
   }
 
 
-  echo json_encode(['brand' => $weeks, 'count' => $counts]);
+  echo json_encode(['weeks' => $weeks, 'count' => $counts]);
   mysqli_close($conn);
   exit();
 }

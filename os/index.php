@@ -90,11 +90,25 @@ require("startsession.php");
                     <div class="d-flex flex-column h-100">
                         <div class="clearfix">
                             <i
-                                class="bi bi-box-fill fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
+                                class="bi bi-boxes fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
                             <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
-                                Most Used Item (Last 7 days)</p>
+                                Items Used Weekly (<?=date("F")?>)</p>
                         </div>
                         <canvas id="item_trend" style="min-height: 25rem !important;" class="my-auto"></canvas>
+                        <p class="text-muted mt-3">Check <a href="transactions.php"
+                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
+                            to display all transactions.</p>
+                    </div>
+                </div>
+                <div class="col bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
+                    <div class="d-flex flex-column h-100">
+                        <div class="clearfix">
+                            <i
+                                class="bi bi-boxes fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
+                            <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
+                                Yearly Completed Transactions</p>
+                        </div>
+                        <canvas id="yearly_completion" style="min-height: 25rem !important;" class="my-auto"></canvas>
                         <p class="text-muted mt-3">Check <a href="transactions.php"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
                             to display all transactions.</p>
@@ -313,7 +327,7 @@ require("startsession.php");
         function fetch_bar(container) {
             $.get(dataurl, { bar: container }, function (d) {
                 create_bar(container, d);
-                console.log(d);
+                // console.log(d);
             }, 'json')
                 .fail(function (e) {
                     alert(`Failed to fetch bar chart ${container}.`);
@@ -329,7 +343,7 @@ require("startsession.php");
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: [...data.brand],
+                    labels: [...data.weeks],
                     datasets: [{
                         data: [...data.count],
                         borderWidth: 0.8,
@@ -393,7 +407,89 @@ require("startsession.php");
 
         $(function () {
             fetch_bar('item_trend');
-        })
+        });
+
+        function fetch_line(container) {
+            $.get(dataurl, { line: container }, function (d) {
+                create_line(container, d);
+            }, 'json')
+                .fail(function (e) {
+                    alert(`Failed to fetch line chart ${container}.`);
+                    console.log(e);
+                });
+        }
+
+        function create_line(canvasid, data) {
+            const ctx = $(`#${canvasid}`);
+            console.log(data.month);
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [...data.months],
+                    datasets: [{
+                        data: [...data.counts],
+                        borderWidth: 0.8,
+                        backgroundColor: [
+                            'rgba(255, 255, 255, 0.98)',
+                            'rgba(255, 255, 255, 0.84)',
+                            'rgba(255, 255, 255, 0.70)',
+                            'rgba(255, 255, 255, 0.56)',
+                            'rgba(255, 255, 255, 0.42)',
+                            'rgba(255, 255, 255, 0.28)',
+
+                        ],
+                        borderColor: '#fff',
+                        borderRadius: 5,
+                        barThickness: 30
+                    }]
+                },
+                options: {
+                    // indexAxis: 'y',
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            bodyColor: 'white',
+                            titleColor: 'white',
+                            yAlign: 'right',
+                            bodyAlign: 'center',
+                            titleAlign: 'center',
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            displayColors: false
+                        },
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#fff',
+                                // minRotation: 90
+                                stepSize: 1
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.8)',
+                                borderWidth: 1,
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.8)',
+                                borderWidth: 1
+                            },
+                            ticks: {
+                                color: '#fff',
+                            },
+                        }
+                    },
+
+                }
+            })
+        }
+
+        $(function () {
+            fetch_line('yearly_completion');
+        });
 
     </script>
 </body>
