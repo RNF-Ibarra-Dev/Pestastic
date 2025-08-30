@@ -86,15 +86,16 @@ require("startsession.php");
                             to display all transactions.</p>
                     </div>
                 </div>
+
                 <div class="col bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
                     <div class="d-flex flex-column h-100">
                         <div class="clearfix">
                             <i
-                                class="bi bi-boxes fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
+                                class="bi bi-calendar2-check-fill fs-4 shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
                             <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
-                                Items Used Weekly (<?=date("F")?>)</p>
+                                Yearly Completed Transactions</p>
                         </div>
-                        <canvas id="item_trend" style="min-height: 25rem !important;" class="my-auto"></canvas>
+                        <canvas id="yearly_completion" class="my-auto"></canvas>
                         <p class="text-muted mt-3">Check <a href="transactions.php"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
                             to display all transactions.</p>
@@ -104,11 +105,66 @@ require("startsession.php");
                     <div class="d-flex flex-column h-100">
                         <div class="clearfix">
                             <i
+                                class="bi bi-person-badge-fill fs-4 shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
+                            <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
+                                Top Technicians (<?= date("F") ?>)</p>
+                        </div>
+                        <ul class="text-shadow list-group list-group-flush rounded-3 shadow-sm" id="top_technicians">
+                        </ul>
+                        <p class="text-muted mt-3">Check <a href="transactions.php"
+                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
+                            to display all transactions.</p>
+                    </div>
+                </div>
+                <div class="col bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
+                    <div class="d-flex flex-column h-100">
+                        <div class="clearfix">
+                            <i
+                                class="bi bi-person-badge-fill fs-4 shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
+                            <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
+                                Weekly Technician Workload</p>
+                        </div>
+                        <ul class="text-shadow list-group list-group-flush rounded-3 shadow-sm" id="tech_workload">
+                        </ul>
+                        <p class="text-muted mt-3">Check <a href="transactions.php"
+                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
+                            to display all transactions.</p>
+                    </div>
+                </div>
+                <div class="col bg-light bg-opacity-25  rounded p-3 shadow">
+                    <div class="clearfix">
+                        <i
+                            class="bi bi-arrow-repeat fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
+                        <p class="text-center fw-medium fs-3 w-75 mx-auto">Finalizing Transactions</p>
+                    </div>
+                    <table class="table-hover rounded overflow-hidden table">
+                        <caption>Check <a href="transactions.php"
+                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
+                            for more.</caption>
+                        <thead>
+                            <tr class="text-center align-middle">
+                                <th scope="col">Transaction ID</th>
+                                <th scope="col">Customer Name</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="finalizing_table">
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="row m-2 gap-2">
+                <div class="col bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
+                    <div class="d-flex flex-column h-100">
+                        <div class="clearfix">
+                            <i
                                 class="bi bi-boxes fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
                             <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
-                                Yearly Completed Transactions</p>
+                                Items Used Weekly (<?= date("F") ?>)</p>
                         </div>
-                        <canvas id="yearly_completion" style="min-height: 25rem !important;" class="my-auto"></canvas>
+                        <canvas id="item_trend" style="min-height: 20rem !important;" class="my-auto"></canvas>
                         <p class="text-muted mt-3">Check <a href="transactions.php"
                                 class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
                             to display all transactions.</p>
@@ -135,11 +191,6 @@ require("startsession.php");
                         <tbody id="pendingtrans" class="text-center align-middle"></tbody>
                     </table>
                 </div>
-
-            </div>
-
-            <div class="row m-2 gap-2">
-
                 <div class="col bg-light bg-opacity-25  rounded p-3 shadow">
                     <div class="clearfix">
                         <i
@@ -160,10 +211,12 @@ require("startsession.php");
                         <tbody id="pendingchem" class=""></tbody>
                     </table>
                 </div>
-                <div class="col bg-light bg-opacity-25  rounded p-3 shadow">
+            </div>
+            <div class="row m-2 gap-2">
+                <div class="col bg-light bg-opacity-25 rounded p-3 shadow">
                     <div class="clearfix">
                         <i
-                            class="bi bi-exclamation-circle fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
+                            class="bi bi-exclamation-circle-fill fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
                         <p class="text-center fw-medium fs-3 w-75 mx-auto">Running Out Items</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
@@ -179,25 +232,24 @@ require("startsession.php");
                         <tbody id="lowchemicals"></tbody>
                     </table>
                 </div>
-                <div class="col bg-light bg-opacity-25  rounded p-3 shadow">
+                <div class="col bg-light bg-opacity-25 rounded p-3 shadow">
                     <div class="clearfix">
                         <i
-                            class="bi bi-arrow-repeat fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
-                        <p class="text-center fw-medium fs-3 w-75 mx-auto">Finalizing Transactions</p>
+                            class="bi bi-exclamation-triangle-fill fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
+                        <p class="text-center fw-medium fs-3 w-75 mx-auto">Expiring Items</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
-                        <caption>Check <a href="transactions.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
-                            for more.</caption>
+                        <caption>Check <a href="inventory.php?chem=low"
+                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
+                            to see all running out items.</caption>
                         <thead>
                             <tr class="text-center align-middle">
-                                <th scope="col">Transaction ID</th>
-                                <th scope="col">Customer Name</th>
-                                <th scope="col"></th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Item</th>
+                                <th scope="col">Expiry Date</th>
                             </tr>
                         </thead>
-                        <tbody id="finalizing_table">
-                        </tbody>
+                        <tbody id="expiring_items"></tbody>
                     </table>
                 </div>
             </div>
@@ -209,10 +261,13 @@ require("startsession.php");
 
 
         $(document).ready(async function () {
-            await append_table('pendingtrans');
-            await append_table('pendingchem');
-            await append_table('lowchemicals');
-            await append_table('finalizing_table');
+            await append('pendingtrans');
+            await append('pendingchem');
+            await append('lowchemicals');
+            await append('finalizing_table');
+            await append('top_technicians');
+            await append('tech_workload');
+            await append('expiring_items');
             await get_count('avail_item_count');
             await get_count('dispatched_tech');
             await get_count('weekly_completed');
@@ -231,7 +286,7 @@ require("startsession.php");
                 })
         }
 
-        async function append_table(container) {
+        async function append(container) {
             try {
                 const append = await $.ajax({
                     method: 'GET',
@@ -277,11 +332,6 @@ require("startsession.php");
 
 
         const transPie = $('#transPie');
-        console.log(transPie);
-        $(function () {
-            get_chart_data('status');
-        })
-
         Chart.defaults.color = '#000';
 
         function create_chart(canvasid, data) {
@@ -316,10 +366,15 @@ require("startsession.php");
                         tooltip: {
                             bodyColor: 'white',
                             titleColor: 'white',
-                            yAlign: 'bottom'
+                            yAlign: 'bottom',
+                            bodyAlign: 'center',
+                            titleAlign: 'center',
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            displayColors: false
                         },
 
-                    }
+                    },
+
                 }
             });
         }
@@ -405,10 +460,6 @@ require("startsession.php");
             })
         }
 
-        $(function () {
-            fetch_bar('item_trend');
-        });
-
         function fetch_line(container) {
             $.get(dataurl, { line: container }, function (d) {
                 create_line(container, d);
@@ -429,18 +480,8 @@ require("startsession.php");
                     datasets: [{
                         data: [...data.counts],
                         borderWidth: 0.8,
-                        backgroundColor: [
-                            'rgba(255, 255, 255, 0.98)',
-                            'rgba(255, 255, 255, 0.84)',
-                            'rgba(255, 255, 255, 0.70)',
-                            'rgba(255, 255, 255, 0.56)',
-                            'rgba(255, 255, 255, 0.42)',
-                            'rgba(255, 255, 255, 0.28)',
-
-                        ],
+                        backgroundColor: 'rgba(255, 255, 255, 0.98)',
                         borderColor: '#fff',
-                        borderRadius: 5,
-                        barThickness: 30
                     }]
                 },
                 options: {
@@ -451,14 +492,20 @@ require("startsession.php");
                             display: false
                         },
                         tooltip: {
+                            mode: 'index',
+                            intersect: false,
                             bodyColor: 'white',
                             titleColor: 'white',
-                            yAlign: 'right',
+                            yAlign: 'bottom',
                             bodyAlign: 'center',
                             titleAlign: 'center',
                             backgroundColor: 'rgba(0, 0, 0, 0.8)',
                             displayColors: false
                         },
+                    },
+                    hover: {
+                        mode: 'index',
+                        intersect: false
                     },
                     scales: {
                         x: {
@@ -479,7 +526,13 @@ require("startsession.php");
                             },
                             ticks: {
                                 color: '#fff',
+                                stepSize: 1
                             },
+                            min: 0,
+                            max: function () {
+                                var highest = Math.max(...data.counts);
+                                return highest + 3;
+                            }
                         }
                     },
 
@@ -488,6 +541,8 @@ require("startsession.php");
         }
 
         $(function () {
+            get_chart_data('status');
+            fetch_bar('item_trend');
             fetch_line('yearly_completion');
         });
 

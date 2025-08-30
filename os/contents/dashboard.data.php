@@ -33,7 +33,7 @@ if (isset($_GET['line']) && $_GET['line'] === 'yearly_completion') {
           GROUP BY
             month
           order by
-            month ASC;";
+            MONTH(t.updated_at) ASC;";
   $result = mysqli_query($conn, $sql);
   $months = [];
   $counts = [];
@@ -118,6 +118,98 @@ if (isset($_GET['append']) && $_GET['append'] === 'pendingtrans') {
   }
 }
 
+if (isset($_GET['append']) && $_GET['append'] === 'top_technicians') {
+  $sql = "SELECT
+            tt.tech_info as names,
+            COUNT(*) AS counts
+          FROM
+            transaction_technicians tt
+          JOIN
+            transactions t
+          ON 
+            t.id = tt.trans_id
+          WHERE
+            YEAR(t.updated_at) = YEAR(NOW())
+          AND
+            MONTH(t.updated_at) = MONTH(NOW())
+          AND
+            t.transaction_status = 'Completed'
+          GROUP BY
+            names
+          ORDER BY
+            counts DESC;";
+  $result = mysqli_query($conn, $sql);
+
+  if (mysqli_num_rows($result) > 0) {
+    echo "<li class='list-group-item d-flex justify-content-between bg-light bg-opacity-25 text-light'>
+        <span class='fw-bold fs-5'>Technician</span>
+        <span class='fw-bold fs-5 text-end'>Completed Transactions</span>
+      </li>";
+    while ($row = mysqli_fetch_assoc($result)) {
+      $name = $row['names'];
+      $count = $row['counts'];
+      ?>
+      <li class="list-group-item d-flex justify-content-between bg-light bg-opacity-25 text-light">
+        <span class="mx-2"><?= htmlspecialchars($name) ?></span>
+        <span class="mx-2 fw-medium"><?= htmlspecialchars($count) ?></span>
+      </li>
+      <?php
+    }
+  } else {
+     ?>
+      <li class="list-group-item text-center">No top technicians for this month</li>
+      <?php
+  }
+  mysqli_close($conn);
+  exit();
+}
+
+if (isset($_GET['append']) && $_GET['append'] === 'tech_workload') {
+  $sql = "SELECT
+            tt.tech_info as names,
+            COUNT(*) AS counts
+          FROM
+            transaction_technicians tt
+          JOIN
+            transactions t
+          ON 
+            t.id = tt.trans_id
+          WHERE
+            YEAR(t.updated_at) = YEAR(NOW())
+          AND
+            MONTH(t.updated_at) = MONTH(NOW())
+          AND
+            WEEK(t.updated_at, 1) = WEEK(NOW(), 1)
+          GROUP BY
+            names
+          ORDER BY
+            counts DESC;";
+  $result = mysqli_query($conn, $sql);
+
+  if (mysqli_num_rows($result) > 0) {
+    echo "<li class='list-group-item d-flex justify-content-between bg-light bg-opacity-25 text-light'>
+        <span class='fw-bold fs-5'>Technician</span>
+        <span class='fw-bold fs-5 text-end'>Transaction Workload</span>
+      </li>";
+    while ($row = mysqli_fetch_assoc($result)) {
+      $name = $row['names'];
+      $count = $row['counts'];
+      ?>
+      <li class="list-group-item d-flex justify-content-between bg-light bg-opacity-25 text-light">
+        <span class="mx-2"><?= htmlspecialchars($name) ?></span>
+        <span class="mx-2 fw-medium"><?= htmlspecialchars($count) ?></span>
+      </li>
+      <?php
+    }
+  } else {
+     ?>
+      <li class="list-group-item text-center">No top technicians for this month</li>
+      <?php
+  }
+  mysqli_close($conn);
+  exit();
+}
+
 if (isset($_GET['append']) && $_GET['append'] === 'finalizing_table') {
   $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing' AND branch = {$_SESSION['branch']} ORDER BY id DESC LIMIT 5;";
   $result = mysqli_query($conn, $sql);
@@ -144,6 +236,32 @@ if (isset($_GET['append']) && $_GET['append'] === 'finalizing_table') {
     }
   } else {
     echo "<tr><td scope='row' colspan='3' class='text-center'>No finalizing requests.</td></tr>";
+  }
+  mysqli_close($conn);
+  exit();
+}
+
+if (isset($_GET['append']) && $_GET['append'] === 'expiring_items') {
+  $sql = "SELECT * FROM chemicals WHERE expiryDate > NOW() AND expiryDate <= DATE_ADD(NOW(), INTERVAL 1 MONTH) AND branch = {$_SESSION['branch']} ORDER BY expiryDate DESC;";
+  $result = mysqli_query($conn, $sql);
+  if (mysqli_num_rows($result) > 0) {
+    while ($row = mysqli_fetch_assoc($result)) {
+      $id = $row['id'];
+      $name = $row['name'];
+      $brand = $row['brand'];
+      $exp = $row['expiryDate'];
+
+      ?>
+      <tr class="text-center align-middle">
+        <td><?= htmlspecialchars($id) ?></td>
+        <td><?= htmlspecialchars("$name ($brand)") ?></td>
+        <td><?= htmlspecialchars($exp) ?></td>
+      </tr>
+
+      <?php
+    }
+  } else {
+    echo "<tr><td scope='row' colspan='3' class='text-center align-middle'>No Expiring Items Soon.</td></tr>";
   }
   mysqli_close($conn);
   exit();
