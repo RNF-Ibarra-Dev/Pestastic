@@ -52,8 +52,9 @@ require("startsession.php");
                                 </div>
                             </div>
                             <label for="address" class="form-label fw-bold mb-0 text-shadow">Address:</label>
-                            <textarea name="address" id="address" rows="1" class="form-control-plaintext text-light ps-2"
-                                style="resize: none;" readonly></textarea>
+                            <textarea name="address" id="address" rows="1"
+                                class="form-control-plaintext text-light ps-2" style="resize: none;"
+                                readonly></textarea>
                             <label for="email" class="form-label fw-bold mb-0 text-shadow">Email:</label>
                             <input type="text" class="form-control-plaintext text-light ps-2" id="email" name="email"
                                 autocomplete="off" readonly>
@@ -61,7 +62,8 @@ require("startsession.php");
                                 Password:</label>
                             <input type="password" class="form-control d-none" id="oldpassword" name="oldpassword"
                                 autocomplete="new-password">
-                            <label for="password" class="form-label fw-bold mb-0 d-none pwd-label text-shadow">Password:</label>
+                            <label for="password"
+                                class="form-label fw-bold mb-0 d-none pwd-label text-shadow">Password:</label>
                             <input type="password" class="form-control d-none" id="password" name="password"
                                 autocomplete="new-password">
                             <label for="rpassword" class="form-label fw-bold mb-0 d-none pwd-label text-shadow">Repeat
@@ -98,7 +100,7 @@ require("startsession.php");
         async function load_user() {
             $.get(dataUrl, {
                 acc: true,
-                accountId: <?= $_SESSION['baID'] ?>
+                accountId: <?= $_SESSION['techId'] ?>
             })
                 .done(function (d) {
                     // console.log(d);
@@ -118,7 +120,7 @@ require("startsession.php");
                     alert(e);
                 })
                 .always(function (e) {
-                    // console.log(e);
+                    console.log(e);
                 })
         }
 
@@ -153,7 +155,7 @@ require("startsession.php");
         });
 
         $(document).on('submit', '#accountsettings', async function (e) {
-            console.log($(this).serialize());
+            // console.log($(this).serialize());
             e.preventDefault();
             $.ajax({
                 url: dataUrl,

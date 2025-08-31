@@ -145,7 +145,9 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
         exit();
     } elseif ($edit) {
         http_response_code(200);
-        echo json_encode(['success' => "Account Modified."]);
+        $_SESSION['fname'] = $fname;
+        $_SESSION['lname'] = $lname;
+        echo json_encode(['success' => "Account Modified.", 'name' => "{$_SESSION['fname']} {$_SESSION['lname']}"]);
         exit();
     } else {
         http_response_code(400);

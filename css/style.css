@@ -44,6 +44,12 @@ label.fw-bold, label.fw-light{
   user-select: none !important;
 }
 
+#accountsettings label.fw-bold, #accountsettings label.fw-light{
+  color: #fff !important;
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+}
+
 button[type="button"][data-bs-dismiss="modal"][aria-label="close"] {
   background-color: #bababa !important;
   padding: 2px 1px;

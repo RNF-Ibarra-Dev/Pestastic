@@ -532,6 +532,50 @@ function modify_ba($conn, $fname, $lname, $username, $address, $email, $pwd = ''
         ];
     }
 }
+function modify_tech($conn, $fname, $lname, $username, $address, $email, $pwd = '', $bd, $id)
+{
+
+    mysqli_begin_transaction($conn);
+    try {
+
+        $sql = "UPDATE technician SET username = ?, firstName = ?, lastName = ?, techEmail = ?, techBirthdate = ?, techAddress = ?";
+        $stmt = mysqli_stmt_init($conn);
+
+        $types = "ssssss";
+        $data = [$username, $fname, $lname, $email, $bd, $address];
+        if (!empty($pwd)) {
+            $sql .= ", techPwd = ?";
+            $types .= 's';
+            $data[] = $pwd;
+        }
+
+        $sql .= " WHERE technicianId = ?;";
+        $types .= "i";
+        $data[] = $id;
+
+        // throw new Exception($sql);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("Prepared statement have failed.");
+        }
+
+        mysqli_stmt_bind_param($stmt, $types, ...$data);
+        mysqli_stmt_execute($stmt);
+        $res = mysqli_stmt_get_result($stmt);
+
+        if (mysqli_affected_rows($conn) > 0) {
+            mysqli_commit($conn);
+            return true;
+        } else {
+            throw new Exception("No changes made, please make sure to modify information.");
+        }
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . " at line " . $e->getLine() . " at file " . $e->getFile()
+        ];
+    }
+}
 
 function addChemv2($conn, $dataArr, $branch, $addby, $request)
 {

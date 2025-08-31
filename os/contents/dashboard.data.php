@@ -137,7 +137,8 @@ if (isset($_GET['append']) && $_GET['append'] === 'top_technicians') {
           GROUP BY
             names
           ORDER BY
-            counts DESC;";
+            counts DESC
+          LIMIT 5;";
   $result = mysqli_query($conn, $sql);
 
   if (mysqli_num_rows($result) > 0) {
@@ -326,7 +327,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'avail_item_count') {
 }
 
 if (isset($_GET['count']) && $_GET['count'] === 'dispatched_tech') {
-  $sql = "SELECT COUNT(*) FROM transaction_technicians tt JOIN transactions t ON tt.trans_id = t.id WHERE t.transaction_status = 'Finalizing' AND t.branch = {$_SESSION['branch']};";
+  $sql = "SELECT COUNT(*) FROM transaction_technicians tt JOIN transactions t ON tt.trans_id = t.id WHERE t.transaction_status = 'Dispatched' AND t.branch = {$_SESSION['branch']};";
   $res = mysqli_query($conn, $sql);
 
   echo mysqli_fetch_row($res)[0];

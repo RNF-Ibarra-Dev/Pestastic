@@ -18,7 +18,7 @@
             <button type="button" data-bs-target="#settings" data-bs-toggle="modal"
                 class="navbar-brand btn user-icon rounded-circle m-0 shadow-lg p-0"><i alt="user"
                     class="rounded-circle bi bi-person ms-auto"></i></button>
-            <p class="text-light my-auto me-2 text-wrap text-capitalize user-select-none">
+            <p class="text-light my-auto me-2 text-wrap text-capitalize user-select-none" id="nav_name">
                 <?= $_SESSION['fname'] . ' ' . $_SESSION['lname'] ?></p>
         </div>
     </div>

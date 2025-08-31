@@ -81,9 +81,9 @@ require("startsession.php");
                                 Transactions Status Summary</p>
                         </div>
                         <canvas id="transPie" style="max-height: 30rem !important;"></canvas>
-                        <p class="text-muted mt-3">Check <a href="transactions.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
-                            to display all transactions.</p>
+                        <p class="text-muted mt-3 text-light">Check <a href="transactions.php"
+                                class=" link-underline-opacity-0 color-accent link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
+                            to see all transactions.</p>
                     </div>
                 </div>
 
@@ -96,9 +96,7 @@ require("startsession.php");
                                 Yearly Completed Transactions</p>
                         </div>
                         <canvas id="yearly_completion" class="my-auto"></canvas>
-                        <p class="text-muted mt-3">Check <a href="transactions.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
-                            to display all transactions.</p>
+                        <p class="text-muted mt-3 text-light">Note: Only those with data are displayed.</p>
                     </div>
                 </div>
                 <div class="col bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
@@ -109,13 +107,15 @@ require("startsession.php");
                             <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
                                 Top Technicians (<?= date("F") ?>)</p>
                         </div>
-                        <ul class="text-shadow list-group list-group-flush rounded-3 shadow-sm" id="top_technicians">
+                        <ul class="text-shadow list-group list-group-flush rounded-3 shadow-sm my-auto" id="top_technicians">
                         </ul>
-                        <p class="text-muted mt-3">Check <a href="transactions.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
-                            to display all transactions.</p>
+                        <p class="text-muted mt-3 text-light">Note: This only displays the top 5 technicians with completed transactions.</p>
                     </div>
                 </div>
+
+            </div>
+
+            <div class="row m-2 gap-2">
                 <div class="col bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
                     <div class="d-flex flex-column h-100">
                         <div class="clearfix">
@@ -124,11 +124,9 @@ require("startsession.php");
                             <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
                                 Weekly Technician Workload</p>
                         </div>
-                        <ul class="text-shadow list-group list-group-flush rounded-3 shadow-sm" id="tech_workload">
+                        <ul class="text-shadow list-group list-group-flush rounded-3 shadow-sm my-auto" id="tech_workload">
                         </ul>
-                        <p class="text-muted mt-3">Check <a href="transactions.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
-                            to display all transactions.</p>
+                        <p class="text-muted mt-3 text-light">Note: Only the technicians with assigned transactions are displayed.</p>
                     </div>
                 </div>
                 <div class="col bg-light bg-opacity-25  rounded p-3 shadow">
@@ -137,9 +135,9 @@ require("startsession.php");
                             class="bi bi-arrow-repeat fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
                         <p class="text-center fw-medium fs-3 w-75 mx-auto">Finalizing Transactions</p>
                     </div>
-                    <table class="table-hover rounded overflow-hidden table">
-                        <caption>Check <a href="transactions.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
+                    <table class="table-hover rounded overflow-hidden table my-auto">
+                        <caption class="text-light text-muted">Check <a href="transactions.php"
+                                class="color-accent link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
                             for more.</caption>
                         <thead>
                             <tr class="text-center align-middle">
@@ -152,7 +150,6 @@ require("startsession.php");
                         </tbody>
                     </table>
                 </div>
-
             </div>
 
             <div class="row m-2 gap-2">
@@ -165,9 +162,7 @@ require("startsession.php");
                                 Items Used Weekly (<?= date("F") ?>)</p>
                         </div>
                         <canvas id="item_trend" style="min-height: 20rem !important;" class="my-auto"></canvas>
-                        <p class="text-muted mt-3">Check <a href="transactions.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
-                            to display all transactions.</p>
+                        <p class="text-muted mt-3 text-light">Note: This displays data only for this month.</p>
                     </div>
                 </div>
                 <div class="col bg-light bg-opacity-25  rounded p-3 shadow">
@@ -178,8 +173,8 @@ require("startsession.php");
                             Pending Transactions</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
-                        <caption class="mt-auto">Check <a href="transactions.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
+                        <caption class="mt-auto text-light">Check <a href="transactions.php"
+                                class="color-accent link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">transactions</a>
                             for more.</caption>
                         <thead>
                             <tr class="text-center align-middle">
@@ -198,8 +193,8 @@ require("startsession.php");
                         <p class="text-center fw-medium fs-3 mx-auto w-75">Pending Item Entries</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
-                        <caption>Recently requested addition of chemicals. Check <a href="inventory.php"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
+                        <caption class="text-muted text-light">Recently requested addition of chemicals. Check <a href="inventory.php"
+                                class="color-accent link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
                             page for more.</caption>
                         <thead>
                             <tr class="text-center">
@@ -220,8 +215,8 @@ require("startsession.php");
                         <p class="text-center fw-medium fs-3 w-75 mx-auto">Running Out Items</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
-                        <caption>Check <a href="inventory.php?chem=low"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
+                        <caption class="text-light text-muted">Check <a href="inventory.php?chem=low"
+                                class="color-accent link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
                             to see all running out items.</caption>
                         <thead>
                             <tr class="text-center align-middle">
@@ -239,9 +234,9 @@ require("startsession.php");
                         <p class="text-center fw-medium fs-3 w-75 mx-auto">Expiring Items</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
-                        <caption>Check <a href="inventory.php?chem=low"
-                                class=" link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
-                            to see all running out items.</caption>
+                        <caption class="text-light text-muted">Check <a href="inventory.php?chem=low"
+                                class="color-accent link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
+                            to see expired items.</caption>
                         <thead>
                             <tr class="text-center align-middle">
                                 <th scope="col">ID</th>
