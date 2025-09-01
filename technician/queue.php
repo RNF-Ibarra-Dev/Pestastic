@@ -64,7 +64,7 @@ require("startsession.php");
 
 <body class="bg-official text-light">
 
-    <div class="sa-bg container-fluid p-0 h-100 d-flex">
+    <div class="sa-bg container-fluid p-0 min-vh-100 d-flex">
         <!-- sidebar -->
         <?php include('sidenav.php'); ?>
         <!-- main content -->
@@ -151,44 +151,7 @@ require("startsession.php");
                 </div>
             </div>
 
-            <div class="container-fluid">
-                <div class="row d-flex justify-content-center px-3">
-                    <!-- <div class="col-4 bg-light bg-opacity-25 border border-light rounded overflow-hidden shadow-sm">
-                        <div
-                            class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm d-flex justify-content-between">
-                            <button type="button" class="btn btn-sidebar rounded-pill me-2 text-light"
-                                id='sortTechStatus'>
-                                <i class="bi bi-filter h5 m-0 d-flex align-items-center"></i>
-                            </button>
-                            <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0">
-                                <i class="bi bi-people me-2"></i>Technician Status
-                            </h4>
-                            <div id="techStatBtnFiller" class="m-0 p-0"></div>
-                        </div>
-                        <div class="list-group list-group-flush d-flex overflow-auto" id="technicianStatus"
-                            style="height: 15rem !important"></div>
-                    </div> -->
-
-
-                </div>
-            </div>
-
-            <!-- <div class="container-fluid">
-                <div class="row d-flex justify-content-around">
-                    <div class="col-4 bg-light bg-opacity-25 border border-light d-flex flex-column rounded pb-3 shadow-sm">
-
-                    </div>
-                </div>
-            </div> -->
-
-            <!-- <div class="hstack gap-3 mt-4 mx-3">
-                <input class="form-control form-custom me-auto p-2 text-light" type="search" placeholder="Search . . ."
-                    id="searchbar" name="searchforafuckingchemical" autocomplete="one-time-code">
-                <div class="vr"></div>
-                <button type="button" id="loadChem" class="btn btn-sidebar text-light py-3 px-4" data-bs-toggle="modal"
-                    data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
-                        class="bi bi-plus-square"></i></button>
-            </div> -->
+            
         </main>
 
 

@@ -67,6 +67,7 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
     $bd = $_POST['birthdate'];
     // $empid = $_POST['empid'];
     $address= $_POST['address'];
+    $cpwd = $_POST['confirm_pwd'];
 
     if (empty($fname) || empty($lname) || empty($email) || empty($bd) || empty($username) || empty($address)) {
         http_response_code(400);
@@ -131,11 +132,17 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
         }
     }
 
+    if(!validateTech($conn, $cpwd)){
+        http_response_code(400);
+        echo "Invalid confirmation password.";
+        exit();
+    }
+
     $edit = modify_tech($conn, $fname, $lname, $username, $address, $email, $pwd, $bdd, $id);
 
     if (isset($edit['error'])) {
         http_response_code(400);
-        echo $edit['error'];
+        echo $edit['message'];
         exit();
     } elseif ($edit) {
         http_response_code(200);

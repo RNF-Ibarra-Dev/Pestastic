@@ -528,7 +528,8 @@ function modify_ba($conn, $fname, $lname, $username, $address, $email, $pwd = ''
     } catch (Exception $e) {
         mysqli_rollback($conn);
         return [
-            'error' => $e->getMessage() . " at line " . $e->getLine() . " at file " . $e->getFile()
+            'error' => $e->getMessage() . " at line " . $e->getLine() . " at file " . $e->getFile(),
+            'message' => $e->getMessage()
         ];
     }
 }
@@ -572,7 +573,8 @@ function modify_tech($conn, $fname, $lname, $username, $address, $email, $pwd = 
     } catch (Exception $e) {
         mysqli_rollback($conn);
         return [
-            'error' => $e->getMessage() . " at line " . $e->getLine() . " at file " . $e->getFile()
+            'error' => $e->getMessage() . " at line " . $e->getLine() . " at file " . $e->getFile(),
+            'message' => $e->getMessage()
         ];
     }
 }

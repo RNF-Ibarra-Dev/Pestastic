@@ -65,6 +65,7 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
     $rpwd = $_POST['rpassword'];
     $bd = $_POST['birthdate'];
     $empid = $_POST['empid'];
+    $cpwd = $_POST['confirm_pwd'];
 
     if(empty($fname) || empty($lname) || empty($email) || empty($bd) ||empty($empid) || empty($username)){
         http_response_code(400);
@@ -135,6 +136,12 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
             echo "User already exists";
             exit();
         }
+    }
+
+    if(!validate($conn, $cpwd)){
+        http_response_code(400);
+        echo "Invalid confirmation password.";
+        exit();
     }
 
     $edit = modify_sa($conn, $fname, $lname, $username, $email, $pwd, $bdd, $empid, $id);

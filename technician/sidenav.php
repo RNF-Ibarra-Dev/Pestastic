@@ -1,4 +1,4 @@
-<aside class="sa-sidebar col-sm-2 d-flex flex-column shadow bg-light bg-opacity-25">
+<aside class="sa-sidebar col-sm-2 my-2 rounded-end-3 d-flex flex-column shadow bg-light bg-opacity-25">
     <div class="mt-2 d-flex align-content-center">
         <a href="index.php"
             class="bg-dark bg-opacity-25 mx-auto border border-light rounded-pill btn btn-sidebar overflow-hidden shadow-sm">

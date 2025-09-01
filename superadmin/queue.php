@@ -8,7 +8,7 @@ require("startsession.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager - Pestastic Queue</title>
+    <title>Manager | Pestastic Queue</title>
     <?php include('header.links.php'); ?>
     <style>
         #queuecontainer,
@@ -64,7 +64,7 @@ require("startsession.php");
 
 <body class="bg-official text-light">
 
-    <div class="sa-bg container-fluid p-0 h-100 d-flex">
+    <div class="sa-bg container-fluid p-0 min-vh-100 d-flex">
         <!-- sidebar -->
         <?php include('sidenav.php'); ?>
         <!-- main content -->
@@ -88,7 +88,7 @@ require("startsession.php");
                             Ongoing Transactions</h4>
                     </div>
 
-                    <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25" id="ongoingContainer">
+                    <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25" id="ongoingContainer" style="min-height: 32rem !important;">
                         <div class="flex-grow-1 d-flex flex-nowrap gap-4 px-4 mb-4 mt-2 align-items-center" id="ongoing">
                         </div>
                     </div>
@@ -107,7 +107,7 @@ require("startsession.php");
                             Transactions</h5>
                             <div style="width: 35px !important;" class="m-0 p-0"></div>
                     </div>
-                    <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25" id="queuecontainer">
+                    <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25" id="queuecontainer" style="min-height: 32rem !important;">
 
                         <div class=" d-flex flex-nowrap w-75 row row-cols-1 row-cols-md-3 gap-4 mt-2 mb-4 px-4 align-items-center"
                             id="cardcontainer">
@@ -120,17 +120,6 @@ require("startsession.php");
 
             <div class="container-fluid">
                 <div class="row row-cols-2 d-flex justify-content-center gap-3 px-3">
-<!-- 
-                    <div class="col-auto d-flex flex-column flex-grow-1 mb-3 px-0">
-                        <div class="bg-light bg-opacity-25 my-3 p-2 rounded-3 shadow-sm">
-                            <h4 class="fw-bold fs-2 text-center d-flex align-items-center justify-content-center m-0"><i
-                                    class="bi bi-calendar-week me-2"></i>Weekly
-                                Transactions</h5>
-                        </div>
-                        <div class="px-3 d-flex align-content-center flex-grow-1 bg-light bg-opacity-25 rounded shadow-sm">
-                            <div id="upcoming" class="flex-grow-1 h-75"></div>
-                        </div>
-                    </div> -->
 
                     <div
                         class="col flex-grow-1 py-3 px-0">
@@ -158,44 +147,7 @@ require("startsession.php");
                 </div>
             </div>
 
-            <div class="container-fluid">
-                <div class="row d-flex justify-content-center px-3">
-                    <!-- <div class="col-4 bg-light bg-opacity-25 border border-light rounded overflow-hidden shadow-sm">
-                        <div
-                            class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm d-flex justify-content-between">
-                            <button type="button" class="btn btn-sidebar rounded-pill me-2 text-light"
-                                id='sortTechStatus'>
-                                <i class="bi bi-filter h5 m-0 d-flex align-items-center"></i>
-                            </button>
-                            <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0">
-                                <i class="bi bi-people me-2"></i>Technician Status
-                            </h4>
-                            <div id="techStatBtnFiller" class="m-0 p-0"></div>
-                        </div>
-                        <div class="list-group list-group-flush d-flex overflow-auto" id="technicianStatus"
-                            style="height: 15rem !important"></div>
-                    </div> -->
-
-                    
-                </div>
-            </div>
-
-            <!-- <div class="container-fluid">
-                <div class="row d-flex justify-content-around">
-                    <div class="col-4 bg-light bg-opacity-25 border border-light d-flex flex-column rounded pb-3 shadow-sm">
-
-                    </div>
-                </div>
-            </div> -->
-
-            <!-- <div class="hstack gap-3 mt-4 mx-3">
-                <input class="form-control form-custom me-auto p-2 text-light" type="search" placeholder="Search . . ."
-                    id="searchbar" name="searchforafuckingchemical" autocomplete="one-time-code">
-                <div class="vr"></div>
-                <button type="button" id="loadChem" class="btn btn-sidebar text-light py-3 px-4" data-bs-toggle="modal"
-                    data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
-                        class="bi bi-plus-square"></i></button>
-            </div> -->
+          
         </main>
 
 

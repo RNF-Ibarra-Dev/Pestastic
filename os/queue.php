@@ -151,44 +151,7 @@ require("startsession.php");
                 </div>
             </div>
 
-            <div class="container-fluid">
-                <div class="row d-flex justify-content-center px-3">
-                    <!-- <div class="col-4 bg-light bg-opacity-25 border border-light rounded overflow-hidden shadow-sm">
-                        <div
-                            class="bg-light bg-opacity-25 my-2 p-2 rounded-pill shadow-sm d-flex justify-content-between">
-                            <button type="button" class="btn btn-sidebar rounded-pill me-2 text-light"
-                                id='sortTechStatus'>
-                                <i class="bi bi-filter h5 m-0 d-flex align-items-center"></i>
-                            </button>
-                            <h4 class="fw-light text-center d-flex align-items-center justify-content-center m-0">
-                                <i class="bi bi-people me-2"></i>Technician Status
-                            </h4>
-                            <div id="techStatBtnFiller" class="m-0 p-0"></div>
-                        </div>
-                        <div class="list-group list-group-flush d-flex overflow-auto" id="technicianStatus"
-                            style="height: 15rem !important"></div>
-                    </div> -->
 
-
-                </div>
-            </div>
-
-            <!-- <div class="container-fluid">
-                <div class="row d-flex justify-content-around">
-                    <div class="col-4 bg-light bg-opacity-25 border border-light d-flex flex-column rounded pb-3 shadow-sm">
-
-                    </div>
-                </div>
-            </div> -->
-
-            <!-- <div class="hstack gap-3 mt-4 mx-3">
-                <input class="form-control form-custom me-auto p-2 text-light" type="search" placeholder="Search . . ."
-                    id="searchbar" name="searchforafuckingchemical" autocomplete="one-time-code">
-                <div class="vr"></div>
-                <button type="button" id="loadChem" class="btn btn-sidebar text-light py-3 px-4" data-bs-toggle="modal"
-                    data-bs-target="#addModal" data-bs-toggle="tooltip" title="Add Stock"><i
-                        class="bi bi-plus-square"></i></button>
-            </div> -->
         </main>
 
 
@@ -247,8 +210,8 @@ require("startsession.php");
         </div>
 
         <form id="reschedForm">
-            <div class="modal fade text-dark modal-edit" id="reschedModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="create"
-                aria-hidden="true">
+            <div class="modal fade text-dark modal-edit" id="reschedModal" tabindex="-1" data-bs-backdrop="static"
+                aria-labelledby="create" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
@@ -274,8 +237,8 @@ require("startsession.php");
                 </div>
 
             </div>
-            <div class="modal fade text-dark modal-edit" id="confirm_resched" tabindex="-1" data-bs-backdrop="static" aria-labelledby="create"
-                aria-hidden="true">
+            <div class="modal fade text-dark modal-edit" id="confirm_resched" tabindex="-1" data-bs-backdrop="static"
+                aria-labelledby="create" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
@@ -284,7 +247,8 @@ require("startsession.php");
                                     class="bi text-light bi-x"></i></button>
                         </div>
                         <div class="modal-body">
-                            <label for="resched_pwd" class="form-label">Reschedule transaction? Enter<?= $_SESSION['techUsn'] ?>'s
+                            <label for="resched_pwd" class="form-label">Reschedule transaction?
+                                Enter<?= $_SESSION['techUsn'] ?>'s
                                 password to continue.'</label>
                             <input type="password" class="form-control w-50" name="pwd" id="resched_pwd">
 

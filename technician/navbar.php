@@ -2,13 +2,13 @@
     class="navbar navbar-expand-sm my-2 mx-2 rounded-3 border border-light navbar-dark bg-dark bg-opacity-50 pt-1 pb-2 shadow">
     <div class="container-fluid">
         <div>
-            <p class="text-wrap fs-2 m-0 ms-2 text-align-center fw-bold">Pestastic Inventory Management</p>
+            <p class="text-wrap fs-1 m-0 ms-2 text-align-center fw-bold">Pestastic Inventory Management</p>
             <?php
-            echo "<p class='ms-3 my-0 fw-light text-light' id='datetime'>" . date('l, F jS, Y \| h:i:s A') . "</p>";
+            echo "<p class='ms-3 my-0 fw-medium fs-5 fw-light text-light' id='datetime'>" . date('l, F jS, Y \| h:i:s A') . "</p>";
             ?>
         </div>
 
-        <div class="gap-3 d-flex ms-auto border bg-dark bg-opacity-50 rounded-pill px-2 py-1">
+        <div class="gap-3 d-flex ms-auto border bg-dark bg-opacity-50  rounded-pill px-2 py-1">
             <button type="button" data-bs-target="#notifications" data-bs-toggle="modal"
                 class="navbar-brand btn user-icon rounded-circle m-0 shadow-lg p-0" id="notifbtn"><i alt="notification"
                     class="rounded-circle bi bi-app-indicator ms-auto">
@@ -18,7 +18,7 @@
             <button type="button" data-bs-target="#settings" data-bs-toggle="modal"
                 class="navbar-brand btn user-icon rounded-circle m-0 shadow-lg p-0"><i alt="user"
                     class="rounded-circle bi bi-person ms-auto"></i></button>
-            <p class="text-light my-auto me-2 text-wrap text-capitalize user-select-none" id="nav_name">
+            <p class="text-light my-auto me-2 fs-5 text-wrap text-capitalize user-select-none" id="nav_name">
                 <?= ($_SESSION['firstName'] ?? '') . ' ' . ($_SESSION['lastName'] ?? '') ?>
             </p>
 

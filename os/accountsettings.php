@@ -10,6 +10,12 @@ require("startsession.php");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings | Contents</title>
     <?php include('header.links.php'); ?>
+    <style>
+        input,
+        textarea {
+            font-size: 1.25rem !important
+        }
+    </style>
 </head>
 
 <body class="bg-official text-light">
@@ -25,8 +31,10 @@ require("startsession.php");
             <div class="container-fluid p-0 d-flex justify-content-center flex-column">
                 <form id="accountsettings" class="my-5">
                     <input type="hidden" name="id" id="id">
-                    <h2 class="fw-light text-center fw-semibold mb-3">User Information</h2>
-                    <div class="container bg-light bg-opacity-25 border border-light w-50 mx-auto rounded-3 p-3 pb-3">
+                    <p
+                        class="display-6  text-center fw-bold text-shadow mb-3 bg-light bg-opacity-25 rounded-3 py-3 mx-auto w-50">
+                        User Information</p>
+                    <div class="container bg-light bg-opacity-25 w-50 mx-auto rounded-3 p-3 pb-3">
                         <div class="d-flex flex-column gap-2 mx-3">
                             <div class="container gap-3 p-0 d-flex justify-content-between">
                                 <div class="col p-0">
@@ -48,12 +56,13 @@ require("startsession.php");
                                 </div>
                                 <div class="col p-0">
                                     <p class="fw-bold mb-1 text-shadow fs-5">Employee ID:</p>
-                                    <p class="text-light ps-2 mt-2 mb-0" id="empid">
+                                    <p class="text-light ps-2 mt-2 mb-0 fs-5" id="empid">
                                 </div>
                             </div>
                             <label for="address" class="form-label fw-bold mb-0 text-shadow">Address:</label>
-                            <textarea name="address" id="address" rows="1" class="form-control-plaintext text-light ps-2"
-                                style="resize: none;" readonly></textarea>
+                            <textarea name="address" id="address" rows="1"
+                                class="form-control-plaintext text-light ps-2" style="resize: none;"
+                                readonly></textarea>
                             <label for="email" class="form-label fw-bold mb-0 text-shadow">Email:</label>
                             <input type="text" class="form-control-plaintext text-light ps-2" id="email" name="email"
                                 autocomplete="off" readonly>
@@ -61,23 +70,53 @@ require("startsession.php");
                                 Password:</label>
                             <input type="password" class="form-control d-none" id="oldpassword" name="oldpassword"
                                 autocomplete="new-password">
-                            <label for="password" class="form-label fw-bold mb-0 d-none pwd-label text-shadow">Password:</label>
+                            <label for="password"
+                                class="form-label fw-bold mb-0 d-none pwd-label text-shadow">Password:</label>
                             <input type="password" class="form-control d-none" id="password" name="password"
                                 autocomplete="new-password">
                             <label for="rpassword" class="form-label fw-bold mb-0 d-none pwd-label text-shadow">Repeat
                                 Password:</label>
                             <input type="password" class="form-control d-none" id="rpassword" name="rpassword"
                                 autocomplete="new-password">
-                            <p class="fw-light ms-1 d-none notes-toggle">Leave password blank if you want to retain the
+                            <div class="form-check d-flex align-items-center ms-2 d-none" id="pwd-toggle">
+                                <input type="checkbox" class="form-check-input me-2" id="showpass">
+                                <label class="form-check-label text-light user-select-none fs-5" for="showpass">Show
+                                    Password</label>
+                            </div>
+                            <p class="fw-light ms-1 fs-5 d-none notes-toggle">Leave password blank if you wish to retain
+                                the
                                 same password.</p>
                             <label for="birthdate" class="form-label fw-bold mb-0 text-shadow">Birthdate:</label>
                             <input type="date" class="form-control ps-2 d-none" id="birthdate" name="birthdate">
-                            <p class="text-light ms-2" id="displaybd"></p>
+                            <p class="text-light ms-2 fs-5" id="displaybd"></p>
 
-                            <div class="alert alert-info text-center m-0 mt-2" style="display: none" id="alert"></div>
 
                             <button type="button" class="btn btn-grad mt-3" id="editbtn">Edit Information</button>
-                            <button type="submit" class="btn btn-grad d-none" id="submitbtn">Submit</button>
+                            <button type="button" class="btn btn-grad d-none" data-bs-target="#confirm_modal"
+                                data-bs-toggle="modal">Submit</button>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="confirm_modal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-modal-title">
+                                    <h1 class="modal-title fs-5">Configuration Confirmation</h1>
+                                    <button type="button" class="btn ms-auto" data-bs-dismiss="modal"
+                                        aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="fs-5 fw-medium text-dark">Confirm Changes? Enter password to continue.</p>
+                                    <input type="password" autocomplete="new-password" class="form-control w-50 ps-2"
+                                        name="confirm_pwd">
+                                    <div class="alert alert-info text-center m-0 mt-2" style="display: none" id="alert">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" id="submitbtn" class="btn btn-grad">Save changes</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -142,14 +181,27 @@ require("startsession.php");
                 // await toggle_input('empid'),
                 await toggle_input('address')
             ]);
-            $("#displaybd, #password, #rpassword, #oldpassword, #passwordlabel, .pwd-label, #birthdate, #submitbtn, .notes-toggle").toggleClass('d-none');
+            $("#displaybd, #password, #rpassword, #pwd-toggle, #oldpassword, #passwordlabel, .pwd-label, #birthdate, .notes-toggle, button[data-bs-target='#confirm_modal']").toggleClass('d-none');
             $("#editbtn").html(function (i, a) {
                 return a.includes('Edit Information') ? 'Close Editor' : 'Edit Information';
             })
         }
 
+
         $(document).on('click', "#editbtn", async function () {
             await toggle();
+        });
+
+        $(document).on('change', '#showpass', function () {
+            if ($(this).is(':checked')) {
+                $("#password, #rpassword, #oldpassword").attr('type', 'text');
+            } else {
+                $("#password, #rpassword, #oldpassword").attr('type', 'password');
+            }
+        });
+
+        $(document).on("show.bs.modal", '#confirm_modal', function () {
+            $("#confirm_modal input[name='confirm_pwd']").val('');
         });
 
         $(document).on('submit', '#accountsettings', async function (e) {
@@ -166,6 +218,7 @@ require("startsession.php");
                     toggle();
                     $("#alert").html(d.success).fadeIn(500).delay(2000).fadeOut(1000);
                     $("#nav_name").text(d.name);
+                    $("#confirm_modal").modal('hide');
                 })
                 .fail(async function (e) {
                     console.log(e);
