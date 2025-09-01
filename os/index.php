@@ -107,9 +107,11 @@ require("startsession.php");
                             <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
                                 Top Technicians (<?= date("F") ?>)</p>
                         </div>
-                        <ul class="text-shadow list-group list-group-flush rounded-3 shadow-sm my-auto" id="top_technicians">
+                        <ul class="text-shadow list-group list-group-flush rounded-3 shadow-sm my-auto"
+                            id="top_technicians">
                         </ul>
-                        <p class="text-muted mt-3 text-light">Note: This only displays the top 5 technicians with completed transactions.</p>
+                        <p class="text-muted mt-3 text-light">Note: This only displays the top 5 technicians with
+                            completed transactions.</p>
                     </div>
                 </div>
 
@@ -124,9 +126,11 @@ require("startsession.php");
                             <p class="text-center fw-medium align-text-center fs-3 w-75 mx-auto">
                                 Weekly Technician Workload</p>
                         </div>
-                        <ul class="text-shadow list-group list-group-flush rounded-3 shadow-sm my-auto" id="tech_workload">
+                        <ul class="text-shadow list-group list-group-flush rounded-3 shadow-sm my-auto"
+                            id="tech_workload">
                         </ul>
-                        <p class="text-muted mt-3 text-light">Note: Only the technicians with assigned transactions are displayed.</p>
+                        <p class="text-muted mt-3 text-light">Note: Only the technicians with assigned transactions are
+                            displayed.</p>
                     </div>
                 </div>
                 <div class="col bg-light bg-opacity-25  rounded p-3 shadow">
@@ -193,7 +197,8 @@ require("startsession.php");
                         <p class="text-center fw-medium fs-3 mx-auto w-75">Pending Item Entries</p>
                     </div>
                     <table class="table-hover rounded overflow-hidden table">
-                        <caption class="text-muted text-light">Recently requested addition of chemicals. Check <a href="inventory.php"
+                        <caption class="text-muted text-light">Recently requested addition of chemicals. Check <a
+                                href="inventory.php"
                                 class="color-accent link-underline-opacity-0 link-underline link-body-emphasis link-underline-opacity-0-hover">inventory</a>
                             page for more.</caption>
                         <thead>
@@ -297,7 +302,8 @@ require("startsession.php");
                     $(`#${container}`).append(append);
                 }
             } catch (error) {
-                alert(error);
+                alert(`Error appending container ${container}.`);
+                console.error(error);
             }
         }
 
@@ -317,7 +323,7 @@ require("startsession.php");
 
                 if (chartData) {
                     data = JSON.parse(chartData);
-                    console.log(data);
+                    // console.log(data);
                     create_chart('transPie', data);
                 }
             } catch (error) {

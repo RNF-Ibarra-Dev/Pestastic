@@ -158,7 +158,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'top_technicians') {
     }
   } else {
      ?>
-      <li class="list-group-item text-center">No top technicians for this month</li>
+      <li class="list-group-item text-center bg-light bg-opacity-25 text-light text-shadow">No top technicians for this month</li>
       <?php
   }
   mysqli_close($conn);
@@ -204,7 +204,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'tech_workload') {
     }
   } else {
      ?>
-      <li class="list-group-item text-center">No top technicians for this month</li>
+      <li class="list-group-item text-center bg-light bg-opacity-25 text-light text-shadow">No assigned technicians for this week.</li>
       <?php
   }
   mysqli_close($conn);
