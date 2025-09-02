@@ -1346,34 +1346,35 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         }
 
         // throw new Exception(var_dump($chemUsed) . var_dump($amtUsed) . $transData['status'] . $transData['transId']);
-
-        if (count($chemUsed) === count($amtUsed)) {
-            $chemSql = "INSERT INTO transaction_chemicals (trans_id, chem_id, chem_brand, amt_used) VALUES (?, ?, ?, ?) 
-                ON DUPLICATE KEY UPDATE chem_brand = VALUES(chem_brand), amt_used = VALUES(amt_used);";
-            $chemStmt = mysqli_stmt_init($conn);
-            if (!mysqli_stmt_prepare($chemStmt, $chemSql)) {
-                throw new Exception("chem stmt failed");
+        if ($transData['status'] === 'Dispatched' || $transData['status'] === 'Finalizing' || $transData['status'] === 'Completed') {
+            if (count($chemUsed) === count($amtUsed)) {
+                $chemSql = "INSERT INTO transaction_chemicals (trans_id, chem_id, chem_brand, amt_used) VALUES (?, ?, ?, ?) 
+                    ON DUPLICATE KEY UPDATE chem_brand = VALUES(chem_brand), amt_used = VALUES(amt_used);";
+                $chemStmt = mysqli_stmt_init($conn);
+                if (!mysqli_stmt_prepare($chemStmt, $chemSql)) {
+                    throw new Exception("chem stmt failed");
+                }
+                for ($i = 0; $i < count($chemUsed); $i++) {
+                    $oamt = prev_trans_amt($conn, $chemUsed[$i], $transData['transId']);
+                    $input_amt = (float) $amtUsed[$i];
+                    if ($input_amt === (float) $oamt) {
+                        // throw new Exception("$oamt = {$amtUsed[$i]} ");
+                        continue;
+                    }
+                    $chemNames = get_chemical_name($conn, $chemUsed[$i]);
+                    if (!$chemNames) {
+                        throw new Exception('failed to fetch chemical name');
+                    }
+                    mysqli_stmt_bind_param($chemStmt, 'iisi', $transData['transId'], $chemUsed[$i], $chemNames, $amtUsed[$i]);
+                    mysqli_stmt_execute($chemStmt);
+                    $chemAR += mysqli_stmt_affected_rows($chemStmt);
+                    if (!mysqli_stmt_affected_rows($chemStmt) > 0) {
+                        throw new Exception("Chemical transaction update failed. Please try again later.");
+                    }
+                }
+            } else {
+                throw new Exception('chemical count error.');
             }
-            for ($i = 0; $i < count($chemUsed); $i++) {
-                $oamt = prev_trans_amt($conn, $chemUsed[$i], $transData['transId']);
-                $input_amt = (float) $amtUsed[$i];
-                if ($input_amt === (float) $oamt) {
-                    // throw new Exception("$oamt = {$amtUsed[$i]} ");
-                    continue;
-                }
-                $chemNames = get_chemical_name($conn, $chemUsed[$i]);
-                if (!$chemNames) {
-                    throw new Exception('failed to fetch chemical name');
-                }
-                mysqli_stmt_bind_param($chemStmt, 'iisi', $transData['transId'], $chemUsed[$i], $chemNames, $amtUsed[$i]);
-                mysqli_stmt_execute($chemStmt);
-                $chemAR += mysqli_stmt_affected_rows($chemStmt);
-                if (!mysqli_stmt_affected_rows($chemStmt) > 0) {
-                    throw new Exception("Chemical transaction update failed. Please try again later.");
-                }
-            }
-        } else {
-            throw new Exception('chemical count error.');
         }
 
         $pestAR = 0;
@@ -1473,6 +1474,25 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
     }
 }
 
+function get_trans_branch($conn, $transid)
+{
+    $sql = "SELECT branch FROM transactions WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'Statement error at fetching branch information.'];
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $transid);
+    mysqli_stmt_execute($stmt);
+
+    $res = mysqli_stmt_get_result($stmt);
+    if ($assoc = mysqli_fetch_assoc($res)) {
+        return $assoc['branch'];
+    } else {
+        return ['error' => 'No branch set to this transaction.' . $transid];
+    }
+}
+
 function get_unit($conn, $chemId)
 {
     if (!is_numeric($chemId)) {
@@ -1524,6 +1544,7 @@ function request_void($conn, $id, $author)
 
 function void_transaction($conn, $id)
 {
+    mysqli_begin_transaction($conn);
     $questionmarks = array_fill(0, count($id), '?');
     try {
         $sql = "UPDATE transactions SET void_request = 0, transaction_status = 'Voided' WHERE id IN (" . implode(',', $questionmarks) . ");";
@@ -1537,14 +1558,48 @@ function void_transaction($conn, $id)
         mysqli_stmt_bind_param($stmt, $ints, ...$id);
         mysqli_stmt_execute($stmt);
 
-        if (0 < mysqli_stmt_affected_rows($stmt)) {
-            return [
-                'success' => 'Transaction Voided.'
-            ];
-        } else {
-            throw new Exception('Void Failed. Contact Administration.');
+        if (!0 < mysqli_stmt_affected_rows($stmt)) {
+            throw new Exception('Void Failed.');
         }
+
+        mysqli_commit($conn);
+        return [
+            'success' => 'Transaction Voided.'
+        ];
     } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'msg' => $e->getMessage(),
+            'id' => json_encode($id) . ' ' . json_encode($questionmarks)
+        ];
+    }
+}
+function reject_void_trans($conn, $id)
+{
+    $questionmarks = array_fill(0, count($id), '?');
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "UPDATE transactions SET void_request = 0 WHERE id IN (" . implode(',', $questionmarks) . ");";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception('Stmt Failed' . mysqli_stmt_error($stmt));
+        }
+
+        $ints = str_repeat('i', count($id));
+        mysqli_stmt_bind_param($stmt, $ints, ...$id);
+        mysqli_stmt_execute($stmt);
+
+        if (!0 < mysqli_stmt_affected_rows($stmt)) {
+            throw new Exception('Void Rejection Failed.');
+        }
+        mysqli_commit($conn);
+        return [
+            'success' => 'Void Rejected.'
+        ];
+
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
         return [
             'msg' => $e->getMessage(),
             'id' => json_encode($id) . ' ' . json_encode($questionmarks)
@@ -2209,7 +2264,7 @@ function editTechAccount($conn, $id, $firstName, $lastName, $username, $email, $
     } catch (Exception $e) {
         mysqli_rollback($conn);
         return [
-            "error"=> $e->getMessage()
+            "error" => $e->getMessage()
         ];
     }
 }

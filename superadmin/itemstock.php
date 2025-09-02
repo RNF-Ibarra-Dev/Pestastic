@@ -1727,8 +1727,8 @@ include('tablecontents/tables.php');
                 });
 
                 if (approve) {
-                    console.log(approve);
-                    console.log(approve.success);
+                    // console.log(approve);
+                    // console.log(approve.success);
                     $('#tableAlert').css('display', 'block').html(approve.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
                     await loadpage(1);
                     $('#confirmmultiapprove').modal('hide');

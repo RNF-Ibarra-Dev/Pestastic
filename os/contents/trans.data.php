@@ -458,7 +458,7 @@ if (isset($_GET['view']) && $_GET['view'] == 'chemUsed') {
         exit();
     } else {
         ?>
-        <li class="list-group-item">No chemical found. Chemical might be deleted.</li>
+        <li class="list-group-item">No item found. Item might be deleted from the database.</li>
         <?php
         mysqli_stmt_close($stmt);
         exit();

@@ -30,7 +30,20 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $session = $_POST['add-session'] ?? null;
     $saPwd = $_POST['saPwd'];
     $addedBy = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
+    $branch = $_POST['branch'] ?? NULL;
 
+    if (!is_numeric($branch)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'invalid_id', 'errorMessage' => "Invalid Branch."]);
+        exit();
+    }
+
+    $branch_ids = get_branches_array($conn);
+    if (!in_array($branch, $branch_ids)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'invalid_id', 'errorMessage' => "Branch ID not found."]);
+        exit();
+    }
 
     if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($problems) || empty($chemUsed) || empty($status) || empty($t_type) || empty($address)) {
         http_response_code(400);
@@ -271,14 +284,15 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
 
     if (!validate($conn, $saPwd)) {
         http_response_code(400);
-        echo json_encode(['error' => 'Invalid Password.']);
+        echo json_encode(['errorMessage' => 'Invalid Password.']);
         exit();
     }
 
     $update = update_transaction($conn, $data, $techId, $chemUsed, $amtUsed, $problems);
     if (!isset($update['success'])) {
         http_response_code(400);
-        echo $update['errorMessage'] . ' ' . $update['line'] . ' ' . $update['file'];
+        echo json_encode(['errorMessage' => $update['errorMessage'] . ' ' . $update['line'] . ' ' . $update['file']]);
+        exit();
     } else {
         echo json_encode([
             'success' => 'Transaction Updated.',
@@ -318,18 +332,13 @@ if (isset($_POST['approve']) && $_POST['approve'] === 'true') {
 }
 
 if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
-    $trans = $_POST['trans'];
+    $trans = $_POST['trans'] ?? [];
+    $trans_reject = $_POST['trans_reject'] ?? [];
     $pwd = $_POST['saPwd'];
 
-    if (empty($trans) || empty($pwd)) {
+    if ((empty($trans) && empty($trans_reject))) {
         http_response_code(400);
-        echo 'Empty Inputs.';
-        exit();
-    }
-
-    if ($status === 'Voided' || $status === 'Finalizing' || $status === 'Completed') {
-        http_response_code(400);
-        echo 'Invalid Status. Transaction already voided or completed.';
+        echo 'No choices selected. Please select at least one.';
         exit();
     }
 
@@ -339,12 +348,22 @@ if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
         exit();
     }
 
-    $voidreq = void_transaction($conn, $trans);
+    if (!empty($trans)) {
+        $voidreq = void_transaction($conn, $trans);
+        if (isset($voidreq['msg'])) {
+            http_response_code(400);
+            echo $voidreq['msg'];
+            exit();
+        }
+    }
 
-    if (isset($voidreq['msg'])) {
-        http_response_code(400);
-        echo $voidreq['msg'] . $voidreq['id'];
-        exit();
+    if (!empty($trans_reject)) {
+        $reject = reject_void_trans($conn, $trans_reject);
+        if (isset($reject['msg'])) {
+            http_response_code(400);
+            echo $reject['msg'];
+            exit();
+        }
     }
 
     http_response_code(200);

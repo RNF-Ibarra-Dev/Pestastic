@@ -27,8 +27,8 @@ if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
             $ntime = strtotime($otime);
             $time = date("h:i A", $ntime);
             ?>
-            <div class="col">
-                <div class="card bg-white bg-opacity-25 shadow-sm rounded border-0 text-light p-0"
+            <div class="col <?=mysqli_num_rows($result) == 1 ? 'mx-auto' : ''?>">
+                <div class="card bg-white bg-opacity-25 shadow-sm rounded border-0 text-light mx-auto p-0"
                     style="min-height: 26rem !important;">
                     <div class="card-body px-2 border-light pb-0 mx-3">
                         <h5 class="card-title fs-4 text-center fw-bold">Transaction <?= htmlspecialchars($id) ?></h5>
@@ -184,7 +184,7 @@ if (isset($_GET['getdata']) && $_GET['getdata'] === 'ongoing') {
             $treatment = $tt['t_name'];
             $status = $row['transaction_status'];
             ?>
-            <div class="col">
+            <div class="col <?=mysqli_num_rows($result) == 1 ? 'mx-auto' : ''?>">
                 <div class="card bg-white bg-opacity-25 rounded border-0 text-light" style="min-height: 26rem !important;">
                     <div class="card-body px-4 border-light ">
                         <h5 class="card-title fs-4 text-center fw-bold">Transaction
@@ -227,7 +227,7 @@ if (isset($_GET['getdata']) && $_GET['getdata'] === 'ongoing') {
         }
     } else {
         ?>
-        <div class="card bg-white bg-opacity-25 rounded border-0 text-light px-3 my-auto align-self-center">
+        <div class="card bg-white bg-opacity-25 mx-auto rounded border-0 text-light px-3 my-auto align-self-center">
             <h5 class="fw-light text-center m-0 p-4">No Dispatched Transactions yet.</h5>
         </div>
         <?php
@@ -263,7 +263,7 @@ if (isset($_GET['techStats']) && $_GET['techStats'] === 'true') {
 }
 
 if (isset($_GET['inc']) && $_GET['inc'] === 'true') {
-    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Pending' AND void_request = 0;";
+    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Pendigng' AND void_request = 0;";
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) > 0) {
@@ -282,7 +282,7 @@ if (isset($_GET['inc']) && $_GET['inc'] === 'true') {
             $cat = date("F j, Y  | h:i A", strtotime($row['created_at']));
             $treatmentType = $row['treatment_type'];
             ?>
-            <div class="col">
+            <div class="col <?=mysqli_num_rows($result) == 1 ? 'mx-auto' : ''?>">
                 <div class="card bg-white bg-opacity-25 shadow-sm rounded border-0 text-light p-0">
                     <div class="card-body px-1 border-light pb-0 mx-3">
                         <h5 class="card-title fs-4 fw-bold text-center">Transaction <?= htmlspecialchars($id) ?></h5>
@@ -315,7 +315,7 @@ if (isset($_GET['inc']) && $_GET['inc'] === 'true') {
             <?php
         }
     } else {
-        echo "<div class='bg-light bg-opacity-25 rounded shadow-sm'><h5 class='fw-light m-0 px-4 py-2'>No Unassigned Transactions.</h5></div>";
+        echo "<div class='bg-light mx-auto bg-opacity-25 rounded shadow-sm'><h5 class='fw-light m-0 px-4 py-2'>No Pending Transactions.</h5></div>";
     }
     exit();
 }

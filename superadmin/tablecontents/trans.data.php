@@ -26,18 +26,36 @@ if (isset($_GET['voidreqs']) && $_GET['voidreqs'] === 'true') {
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
-                        if ($request === "1") {
+                        if ($request == 1) {
                             ?>
-                            <input type="checkbox" class="btn-check" value="<?= $id ?>" name="trans[]" id="c-<?= $id ?>"
-                                autocomplete="off">
-                            <label class="btn btn-outline-dark" for="c-<?= $id ?>"><i class="bi bi-check-circle me-2"></i>Void
-                                Transaction</label>
+                            <div class="btn-group">
+                                <input type="checkbox" class="btn-check chkbox-approve" value="<?= htmlspecialchars($id) ?>"
+                                    name="trans[]" id="c-<?= $id ?>" autocomplete="off">
+                                <label class="btn btn-sidebar btn-outline-dark" for="c-<?= htmlspecialchars($id) ?>"><i
+                                        class="bi bi-check mx-auto"></i></label>
+                            </div>
                             <?php
                         } else {
                             ?>
-                            <p class="text-muted">Voided.</p>
+                            <p class="text-muted">Item approved.</p>
                         <?php } ?>
                     </div>
+                </td>
+                <td>
+                    <?php
+                    if ($request == 1) {
+                        ?>
+                        <div class="btn-group">
+                            <input type="checkbox" class="btn-check chkbox-reject" value="<?= htmlspecialchars($id) ?>"
+                                name="trans_reject[]" id="r-<?= htmlspecialchars($id) ?>" autocomplete="off">
+                            <label class="btn btn-sidebar btn-outline-dark" for="r-<?= htmlspecialchars($id) ?>"><i
+                                    class="bi bi-x mx-auto"></i></label>
+                        </div>
+                        <?php
+                    } else {
+                        ?>
+                        <p class="text-muted">-</p>
+                    <?php } ?>
                 </td>
             </tr>
 
@@ -434,7 +452,7 @@ if (isset($_GET['view']) && $_GET['view'] == 'probCheckbox') {
 if (isset($_GET['view']) && $_GET['view'] == 'chemUsed') {
     $transId = $_GET['transId'];
 
-    $sql = "SELECT chem_brand, amt_used FROM transaction_chemicals WHERE trans_id = ?;";
+    $sql = "SELECT chem_brand, amt_used, chem_id FROM transaction_chemicals WHERE trans_id = ?;";
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         echo json_encode(['type' => 'stmt', 'message' => mysqli_stmt_error($stmt)]);
@@ -450,18 +468,21 @@ if (isset($_GET['view']) && $_GET['view'] == 'chemUsed') {
     if ($numRows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             $chemUsed = $row['chem_brand'];
+            $chemId = $row['chem_id'];
             $amtUsed = $row['amt_used'];
+            $unit = $unit = get_unit($conn, $chemId);
+            ;
 
             ?>
             <li class="list-group-item mb-2"><strong>Chemical:</strong> <?= $chemUsed ?><br><strong>Amount used:
-                </strong><?= $amtUsed != 0 ? $amtUsed . ' ml' : 'Amount Pending' ?></li>
+                </strong><?= $amtUsed != 0 ? "$amtUsed $unit" : 'Amount Pending' ?></li>
             <?php
         }
         mysqli_stmt_close($stmt);
         exit();
     } else {
         ?>
-        <li class="list-group-item">There are no logged chemicals. Please contact administration.</li>
+        <li class="list-group-item">No item found. Item might be deleted from the database.</li>
         <?php
         mysqli_stmt_close($stmt);
         exit();
@@ -574,6 +595,7 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
         while ($row = mysqli_fetch_assoc($results)) {
             $id = $row['chem_id'];
             $amtUsed = $row['amt_used'];
+            $unit = get_unit($conn, $id);
 
             ?>
             <div class="row" id="row-<?= $id ?>">
@@ -589,12 +611,12 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
                     <div class="d-flex flex-column">
                         <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
                             id="edit-amountUsed-label">Amount:</label>
-                        <input type="number" <?= $status != 'Accepted' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
-                            id="edit-amountUsed-<?= $id ?>" class="form-control form-add me-3" autocomplete="one-time-code"
-                            value="<?= $amtUsed ?>" <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
+                        <input type="number" <?= $status === 'Finalizing' || $status === 'Voided' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $id ?>"
+                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>"
+                            <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
                     </div>
                     <span id="passwordHelpInline-<?= $id ?>" class="form-text mt-auto mb-2">
-                        /ml
+                        <?= $unit ?>
                     </span>
                     <button type="button" data-row-id="<?= $id ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
                             class="bi bi-dash-circle text-light"></i></button>
@@ -717,22 +739,54 @@ if (isset($_GET['treatmentname']) && $_GET['treatmentname'] === 'true') {
     }
 }
 
+if (isset($_GET['get_branch']) && $_GET['get_branch'] === 'add_branch') {
+    $sql = "SELECT * FROM branches;";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        echo "<option value='' selected>Select Transaction Branch</option>";
+        while($row = mysqli_fetch_assoc($result)){
+            $id = $row['id'];
+            $name = $row['name'];
+            $loc = $row['location'];
+            ?>
+            <option value="<?=htmlspecialchars($id)?>"><?=htmlspecialchars("$name ($loc)")?></option>
+            <?php
+        }
+    } else {
+        ?>
+        <option value="" disabled>No branches detected.</option>
+        <?php
+    }
+}
+
 if (isset($_GET['edit']) && $_GET['edit'] === 'treatment-options') {
     $id = $_GET['transId'];
+    $transid = $_GET['additional'];
 
-    if (!ctype_digit($id)) {
+    if (!is_numeric($transid)) {
         http_response_code(400);
         echo "Invalid ID.";
         exit();
     }
+    $trans_branch = get_trans_branch($conn, $transid);
+    if (isset($trans_branch['error'])) {
+        // http_response_code(400);
+        ?>
+        <option value="" disabled><?= $trans_branch['error'] ?></option>
+        <?php
+        exit();
+    }
 
-    $sql = "SELECT * FROM treatments;";
+    $sql = "SELECT * FROM treatments WHERE branch = $trans_branch;";
     $res = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($res) > 0) {
         while ($row = mysqli_fetch_assoc($res)) {
             $idval = $row['id'];
             $tname = $row['t_name'];
+            $branch = get_branch_details($conn, $row['branch']);
+            $branch_info = "{$branch['name']} ({$branch['location']})";
             ?>
             <option value="<?= htmlspecialchars($idval) ?>" <?= $id == $idval ? 'selected' : '' ?>><?= htmlspecialchars($tname) ?>
             </option>
@@ -740,7 +794,7 @@ if (isset($_GET['edit']) && $_GET['edit'] === 'treatment-options') {
         }
     } else {
         ?>
-        <option value="" disabled>No Treatments</option>
+        <option value="" disabled>No Treatments Assigned</option>
         <?php
     }
 }

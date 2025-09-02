@@ -347,6 +347,8 @@
                                     <div class="mb-2" id="add-chemContainer">
                                         <!-- template add chemical -->
                                     </div>
+                                    <p class="alert alert-warning py-1 mt-1 w-50 mx-auto text-center amt-used-alert"
+                                        style="display: none;"></p>
                                     <div class="row mb-2">
                                         <div class="dropdown-center col-lg-6 mb-2">
                                             <label for="add-technicianName" class="form-label fw-light">Technicians
@@ -388,6 +390,7 @@
                                         id="emptyInput"></p>
                                 </div>
                                 <div class="modal-footer">
+                                    <select name="branch" id="add_branch" class="form-select me-auto w-25"></select>
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
                                     <button type="button" class="btn btn-grad" disabled-id="submitAdd"
                                         data-bs-toggle="modal" data-bs-target="#confirmAdd">Proceed &
@@ -647,7 +650,8 @@
                                         </div>
 
                                     </div>
-
+                                    <p class="alert alert-warning py-1 mt-1 w-50 mx-auto text-center amt-used-alert"
+                                        style="display: none;"></p>
                                     <div class="row mb-2">
                                         <div class="col-lg-6">
                                             <!-- edit technician choices/select, toggle visually-hidden when edit is on -->
@@ -846,6 +850,12 @@
                                                         autocomplete="off">
                                                     <label class="btn fw-bold" for="checkall">Check All <i
                                                             id="checkicon" class="bi bi-square ms-2"></i></label>
+                                                </th>
+                                                <th>
+                                                    <input type="checkbox" class="btn-check" id="checkallreject"
+                                                        autocomplete="off">
+                                                    <label class="btn fw-bold" for="checkallreject">Reject All <i
+                                                            id="rejecticon" class="bi bi-square ms-2"></i></label>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -1484,8 +1494,38 @@
                 }
             } catch (error) {
                 console.log(error);
+                $("#approvemulti-errmsg").text(error.responseText).removeClass('visually-hidden').hide().fadeIn().delay(2000).fadeOut();
             }
         })
+
+        $(document).on('change', '#add-status, #edit-status', function () {
+            let sel = $(this);
+            if (sel.val() === 'Voided') {
+                sel.next().fadeOut().fadeIn(750).html("Note: Voiding a transaction completely will require Manager approval. Ignore to continue.");
+                $(".amt-used-alert").fadeOut(1000);
+            } else if (sel.val() === 'Accepted') {
+                sel.next().fadeOut().fadeIn(750).html("Make sure to double check the details at least before the dispatch date.");
+                $(".amt-used-alert").fadeOut(1000);
+            } else if (sel.val() === 'Finalizing') {
+                sel.next().fadeOut().fadeIn(750).html("Note: Transactions with this status will be subjected to completion, please make sure to double check the details.");
+                $(".amt-used-alert").fadeOut().fadeIn(750).html('Note: Only report the amount the technician used.');
+            } else if (sel.val() === 'Cancelled') {
+                sel.next().fadeOut().fadeIn(750).html("Cancelled transactions should be accepted first.");
+                $(".amt-used-alert").fadeOut(1000);
+            } else if (sel.val() === 'Dispatched') {
+                sel.next().fadeOut().fadeIn(750).html("Note: Make sure the technicians are ready.");
+                $(".amt-used-alert").fadeOut().fadeIn(750).html('Note: Only put the amount the technician will bring.');
+            } else if (sel.val() === 'Completed') {
+                sel.next().fadeOut().fadeIn(750).html("Make sure to double check details. Setting this transaction to complete will make this viewonly.");
+                $(".amt-used-alert").fadeOut().fadeIn(750).html('Note: Make sure to put only the actual amount of the used chemical.');
+            } else {
+                sel.next().fadeOut(1000);
+                $(".amt-used-alert").fadeOut(1000);
+            }
+            $(document).on('click', '#editbtn', function () {
+                $(".amt-used-alert").hide();
+            })
+        });
 
         $('#viewEditForm').on('change', 'select#edit-status', function () {
             if ($(this).val() === 'Completed') {
@@ -1556,6 +1596,18 @@
                 console.log(error);
             }
         }
+        async function get_branches(container) {
+            try {
+                $.get(transUrl, {
+                    get_branch: container
+                }, function (d) {
+                    $(`#${container}`).empty();
+                    $(`#${container}`).append(d);
+                }, 'html')
+            } catch (error) {
+                console.error(error);
+            }
+        }
 
         $(document).on('click', '#addbtn', async function () {
             let form = 'add';
@@ -1567,7 +1619,8 @@
                     // add_more_chem(),
                     add_more_tech(),
                     add_packages(),
-                    treatments(form)
+                    treatments(form),
+                    get_branches('add_branch')
                 ]);
                 if (load) {
 
@@ -1727,7 +1780,7 @@
             let sts = $(this).val();
             $('#edit-addMoreChem').data('status', sts);
 
-            if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched') {
+            if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched' || sts === 'Voided') {
                 $('#edit-chemBrandUsed input.form-control').prop('disabled', false);
                 $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
             } else {
@@ -1926,32 +1979,26 @@
 
         $(document).on('change', '#edit-status', function () {
             let sts = $(this).val();
-            // if (sts == 'Pending' || 'Completed') {
-            //     editTransDate.config.minDate = new Date().fp_incr(1);
-            // } else {
-            //     editTransDate.config.minDate = null;
-            // }
-
-            // $('#edit-addMoreChem').removeAttr('data-status');
             $('#edit-addMoreChem').data('status', sts);
 
-            if (sts == 'Accepted' || sts == 'Completed') {
-                $('#edit-chemBrandUsed input.form-control').attr('disabled', false);
+            if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched') {
+                $('#edit-chemBrandUsed input.form-control').prop('disabled', false);
                 $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
             } else {
-                $('#edit-chemBrandUsed input.form-control').attr('disabled', true);
+                $('#edit-chemBrandUsed input.form-control').val('-').prop('disabled', true);
                 $('#edit-chemBrandUsed input.form-control').removeAttr('name');
             }
         });
 
-        async function edit(name, transId = null) {
+        async function edit(name, transId = null, additional_data = null) {
             try {
                 const target = await $.ajax({
                     url: transUrl,
                     type: 'GET',
                     data: {
                         edit: name,
-                        transId: transId
+                        transId: transId,
+                        additional: additional_data
                     },
                     dataType: 'html'
                 });
@@ -2249,7 +2296,7 @@
                         await view(d.treatment, 'treatment'),
                         await view(d.id, 'probCheckbox'),
                         await view(d.id, 'chemUsed'),
-                        await edit('treatment-options', d.treatment), //treatment option
+                        await edit('treatment-options', d.treatment, d.id), //treatment option
                         await edit('technicianName', d.id),
                         await edit('probCheckbox', d.id),
                         await edit('package', d.package_id ?? 0),
@@ -2569,8 +2616,8 @@
                 }
             } catch (error) {
                 console.log(error);
-                alert(error.responseText);
-                let err = error.responseText;
+                // alert(error.responseText);
+                let err = error.responseJSON.errorMessage;
                 $('#del-errormessage').removeClass('visually-hidden').html(err).hide().fadeIn(400).delay(2000).fadeOut(1000);
                 $('input#editPwd').addClass('border border-danger-subtle').fadeIn(400);
             }
@@ -3127,19 +3174,77 @@
                     console.log(e);
                 })
         });
-        // $(document).ready(function () {
-        //     // Prevent right-click
-        //     $(document).on("contextmenu", function (event) {
-        //         event.preventDefault();
-        //     });
 
-        //     // Prevent F12 and Ctrl+Shift+I (Inspect Element)
-        //     $(document).on("keydown", function (event) {
-        //         if (event.key === "F12" || (event.ctrlKey && event.shiftKey && event.key === "I")) {
-        //             event.preventDefault();
-        //         }
-        //     });
-        // });
+        function update_checks() {
+            let totalRows = $('tbody#voidrequesttable tr').length;
+
+            let approveChecked = $('tbody#voidrequesttable .chkbox-approve:checked').length;
+            if (approveChecked === totalRows && totalRows > 0) {
+                $('#approveall').prop('checked', true);
+                $('#approveicon').removeClass('bi-square').addClass('bi-check-square');
+            } else {
+                $('#approveall').prop('checked', false);
+                $('#approveicon').removeClass('bi-check-square').addClass('bi-square');
+            }
+
+            let rejectChecked = $('tbody#voidrequesttable .chkbox-reject:checked').length;
+            if (rejectChecked === totalRows && totalRows > 0) {
+                $('#checkallreject').prop('checked', true);
+                $('#rejecticon').removeClass('bi-square').addClass('bi-x-square');
+            } else {
+                $('#checkallreject').prop('checked', false);
+                $('#rejecticon').removeClass('bi-x-square').addClass('bi-square');
+            }
+        }
+
+        $(document).on('click', '#approvemulti', async function () {
+            $('#multiapprove')[0].reset();
+            await stock_requests();
+            $('#multiapproveModal').modal('show');
+        });
+
+        $(document).on('change', '#approveall', function () {
+            let checked = $(this).prop('checked');
+
+            $('#approveicon').toggleClass('bi-square bi-check-square');
+            $('tbody#voidrequesttable .chkbox-approve').prop('checked', checked);
+
+            if (checked) {
+                $('tbody#voidrequesttable .chkbox-reject').prop('checked', false);
+                $('#checkallreject').prop('checked', false);
+                $('#rejecticon').removeClass('bi-x-square').addClass('bi-square');
+            }
+        });
+
+        // Reject All
+        $(document).on('change', '#checkallreject', function () {
+            let checked = $(this).prop('checked');
+
+            $('#rejecticon').toggleClass('bi-square bi-x-square');
+            $('tbody#voidrequesttable .chkbox-reject').prop('checked', checked);
+
+            if (checked) {
+                $('tbody#voidrequesttable .chkbox-approve').prop('checked', false);
+                $('#approveall').prop('checked', false);
+                $('#approveicon').removeClass('bi-check-square').addClass('bi-square');
+            }
+        });
+
+        $(document).on('change', '.chkbox-approve', function () {
+            if ($(this).prop('checked')) {
+                // Uncheck reject in the same row
+                $(this).closest('tr').find('.chkbox-reject').prop('checked', false);
+            }
+            update_checks();
+        });
+
+        $(document).on('change', '.chkbox-reject', function () {
+            if ($(this).prop('checked')) {
+                // Uncheck approve in the same row
+                $(this).closest('tr').find('.chkbox-approve').prop('checked', false);
+            }
+            update_checks();
+        });
     </script>
 
 </body>
