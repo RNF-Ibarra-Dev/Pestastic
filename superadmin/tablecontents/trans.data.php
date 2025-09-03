@@ -108,7 +108,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'table') {
 
 if (isset($_GET['getChem']) && $_GET['getChem'] == 'add') {
     // $activeChem = $_GET['active'];
-    get_chem($conn);
+    $branch = $_GET['branch'] ?? null;
+    get_chem($conn, null, $branch);
 } else if (isset($_GET['getTech']) && $_GET['getTech'] == 'true') {
     $active = $_GET['active'];
     get_tech($conn, $active);
@@ -117,7 +118,8 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'add') {
     get_prob($conn, $checked);
 } else if (isset($_GET['getMoreChem']) && $_GET['getMoreChem'] == 'true') {
     $status = $_GET['status'];
-    get_more_chem($conn, $status);
+    $branch = $_GET['branch'] ?? null;
+    get_more_chem($conn, $status, $branch);
 } else if (isset($_GET['addMoreTech']) && $_GET['addMoreTech'] == 'true') {
     $rowNum = $_GET['techRowNum'];
     $active = isset($_GET['active']) ? $_GET['active'] : null;
@@ -173,19 +175,42 @@ function get_prob($conn, $checked = null)
         <?php
     }
 }
-function get_chem($conn, $active = null)
+function get_chem($conn, $active = null, $branch = null)
 {
-    $active = $active == null ? '' : $active;
-    $sql = 'SELECT * FROM chemicals WHERE request = 0 AND chemLevel > 0 ORDER BY id DESC;';
-    $result = mysqli_query($conn, $sql);
+    $active = $active ?? '';
+
+    $sql = 'SELECT * FROM chemicals WHERE request = 0 AND chemLevel > 0 AND unop_cont > 0';
+
+    if ($branch !== NULL && is_numeric($branch)) {
+        $sql .= " AND branch = ?";
+    }
+    $sql .= " ORDER BY id DESC;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo "<option value=''>Statement preparation failed.</option>";
+        exit();
+    }
+
+    if ($branch !== NULL && is_numeric($branch)) {
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if (!$result) {
-        echo 'Error fetching chem data' . mysqli_error($conn);
-        return;
+        echo "<option value=''>" . mysqli_stmt_error($conn) . "</option>";
+        exit();
     }
 
     echo "<option value='#' selected>Select Chemical</option>";
     echo "<hr class='dropdown-divider'>";
+
+    if (mysqli_num_rows($result) === 0) {
+        echo "<option value=''>No chemicals found.</option>";
+        return;
+    }
 
     while ($row = mysqli_fetch_assoc($result)) {
         $id = $row['id'];
@@ -194,9 +219,11 @@ function get_chem($conn, $active = null)
         $level = $row['chemLevel'];
         $req = $row['request'];
         $unit = $row['quantity_unit'];
+        $branchid = $row['branch'];
+        $branchd = get_branch_details($conn, $branchid);
         ?>
         <option value="<?= htmlspecialchars($id) ?>" <?= $level <= 0 || $req == 1 ? 'disabled' : '' ?><?= $id == $active ? 'selected' : '' ?>>
-            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level$unit") ?>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level$unit") . htmlspecialchars(" | {$branchd['name']} ({$branchd['location']})") ?>
         </option>
         <?php
     }
@@ -205,6 +232,7 @@ function get_chem_edit($conn, $active = 0)
 {
     $active = $active === 0 ? 0 : (int) $active;
     $sql = "SELECT * FROM chemicals ORDER BY id DESC;";
+
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -229,10 +257,29 @@ function get_chem_edit($conn, $active = 0)
         <?php
     }
 }
-function get_more_chem($conn, $status = '')
+function get_more_chem($conn, $status = '', $branch = null)
 {
-    $sql = "SELECT * FROM chemicals";
-    $result = mysqli_query($conn, $sql);
+    $sql = "SELECT * FROM chemicals WHERE request = 0 AND chemLevel > 0 AND unop_cont > 0";
+
+    if ($branch !== null && is_numeric($branch)) {
+        $sql .= " AND branch = ?";
+    }
+
+    $sql .= " ORDER BY id DESC;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo "<option value=''>Statement preparation failed.</option>";
+        exit();
+    }
+
+    if($branch !== null && is_numeric($branch)){
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
 
     if (!$result) {
         echo 'Error fetching chem data' . mysqli_error($conn);
@@ -243,7 +290,7 @@ function get_more_chem($conn, $status = '')
     <div class="row mb-2 addmorechem-row">
         <div class="col-lg-6 dropdown-center d-flex flex-column">
             <select id="add-chemBrandUsed-<?= $id ?>" name="add_chemBrandUsed[]" class="form-select chem-brand-select">
-                <?= get_chem($conn); ?>
+                <?= get_chem($conn, null, $branch); ?>
                 <!-- chem ajax -->
             </select>
         </div>
@@ -744,13 +791,13 @@ if (isset($_GET['get_branch']) && $_GET['get_branch'] === 'add_branch') {
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) > 0) {
-        echo "<option value='' selected>Select Transaction Branch</option>";
-        while($row = mysqli_fetch_assoc($result)){
+        echo "<option value='NULL' selected>Select Transaction Branch</option>";
+        while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
             $name = $row['name'];
             $loc = $row['location'];
             ?>
-            <option value="<?=htmlspecialchars($id)?>"><?=htmlspecialchars("$name ($loc)")?></option>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars("$name ($loc)") ?></option>
             <?php
         }
     } else {

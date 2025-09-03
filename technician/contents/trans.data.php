@@ -92,6 +92,7 @@ function get_tech($conn, $active = null)
         $id = $row['technicianId'];
         $name = $row['firstName'] . ' ' . $row['lastName'];
         $empId = $row['techEmpId'];
+        
 
         ?>
         <option value="<?= $id ?>" <?= $id == $active ? 'selected' : '' ?>><?= $name . ' | Technician ' . $empId ?></option>

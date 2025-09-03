@@ -1608,6 +1608,21 @@
                 console.error(error);
             }
         }
+        $("#addTransaction").on('change', '#add_branch', async function () {
+            let branch_id = $(this).val();
+            let form = 'add';
+            $("#addMoreChem").data('branch', branch_id);
+            $("#add-chemContainer").empty();
+            const load = await Promise.all([
+                get_chemical_brand(form, null, null, branch_id),
+                get_technician(form, null, branch_id),
+                get_problems(form, null, branch_id),
+                // add_more_chem(),
+                add_more_tech(),
+                add_packages(branch_id),
+                treatments(form),
+            ]);
+        })
 
         $(document).on('click', '#addbtn', async function () {
             let form = 'add';
@@ -1641,13 +1656,16 @@
         });
 
 
-        async function add_packages() {
+        async function add_packages(branch = null) {
             try {
                 const package = await $.ajax({
                     method: 'GET',
                     url: transUrl,
                     dataType: 'html',
-                    data: "packages=true"
+                    data: {
+                        packages: true,
+                        branch: branch
+                    }
                 });
 
                 if (package) {
@@ -1663,11 +1681,12 @@
         // add / delete more technicians
         async function add_more_tech() {
             let num = 2;
+            let branch = $("#add_branch").val();
 
             $('#addMoreTech', '#addModal').off('click').on('click', async function () {
-                await get_more_tech(num);
+                await get_more_tech(num, branch);
                 num++;
-                console.log('tech add number: ' + num);
+                // console.log('tech add number: ' + num);
             });
 
         }
@@ -1699,21 +1718,24 @@
         };
 
         // add / delete chem main function
-        async function add_more_chem() {
-            // let moreChemTemp = $('#add-chemicalData').html();
-            let num = 2;
+        // async function add_more_chem() {
+        //     // let moreChemTemp = $('#add-chemicalData').html();
+        //     let num = 2;
 
-            $('#addMoreChem', '#addModal').off('click').on('click', async function () {
-                await add_used_chem(num);
-                num++;
-                console.log(num);
+        //     $('#addMoreChem', '#addModal').off('click').on('click', async function () {
+        //         const branch = $(this).data('branch');
+        //         console.log(branch);
+        //         await add_used_chem(num, branch);
+        //         num++;
+        //         // console.log(num);
 
-            });
+        //     });
 
-        }
+
+        // }
 
         // append tech row function
-        async function get_more_tech(num) {
+        async function get_more_tech(num, branch = null) {
             try {
                 const addTech = await $.ajax({
                     type: 'GET',
@@ -1721,7 +1743,8 @@
                     dataType: 'html',
                     data: {
                         addMoreTech: 'true',
-                        techRowNum: num
+                        techRowNum: num,
+                        branch: branch
                     }
                 });
 
@@ -1757,8 +1780,10 @@
 
         $(document).on('click', '#addMoreChem', async function () {
             let sts = $(this).data('status');
-            console.log(sts);
-            await add_used_chem(sts);
+            let branch = $("#add_branch").val();
+            // let branch = parseInt(branchstr);
+            console.log(branch);
+            await add_used_chem(sts, branch);
         })
 
         $(document).on('change', "#add-status", function () {
@@ -1790,7 +1815,7 @@
         });
 
         // append chem row function
-        async function add_used_chem(status = '') {
+        async function add_used_chem(status = '', branch = null) {
             // let rowNum = num;
             try {
                 const addMoreUsed = await $.ajax({
@@ -1799,7 +1824,8 @@
                     dataType: 'html',
                     data: {
                         getMoreChem: 'true',
-                        status: status
+                        status: status,
+                        branch: branch
                     }
                 });
 
@@ -1813,7 +1839,7 @@
         }
 
         // fetch modal contents:
-        async function get_problems(form, checked = null) {
+        async function get_problems(form, checked = null, branch = null) {
             // if (typeof transId == 'undefined') transId = null;
             $(`#${form}-probCheckbox`).empty();
             try {
@@ -1823,7 +1849,8 @@
                     dataType: 'html',
                     data: {
                         getProb: 'true',
-                        checked: checked
+                        checked: checked,
+                        branch: branch
                     }
                 });
 
@@ -1836,7 +1863,7 @@
             }
         }
 
-        async function get_technician(form, activeTech) {
+        async function get_technician(form, activeTech, branch) {
             if (typeof activeTech == 'undefined') activeTech = null;
             // console.log('no active tech. Var = ' + activeTech);
 
@@ -1847,7 +1874,8 @@
                     url: transUrl,
                     data: {
                         getTech: 'true',
-                        active: activeTech
+                        active: activeTech,
+                        branch: branch
                     }
                 });
 
@@ -1861,7 +1889,7 @@
             }
         }
 
-        async function get_chemical_brand(method, transId = null, status = null) {
+        async function get_chemical_brand(method, transId = null, status = null, branch = null) {
             try {
                 const brand = await $.ajax({
                     type: 'GET',
@@ -1869,7 +1897,8 @@
                     data: {
                         getChem: method,
                         transId: transId,
-                        status: status
+                        status: status,
+                        branch: branch
                     }
                 });
 
