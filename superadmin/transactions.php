@@ -1196,7 +1196,7 @@
                     <div class="modal-dialog modal-lg modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Finalize Transaction</h1>
+                                <h1 class="modal-title fs-5">Complete Transaction</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                         class="bi text-light bi-x"></i></button>
                             </div>
@@ -1226,7 +1226,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Finalize Transaction Confirmation</h1>
+                                <h1 class="modal-title fs-5">Transaction Completion Confirmation</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
@@ -1586,9 +1586,12 @@
             }
         })
 
-        async function treatments(form) {
+        async function treatments(form, branch = null) {
             try {
-                $.get(transUrl, "treatments=true", function (data) {
+                $.get(transUrl, {
+                    treatments: true,
+                    branch: branch
+                }, function (data) {
                     $(`#${form}-treatmentContainer`).empty();
                     $(`#${form}-treatmentContainer`).html(data);
                 });
@@ -1612,15 +1615,17 @@
             let branch_id = $(this).val();
             let form = 'add';
             $("#addMoreChem").data('branch', branch_id);
+            $("#addMoreTech").data('branch', branch_id);
             $("#add-chemContainer").empty();
+            $("#addTechContainer").empty();
             const load = await Promise.all([
                 get_chemical_brand(form, null, null, branch_id),
                 get_technician(form, null, branch_id),
                 get_problems(form, null, branch_id),
                 // add_more_chem(),
-                add_more_tech(),
+                add_more_tech(branch_id),
                 add_packages(branch_id),
-                treatments(form),
+                treatments(form, branch_id),
             ]);
         })
 
@@ -1679,9 +1684,8 @@
         }
 
         // add / delete more technicians
-        async function add_more_tech() {
+        async function add_more_tech(branch = null) {
             let num = 2;
-            let branch = $("#add_branch").val();
 
             $('#addMoreTech', '#addModal').off('click').on('click', async function () {
                 await get_more_tech(num, branch);
@@ -1750,6 +1754,7 @@
 
                 if (addTech) {
                     $('#addTechContainer').append(addTech);
+                    console.log(branch);
                 } else {
                     console.log('add tech append failed');
                 }

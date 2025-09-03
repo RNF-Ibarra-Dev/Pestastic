@@ -248,7 +248,7 @@ require("startsession.php");
                         </div>
                         <div class="modal-body">
                             <label for="resched_pwd" class="form-label">Reschedule transaction?
-                                Enter<?= $_SESSION['techUsn'] ?>'s
+                                Enter<?= $_SESSION['baUsn'] ?>'s
                                 password to continue.'</label>
                             <input type="password" class="form-control w-50" name="pwd" id="resched_pwd">
 
@@ -279,7 +279,7 @@ require("startsession.php");
                         <div class="modal-body">
                             <input type="hidden" name="cancelIdName" id="cancelId">
                             <label for="cancelPass" class="form-label">Cancel this transaction? Enter
-                                <?= $_SESSION['techUsn'] ?>'s password to proceed</label>
+                                <?= $_SESSION['baUsn'] ?>'s password to proceed</label>
                             <input type="password" name="cancelPass" class="form-control w-50" id="cancelPass">
                             <div class="form-text ms-1">Cancelling Transaction is undoable, continue?</div>
                             <p class='text-center alert alert-info p-3 w-75 mx-auto my-0 mt-3' style="display: none;"

@@ -263,7 +263,7 @@ if (isset($_GET['techStats']) && $_GET['techStats'] === 'true') {
 }
 
 if (isset($_GET['inc']) && $_GET['inc'] === 'true') {
-    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Pendigng' AND void_request = 0;";
+    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Pending' AND void_request = 0;";
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) > 0) {

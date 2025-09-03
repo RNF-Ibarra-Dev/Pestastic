@@ -112,7 +112,8 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'add') {
     get_chem($conn, null, $branch);
 } else if (isset($_GET['getTech']) && $_GET['getTech'] == 'true') {
     $active = $_GET['active'];
-    get_tech($conn, $active);
+    $branch = $_GET['branch'] ?? NULL;
+    get_tech($conn, $active, $branch);
 } else if (isset($_GET['getProb']) && $_GET['getProb'] == 'true') {
     $checked = $_GET['checked'];
     get_prob($conn, $checked);
@@ -122,19 +123,39 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'add') {
     get_more_chem($conn, $status, $branch);
 } else if (isset($_GET['addMoreTech']) && $_GET['addMoreTech'] == 'true') {
     $rowNum = $_GET['techRowNum'];
+    $branch = $_GET['branch'] ?? null;
     $active = isset($_GET['active']) ? $_GET['active'] : null;
-    add_more_tech($conn, $rowNum, $active);
+    add_more_tech($conn, $rowNum, $active, $branch);
 }
 // else {
 //     // echo 'ajax get error';
 //     // return;
 // }
 
-function get_tech($conn, $active = null)
+function get_tech($conn, $active = null, $branch = null)
 {
     $active = $active == null ? '' : $active;
+
     $sql = 'SELECT * FROM technician';
-    $result = mysqli_query($conn, $sql);
+    $stmt = mysqli_stmt_init($conn);
+
+    if ($branch !== NULL && is_numeric($branch)) {
+        $sql .= " WHERE user_branch = ?";
+    }
+
+    $sql .= ';';
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo "<option value=''>Statement preparation failed.</option>";
+        exit();
+    }
+
+    if ($branch !== NULL && is_numeric($branch)) {
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if (!$result) {
         echo 'Error fetching tech data' . mysqli_error($conn);
@@ -143,14 +164,21 @@ function get_tech($conn, $active = null)
 
     echo "<option value='#' selected>Select Technician</option>";
     echo "<hr class='dropdown-divider'>";
-    while ($row = mysqli_fetch_assoc($result)) {
-        $id = $row['technicianId'];
-        $name = $row['firstName'] . ' ' . $row['lastName'];
-        $empId = $row['techEmpId'];
-
-        ?>
-        <option value="<?= $id ?>" <?= $id == $active ? 'selected' : '' ?>><?= $name . ' | Technician ' . $empId ?></option>
-        <?php
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['technicianId'];
+            $name = $row['firstName'] . ' ' . $row['lastName'];
+            $empId = $row['techEmpId'];
+            $branch_deets = get_branch_details($conn, $row['user_branch']);
+            $branch_info = "{$branch_deets['name']} ({$branch_deets['location']})";
+            ?>
+            <option value="<?= $id ?>" <?= $id == $active ? 'selected' : '' ?>>
+                <?= $name . ' | Technician ' . $empId . ' | ' . $branch_info ?>
+            </option>
+            <?php
+        }
+    } else {
+        echo "<option value='' disable>No technicians found.</option>";
     }
 }
 
@@ -273,7 +301,7 @@ function get_more_chem($conn, $status = '', $branch = null)
         exit();
     }
 
-    if($branch !== null && is_numeric($branch)){
+    if ($branch !== null && is_numeric($branch)) {
         mysqli_stmt_bind_param($stmt, 'i', $branch);
     }
 
@@ -309,21 +337,48 @@ function get_more_chem($conn, $status = '', $branch = null)
 }
 
 if (isset($_GET['treatments']) && $_GET['treatments'] === 'true') {
-    $sql = "SELECT * FROM treatments;";
-    $result = mysqli_query($conn, $sql);
+    $branch = $_GET['branch'] ?? NULL;
+
+    $sql = "SELECT * FROM treatments";
+    $stmt = mysqli_stmt_init($conn);
+
+    if ($branch !== NULL & is_numeric($branch)) {
+        $sql .= " WHERE branch = ?";
+    }
+
+    $sql .= ';';
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo "<option value='' disabled selected>Statement preparation failed.</option>";
+        exit;
+    }
+
+    if ($branch !== NULL & is_numeric($branch)) {
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
 
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
             $n = $row['t_name'];
+            $branch_details = get_branch_details($conn, $row['branch']);
+            $branch_display = "{$branch_details['name']} ({$branch_details['location']})";
             ?>
-            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($n) ?></option>
+            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars("$n | $branch_display") ?></option>
             <?php
         }
+    } else {
+        ?>
+        <option value="" selected>No treatment found.</option>
+        <?php
     }
 }
 
-function add_more_tech($conn, $num, $active)
+function add_more_tech($conn, $num, $active, $branch = null)
 {
 
     ?>
@@ -331,7 +386,7 @@ function add_more_tech($conn, $num, $active)
         <div class="dropdown-center d-flex col-lg-6 mb-2" id="row-<?= $num ?>">
             <select id="add-technicianName" name="add-technicianName[]" class="form-select"
                 aria-label="Default select example">
-                <?= get_tech($conn, $active); ?>
+                <?= get_tech($conn, $active, $branch); ?>
             </select>
         </div>
         <div class="col-2 p-0">
@@ -742,10 +797,30 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
 }
 
 
-function packages($conn)
+function packages($conn, $branch = NULL)
 {
-    $sql = "SELECT * FROM packages;";
-    $result = mysqli_query($conn, $sql);
+    $sql = "SELECT * FROM packages";
+    $stmt = mysqli_stmt_init($conn);
+
+    if ($branch !== NULL && is_numeric($branch)) {
+        $sql .= " WHERE branch = ?";
+    }
+
+    $sql .= ';';
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        ?>
+        <option disabled>Statement preparation failed.</option>
+        <?php
+        exit;
+    }
+
+    if ($branch !== NULL && is_numeric($branch)) {
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
 
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
@@ -753,24 +828,27 @@ function packages($conn)
             $name = $row['name'];
             $sessions = $row['session_count'];
             $warranty = $row['year_warranty'];
+            $branch_deets = get_branch_details($conn, $row['branch']);
+            $branch_info = "{$branch_deets['name']} ({$branch_deets['location']})";
             ?>
             <option value="<?= $id ?>">
-                <?= htmlspecialchars($name) . ' | ' . htmlspecialchars($warranty) . " Years Warranty" . ($sessions != 1 ? " | (" . htmlspecialchars($sessions) . " Sessions) " : '') ?>
+                <?= htmlspecialchars($name) . ' | ' . htmlspecialchars($warranty) . " Years Warranty" . ($sessions != 1 ? " | (" . htmlspecialchars($sessions) . " Sessions) " : '') . $branch_info ?>
             </option>
             <?php
         }
     } else {
         ?>
-        <option disabled>No Current Package.</option>
+        <option disabled>No package available at the moment.</option>
         <?php
     }
 }
 
 if (isset($_GET['packages']) && $_GET['packages'] === 'true') {
+    $branch = $_GET['branch'] ?? NULL;
     ?>
     <option value="none">None</option>
     <?php
-    packages($conn);
+    packages($conn, $branch);
 }
 
 if (isset($_GET['treatmentname']) && $_GET['treatmentname'] === 'true') {
