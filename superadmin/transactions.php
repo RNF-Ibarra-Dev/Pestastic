@@ -145,6 +145,7 @@
                     <option value="Cancelled">Cancelled </option>
                     <option value="Voided">Voided</option>
                 </select>
+
                 <input class="form-control form-custom me-auto py-2 align-middle px-3 rounded-pill text-light"
                     type="search" placeholder="Search transactions . . ." id="searchbar" name="searchTrans"
                     autocomplete="one-time-code">
@@ -156,6 +157,10 @@
                         class="position-absolute top-0 start-100 translate-middle p-2 bg-warning btn btn-sidebar rounded-circle visually-hidden">
                     </span>
                 </button>
+                <button type="button" id="recentlyCompleted" data-bs-target="#finalizetransactionmodal"
+                    data-bs-toggle="modal"
+                    class="btn w-50 rounded btn-sidebar bg-light bg-opacity-25 border-0 text-light py-2 px-1 "><i
+                        class="bi bi-calendar2-check me-2"></i>Finalizing Transactions</button>
                 <div class="vr"></div>
                 <button type="button" id="addbtn" class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3"
                     disabled-data-bs-toggle="modal" disabled-data-bs-target="#addModal"><i
@@ -849,7 +854,7 @@
                                                     <input type="checkbox" class="btn-check" id="checkall"
                                                         autocomplete="off">
                                                     <label class="btn fw-bold" for="checkall">Check All <i
-                                                            id="checkicon" class="bi bi-square ms-2"></i></label>
+                                                            id="approveicon" class="bi bi-square ms-2"></i></label>
                                                 </th>
                                                 <th>
                                                     <input type="checkbox" class="btn-check" id="checkallreject"
@@ -1060,7 +1065,7 @@
                     <div class="modal-dialog modal-lg modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Reschedule Cancelled Transaction</h1>
+                                <h1 class="modal-title fs-5">Reschedule Transaction</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                         class="bi text-light bi-x"></i></button>
                             </div>
@@ -1089,7 +1094,7 @@
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Reschedule Transaction Confirmation</h1>
+                                <h1 class="modal-title fs-5">Reschedule Confirmation</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
@@ -2897,7 +2902,8 @@
 
         $("#table").on('click', '.dispatched-btn', async function () {
             let id = $(this).data('dispatched-id');
-            // console.log(id);
+            $("button#finalize-addMoreChem").data('transaction', id);
+            // console.log('tite');
             $("#finalizeid").val(id);
             await get_chemical_brand('finalize', id, "Dispatched");
             $.get(transUrl, {
@@ -2916,6 +2922,7 @@
 
         $("#table").on('click', '.accepted-btn', async function () {
             let id = $(this).data('accepted');
+            $("button#dispatch-addMoreChem").data('transaction', id);
             // console.log(id);
             $("#dispatchid").val(id);
             await get_chemical_brand('dispatch', id, "Dispatched");
@@ -2935,7 +2942,7 @@
 
         $("#table").on('click', '.finalizing-btn', async function () {
             let id = $(this).data('finalize-id');
-
+            $("button#complete-addMoreChem").data('transaction', id);
             $("#completeid").val(id);
             await get_chemical_brand('complete', id, "Finalizing");
             $.get(transUrl, {
@@ -2995,9 +3002,12 @@
         })
 
         $("#finalizeForm").on('click', "#finalize-addMoreChem", function () {
+            let id = $(this).data('transaction');
+            // console.log(id);
             $.get(transUrl, {
                 addrow: 'true',
-                status: 'Finalizing'
+                status: 'Finalizing',
+                transaction: id
             }, function (data) {
                 $("#finalize-chemBrandUsed").append(data);
                 // console.log(data);
@@ -3005,18 +3015,22 @@
 
         });
         $("#completeForm").on('click', "#complete-addMoreChem", function () {
+            let id = $(this).data('transaction');
             $.get(transUrl, {
                 addrow: 'true',
-                status: 'Completed'
+                status: 'Completed',
+                transaction: id
             }, function (data) {
                 $("#complete-chemBrandUsed").append(data);
             }, 'html');
 
         });
         $("#dispatchForm").on('click', "#dispatch-addMoreChem", function () {
+            let id = $(this).data('transaction');
             $.get(transUrl, {
                 addrow: 'true',
-                status: 'Dispatched'
+                status: 'Dispatched',
+                transaction: id
             }, function (data) {
                 $("#dispatch-chemBrandUsed").append(data);
             }, 'html');
@@ -3158,6 +3172,24 @@
                 })
         });
 
+
+        $(document).on("shown.bs.modal", "#finalizetransactionmodal", async function () {
+            let status = $("#sortstatus").val();
+            await $.get(transUrl, "&finalizetrans=true")
+                .done(function (d) {
+                    if ($("#finalizetranstable").length <= 0) {
+                        $("#finalizetranstable").append(d);
+                    } else {
+                        $("#finalizetranstable").empty();
+                        $("#finalizetranstable").append(d);
+                    }
+                    loadpage(1, status);
+                })
+                .fail(function (e) {
+                    console.log(e);
+                })
+        });
+
         $("#table").on('click', '.finalize-btn', function () {
             // console.log($(this).data('finalize-id'));
             let id = $(this).data('finalize-id');
@@ -3214,10 +3246,10 @@
 
             let approveChecked = $('tbody#voidrequesttable .chkbox-approve:checked').length;
             if (approveChecked === totalRows && totalRows > 0) {
-                $('#approveall').prop('checked', true);
+                $('#checkall').prop('checked', true);
                 $('#approveicon').removeClass('bi-square').addClass('bi-check-square');
             } else {
-                $('#approveall').prop('checked', false);
+                $('#checkall').prop('checked', false);
                 $('#approveicon').removeClass('bi-check-square').addClass('bi-square');
             }
 
@@ -3231,13 +3263,8 @@
             }
         }
 
-        $(document).on('click', '#approvemulti', async function () {
-            $('#multiapprove')[0].reset();
-            await stock_requests();
-            $('#multiapproveModal').modal('show');
-        });
 
-        $(document).on('change', '#approveall', function () {
+        $(document).on('change', '#checkall', function () {
             let checked = $(this).prop('checked');
 
             $('#approveicon').toggleClass('bi-square bi-check-square');
@@ -3259,7 +3286,7 @@
 
             if (checked) {
                 $('tbody#voidrequesttable .chkbox-approve').prop('checked', false);
-                $('#approveall').prop('checked', false);
+                $('#checkall').prop('checked', false);
                 $('#approveicon').removeClass('bi-check-square').addClass('bi-square');
             }
         });

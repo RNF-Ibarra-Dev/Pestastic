@@ -1036,7 +1036,7 @@
                     <div class="modal-dialog modal-lg modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Reschedule Cancelled Transaction</h1>
+                                <h1 class="modal-title fs-5">Reschedule Transaction</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                         class="bi text-light bi-x"></i></button>
                             </div>
@@ -1065,7 +1065,7 @@
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Reschedule Transaction Confirmation</h1>
+                                <h1 class="modal-title fs-5">Reschedule Confirmation</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>

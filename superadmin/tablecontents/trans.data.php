@@ -207,7 +207,7 @@ function get_chem($conn, $active = null, $branch = null)
 {
     $active = $active ?? '';
 
-    $sql = 'SELECT * FROM chemicals WHERE request = 0 AND chemLevel > 0 AND unop_cont > 0';
+    $sql = 'SELECT * FROM chemicals WHERE request = 0 AND (chemLevel > 0 OR unop_cont > 0)';
 
     if ($branch !== NULL && is_numeric($branch)) {
         $sql .= " AND branch = ?";
@@ -256,12 +256,31 @@ function get_chem($conn, $active = null, $branch = null)
         <?php
     }
 }
-function get_chem_edit($conn, $active = 0)
+function get_chem_edit($conn, $active = 0, $branch = null)
 {
     $active = $active === 0 ? 0 : (int) $active;
-    $sql = "SELECT * FROM chemicals ORDER BY id DESC;";
 
-    $result = mysqli_query($conn, $sql);
+    $sql = "SELECT * FROM chemicals WHERE request = 0";
+
+    if ($branch !== null && is_numeric($branch)) {
+        $sql .= " AND branch = ?";
+    }
+
+    $sql .= " ORDER BY id DESC;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo "<option value=''>Statement preparation failed.</option>";
+        exit();
+    }
+
+    if ($branch !== null && is_numeric($branch)) {
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
 
     if (!$result) {
         echo 'Error fetching chem data' . mysqli_error($conn);
@@ -278,16 +297,18 @@ function get_chem_edit($conn, $active = 0)
         $level = $row['chemLevel'];
         $req = (int) $row['request'];
         $unit = $row['quantity_unit'];
+        $branch_details = get_branch_details($conn, $row['branch']);
+        $branch_info = "{$branch_details['name']} ({$branch_details['location']})";
         ?>
         <option value="<?= htmlspecialchars($id) ?>" <?= $id === $active ? 'selected' : '' ?>>
-            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level $unit") . ' ' . ($req === 1 ? '(Under Review)' : '') ?>
+            <?= htmlspecialchars($name) . " | " . htmlspecialchars($brand) . " | " . htmlspecialchars("$level $unit") . " | " . htmlspecialchars($branch_info) ?>
         </option>
         <?php
     }
 }
 function get_more_chem($conn, $status = '', $branch = null)
 {
-    $sql = "SELECT * FROM chemicals WHERE request = 0 AND chemLevel > 0 AND unop_cont > 0";
+    $sql = "SELECT * FROM chemicals WHERE request = 0 AND (chemLevel > 0 OR unop_cont > 0)";
 
     if ($branch !== null && is_numeric($branch)) {
         $sql .= " AND branch = ?";
@@ -606,6 +627,7 @@ if (isset($_GET['edit']) && $_GET['edit'] === 'technicianName') {
     mysqli_stmt_execute($stmt);
     $results = mysqli_stmt_get_result($stmt);
     $numRows = mysqli_num_rows($results);
+    $branch = get_trans_branch($conn, $transId);
 
     if ($numRows > 0) {
         while ($row = mysqli_fetch_assoc($results)) {
@@ -617,7 +639,7 @@ if (isset($_GET['edit']) && $_GET['edit'] === 'technicianName') {
                 <select id="edit-technicianName" name="edit-technicianName[]" class="form-select me-3"
                     aria-label="Default select example">
                     <?php
-                    get_tech($conn, $id);
+                    get_tech($conn, $id, $branch);
                     ?>
                 </select>
                 <button type="button" id="edit-deleteTech" data-row-id="<?= $id ?>" class="btn btn-grad mt-auto py-2 px-3"><i
@@ -633,7 +655,7 @@ if (isset($_GET['edit']) && $_GET['edit'] === 'technicianName') {
             <select id="edit-technicianName" name="edit-technicianName[]" class="form-select me-3"
                 aria-label="Default select example">
                 <?php
-                get_tech($conn);
+                get_tech($conn, $null, $branch);
                 ?>
             </select>
             <button type="button" id="edit-deleteTech" class="btn btn-grad mt-auto py-2 px-3"><i
@@ -676,96 +698,15 @@ if (isset($_GET['edit']) && $_GET['edit'] == 'probCheckbox') {
     }
 }
 
-if (isset($_GET['getChem']) && $_GET['getChem'] == 'edit') {
-    $transId = $_GET['transId'];
-    $status = $_GET['status'];
-
-    $sql = "SELECT * FROM transaction_chemicals WHERE trans_id = ?;";
-    $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        http_response_code(400);
-        echo json_encode(['type' => 'stmt', 'message' => mysqli_stmt_error($stmt)]);
-        exit();
-    }
-    mysqli_stmt_bind_param($stmt, 'i', $transId);
-    mysqli_stmt_execute($stmt);
-    $results = mysqli_stmt_get_result($stmt);
-    $numRows = mysqli_num_rows($results);
-
-
-    if ($numRows > 0) {
-        while ($row = mysqli_fetch_assoc($results)) {
-            $id = $row['chem_id'];
-            $amtUsed = $row['amt_used'];
-            $unit = get_unit($conn, $id);
-
-            ?>
-            <div class="row" id="row-<?= $id ?>">
-                <div class="col-lg-4 mb-2">
-                    <label for="edit-chemBrandUsed-<?= $id ?>" class="form-label fw-light">Chemical
-                        Used:</label>
-                    <select id="edit-chemBrandUsed-<?= $id ?>" name="edit_chemBrandUsed[]" class="form-select">
-                        <?php get_chem_edit($conn, $id); ?>
-                    </select>
-                </div>
-
-                <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
-                    <div class="d-flex flex-column">
-                        <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
-                            id="edit-amountUsed-label">Amount:</label>
-                        <input type="number" <?= $status === 'Finalizing' || $status === 'Voided' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $id ?>"
-                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>"
-                            <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
-                    </div>
-                    <span id="passwordHelpInline-<?= $id ?>" class="form-text mt-auto mb-2">
-                        <?= $unit ?>
-                    </span>
-                    <button type="button" data-row-id="<?= $id ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
-                            class="bi bi-dash-circle text-light"></i></button>
-                </div>
-
-            </div>
-            <?php
-        }
-        mysqli_stmt_close($stmt);
-        exit();
-    } else {
-        $idd = uniqid();
-        ?>
-        <div class="row" id="row-<?= $idd ?>">
-            <div class="col-lg-4 mb-2">
-                <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
-                    Used:</label>
-                <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select">
-                    <?php get_chem($conn); ?>
-                </select>
-            </div>
-
-            <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
-                <div class="d-flex flex-column">
-                    <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light"
-                        id="edit-amountUsed-label">Amount:</label>
-                    <input type="number" <?= $status != 'Accepted' ? '' : "name='edit-amountUsed[]'" ?> maxlength="4"
-                        id="edit-amountUsed-<?= $idd ?>" class="form-control form-add me-3" autocomplete="one-time-code"
-                        <?= $status == null ? '' : ($status != 'Accepted' ? 'disabled' : '') ?>>
-                </div>
-                <span id="passwordHelpInline" class="form-text mt-auto mb-2">
-                    /ml
-                </span>
-                <button type="button" data-row-id="<? $idd ?>" class="ef-del-btn btn btn-grad mt-auto py-2 px-3"><i
-                        class="bi bi-dash-circle text-light"></i></button>
-            </div>
-        </div>
-        <?php
-        mysqli_stmt_close($stmt);
-        exit();
-    }
-}
 
 
 if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
 
     $status = (string) $_GET['status'];
+    $transaction = $_GET['transaction'] ?? NULL;
+    if ($transaction !== NULL && is_numeric($transaction)) {
+        $branch = get_trans_branch($conn, $transaction);
+    }
 
     $idd = uniqid();
     ?>
@@ -774,7 +715,7 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
             <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
                 Used:</label>
             <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
-                <?php get_chem($conn); ?>
+                <?php get_chem($conn, NULL, $branch); ?>
             </select>
         </div>
 
@@ -1173,6 +1114,7 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
     $results = mysqli_stmt_get_result($stmt);
     $numRows = mysqli_num_rows($results);
 
+    $branch_id = get_trans_branch($conn, $transId);
 
     if ($numRows > 0) {
         while ($row = mysqli_fetch_assoc($results)) {
@@ -1186,7 +1128,7 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
                     <label for="edit-chemBrandUsed-<?= $id ?>" class="form-label fw-light">Chemical
                         Used:</label>
                     <select id="edit-chemBrandUsed-<?= $id ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
-                        <?php get_chem_edit($conn, $id); ?>
+                        <?php get_chem_edit($conn, $id, $branch_id); ?>
                     </select>
                 </div>
 
@@ -1220,7 +1162,7 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
                 <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
                     Used:</label>
                 <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
-                    <?php get_chem($conn); ?>
+                    <?php get_chem($conn, null, $branch_id); ?>
                 </select>
             </div>
 
