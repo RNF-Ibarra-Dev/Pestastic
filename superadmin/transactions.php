@@ -201,7 +201,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <p
-                                        class="fw-medium mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        class="fw-medium mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-white rounded p-2">
                                         Customer Information</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
@@ -324,7 +324,7 @@
 
                                     <div class="row mb-2" did="row">
                                         <div class="col-lg-6 mb-2">
-                                            <label for="add-chemBrandUsed" class="form-label fw-light">Chemical
+                                            <label for="add-chemBrandUsed" class="form-label fw-light">Chemical / Item
                                                 Used</label>
                                             <select id="add-chemBrandUsed" name="add_chemBrandUsed[]"
                                                 class="form-select chem-brand-select">
@@ -632,7 +632,7 @@
                                         <div class="col-lg-6 mb-2" id="view-chemUsedContainer">
                                             <!-- left side -- view -->
                                             <label for="view-chemUsed" id="view-chemUsed-label"
-                                                class="form-label fw-light">Chemicals
+                                                class="form-label fw-light">Chemicals / Item
                                                 Used:</label>
                                             <ul class="list-group list-group-flush" id="view-chemUsed"></ul>
                                         </div>
@@ -649,7 +649,7 @@
                                         <div class="col-lg-4  my-2 d-flex visually-hidden" id='btn-amountUsed'>
                                             <button type="button" id="edit-addMoreChem"
                                                 class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
-                                                <p class="fw-light m-0 me-2">Add Chemical</p><i
+                                                <p class="fw-light m-0 me-2">Add Chemical / Item</p><i
                                                     class="bi bi-plus-circle text-light"></i>
                                             </button>
                                         </div>
@@ -926,7 +926,7 @@
             <form id="finalizetransactionform">
                 <div class="modal modal-lg fade text-dark modal-edit" data-bs-backdrop="static"
                     id="finalizetransactionmodal" tabindex="0" aria-labelledby="confirmAdd" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title">
                                 <h1 class="modal-title fs-5 text-light">Transactions Completion</h1>
@@ -936,7 +936,7 @@
 
                             <div class="modal-body text-dark p-3">
                                 <div class="table-responsive-sm  d-flex justify-content-center">
-                                    <table class="table align-middle table-hover w-100" id="approvechemtable">
+                                    <table class="table align-middle table-hover w-100" id="finalizetable">
                                         <caption class="fw-light text-muted">List of recently finished transactions
                                             marked by technicians. Select the transaction number ID to view transaction.
                                         </caption>
@@ -945,13 +945,15 @@
                                                 <th class="text-dark" scope="col">Transaction ID</th>
                                                 <th class="text-dark">Customer Name</th>
                                                 <th class="text-dark">Treatment Date</th>
+                                                <th class="text-dark">Transaction Branch</th>
                                                 <th class="text-dark">Updated By</th>
                                                 <th class="text-dark">Updated At</th>
                                                 <th class="text-dark">
-                                                    <input type="checkbox" class="btn-check" id="checkall"
+                                                    <input type="checkbox" class="btn-check" id="finalize-checkall"
                                                         autocomplete="off">
-                                                    <label class="btn fw-bold" for="checkall">Check All <i
-                                                            id="checkicon" class="bi bi-square ms-2"></i></label>
+                                                    <label class="btn fw-bold" for="finalize-checkall">Check All <i
+                                                            id="finalize-checkicon"
+                                                            class="bi bi-square ms-2"></i></label>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -1141,7 +1143,7 @@
                                 <div class="p-0 m-0 mb-2" id="finalize-chemBrandUsed"></div>
                                 <button type="button" id="finalize-addMoreChem"
                                     class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
-                                    <p class="fw-light m-0 me-2">Add Chemical</p><i
+                                    <p class="fw-light m-0 me-2">Add Chemical / Item</p><i
                                         class="bi bi-plus-circle text-light"></i>
                                 </button>
 
@@ -1209,7 +1211,7 @@
                                 <div class="p-0 m-0 mb-2" id="complete-chemBrandUsed"></div>
                                 <button type="button" id="complete-addMoreChem"
                                     class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
-                                    <p class="fw-light m-0 me-2">Add Chemical</p><i
+                                    <p class="fw-light m-0 me-2">Add Chemical / Item</p><i
                                         class="bi bi-plus-circle text-light"></i>
                                 </button>
 
@@ -1277,13 +1279,13 @@
                                 <div class="p-0 m-0 mb-2" id="dispatch-chemBrandUsed"></div>
                                 <button type="button" id="dispatch-addMoreChem"
                                     class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
-                                    <p class="fw-light m-0 me-2">Add Chemical</p><i
+                                    <p class="fw-light m-0 me-2">Add Chemical / Item</p><i
                                         class="bi bi-plus-circle text-light"></i>
                                 </button>
 
                                 <label for="dispatchnotes" class="fw-light my-2">Note:</label>
                                 <textarea name="note" class="form-control w-50" id="dispatchnotes" cols="1"
-                                    placeholder="e.g. Chemicals and equipment prepared for dispatch. Technician will bring 500ml Termicide and 2 sprayers."></textarea>
+                                    placeholder="e.g. Chemicals / Items and equipment prepared for dispatch. Technician will bring 500ml Termicide and 2 sprayers."></textarea>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
@@ -1385,11 +1387,34 @@
         }
         ?>
 
+        // function update_checks_finalize() {
+        //     let checked_inputs = $("#finalizetranstable input[type='checkbox']:checked").length;
+        //     let totalRows = $("#finalizetranstable input[type='checkbox']").length;
+        //     if (checked_inputs === totalRows && totalRows > 0) {
+        //         $("#finalize-checkall").prop('checked', true);
+        //         $("#finalize-checkicon").removeClass('bi-square').addClass('bi-check-square');
+        //     }
+        // }
 
-        $(document).on('change', '#checkall', function () {
-            $('#checkicon').toggleClass('bi-square bi-check-square');
-            var checked = $(this).prop('checked');
-            $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
+        $("#finalizetranstable").on('change', 'tr input[type="checkbox"]', function () {
+            let checked_inputs = $("#finalizetranstable input[type='checkbox']:checked").length;
+            let totalRows = $("#finalizetranstable input[type='checkbox']").length;
+            if (checked_inputs === totalRows && totalRows > 0) {
+                $("#finalize-checkall").prop('checked', true);
+                $("#finalize-checkicon").removeClass('bi-square').addClass('bi-check-square');
+            }else{
+                $("#finalize-checkall").prop('checked', false);
+                $("#finalize-checkicon").removeClass('bi-check-square').addClass('bi-square');
+            }
+        })
+
+        $(document).on('change', '#finalize-checkall', function () {
+            let checked = $(this).prop('checked');
+
+            $('table#finalizetable #finalize-checkicon').toggleClass('bi-square bi-check-square');
+            // $("table#finalizetable #checkall").prop('checked', checked);
+
+            $('table#finalizetable tbody tr input[type="checkbox"]').prop('checked', checked);
         });
 
         // voidrequesttable
@@ -3041,7 +3066,7 @@
             let row = $(this).closest('div.row');
             let length = $('#finalize-chemBrandUsed').children('.row').length;
             if (length === 1) {
-                alert('One or more chemicals are required in order to proceed.');
+                alert('One or more chemicals/Item are required in order to proceed.');
                 console.log($('#finalize-chemBrandUsed'));
             } else {
                 row.remove();
@@ -3051,7 +3076,7 @@
             let row = $(this).closest('div.row');
             let length = $('#complete-chemBrandUsed').children('.row').length;
             if (length === 1) {
-                alert('One or more chemicals are required in order to proceed.');
+                alert('One or more chemicals/item are required in order to proceed.');
             } else {
                 row.remove();
             }
@@ -3061,7 +3086,7 @@
             let row = $(this).closest('div.row');
             let length = $('#dispatch-chemBrandUsed').children('.row').length;
             if (length === 1) {
-                alert('One or more chemicals are required in order to proceed.');
+                alert('One or more chemicals/item are required in order to proceed.');
             } else {
                 row.remove();
             }
@@ -3084,7 +3109,7 @@
                         // $("#tableAlert").removeClass('visually-hidden').html(data.success).hide().fadeIn(400).delay(2000).fadeOut(1000);
                         show_toast(data.success);
                         loadpage(1, $("#sortstatus").val());
-                        $('#finalizetransactionmodal')[0].reset();
+                        $('#finalizetransactionform')[0].reset();
                     }
                 })
                 .fail(function (err) {
@@ -3174,8 +3199,9 @@
 
 
         $(document).on("shown.bs.modal", "#finalizetransactionmodal", async function () {
-            let status = $("#sortstatus").val();
-            await $.get(transUrl, "&finalizetrans=true")
+            // let status = $("#sortstatus").val();
+            let branch = $("#sortbranches").val();
+            await $.get(transUrl, { finalizetrans: true, branch: branch })
                 .done(function (d) {
                     if ($("#finalizetranstable").length <= 0) {
                         $("#finalizetranstable").append(d);
@@ -3183,7 +3209,7 @@
                         $("#finalizetranstable").empty();
                         $("#finalizetranstable").append(d);
                     }
-                    loadpage(1, status);
+                    // loadpage(1, status);
                 })
                 .fail(function (e) {
                     console.log(e);
@@ -3241,15 +3267,23 @@
                 })
         });
 
+
+        $(document).on("shown.bs.modal", "#voidrequestmodal", function () {
+            $('#approvechemtable #checkall').prop('checked', false);
+            $('#approveicon').removeClass('bi-check-square').addClass('bi-square');
+            $('#checkallreject').prop('checked', false);
+            $('#rejecticon').removeClass('bi-x-square').addClass('bi-square');
+        });
+
         function update_checks() {
             let totalRows = $('tbody#voidrequesttable tr').length;
 
             let approveChecked = $('tbody#voidrequesttable .chkbox-approve:checked').length;
             if (approveChecked === totalRows && totalRows > 0) {
-                $('#checkall').prop('checked', true);
+                $('#approvechemtable #checkall').prop('checked', true);
                 $('#approveicon').removeClass('bi-square').addClass('bi-check-square');
             } else {
-                $('#checkall').prop('checked', false);
+                $('#approvechemtable #checkall').prop('checked', false);
                 $('#approveicon').removeClass('bi-check-square').addClass('bi-square');
             }
 
@@ -3264,7 +3298,7 @@
         }
 
 
-        $(document).on('change', '#checkall', function () {
+        $(document).on('change', '#approvechemtable #checkall', function () {
             let checked = $(this).prop('checked');
 
             $('#approveicon').toggleClass('bi-square bi-check-square');

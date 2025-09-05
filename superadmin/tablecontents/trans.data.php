@@ -232,11 +232,11 @@ function get_chem($conn, $active = null, $branch = null)
         exit();
     }
 
-    echo "<option value='#' selected>Select Chemical</option>";
+    echo "<option value='#' selected>Select Chemical / Item</option>";
     echo "<hr class='dropdown-divider'>";
 
     if (mysqli_num_rows($result) === 0) {
-        echo "<option value=''>No chemicals found.</option>";
+        echo "<option value=''>No chemicals/items found.</option>";
         return;
     }
 
@@ -287,7 +287,7 @@ function get_chem_edit($conn, $active = 0, $branch = null)
         return;
     }
 
-    echo "<option value='#' selected>Select Chemical</option>";
+    echo "<option value='#' selected>Select Chemical / Item</option>";
     echo "<hr class='dropdown-divider'>";
 
     while ($row = mysqli_fetch_assoc($result)) {
@@ -597,7 +597,7 @@ if (isset($_GET['view']) && $_GET['view'] == 'chemUsed') {
             ;
 
             ?>
-            <li class="list-group-item mb-2"><strong>Chemical:</strong> <?= $chemUsed ?><br><strong>Amount used:
+            <li class="list-group-item mb-2"><strong>Chemical/Item:</strong> <?= $chemUsed ?><br><strong>Amount used:
                 </strong><?= $amtUsed != 0 ? "$amtUsed $unit" : 'Amount Pending' ?></li>
             <?php
         }
@@ -712,7 +712,7 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
     ?>
     <div class="row" id="row-<?= $idd ?>">
         <div class="col-lg-4 mb-2">
-            <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
+            <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical / Item
                 Used:</label>
             <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
                 <?php get_chem($conn, NULL, $branch); ?>
@@ -1038,7 +1038,7 @@ if (isset($_GET['getunit']) && $_GET['getunit'] === 'true') {
     $chemId = $_GET['chemid'];
     if (!is_numeric($chemId)) {
         http_response_code(400);
-        echo "Invalid Chemical ID.";
+        echo "Invalid Chemical/Item ID.";
         exit();
     }
     $unit = get_unit($conn, $chemId);
@@ -1054,8 +1054,34 @@ if (isset($_GET['getunit']) && $_GET['getunit'] === 'true') {
 }
 
 if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
-    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing' ORDER BY updated_at DESC LIMIT 5;";
-    $result = mysqli_query($conn, $sql);
+    $branch = (int) $_GET['branch'];
+
+    if (!is_numeric($branch)) {
+        // http_response_code(400);
+        echo "<tr><td scope='row' colspan='6' class='text-center text-dark'>Error. Invalid branch ID. $branch </td></tr>";
+        exit;
+    }
+
+    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing'";
+
+    if ($branch !== 0) {
+        $sql .= " AND branch = ?";
+    }
+
+    $sql .= " ORDER BY updated_at DESC;";
+
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        // http_response_code(400);
+        echo "<tr><td scope='row' colspan='6' class='text-center text-dark'>Statment preparation failed.</td></tr>";
+        exit;
+    }
+    if($branch !== 0){
+        mysqli_stmt_bind_param($stmt, 'i', $branch);
+    }
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
     $rows = mysqli_num_rows($result);
 
     if ($rows > 0) {
@@ -1065,9 +1091,11 @@ if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
             $treatmentDate = $row['treatment_date'];
             $td = date('F j, Y', strtotime($treatmentDate));
             $updatedat = $row['updated_at'];
-            $ua = date("H:i A", strtotime($updatedat));
+            $ua = date("h:i A", strtotime($updatedat));
             $request = $row['void_request'];
             $upby = $row['updated_by'];
+            $branch_details = get_branch_details($conn, $row['branch']);
+            $branch = $branch_details['name'];
             $cby = $row['created_by'];
             ?>
             <tr class="text-center">
@@ -1075,6 +1103,7 @@ if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
                         data-trans-id="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($id) ?></button></td>
                 <td class="text-dark"><?= htmlspecialchars($customerName) ?></td>
                 <td class="text-dark"><?= htmlspecialchars($td) ?></td>
+                <td class="text-dark"><?= htmlspecialchars($branch) ?></td>
                 <td class="text-dark">
                     <?= $upby === "No User" && $cby === "No User" ? htmlspecialchars("No Recorded User.") : ($upby === $cby ? htmlspecialchars($upby) : ($upby !== 'No User' ? htmlspecialchars($upby) : htmlspecialchars($cby))) ?>
                 </td>
@@ -1093,7 +1122,7 @@ if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='6' class='text-center text-dark'>No finalizing transactions.</td></tr>";
+        echo "<tr><td scope='row' colspan='6' class='text-center text-dark'>No finalizing transactions. $sql $branch</td></tr>";
     }
 }
 
@@ -1125,7 +1154,7 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
             ?>
             <div class="row" id="row-<?= $id ?>">
                 <div class="col-lg-4 mb-2">
-                    <label for="edit-chemBrandUsed-<?= $id ?>" class="form-label fw-light">Chemical
+                    <label for="edit-chemBrandUsed-<?= $id ?>" class="form-label fw-light">Chemical / Item
                         Used:</label>
                     <select id="edit-chemBrandUsed-<?= $id ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
                         <?php get_chem_edit($conn, $id, $branch_id); ?>
@@ -1155,11 +1184,12 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
     } else {
         $idd = uniqid();
         ?>
-        <p class="alert alert-warning py-2 text-center fw-light w-75 mx-auto">This transaction has no chemicals set. Chemical
+        <p class="alert alert-warning py-2 text-center fw-light w-75 mx-auto">This transaction has no chemicals/items set.
+            Chemical/item
             might be deleted.</p>
         <div class="row" id="row-<?= $idd ?>">
             <div class="col-lg-4 mb-2">
-                <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical
+                <label for="edit-chemBrandUsed-<?= $idd ?>" class="form-label fw-light">Chemical / Item
                     Used:</label>
                 <select id="edit-chemBrandUsed-<?= $idd ?>" name="edit_chemBrandUsed[]" class="form-select chem-brand-select">
                     <?php get_chem($conn, null, $branch_id); ?>
