@@ -1402,10 +1402,15 @@
             if (checked_inputs === totalRows && totalRows > 0) {
                 $("#finalize-checkall").prop('checked', true);
                 $("#finalize-checkicon").removeClass('bi-square').addClass('bi-check-square');
-            }else{
+            } else {
                 $("#finalize-checkall").prop('checked', false);
                 $("#finalize-checkicon").removeClass('bi-check-square').addClass('bi-square');
             }
+        });
+
+        $(document).on('shown.bs.modal', '#finalizetransactionmodal', function () {
+            $("#finalize-checkall").prop('checked', false);
+            $("#finalize-checkicon").removeClass('bi-check-square').addClass('bi-square');
         })
 
         $(document).on('change', '#finalize-checkall', function () {

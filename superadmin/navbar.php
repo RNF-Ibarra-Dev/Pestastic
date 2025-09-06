@@ -1,3 +1,12 @@
+<style>
+    #notifications p {
+        font-size: 1.25rem !important;
+        text-wrap: wrap !important;
+        text-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2) !important;
+        font-weight: 400 !important;
+    }
+</style>
+
 <nav
     class="navbar navbar-expand-sm my-2 mx-2 rounded-3 border border-light navbar-dark bg-dark bg-opacity-50 pt-1 pb-2 shadow">
     <div class="container-fluid">

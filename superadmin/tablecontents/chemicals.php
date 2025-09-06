@@ -569,7 +569,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
             $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals";
             break;
         case "low":
-            $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals WHERE chemLevel <= unop_cont * .20";
+            $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals WHERE (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) < restock_threshold";
             break;
         case "expired":
             $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals WHERE expiryDate < CURDATE()";
@@ -578,7 +578,7 @@ if (isset($_GET['count']) && $_GET['count'] === 'true') {
             $sql = "SELECT COUNT(*) FROM chemicals WHERE request = 1";
             break;
         case "available":
-            $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals WHERE chemLevel > 0 AND request = 0";
+            $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals WHERE (chemLevel > 0 OR unop_cont > 0) AND request = 0 AND chem_location = 'main_storage'";
             break;
         case "dispatched":
             $sql = "SELECT COUNT(DISTINCT name, brand, container_size, quantity_unit) FROM chemicals WHERE chem_location = 'dispatched'";

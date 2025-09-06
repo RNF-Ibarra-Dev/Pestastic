@@ -833,7 +833,7 @@
 
                             <div class="modal-body text-dark p-3">
                                 <div class="table-responsive-sm  d-flex justify-content-center">
-                                    <table class="table align-middle table-hover w-100" id="approvechemtable">
+                                    <table class="table align-middle table-hover w-100" id="finalizetable">
                                         <caption class="fw-light text-muted">List of recently finished transactions
                                             marked by technicians. Select the transaction number ID to view transaction.
                                         </caption>
@@ -845,10 +845,11 @@
                                                 <th class="text-dark">Updated By</th>
                                                 <th class="text-dark">Updated At</th>
                                                 <th class="text-dark">
-                                                    <input type="checkbox" class="btn-check" id="checkall"
+                                                    <input type="checkbox" class="btn-check" id="finalize-checkall"
                                                         autocomplete="off">
-                                                    <label class="btn fw-bold" for="checkall">Check All <i
-                                                            id="checkicon" class="bi bi-square ms-2"></i></label>
+                                                    <label class="btn fw-bold" for="finalize-checkall">Check All <i
+                                                            id="finalize-checkicon"
+                                                            class="bi bi-square ms-2"></i></label>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -1355,11 +1356,26 @@
         }
         ?>
 
+        $("#finalizetranstable").on('change', 'tr input[type="checkbox"]', function () {
+            let checked_inputs = $("#finalizetranstable input[type='checkbox']:checked").length;
+            let totalRows = $("#finalizetranstable input[type='checkbox']").length;
+            if (checked_inputs === totalRows && totalRows > 0) {
+                $("#finalize-checkall").prop('checked', true);
+                $("#finalize-checkicon").removeClass('bi-square').addClass('bi-check-square');
+            } else {
+                $("#finalize-checkall").prop('checked', false);
+                $("#finalize-checkicon").removeClass('bi-check-square').addClass('bi-square');
+            }
+        });
 
-        $(document).on('change', '#checkall', function () {
-            $('#checkicon').toggleClass('bi-square bi-check-square');
-            var checked = $(this).prop('checked');
-            $('tbody tr td div input[type="checkbox"]').prop('checked', checked);
+
+        $(document).on('change', '#finalize-checkall', function () {
+            let checked = $(this).prop('checked');
+
+            $('table#finalizetable #finalize-checkicon').toggleClass('bi-square bi-check-square');
+            // $("table#finalizetable #checkall").prop('checked', checked);
+
+            $('table#finalizetable tbody tr input[type="checkbox"]').prop('checked', checked);
         });
 
 
@@ -2268,6 +2284,11 @@
                 })
             $("#completeModal").modal('show');
         });
+
+        $(document).on('shown.bs.modal', '#finalizetransactionmodal', function () {
+            $("#finalize-checkall").prop('checked', false);
+            $("#finalize-checkicon").removeClass('bi-check-square').addClass('bi-square');
+        })
 
         async function view_transaction(transId) {
             try {
