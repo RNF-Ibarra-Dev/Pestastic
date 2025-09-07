@@ -1,9 +1,11 @@
 <style>
-    #notifications p {
-        font-size: 1.25rem !important;
-        text-wrap: wrap !important;
-        text-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2) !important;
-        font-weight: 400 !important;
+    li a div p {
+        text-align: justify !important;
+        text-justify: inter-word !important;
+    }
+
+    li>a>div {
+        padding-right: 1rem !important;
     }
 </style>
 
@@ -83,7 +85,7 @@
     <div class="modal-dialog me-4 w-25 shadow-lg" style="margin-top: 5rem !important;">
         <div class="modal-content text-dark rounded-4 border-0 shadow-lg">
             <div class="modal-header position-relative">
-                <h1 class="modal-title fs-5 mx-auto">Alerts</h1>
+                <h1 class="modal-title fs-4 fw-bold mx-auto">Alerts</h1>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"
                     style="position: absolute; right: 0.4rem;"></button>
             </div>

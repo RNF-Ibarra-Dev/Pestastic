@@ -255,10 +255,11 @@ body {
   cursor: pointer;
 } */
 
-.account-settings-icon {
+/* .account-settings-icon {
   position: absolute !important;
-  right: 1rem !important;
-}
+  left: 1rem !important;
+  float: right !important;
+} */
 
 /* .sa-content {
   overflow: auto !important;

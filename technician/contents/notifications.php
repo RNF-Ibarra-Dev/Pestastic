@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
@@ -9,25 +10,8 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
         'countbadge' => ''
     ];
 
-    $ls = "SELECT * FROM chemicals WHERE chemLevel <= 10 ORDER BY chemLevel;";
-    $lsr = mysqli_query($conn, $ls);
-    if ($lsr) {
-        $num = mysqli_num_rows($lsr);
-        if ($num > 0) {
-            $lchems = $num == 1 ? 'Item' : 'Items';
-            $response['notif'] .=
-                "<li class='list-group-item p-0'>
-            <a href='itemstock.php'
-            class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center gap'>
-            <p class='fw-light mb-0'><i class='bi bi-beaker fw-light account-settings-icon'></i><span class='text-danger'>$num</span> $lchems are
-            low
-            in level.</p>
-            </a>
-            </li>";
-            $response['count']++;
-        }
-    }
-    $pt = "SELECT * FROM transactions WHERE transaction_status = 'pending';";
+
+    $pt = "SELECT * FROM transactions t JOIN transaction_technicians tt ON t.id = tt.trans_id WHERE tt.tech_id = {$_SESSION['techId']} AND (t.transaction_status = 'Pending' OR t.transaction_status = 'Accepted') AND t.treatment_date > CURDATE() AND void_request = 0;";
     $ptr = mysqli_query($conn, $pt);
     if ($ptr) {
         $num = mysqli_num_rows($ptr);
@@ -36,54 +20,65 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
             $response['notif'] .= "
             <li class='list-group-item p-0'>
                 <a href='transactions.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-clipboard-data fw-light account-settings-icon'></i> <span class='text-danger'>$num</span> Pending
-                        $ttransactions needs attention.</p>
+                    class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
+                    <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
+                        <i class='bi bi-clipboard-minus-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i> 
+                        <div class='vr mx-5'></div>
+                        <p class='text-start m-0 p-0'>You have <span class='text-danger'>$num</span>&nbsp; upcoming
+                        $ttransactions.</p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;
         }
     }
 
-    $se = "SELECT * FROM chemicals WHERE request = 1;";
-    $ser = mysqli_query($conn, $se);
-    if ($ser) {
-        $num = mysqli_num_rows($ser);
+    $ft = "SELECT * FROM transactions t JOIN transaction_technicians tt ON t.id = tt.trans_id WHERE tt.tech_id = {$_SESSION['techId']} AND t.transaction_status = 'Dispatched';";
+    $ftr = mysqli_query($conn, $ft);
+    if ($ftr) {
+        $num = mysqli_num_rows($ftr);
         if ($num > 0) {
-            $centry = $num == 1 ? 'entry' : 'entries';
+            $ftransactions = $num == 1 ? 'transaction' : 'transactions';
             $response['notif'] .= "
             <li class='list-group-item p-0'>
-                <a href='itemstock.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-flask-florence fw-light account-settings-icon'></i>
-                        <span class='text-danger'>$num</span> Item $centry needs approval.
-                    </p>
+                <a href='transactions.php'
+                    class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
+                    <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
+                        <i class='bi bi-clipboard-check-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i>
+                        <div class='vr mx-5'></div>
+                        <p class='m-0 p-0 text-start'>You have <span class='text-danger '>$num</span>&nbsp; ongoing dispatched
+                            $ftransactions.</p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;
         }
     }
 
-    $vr = "SELECT * FROM transactions WHERE void_request = 1;";
-    $vrr = mysqli_query($conn, $vr);
-    if ($vrr) {
-        $num = mysqli_num_rows($vrr);
+
+    $rt = "SELECT * FROM transactions WHERE transaction_status = 'cancelled' AND void_request = 0;";
+    $rtr = mysqli_query($conn, $rt);
+    if ($rtr) {
+        $num = mysqli_num_rows($rtr);
         if ($num > 0) {
-            $trequest = $num == 1 ? 'request' : 'requests';
+            $rtransactions = $num == 1 ? 'transaction' : 'transactions';
             $response['notif'] .= "
             <li class='list-group-item p-0'>
                 <a href='transactions.php'
                     class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-clipboard-x fw-light account-settings-icon'></i>
-                        <span class='text-danger'>$num</span> Transaction void $trequest needs attention.
-                    </p>
+                    <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
+                        <i class='bi bi-calendar-minus-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i> 
+                        <div class='vr mx-5'></div>
+                        <p class='m-0 p-0 text-start'><span class='text-danger '>$num</span>&nbsp; cancelled
+                            $rtransactions need further review and rescheduling.</p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;
         }
     }
 
-    $up = "SELECT * FROM transactions WHERE transaction_status = 'Accepted' AND treatment_date >= CURDATE();";
+    $up = "SELECT * FROM transactions WHERE transaction_status = 'Accepted' AND treatment_date > CURDATE() AND void_request = 0;";
     $upr = mysqli_query($conn, $up);
     if ($upr) {
         $num = mysqli_num_rows($upr);
@@ -92,10 +87,77 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
             $response['notif'] .= "
             <li class='list-group-item p-0'>
                 <a href='transactions.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-calendar-event fw-light account-settings-icon'></i>
-                        There are <span class='text-info'>$num</span> upcoming $msg.
-                    </p>
+                    class='nav-link btn btn-sidebar m-0 d-flex align-items-center justify-content-center'>
+                    <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
+                        <i class='bi bi-calendar2-x-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i> 
+                        <div class='vr mx-5'></div>
+                        <p class='m-0 p-0 text-start'><span class='text-danger '>$num</span>&nbsp;
+                            $unfinished_transactions are unfinished and needs update.</p>
+                    </div>
+                </a>
+            </li>";
+            $response['count']++;
+        }
+    }
+
+    $unfinished_t = "SELECT * FROM transactions WHERE (transaction_status = 'Accepted' OR transaction_status = 'Dispatched') AND void_request = 0 AND treatment_date < CURDATE();";
+    $unfinished_tr = mysqli_query($conn, $unfinished_t);
+    if ($unfinished_tr) {
+        $num = mysqli_num_rows($unfinished_tr);
+        if ($num > 0) {
+            $unfinished_transactions = $num == 1 ? 'transaction' : 'transactions';
+            $response['notif'] .= "
+            <li class='list-group-item p-0'>
+                <a href='transactions.php'
+                    class='nav-link btn btn-sidebar m-0 d-flex align-items-center justify-content-center'>
+                    <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
+                        <i class='bi bi-calendar2-x-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i> 
+                        <div class='vr mx-5'></div>
+                        <p class='m-0 p-0 text-start'><span class='text-danger '>$num</span>&nbsp;
+                            $unfinished_transactions are unfinished and needs update.</p>
+                    </div>
+                </a>
+            </li>";
+            $response['count']++;
+        }
+    }
+
+    $up = "SELECT * FROM transactions WHERE transaction_status = 'Accepted' AND treatment_date > CURDATE() AND void_request = 0;";
+    $upr = mysqli_query($conn, $up);
+    if ($upr) {
+        $num = mysqli_num_rows($upr);
+        if ($num > 0) {
+            $msg = $num == 1 ? 'transaction' : 'transactions';
+            $response['notif'] .= "
+            <li class='list-group-item p-0'>
+                <a href='transactions.php'
+                    class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
+                    <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
+                        <i class='bi bi-calendar-event-fill fs-4 ms-3 text-body-tertiary fw-light account-settings-icon'></i>
+                        <div class='vr mx-5+'></div>
+                        <p class='text-start m-0 p-0'>There are <span class='text-info'>$num</span> upcoming $msg waiting to be dispatched.</p>
+                    </div>
+                </a>
+            </li>";
+            $response['count']++;
+        }
+    }
+
+    $outdated_dispatch_p = "SELECT * FROM transactions WHERE transaction_status = 'Dispatched' AND treatment_date < CURDATE() AND void_request = 0;";
+    $outdated_dispatch_pr = mysqli_query($conn, $outdated_dispatch_p);
+    if ($outdated_dispatch_pr) {
+        $num = mysqli_num_rows($outdated_dispatch_pr);
+        if ($num > 0) {
+            $msg = $num == 1 ? 'transaction' : 'transactions';
+            $response['notif'] .= "
+            <li class='list-group-item p-0'>
+                <a href='transactions.php'
+                    class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
+                    <div class='fw-medium w-100 fs-5 d-flex align-items-center justify-content-start mb-0 py-2'>
+                        <i class='bi bi-calendar-event-fill fs-4 ms-3 text-body-tertiary fw-light account-settings-icon'></i>
+                        <div class='vr mx-5'></div>
+                        <p class='m-0 p-0 text-start'><span class='text-danger'>$num</span> dispatched $msg were never updated.</p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;

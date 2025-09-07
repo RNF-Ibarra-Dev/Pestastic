@@ -14,14 +14,17 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
     if ($lsr) {
         $num = mysqli_num_rows($lsr);
         if ($num > 0) {
-            $lchems = $num == 1 ? 'Item' : 'Items';
+            $lchems = $num == 1 ? 'item' : 'items';
             $response['notif'] .=
                 "<li class='list-group-item p-0'>
             <a href='itemstock.php'
-            class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center gap'>
-            <p class='fw-light mb-0'><i class='bi bi-beaker fw-light account-settings-icon'></i><span class='text-danger'>$num</span> $lchems are
-            low
-            in stock.</p>
+            class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
+                <div class='fw-medium mb-0 w-100 fs-5 d-flex align-items-center py-2 justify-content-start'>
+                    <i class='bi bi-beaker-fill text-body-tertiary ms-3 fw-light account-settings-icon fs-4'></i>
+                    <div class='vr mx-5'></div>
+                    <p class='m-0 p-0 text-start'><span class='text-danger '>$num</span>&nbsp; $lchems are
+                low
+                in stock.</p></div>
             </a>
             </li>";
             $response['count']++;
@@ -36,9 +39,13 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
             $response['notif'] .= "
             <li class='list-group-item p-0'>
                 <a href='transactions.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-clipboard-minus fw-light account-settings-icon'></i> <span class='text-danger'>$num</span> Pending
+                    class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
+                    <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
+                        <i class='bi bi-clipboard-minus-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i> 
+                        <div class='vr mx-5'></div>
+                        <p class='text-start m-0 p-0'><span class='text-danger '>$num</span>&nbsp; pending
                         $ttransactions need confirmation.</p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;
@@ -54,9 +61,13 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
             $response['notif'] .= "
             <li class='list-group-item p-0'>
                 <a href='transactions.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-clipboard-check fw-light account-settings-icon'></i> <span class='text-danger'>$num</span> finalizing
-                        $ftransactions need completion.</p>
+                    class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
+                    <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
+                        <i class='bi bi-clipboard-check-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i>
+                        <div class='vr mx-5'></div>
+                        <p class='m-0 p-0 text-start'><span class='text-danger '>$num</span>&nbsp; finalizing
+                            $ftransactions need completion.</p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;
@@ -73,8 +84,12 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
             <li class='list-group-item p-0'>
                 <a href='transactions.php'
                     class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-calendar-minus fw-light account-settings-icon'></i> <span class='text-danger'>$num</span> cancelled
-                        $rtransactions need further review and rescheduling.</p>
+                    <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
+                        <i class='bi bi-calendar-minus-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i> 
+                        <div class='vr mx-5'></div>
+                        <p class='m-0 p-0 text-start'><span class='text-danger '>$num</span>&nbsp; cancelled
+                            $rtransactions need further review and rescheduling.</p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;
@@ -90,9 +105,13 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
             $response['notif'] .= "
             <li class='list-group-item p-0'>
                 <a href='transactions.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-calendar2-x fw-light account-settings-icon'></i> <span class='text-danger'>$num</span>
-                        $unfinished_transactions are unfinished and needs update.</p>
+                    class='nav-link btn btn-sidebar m-0 d-flex align-items-center justify-content-center'>
+                    <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
+                        <i class='bi bi-calendar2-x-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i> 
+                        <div class='vr mx-5'></div>
+                        <p class='m-0 p-0 text-start'><span class='text-danger '>$num</span>&nbsp;
+                            $unfinished_transactions are unfinished and needs update.</p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;
@@ -108,10 +127,12 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
             $response['notif'] .= "
             <li class='list-group-item p-0'>
                 <a href='itemstock.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-flask-florence fw-light account-settings-icon'></i>
-                        <span class='text-danger'>$num</span> Item / Chemical $centry need approval.
-                    </p>
+                    class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
+                    <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
+                        <i class='bi bi-flask-florence-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i>
+                        <div class='vr mx-5'></div>
+                        <p class='m-0 p-0 text-start'><span class='text-danger '>$num</span>&nbsp; item / chemical $centry need approval.</p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;
@@ -127,10 +148,12 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
             $response['notif'] .= "
             <li class='list-group-item p-0'>
                 <a href='transactions.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-clipboard-x fw-light account-settings-icon'></i>
-                        <span class='text-danger'>$num</span> Transaction void $trequest need reviewal.
-                    </p>
+                    class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
+                    <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
+                        <i class='bi bi-clipboard-x-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i>
+                        <div class='vr mx-5'></div>
+                        <p class='m-0 p-0 text-start'><span class='text-danger '>$num</span>&nbsp; transaction void $trequest need reviewal.</p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;
@@ -146,10 +169,12 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
             $response['notif'] .= "
             <li class='list-group-item p-0'>
                 <a href='transactions.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-calendar-event fw-light account-settings-icon'></i>
-                        There are <span class='text-info'>$num</span> upcoming $msg waiting to be dispatched.
-                    </p>
+                    class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
+                    <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
+                        <i class='bi bi-calendar-event-fill fs-4 ms-3 text-body-tertiary fw-light account-settings-icon'></i>
+                        <div class='vr mx-5+'></div>
+                        <p class='text-start m-0 p-0'>There are <span class='text-info'>$num</span> upcoming $msg waiting to be dispatched.</p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;
@@ -165,10 +190,12 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
             $response['notif'] .= "
             <li class='list-group-item p-0'>
                 <a href='transactions.php'
-                    class='nav-link btn btn-sidebar m-0 py-2 fw-light d-flex align-items-center justify-content-center'>
-                    <p class='fw-light mb-0'><i class='bi bi-calendar-event fw-light account-settings-icon'></i>
-                        <span class='text-danger'>$num</span> dispatched $msg were never updated.
-                    </p>
+                    class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
+                    <div class='fw-medium w-100 fs-5 d-flex align-items-center justify-content-start mb-0 py-2'>
+                        <i class='bi bi-calendar-event-fill fs-4 ms-3 text-body-tertiary fw-light account-settings-icon'></i>
+                        <div class='vr mx-5'></div>
+                        <p class='m-0 p-0 text-start'><span class='text-danger'>$num</span> dispatched $msg were never updated.</p>
+                    </div>
                 </a>
             </li>";
             $response['count']++;

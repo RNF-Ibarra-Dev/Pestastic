@@ -1,3 +1,14 @@
+<style>
+    li a div p {
+        text-align: justify !important;
+        text-justify: inter-word !important;
+    }
+
+    li>a>div {
+        padding-right: 1rem !important;
+    }
+</style>
+
 <nav
     class="navbar navbar-expand-sm my-2 mx-2 rounded-4 border border-light navbar-dark bg-dark bg-opacity-50 shadow-sm">
     <div class="container-fluid">
@@ -19,7 +30,8 @@
                 class="navbar-brand btn user-icon rounded-circle m-0 shadow-lg p-0"><i alt="user"
                     class="rounded-circle bi bi-person ms-auto"></i></button>
             <p class="text-light my-auto me-2 text-wrap text-capitalize user-select-none" id="nav_name">
-                <?= $_SESSION['fname'] . ' ' . $_SESSION['lname'] ?></p>
+                <?= $_SESSION['fname'] . ' ' . $_SESSION['lname'] ?>
+            </p>
         </div>
     </div>
 </nav>
@@ -61,7 +73,7 @@
     <div class="modal-dialog me-4 w-25 shadow-lg" style="margin-top: 5rem !important;">
         <div class="modal-content text-dark rounded-4 border-0 shadow-lg">
             <div class="modal-header position-relative">
-                <h1 class="modal-title fs-5 mx-auto">Alerts</h1>
+                <h1 class="modal-title fs-3 fw-bold mx-auto">Alerts</h1>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"
                     style="position: absolute; right: 0.4rem;"></button>
             </div>

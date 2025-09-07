@@ -1411,7 +1411,6 @@
                         $("#finalizetranstable").empty();
                         $("#finalizetranstable").append(d);
                     }
-                    loadpage(1, status);
                 })
                 .fail(function (e) {
                     console.log(e);
