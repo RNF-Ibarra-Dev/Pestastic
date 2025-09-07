@@ -1,3 +1,14 @@
+<style>
+    li a div p {
+        text-align: justify !important;
+        text-justify: inter-word !important;
+    }
+
+    li>a>div {
+        padding-right: 1rem !important;
+    }
+</style>
+
 <nav
     class="navbar navbar-expand-sm my-2 mx-2 rounded-3 border border-light navbar-dark bg-dark bg-opacity-50 pt-1 pb-2 shadow">
     <div class="container-fluid">

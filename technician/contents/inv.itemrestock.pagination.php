@@ -177,8 +177,6 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td>
                     <button type="button" class="btn btn-sidebar border border-dark rounded-4 editbtn"
                         data-chem="<?= htmlspecialchars($id) ?>"><i class="bi bi-info-circle text-dark"></i></button>
-                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 restock-btn" data-restock="<?= htmlspecialchars($id) ?>"><i
-                            class=" bi bi-box text-dark"></i></button>
                 </td>
             </tr>
 

@@ -24,7 +24,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
                         <i class='bi bi-clipboard-minus-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i> 
                         <div class='vr mx-5'></div>
-                        <p class='text-start m-0 p-0'>You have <span class='text-danger'>$num</span>&nbsp; upcoming
+                        <p class='text-start m-0 p-0'>You have <span class='text-danger'>$num</span>&nbsp;upcoming
                         $ttransactions.</p>
                     </div>
                 </a>
@@ -46,7 +46,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
                         <i class='bi bi-clipboard-check-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i>
                         <div class='vr mx-5'></div>
-                        <p class='m-0 p-0 text-start'>You have <span class='text-danger '>$num</span>&nbsp; ongoing dispatched
+                        <p class='m-0 p-0 text-start'>You have <span class='text-danger '>$num</span>&nbsp;ongoing dispatched
                             $ftransactions.</p>
                     </div>
                 </a>
@@ -56,7 +56,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
     }
 
 
-    $rt = "SELECT * FROM transactions WHERE transaction_status = 'cancelled' AND void_request = 0;";
+    $rt = "SELECT * FROM transactions t JOIN transaction_technicians tt ON t.id = tt.trans_id WHERE tt.tech_id = {$_SESSION['techId']} AND t.transaction_status = 'cancelled' AND t.void_request = 0;";
     $rtr = mysqli_query($conn, $rt);
     if ($rtr) {
         $num = mysqli_num_rows($rtr);
@@ -69,8 +69,8 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
                         <i class='bi bi-calendar-minus-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i> 
                         <div class='vr mx-5'></div>
-                        <p class='m-0 p-0 text-start'><span class='text-danger '>$num</span>&nbsp; cancelled
-                            $rtransactions need further review and rescheduling.</p>
+                        <p class='m-0 p-0 text-start'>You have <span class='text-danger '>$num</span>&nbsp;cancelled
+                            $rtransactions that needs further review and rescheduling.</p>
                     </div>
                 </a>
             </li>";
@@ -78,7 +78,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
         }
     }
 
-    $up = "SELECT * FROM transactions WHERE transaction_status = 'Accepted' AND treatment_date > CURDATE() AND void_request = 0;";
+    $up = "SELECT * FROM transactions t JOIN transaction_technicians tt ON t.id = tt.trans_id WHERE tt.tech_id = {$_SESSION['techId']} AND t.transaction_status = 'Accepted' AND t.treatment_date > CURDATE() AND t.void_request = 0;";
     $upr = mysqli_query($conn, $up);
     if ($upr) {
         $num = mysqli_num_rows($upr);
@@ -91,8 +91,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
                         <i class='bi bi-calendar2-x-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i> 
                         <div class='vr mx-5'></div>
-                        <p class='m-0 p-0 text-start'><span class='text-danger '>$num</span>&nbsp;
-                            $unfinished_transactions are unfinished and needs update.</p>
+                        <p class='m-0 p-0 text-start'>You have<span class='text-danger'>$num</span>&nbsp;$unfinished_transactions are unfinished and needs update.</p>
                     </div>
                 </a>
             </li>";
@@ -100,7 +99,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
         }
     }
 
-    $unfinished_t = "SELECT * FROM transactions WHERE (transaction_status = 'Accepted' OR transaction_status = 'Dispatched') AND void_request = 0 AND treatment_date < CURDATE();";
+    $unfinished_t = "SELECT * FROM transactions t JOIN transaction_technicians tt ON t.id = tt.trans_id WHERE (t.transaction_status = 'Accepted' OR t.transaction_status = 'Dispatched') AND t.void_request = 0 AND t.treatment_date < CURDATE() AND tt.tech_id = {$_SESSION['techId']};";
     $unfinished_tr = mysqli_query($conn, $unfinished_t);
     if ($unfinished_tr) {
         $num = mysqli_num_rows($unfinished_tr);
@@ -113,8 +112,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
                         <i class='bi bi-calendar2-x-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i> 
                         <div class='vr mx-5'></div>
-                        <p class='m-0 p-0 text-start'><span class='text-danger '>$num</span>&nbsp;
-                            $unfinished_transactions are unfinished and needs update.</p>
+                        <p class='m-0 p-0 text-start'>You have <span class='text-danger '>$num</span>&nbsp;$unfinished_transactions that are unfinished and needs update.</p>
                     </div>
                 </a>
             </li>";
@@ -122,7 +120,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
         }
     }
 
-    $up = "SELECT * FROM transactions WHERE transaction_status = 'Accepted' AND treatment_date > CURDATE() AND void_request = 0;";
+    $up = "SELECT * FROM transactions t JOIN transaction_technicians tt ON t.id = tt.trans_id WHERE t.transaction_status = 'Accepted' AND t.treatment_date > CURDATE() AND t.void_request = 0 AND tt.tech_id = {$_SESSION['techId']};";
     $upr = mysqli_query($conn, $up);
     if ($upr) {
         $num = mysqli_num_rows($upr);
@@ -135,7 +133,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
                         <i class='bi bi-calendar-event-fill fs-4 ms-3 text-body-tertiary fw-light account-settings-icon'></i>
                         <div class='vr mx-5+'></div>
-                        <p class='text-start m-0 p-0'>There are <span class='text-info'>$num</span> upcoming $msg waiting to be dispatched.</p>
+                        <p class='text-start m-0 p-0'>You have <span class='text-info'>$num</span>&nbsp;upcoming $msg waiting to be dispatched.</p>
                     </div>
                 </a>
             </li>";
@@ -143,7 +141,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
         }
     }
 
-    $outdated_dispatch_p = "SELECT * FROM transactions WHERE transaction_status = 'Dispatched' AND treatment_date < CURDATE() AND void_request = 0;";
+    $outdated_dispatch_p = "SELECT * FROM transactions t JOIN transaction_technicians tt ON t.id = tt.trans_id WHERE t.transaction_status = 'Dispatched' AND t.treatment_date < CURDATE() AND t.void_request = 0 AND tt.tech_id = {$_SESSION['techId']};";
     $outdated_dispatch_pr = mysqli_query($conn, $outdated_dispatch_p);
     if ($outdated_dispatch_pr) {
         $num = mysqli_num_rows($outdated_dispatch_pr);

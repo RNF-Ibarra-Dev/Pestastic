@@ -1058,8 +1058,7 @@ include('tablecontents/tables.php');
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="pass" class="form-label fw-light">Dispatch Item? Enter Operations
-                                        Supervisor
+                                    <label for="pass" class="form-label fw-light">Dispatch Item? Enter Manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control">
