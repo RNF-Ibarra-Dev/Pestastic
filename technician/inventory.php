@@ -137,7 +137,7 @@ require("startsession.php");
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5">
                                     <i class="bi bi-info-circle me-2"></i>
-                                    Item Details<span class="text-secondary mx-2">|</span>Edit Item
+                                    Item Details
                                 </h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                         class="bi text-light bi-x"></i></button>
@@ -198,13 +198,13 @@ require("startsession.php");
                                     <div class="col-3 mb-2">
                                         <label for="edit-dateReceived" class="form-label fw-medium">Date
                                             Received:</label>
-                                        <input type="date" name="edit-receivedDate" id="edit-dateReceived"
-                                            class="ps-2 form-control-plaintext form-add form-date" disabled>
+                                        <input type="text" name="edit-receivedDate" id="edit-dateReceived"
+                                            class="ps-2 form-control-plaintext form-add form-date" readonly>
                                     </div>
                                     <div class="col-3 mb-2">
                                         <label for="edit-expDate" class="form-label fw-medium">Expiry Date:</label>
-                                        <input type="date" name="edit-expDate" id="edit-expDate"
-                                            class="ps-2 form-control-plaintext form-date" autocomplete="off" disabled>
+                                        <input type="text" name="edit-expDate" id="edit-expDate"
+                                            class="ps-2 form-control-plaintext form-date" autocomplete="off" readonly>
                                         <p class="fw-light text-center alert alert-warning py-1 px-3 d-none"
                                             id="expdatewarning"></p>
                                     </div>
@@ -591,9 +591,7 @@ require("startsession.php");
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                data-bs-target="#finalizeconfirm">Continue</button>
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -1633,6 +1631,7 @@ require("startsession.php");
                 async function (d) {
                     $("#return_transaction").empty();
                     $("#return_transaction").append(d);
+                    console.log(d);
                 },
                 'html'
             )
@@ -1659,11 +1658,9 @@ require("startsession.php");
 
         $(document).on('click', '.returnbtn', async function () {
             let id = $(this).data('return');
-            console.log(id);
             $("#returnChemicalForm")[0].reset();
             let deets = await get_chem_details(id);
             var details = JSON.parse(deets);
-            console.log(details);
             let clocation = 'Unknown';
             if (details.location === 'main_storage') {
                 clocation = "Main Storage";
@@ -1688,12 +1685,6 @@ require("startsession.php");
             $("#return_closedContainerCount").text(details.unop_cont + " Container/s")
 
             let transreturn = await get_transaction_return(details.name, details.brand, details.container_size, details.unit);
-            // if (!transreturn) {
-            //     $("#returnChemicalForm button.return-proceed-btn, #returnChemicalForm button[type='submit']").prop('disabled', true);
-            // } else {
-            //     $("#returnChemicalForm button.return-proceed-btn, #returnChemicalForm button[type='submit']").prop('disabled', false);
-            // }
-            // console.log(transreturn);
 
             $("#returnChemModal").modal('show');
             $("#returnChemModal").on('shown.bs.modal', function () {
@@ -1702,7 +1693,13 @@ require("startsession.php");
             $("#returnChemicalForm").on('change', "select#return_transaction", function () {
                 let transid = $(this).val();
 
-                $.get(urldata, { dispatch_cur_transchem: true, chemId: id, transid: transid, return: true, containerSize: details.container_size }, function (d) {
+                $.get(urldata, {
+                    dispatch_cur_transchem: true,
+                    chemId: id,
+                    transid: transid,
+                    return: true,
+                    containerSize: details.container_size
+                }, function (d) {
                     if (d.error) {
                         $("p#return_current_transaction_info").text(d.error);
                     } else {
@@ -1831,30 +1828,12 @@ require("startsession.php");
 
         });
 
-        let toggled = false;
-
-        function toggle() {
-            $('#submitEdit').toggleClass('d-none');
-            $('#view-chemUnit, #edit-chemUnit, #view-location, #edit-location').toggleClass('d-none');
-            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount, #edit-restockThreshold').attr('readonly', function (i, a) {
-                return a ? false : true;
-            });
-            $("#edit-expDate, #edit-dateReceived, #edit-chemUnit").attr('disabled', function (i, a) {
-                return a ? false : true;
-            });
-
-            $("#toggleEditBtn").html(function (i, a) {
-                return a.includes('Close Edit') ? 'Edit' : 'Close Edit';
-            });
-            $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived, #edit-contSize, #edit-containerCount, #edit-restockThreshold').toggleClass('form-control-plaintext form-control');
-
-            return toggled = toggled ? false : true;
-        }
-
+      
         $(document).on('click', '.editbtn', async function () {
             let id = $(this).data('chem');
             let deets = await get_chem_details(id);
             var details = JSON.parse(deets);
+            // console.log(details);
 
             $('#submitEdit, #toggleEditBtn').attr('disabled', function () {
                 return details.req == 1 ? true : false;

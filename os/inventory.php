@@ -449,9 +449,7 @@ require("startsession.php");
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                data-bs-target="#finalizeconfirm">Continue</button>
+                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>

@@ -34,7 +34,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             $logdate = $row['log_date'];
             $lg = date('F j, Y | h:s A', strtotime($logdate));
             $role = (string) $row['user_role'];
-            $userid = $row['user_id'];
+            $userid = $row['user_id'] ?? 0;
             $user = get_user($conn, $userid, $role);
             $transid = $row['trans_id'] === NULL ? 'None' : $row['trans_id'];
             $notes = $row['notes'];

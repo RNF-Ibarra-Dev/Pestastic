@@ -3117,7 +3117,11 @@ function adjust_chemical($conn, $chemid, $logtype, $signed_cont_count, $qty, $no
 
 function get_user($conn, $userid, $role)
 {
-    // $datacol = [];   
+    if($userid === null || $userid === '' )
+    {
+        return 'User not found.';
+    }
+    $datacol = [];   
     $usertypes = $GLOBALS['userTypes'];
     foreach ($usertypes as $roles => $columns) {
         if ($columns['table'] === $role) {

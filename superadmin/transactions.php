@@ -201,7 +201,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <p
-                                        class="fw-medium mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-white rounded p-2">
+                                        class="fw-bold text-shadow mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-light rounded p-2">
                                         Customer Information</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
@@ -226,7 +226,7 @@
                                     <hr class="my-2">
 
                                     <p
-                                        class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        class="fw-bold text-shadow mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-light rounded p-2">
                                         Treatment Information
                                     </p>
 
@@ -305,7 +305,7 @@
                                     <hr class="mb-2 mt-0">
 
                                     <p
-                                        class="fw-medium mt-3 mb-2 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        class="fw-bold text-shadow mt-3 mb-2 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-light rounded p-2">
                                         Additional
                                         Information
                                     </p>
@@ -457,7 +457,7 @@
 
                                     <!-- <p class="fw-light text-muted">Transaction details presented below.</p> -->
                                     <p
-                                        class="fw-medium mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        class="fw-bold text-shadow mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-light rounded p-2">
                                         Customer Information</p>
 
                                     <!-- row 1 -->
@@ -503,7 +503,7 @@
                                     <hr class="my-2">
 
                                     <p
-                                        class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        class="fw-bold text-shadow mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-light rounded p-2">
                                         Treatment Information
                                     </p>
 
@@ -620,7 +620,7 @@
                                     <hr class="my-2">
 
                                     <p
-                                        class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        class="fw-bold text-shadow mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-light rounded p-2">
                                         Additional Information
                                     </p>
 

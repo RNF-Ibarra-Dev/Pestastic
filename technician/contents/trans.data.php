@@ -660,7 +660,7 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
     exit();
 }
 if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
-    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing' AND branch = {$_SESSION['branch']} ORDER BY updated_at DESC LIMIT 5;";
+    $sql = "SELECT * FROM transactions WHERE transaction_status = 'Finalizing' AND branch = {$_SESSION['branch']} ORDER BY updated_at DESC;";
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
 

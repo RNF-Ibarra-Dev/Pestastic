@@ -178,7 +178,7 @@ require("startsession.php");
                                 </div>
                                 <div class="modal-body">
                                     <p
-                                        class="fw-medium mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        class="fw-bold mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-light text-shadow rounded p-2">
                                         Customer Information</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
@@ -203,7 +203,7 @@ require("startsession.php");
                                     <hr class="my-2">
 
                                     <p
-                                        class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        class="fw-bold mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-light text-shadow rounded p-2">
                                         Treatment Information
                                     </p>
 
@@ -283,7 +283,7 @@ require("startsession.php");
                                     <hr class="mb-2 mt-0">
 
                                     <p
-                                        class="fw-medium mt-3 mb-2 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                        class="fw-bold mt-3 mb-2 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-shadow text-light rounded p-2">
                                         Additional
                                         Information
                                     </p>
@@ -579,67 +579,69 @@ require("startsession.php");
                 </div>
             </div>
 
-            <form id="reschedForm">
-                <input type="hidden" name="reschedid" id="reschedId">
-                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="reschedModal" tabindex="-1"
+
+            <form id="dispatchForm">
+                <input type="hidden" name="dispatchid" id="dispatchid">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="dispatchModal" tabindex="-1"
                     aria-labelledby="create" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Reschedule Cancelled Transaction</h1>
+                                <h1 class="modal-title fs-5">Dispatch Transaction</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                         class="bi text-light bi-x"></i></button>
                             </div>
                             <div class="modal-body">
-                                <div class="row">
-                                    <div class="col">
-                                        <label for="rescheddate" class="form-label">Select New Schedule</label>
-                                        <input type="date" name="reschedDate" class="form-control" id="reschedDate">
-                                    </div>
-                                    <div class="col">
-                                        <label for="reschedTime" class="form-label">Select New Time:</label>
-                                        <input type="text" name="reschedTime" class="form-control" id="reschedTime">
-                                    </div>
-                                </div>
+                                <div class="p-0 m-0 mb-2" id="dispatch-chemBrandUsed"></div>
+                                <button type="button" id="dispatch-addMoreChem"
+                                    class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
+                                    <p class="fw-light m-0 me-2">Add Chemical / Item</p><i
+                                        class="bi bi-plus-circle text-light"></i>
+                                </button>
+
+                                <label for="dispatchnotes" class="fw-light my-2">Note:</label>
+                                <textarea name="note" class="form-control w-50" id="dispatchnotes" cols="1"
+                                    placeholder="e.g. Chemicals / Items and equipment prepared for dispatch. Technician will bring 500ml Termicide and 2 sprayers."></textarea>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
-                                <button type="button" data-bs-target="#reschedConfirm" data-bs-toggle="modal"
+                                <button type="button" data-bs-target="#dispatchconfirm" data-bs-toggle="modal"
                                     class="btn btn-grad">Proceed</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="reschedConfirm" tabindex="0">
-                    <div class="modal-dialog modal-lg">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="dispatchconfirm"
+                    tabindex="0">
+                    <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Reschedule Transaction Confirmation</h1>
+                                <h1 class="modal-title fs-5">Dispatch Transaction Confirmation</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
                                     aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="confirmapprove-inputpwd" class="form-label fw-light">Confirm reschedule
-                                        of this transaction?
-                                        Enter Operation Supervisor
+                                    <label for="complete-inputpwd" class="form-label fw-light">Update transaction to
+                                        Dispatch?
+                                        Enter Technician
                                         <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
-                                        <input type="password" name="baPwd" class="form-control w-50"
-                                            id="confirmapprove-inputpwd">
+                                        <input type="password" name="baPwd" class="form-control w-75"
+                                            id="complete-inputpwd">
                                     </div>
                                 </div>
-                                <p class="text-body-secondary">Note. After setting new time and schedule, this
-                                    transaction will be marked as Accepted.</p>
+                                <p class="text-body-secondary fw-light">Note. Make sure the dispatch team is geared and
+                                    ready.</p>
                                 <p class="text-center alert alert-info w-75 mx-auto" style="display: none;"
-                                    id="reschedAlert">
+                                    id="dispatchAlert">
                                 </p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                    data-bs-target="#reschedModal">Go back</button>
-                                <button type="submit" class="btn btn-grad">Reschedule</button>
+                                    data-bs-target="#dispatchModal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Dispatch</button>
                             </div>
                         </div>
                     </div>
@@ -664,7 +666,7 @@ require("startsession.php");
 
                                 <!-- <p class="fw-light text-muted">Transaction details presented below.</p> -->
                                 <p
-                                    class="fw-medium mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                    class="fw-bold text-shadow mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-white rounded p-2">
                                     Customer Information</p>
 
                                 <!-- row 1 -->
@@ -709,7 +711,7 @@ require("startsession.php");
                                 <hr class="my-2">
 
                                 <p
-                                    class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                    class="fw-bold text-shadow mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-white rounded p-2">
                                     Treatment Information
                                 </p>
 
@@ -824,7 +826,7 @@ require("startsession.php");
                                 <hr class="my-2">
 
                                 <p
-                                    class="fw-medium mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-25 text-white rounded p-2">
+                                    class="fw-bold text-shadow mt-3 mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-white rounded p-2">
                                     Additional Information
                                 </p>
 
@@ -922,7 +924,7 @@ require("startsession.php");
                                     <label for="confirmapprove-inputpwd" class="form-label fw-light">Send request to
                                         void
                                         transaction?
-                                        Enter Operation Supervisor
+                                        Enter Technician
                                         <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control"
@@ -1389,6 +1391,28 @@ require("startsession.php");
 
         });
 
+        $("#dispatchForm").on('click', '#dispatch-chemBrandUsed button', async function () {
+            let row = $(this).closest('div.row');
+            let length = $('#dispatch-chemBrandUsed').children('.row').length;
+            if (length === 1) {
+                alert('One or more chemicals/item are required in order to proceed.');
+            } else {
+                row.remove();
+            }
+        });
+
+        $("#dispatchForm").on('click', "#dispatch-addMoreChem", function () {
+            let id = $(this).data('transaction');
+            $.get(dataurl, {
+                addrow: 'true',
+                status: 'Dispatched',
+                transaction: id
+            }, function (data) {
+                $("#dispatch-chemBrandUsed").append(data);
+            }, 'html');
+
+        });
+
         $(document).ready(function () {
             $('#table').on('mouseenter', '.dispatched-btn', function () {
                 $(this).html('Finalize Transaction');
@@ -1396,12 +1420,58 @@ require("startsession.php");
             $('#table').on('mouseleave', '.dispatched-btn', function () {
                 $(this).html('Dispatched');
             });
-            $('#table').on('mouseenter', '.cancel-btn', function () {
-                $(this).html('Reschedule');
+            $('#table').on('mouseenter', '.accepted-btn', function () {
+                $(this).html('Dispatch Transaction');
             });
-            $('#table').on('mouseleave', '.cancel-btn', function () {
-                $(this).html('Cancelled');
+            $('#table').on('mouseleave', '.accepted-btn', function () {
+                $(this).html('Accepted');
             });
+        });
+
+        $("#table").on('click', '.accepted-btn', async function () {
+            let id = $(this).data('accepted');
+            $("button#dispatch-addMoreChem").data('transaction', id);
+            // console.log(id);
+            $("#dispatchid").val(id);
+            await get_chemical_brand('dispatch', id, "Dispatched");
+            $.get(dataurl, {
+                notes: true,
+                id: id
+            }, function (d) {
+                // console.log(d);
+                // dd = JSON.parse(d);
+                $("#dispatchNotes").val(d.notes);
+            }, 'json')
+                .fail(function (e) {
+                    console.log(e);
+                })
+            $("#dispatchModal").modal('show');
+        });
+
+        $(document).on('submit', '#dispatchForm', async function (e) {
+            e.preventDefault();
+            let status = $('#sortstatus').val();
+            console.log($(this).serialize());
+            $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                data: $(this).serialize() + "&singledispatch=true",
+                url: submiturl
+            })
+                .done(function (d) {
+                    if (d.success) {
+                        loadpage(1, status);
+                        show_toast(d.success);
+                        $("#dispatchForm")[0].reset();
+                        $("#dispatchconfirm").modal('hide');
+                    } else {
+                        alert('Unknown error occured');
+                    }
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $("#dispatchAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                })
         });
 
         async function get_chemical_brand(method, transId = null, status = null) {
@@ -1473,7 +1543,7 @@ require("startsession.php");
                         $("#finalizetranstable").empty();
                         $("#finalizetranstable").append(d);
                     }
-                    loadpage(1, status);
+                    // loadpage(1, status);
                 })
                 .fail(function (e) {
                     console.log(e);
@@ -1783,47 +1853,6 @@ require("startsession.php");
             $("#reschedModal").modal('show');
         })
 
-
-        $(document).on("submit", "#reschedForm", async function (e) {
-            e.preventDefault();
-            console.log($(this).serialize());
-            await $.ajax({
-                method: "POST",
-                url: submiturl,
-                dataType: 'json',
-                data: $(this).serialize() + "&reschedule=true"
-            })
-                .done(async function (d) {
-                    show_toast(d.success);
-                    $("#reschedForm")[0].reset();
-                    $("#reschedConfirm").modal('hide');
-                    await loadpage(1, $("#sortstatus").val());
-                })
-                .fail(function (e) {
-                    $("#reschedAlert").fadeIn(400).html(e.responseText).delay(2000).fadeOut(1000);
-                    console.log(e);
-                })
-        });
-
-
-        let reschedDatee = document.getElementById('reschedDate');
-        reschedDate = flatpickr(reschedDatee, {
-            altInput: true,
-            altFormat: "F j, Y",
-            dateFormat: "Y-m-d",
-            minDate: new Date().fp_incr(1)
-        });
-
-        let reschedTimee = document.getElementById('reschedTime');
-        reschedTime = flatpickr(reschedTimee, {
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-            time_24hr: false,
-            altFormat: "h:i K",
-            altInput: true
-        });
-
         async function get_problems(form, checked = null) {
             // if (typeof transId == 'undefined') transId = null;
             $(`#${form}-probCheckbox`).empty();
@@ -1937,6 +1966,7 @@ require("startsession.php");
 
         $(document).on('click', '#addbtn', async function () {
             let form = 'add';
+            // console.log('add clicked');
             try {
                 const load = await Promise.all([
                     get_chemical_brand(form),
@@ -1958,6 +1988,8 @@ require("startsession.php");
                     $('#addTechContainer').empty();
                     $('#add-chemContainer').empty();
                     $('#addModal').modal('show');
+                } else {
+                    alert('An error occured. Please refresh the page and try again.');
                 }
 
             } catch (error) {

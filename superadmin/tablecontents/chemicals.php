@@ -731,7 +731,7 @@ if (isset($_GET['dispatched_transactions']) && $_GET['dispatched_transactions'] 
             <?php
         }
     } else {
-        echo "<option selected disabled>No available accepted transactions</option>";
+        echo "<option selected disabled>No available dispatched transactions</option>";
     }
     mysqli_close($conn);
     exit();
