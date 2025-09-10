@@ -44,7 +44,7 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
     }
 
     // http_response_code(400);
-    // echo "now: $now exp $e exp $expiry";
+    // echo date('Y-m-d H:i:s',$now) . ' ' . date('Y-m-d H:i:s',$e) . ' ' . date('Y-m-d H:i:s', strtotime($expiry));
     // exit;
 
     $sql = "INSERT INTO reset_password
@@ -79,7 +79,7 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
 
         We received a request to reset your password for your Pestastic Inventory account.
 
-        Click <a href="https://Pestastic-inventory.site/resetpassword.php?token=$token">here</a> to reset your password.
+        Click <a href="https://Pestastic-inventory.site/resetpassword.php?token=$token_hash">here</a> to reset your password.
 
         If you did not request a password reset, please ignore this email.
 
