@@ -76,7 +76,7 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
         $mail->Body = <<<END
 
         <b>Greetings!</b>
-        <br><br>
+        <br>
         <p>We received a request to reset your password for your Pestastic Inventory account.</p>
         <br>
 
