@@ -10,7 +10,7 @@ if (isset($_POST['deleteTech']) && $_POST['deleteTech'] === 'true') {
 
     if (!is_numeric($techId)) {
         http_response_code(400);
-        echo "Invalid technician ID was passed. Refresh page and try again.";
+        echo "Invalid account ID was passed. Refresh page and try again.";
         // echo var_dump($techId);
         exit();
     }
@@ -55,7 +55,7 @@ if (isset($_POST['deleteOS']) && $_POST['deleteOS'] === 'true') {
 
     if (!is_numeric($baId)) {
         http_response_code(400);
-        echo "Invalid technician ID was passed. Refresh page and try again.";
+        echo "Invalid account ID was passed. Refresh page and try again.";
         exit();
     }
 
