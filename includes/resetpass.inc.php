@@ -78,16 +78,16 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
         <b>Greetings!</b>
         <br><br>
         <p>We received a request to reset your password for your Pestastic Inventory account.</p>
-        <br><br>
+        <br>
 
         <p>Click <a href="https://Pestastic-inventory.site/resetpassword.php?token=$token_hash)">here</a> to reset your password.</p>
-        <br><br>
+        <br>
 
         <p>If you did not request a password reset, please ignore this email.</p>
-        <br><br>
+        <br>
         <i>Note:</i><br>
         <p>This link will expire in 1 minute for your security.</p>
-        <br><br>
+        <br>
 
         Thank you,<br>
         <b>Pestastic Team</b>
