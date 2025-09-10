@@ -2260,6 +2260,7 @@ function editTechAccount($conn, $id, $firstName, $lastName, $username, $email, $
 
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
+        mysqli_commit($conn);
         return true;
     } catch (Exception $e) {
         mysqli_rollback($conn);

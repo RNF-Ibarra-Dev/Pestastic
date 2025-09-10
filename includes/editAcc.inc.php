@@ -19,6 +19,18 @@ if (isset($_POST["configure_tech"]) && $_POST['configure_tech'] === 'true') {
     $contactNo = $_POST["contactNo"];
 
 
+    if (empty($contactNo)) {
+        http_response_code(400);
+        echo "Incomplete Input.";
+        exit();
+    }
+
+    if (strlen($contactNo) !== 11) {
+        http_response_code(400);
+        echo "Invalid Contact Number.";
+        exit();
+    }
+
     if (emptyInputEdit($fname, $lname, $usn, $email) !== false) {
         http_response_code(400);
         echo "Incomplete Input.";
@@ -62,7 +74,6 @@ if (isset($_POST["configure_tech"]) && $_POST['configure_tech'] === 'true') {
     }
 
     if (empty($saPwd)) {
-        header("location: ../superadmin/tech.acc.php?error=emptymanagerpassword");
         http_response_code(400);
         echo "Empty Manager Password.";
         exit();
@@ -73,6 +84,7 @@ if (isset($_POST["configure_tech"]) && $_POST['configure_tech'] === 'true') {
         echo "User Already Exists.";
         exit();
     }
+
     if (!empty($pwd)) {
         if (pwdMatch($pwd, $pwdRepeat) !== false) {
             http_response_code(400);
@@ -80,9 +92,16 @@ if (isset($_POST["configure_tech"]) && $_POST['configure_tech'] === 'true') {
             exit();
         }
     }
+
     if (employeeIdCheck($conn, $empId, $id) !== false) {
         http_response_code(400);
         echo "Employee ID already exists.";
+        exit();
+    }
+
+    if(strlen($empId) !== 3){
+        http_response_code(400);
+        echo "Invalid Employee ID.";
         exit();
     }
 
@@ -122,6 +141,18 @@ if (isset($_POST["configure_os"]) && $_POST['configure_os'] === 'true') {
     $birthdate = $_POST['birthdate'];
     $contactNo = $_POST["contactNo"];
 
+    if(empty($contactNo)){
+        http_response_code(400);
+        echo "Incomplete Input.";
+        exit();
+    }
+    
+    if (strlen($contactNo) !== 11) {
+        http_response_code(400);
+        echo "Invalid Contact Number.";
+        exit();
+    }
+
     if (emptyInputEdit($fname, $lname, $usn, $email) !== false) {
         http_response_code(400);
         echo "Incomplete Input.";
@@ -170,9 +201,16 @@ if (isset($_POST["configure_os"]) && $_POST['configure_os'] === 'true') {
             exit();
         }
     }
+    
     if (employeeIdCheck($conn, $empId, $id) !== false) {
         http_response_code(400);
         echo "Employee ID already exists.";
+        exit();
+    }
+
+    if(strlen($empId) !== 3){
+        http_response_code(400);
+        echo "Invalid Employee ID.";
         exit();
     }
 

@@ -91,17 +91,17 @@ require_once("startsession.php");
                                         <label for="fname" class="form-label fw-bold">First
                                             Name</label>
                                         <input type="text" name="fname" class="form-control-plaintext" id="fname"
-                                            required>
+                                            readonly>
                                     </div>
                                     <div class="col-lg-6 mb-2">
                                         <label for="lname" class="form-label fw-bold">Last
                                             Name</label>
                                         <input type="text" name="lname" class="form-control-plaintext" id="lname"
-                                            required>
+                                            readonly>
                                     </div>
                                 </div>
-                                <div class="invalid-feedback mb-2">
-                                    Should not contain numbers and any special characters.
+                                <div class="form-text d-none">
+                                    First and last name should not contain numbers and any special characters.
                                 </div>
 
                                 <div class="row mb-2">
@@ -109,12 +109,12 @@ require_once("startsession.php");
                                         <label for="birthdate" class="form-label fw-bold">Birthdate</label>
                                         <p class="my-auto" id="bdate_info"></p>
                                         <input type="date" name="birthdate" class="form-control-plaintext d-none"
-                                            id="birthdate" required>
+                                            id="birthdate" readonly>
                                     </div>
                                     <div class="mb-2 col">
                                         <label for="address" class="form-label fw-bold">Address</label>
                                         <input type="text" name="address" class="form-control-plaintext" id="address"
-                                            required>
+                                            readonly>
                                     </div>
                                 </div>
 
@@ -124,15 +124,15 @@ require_once("startsession.php");
                                 <div class="row mb-2">
                                     <div class="col-lg-2 mb-2">
                                         <label for="usn" class="form-label fw-bold">Username</label>
-                                        <input type="text" name="usn" class="form-control-plaintext" id="usn" required>
+                                        <input type="text" name="usn" class="form-control-plaintext" id="usn" readonly>
                                     </div>
 
                                     <div class="col-lg-4 mb-2">
                                         <label for="email" class="form-label fw-bold">Email
                                             Address</label>
                                         <input type="email" name="email" class="form-control-plaintext" id="email"
-                                            required>
-                                        <div class="form-text">
+                                            readonly>
+                                        <div class="form-text d-none">
                                             Please choose a valid email.
                                         </div>
                                     </div>
@@ -140,14 +140,20 @@ require_once("startsession.php");
                                         <label for="contact-number" class="form-label fw-bold">Contact
                                             Number</label>
                                         <input type="number" name="contactNo" class="form-control-plaintext"
-                                            id="contact-number" required>
+                                            id="contact-number" readonly>
+                                        <div class="form-text d-none">
+                                            e.g. 09123456789
+                                        </div>
                                     </div>
 
                                     <div class="col-lg-3 mb-2">
                                         <label for="emp-id" class="form-label fw-bold">Employee
                                             ID</label>
                                         <input type="number" name="empId" class="form-control-plaintext" id="emp-id"
-                                            required>
+                                            readonly>
+                                        <div class="form-text d-none">
+                                            e.g. 023
+                                        </div>
                                     </div>
                                 </div>
 
@@ -174,7 +180,7 @@ require_once("startsession.php");
                                         <label class="form-check-label text-secondary user-select-none"
                                             for="showpass">Show Password</label>
                                     </div>
-                                    <div id="passwordHelpBlock" class="form-text">
+                                    <div id="passwordHelpBlock" class="form-text d-none">
                                         To use the same password, kindly leave the password forms blank.
                                     </div>
                                 </div>
@@ -412,12 +418,12 @@ require_once("startsession.php");
             let btn_text = $("#edit_toggle").text();
 
             if (btn_text === 'Edit') {
-                $(this).text("Cancel edit");
+                $("#edit_toggle").text("Cancel edit");
                 $("#proceedbtn").toggleClass('d-none').prop('disabled', false);
                 $("#editform #editModal .modal-body input").prop("readonly", false);
                 toggled = true;
             } else {
-                $(this).text("Edit");
+                $("#edit_toggle").text("Edit");
                 $("#proceedbtn").toggleClass('d-none').prop('disabled', true);
                 $("#editform #editModal .modal-body input").prop("readonly", true);
                 toggled = false;
@@ -425,7 +431,7 @@ require_once("startsession.php");
             let altformat = $("#birthdate").next();
             altformat.toggleClass("form-control");
             $("#editform #editModal .modal-body input").toggleClass("form-control form-control-plaintext");
-            $("#password_section, #bdate_info, #birthdate, input.input[placeholder]").toggleClass("d-none");
+            $("#password_section, #bdate_info, #birthdate, input.input[placeholder], .form-text").toggleClass("d-none");
         }
 
         $("#editform").on('click', '#edit_toggle', function () {
@@ -441,7 +447,7 @@ require_once("startsession.php");
                 $("#password_section input.form-control-plaintext").attr("type", "password");
             }
             let id = $(this).data('edit');
-            console.log(id);
+            // console.log(id);
             $.get(dataurl, {
                 accountinfo: true,
                 id: id
@@ -485,6 +491,8 @@ require_once("startsession.php");
                 .done(function (d) {
                     $("#modalVerify").modal('hide');
                     show_toast(d.success);
+                    load_page(1, $("#sortbranches").val());
+
                 })
                 .fail(function (e) {
                     console.error(e);
@@ -495,6 +503,7 @@ require_once("startsession.php");
         $("#os_table").on('click', '.delete-btn', function () {
             let id = $(this).data('delete');
             $("#delete_input_id").val(id);
+            $("#deleteform")[0].reset();
             $("#deleteModal").modal('show');
         });
 
@@ -510,6 +519,8 @@ require_once("startsession.php");
                 .done(function (d) {
                     $("#deleteModal").modal('hide');
                     show_toast(d.success);
+                    load_page(1, $("#sortbranches").val());
+
                 })
                 .fail(function (e) {
                     console.error(e);
