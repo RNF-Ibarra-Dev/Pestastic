@@ -44,7 +44,7 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
     }
 
     // http_response_code(400);
-    // echo "now: $now exp $e exp $expiry";
+    // echo date('Y-m-d H:i:s',$now) . ' ' . date('Y-m-d H:i:s',$e) . ' ' . date('Y-m-d H:i:s', strtotime($expiry));
     // exit;
 
     $sql = "INSERT INTO reset_password
@@ -75,18 +75,25 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
         $mail->Subject = "Password Reset";
         $mail->Body = <<<END
 
-        Greetings!
+        <div style="text-align: center;">
+            <img src="https://pestastic-inventory.site/img/pestastic.logo.jpg" alt="logo" style="width: 12rem !important">
+        </div>
+        <br>
 
-        We received a request to reset your password for your Pestastic Inventory account.
+        <b>Greetings!</b>
+        <p>We received a request to reset your password for your Pestastic Inventory account.</p>
 
-        Click <a href="https://Pestastic-inventory.site/resetpassword.php?token=$token">here</a> to reset your password.
+        Click <a href="https://pestastic-inventory.site/resetpassword.php?token=$token">here</a> to reset your password.
 
-        If you did not request a password reset, please ignore this email.
+        <br><br>
+        <p><i>If you did not request a password reset, please ignore this email.</i></p>
 
-        This link will expire in 1 minute for your security.
+        <p><i>Note: <br>   
+        This link will expire in 1 minute for your security.</i></p>
 
-        Thank you,
-        Pestastic Team
+        <img src="https://pestastic-inventory.site/img/logo.png" alt="logo" style="width: 4rem !important"><br>
+        Thank you,<br>
+        <b>Pestastic Team</b>
 
         END;
 
@@ -177,7 +184,7 @@ if (isset($_POST['newpass']) && $_POST['newpass'] === 'true') {
 }
 
 if (isset($_POST['chktoken']) && $_POST['chktoken'] === 'true') {
-    $token = $_POST['token'];
+    $token = $_POST['token'] ?? '';
 
     $email = email_token($conn, $token);
     if ($email) {
@@ -196,4 +203,5 @@ if (isset($_POST['chktoken']) && $_POST['chktoken'] === 'true') {
 
     http_response_code(400);
     echo "Token Expired.";
+    exit;
 }
