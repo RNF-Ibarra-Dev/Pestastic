@@ -1,18 +1,22 @@
 <?php
 
-// localhost
-$servername = "localhost";
-$dBUsername = "root";
-$dBPassword = "";
-$dBName = "pestastic_db";
+if ($_SERVER['SERVER_NAME'] === 'localhost') {
 
-// hosting
-// $servername = "localhost";
-// $dBUsername = "u877186800_pestastic_inv";
-// $dBPassword = "Pestastic_inv1";
-// $dBName = "u877186800_pestastic_db";
+    // localhost
+    $servername = "localhost";
+    $dBUsername = "root";
+    $dBPassword = "";
+    $dBName = "pestastic_db";
 
-$conn = mysqli_connect($servername, $dBUsername, $dBPassword, $dBName); 
+} else {
+    // hosting
+    $servername = "localhost";
+    $dBUsername = "u877186800_pestastic_inv";
+    $dBPassword = "Pestastic_inv1";
+    $dBName = "u877186800_pestastic_db";
+}
+
+$conn = mysqli_connect($servername, $dBUsername, $dBPassword, $dBName);
 
 if (!$conn) {
     die("Connection Failed: " . mysqli_connect_error());
