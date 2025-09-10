@@ -83,11 +83,7 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
         <b>Greetings!</b>
         <p>We received a request to reset your password for your Pestastic Inventory account.</p>
 
-<<<<<<< HEAD
-        Click <a href="https://Pestastic-inventory.site/resetpassword.php?token=$token_hash">here</a> to reset your password.
-=======
-        <p>Please click <a href="https://Pestastic-inventory.site/resetpassword.php?token=$token_hash">here</a> to reset your password.</p>
->>>>>>> main
+        Click <a href="https://pestastic-inventory.site/resetpassword.php?token=$token">here</a> to reset your password.
 
         <br><br>
         <p><i>If you did not request a password reset, please ignore this email.</i></p>
@@ -188,7 +184,7 @@ if (isset($_POST['newpass']) && $_POST['newpass'] === 'true') {
 }
 
 if (isset($_POST['chktoken']) && $_POST['chktoken'] === 'true') {
-    $token = $_POST['token'];
+    $token = $_POST['token'] ?? '';
 
     $email = email_token($conn, $token);
     if ($email) {
@@ -207,4 +203,5 @@ if (isset($_POST['chktoken']) && $_POST['chktoken'] === 'true') {
 
     http_response_code(400);
     echo "Token Expired.";
+    exit;
 }
