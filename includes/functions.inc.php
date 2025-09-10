@@ -39,7 +39,7 @@ function invalidUsername($username)
 function invalidFirstName($firstName)
 {
     $result;
-    if (!preg_match("/^[a-zA-Z]+$/", $firstName)) {
+    if (!preg_match("/^[a-zA-Z ]+$/", $firstName)) {
         $result = true;
     } else {
         $result = false;
