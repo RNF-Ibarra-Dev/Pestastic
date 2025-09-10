@@ -75,6 +75,11 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
         $mail->Subject = "Password Reset";
         $mail->Body = <<<END
 
+        <div style="text-align: center;">
+            <img src="https://Pestastic-inventory.site/img/pestatic.logo.jpg" alt="logo" style="width: 6rem !important">
+        </div>
+        <br>
+
         <b>Greetings!</b>
         <p>We received a request to reset your password for your Pestastic Inventory account.</p>
 
@@ -86,7 +91,7 @@ if (isset($_POST['reset']) && $_POST['reset'] === 'true') {
         <p><i>Note: <br>   
         This link will expire in 1 minute for your security.</i></p>
 
-        <img src="../img/logo.svg" alt="logo" style="width: 6rem !important"><br>
+        <img src="https://Pestastic-inventory.site/img/logo.svg" alt="logo" style="width: 4rem !important"><br>
         Thank you,<br>
         <b>Pestastic Team</b>
 
