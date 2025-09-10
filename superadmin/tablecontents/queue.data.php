@@ -186,7 +186,7 @@ if (isset($_GET['getdata']) && $_GET['getdata'] === 'ongoing') {
             ?>
             <div class="col <?=mysqli_num_rows($result) == 1 ? 'mx-auto' : ''?>">
                 <div class="card bg-white bg-opacity-25 rounded border-0 text-light" style="min-height: 26rem !important;">
-                    <div class="card-body px-4 border-light ">
+                    <div class="card-body px-4 border-light text-wrap">
                         <h5 class="card-title fs-4 text-center fw-bold">Transaction
                             <?= htmlspecialchars($id) ?>
                             <?= $status === 'Pending' ? "<i class='bi bi-dot text-warning fs-4'></i>" : "<i class='bi bi-dot text-success fs-4'></i>" ?>
@@ -284,7 +284,7 @@ if (isset($_GET['inc']) && $_GET['inc'] === 'true') {
             ?>
             <div class="col <?=mysqli_num_rows($result) == 1 ? 'mx-auto' : ''?>">
                 <div class="card bg-white bg-opacity-25 shadow-sm rounded border-0 text-light p-0">
-                    <div class="card-body px-1 border-light pb-0 mx-3">
+                    <div class="card-body text-wrap px-1 border-light pb-0 mx-3">
                         <h5 class="card-title fs-4 fw-bold text-center">Transaction <?= htmlspecialchars($id) ?></h5>
                         <hr>
                         <p class="card-text lh-lg mb-3 text-wrap">
