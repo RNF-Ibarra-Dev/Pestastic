@@ -502,7 +502,7 @@ require_once("startsession.php");
 
         $("#os_table").on('click', '.delete-btn', function () {
             let id = $(this).data('delete');
-            $("#delete_input_id").val(id);
+            $("#del_input_id").val(id);
             $("#deleteform")[0].reset();
             $("#deleteModal").modal('show');
         });
