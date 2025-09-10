@@ -30,7 +30,7 @@ if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
             <div class="col <?=mysqli_num_rows($result) == 1 ? 'mx-auto' : ''?>">
                 <div class="card bg-white bg-opacity-25 shadow-sm rounded border-0 text-light mx-auto p-0"
                     style="min-height: 26rem !important;">
-                    <div class="card-body px-2 border-light pb-0 mx-3">
+                    <div class="card-body px-2 border-light pb-0 mx-3 text-wrap">
                         <h5 class="card-title fs-4 text-center fw-bold">Transaction <?= htmlspecialchars($id) ?></h5>
                         <hr>
                         <p class="card-text lh-lg mb-3">
