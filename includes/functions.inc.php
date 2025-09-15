@@ -408,9 +408,10 @@ function employeeIdCheck($conn, $empId, $id = NULL)
             return $row;
         }
     }
-    return false;
     mysqli_stmt_close($stmt);
+    return false;
 }
+
 
 function createTechAccount($conn, $firstName, $lastName, $username, $email, $pwd, $contact, $address, $empId, $birthdate, $branch)
 {
@@ -455,6 +456,27 @@ function createOpSupAccount($conn, $firstName, $lastName, $username, $email, $pw
         return ['error' => 'Account creation failed. Please contact administration.'];
     }
 }
+function createManager($conn, $firstName, $lastName, $username, $email, $pwd, $empId, $birthdate, $branch)
+{
+
+    $sql = "INSERT INTO superadmin (saName, saLName, saUsn, saEmail, saPwd, saEmpId, saBirthdate, user_branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../superadmin/create.os.php?error=stmtfailed");
+        exit();
+    }
+
+    $hashedPwd = password_hash($pwd, PASSWORD_DEFAULT);
+
+    mysqli_stmt_bind_param($stmt, "sssssssi", $firstName, $lastName, $username, $email, $hashedPwd, $empId, $birthdate, $branch);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_stmt_affected_rows($stmt) > 0) {
+        return true;
+    } else {
+        return ['error' => 'Account creation failed. Please contact administration.'];
+    }
+}
 
 function modify_sa($conn, $fname, $lname, $username, $email, $pwd = '', $bd, $empid, $id)
 {
@@ -467,7 +489,8 @@ function modify_sa($conn, $fname, $lname, $username, $email, $pwd = '', $bd, $em
     if (!empty($pwd)) {
         $sql .= ", saPwd = ?";
         $types .= 's';
-        $data[] = $pwd;
+        $hashed_pwd = password_hash($pwd, PASSWORD_DEFAULT);
+        $data[] = $hashed_pwd;
     }
 
     $sql .= " WHERE saID = ?;";
@@ -1950,29 +1973,37 @@ function loginMultiUser($conn, $uidEmail, $pwd)
         // super admin = manager/owner
     } elseif (isset($userExists['saID'])) {
 
-        // $pwdHashed = $userExists['techPwd'];
-        // $checkPwd = password_verify($pwd, $pwdHashed);
-        $password = $userExists['saPwd'];
+        $pwdHashed = $userExists['saPwd'];
+        $checkPwd = password_verify($pwd, $pwdHashed);
 
-        if ($pwd === $password) {
-            session_start();
-            $_SESSION["saID"] = $userExists['saID'];
-            $_SESSION["saUsn"] = $userExists['saUsn'];
-            $_SESSION["fname"] = $userExists['saName'];
-            $_SESSION["lname"] = $userExists['saLName'];
-            $_SESSION['empId'] = $userExists['saEmpId'];
-            $_SESSION['saEmail'] = $userExists['saEmail'];
-            $_SESSION['branch'] = $userExists['user_branch'];
-            $_SESSION['user_role'] = "superadmin";
-            $_SESSION['author'] = "{$userExists['saUsn']} | Employee no. {$userExists['saEmpId']}";
+        if ($checkPwd) {
 
-            header("location: ../superadmin/index.php?sa_login=success");
-            exit();
-        } else {
-            header("location: ../login.php?error=wrongpassword");
-            exit();
+            if (password_needs_rehash($pwdHashed, $alg, $opt)) {
+                $newhash = password_hash($pwd, $alg, $opt);
+                if (!$updatehash = update_pwd_hash($conn, 'superadmin', $newhash, 'saPwd', $userExists['saID'], 'saID')) {
+                    echo $updatehash['error'];
+                    exit();
+                }
+            }
         }
+        session_start();
+        $_SESSION["saID"] = $userExists['saID'];
+        $_SESSION["saUsn"] = $userExists['saUsn'];
+        $_SESSION["fname"] = $userExists['saName'];
+        $_SESSION["lname"] = $userExists['saLName'];
+        $_SESSION['empId'] = $userExists['saEmpId'];
+        $_SESSION['saEmail'] = $userExists['saEmail'];
+        $_SESSION['branch'] = $userExists['user_branch'];
+        $_SESSION['user_role'] = "superadmin";
+        $_SESSION['author'] = "{$userExists['saUsn']} | Employee no. {$userExists['saEmpId']}";
+
+        header("location: ../superadmin/index.php?sa_login=success");
+        exit();
+    } else {
+        header("location: ../login.php?error=wrongpassword");
+        exit();
     }
+
 }
 
 function check_request($conn, $id)
@@ -2076,8 +2107,8 @@ function validate($conn, $password)
     $row = mysqli_fetch_assoc($result);
 
     $saPwd = $row['saPwd'];
-    // $verifiedPwd = password_verify($password, $saPwd);
-    if ($saPwd === $password) {
+    $verifiedPwd = password_verify($password, $saPwd);
+    if ($verifiedPwd) {
         return true;
         // header("location: ../superadmin/tech.acc.php?error=passwordcorrect");
     } else {
@@ -3118,11 +3149,10 @@ function adjust_chemical($conn, $chemid, $logtype, $signed_cont_count, $qty, $no
 
 function get_user($conn, $userid, $role)
 {
-    if($userid === null || $userid === '' )
-    {
+    if ($userid === null || $userid === '') {
         return 'User not found.';
     }
-    $datacol = [];   
+    $datacol = [];
     $usertypes = $GLOBALS['userTypes'];
     foreach ($usertypes as $roles => $columns) {
         if ($columns['table'] === $role) {
@@ -3950,7 +3980,8 @@ function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $cl
         if (!mysqli_stmt_prepare($trans_chem_update_stmt, $trans_chem_update_sql)) {
             throw new Exception("Prepared statement failed at updating transaction chemicals. Please try again later.");
         }
-        mysqli_stmt_bind_param($trans_chem_update_stmt, 'dii', abs($total_amt_used), $trans_id, $main_id);
+        $abs_total_amt_used = abs($total_amt_used);
+        mysqli_stmt_bind_param($trans_chem_update_stmt, 'dii', $abs_total_amt_used, $trans_id, $main_id);
         mysqli_stmt_execute($trans_chem_update_stmt);
 
         // if (mysqli_stmt_affected_rows($trans_chem_update_stmt) === 0) {
@@ -4091,7 +4122,8 @@ function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $cl
     } catch (Exception $e) {
         mysqli_rollback($conn);
         return [
-            'error' => $e->getMessage() . " at line " . $e->getLine() . " at file " . $e->getFile()
+            'error' => $e->getMessage(),
+            'src' => $e->getMessage() . " at line " . $e->getLine() . " at file " . $e->getFile()
         ];
     }
 }

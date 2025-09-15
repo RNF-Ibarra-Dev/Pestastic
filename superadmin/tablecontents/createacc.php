@@ -101,6 +101,87 @@ if (isset($_POST["createacc"]) && $_POST['createacc'] === 'true') {
 
 } 
 
+if (isset($_POST["addmanager"]) && $_POST['addmanager'] === 'true') {
+
+    $firstName = $_POST["firstName"];
+    $lastName = $_POST["lastName"];
+    $username = $_POST["username"];
+    $email = $_POST["email"];
+    $pwd = $_POST["pwd"];
+    $pwdRepeat = $_POST["pwdRepeat"];
+    $empId = $_POST["empId"];
+    $birthdate = $_POST['birthdate'];
+    $branch = $_POST['branch'];
+    $mpwd = $_POST['manager_pwd'];
+
+    if (emptyInputSignup($firstName, $lastName, $username, $email, $pwd, $pwdRepeat) !== false) {
+        http_response_code(400);
+        echo "Please fill in all details.";
+        exit();
+    }
+    if (invalidFirstName($firstName) !== false) {
+        http_response_code(400);
+        echo 'Invalid first name.';
+        exit();
+    }
+    if (invalidLastName($lastName) !== false) {
+        http_response_code(400);
+        echo 'Invalid last name.';
+        exit();
+    }
+    if (invalidUsername($username) !== false) {
+        http_response_code(400);
+        echo 'Invalid Username';
+        exit();
+    }
+
+    if (invalidEmail($email) !== false) {
+        http_response_code(400);
+        echo 'Invalid email.';
+        exit();
+    }
+
+    if (pwdMatch($pwd, $pwdRepeat) !== false) {
+        http_response_code(400);
+        echo 'Passwords do not match.';
+        exit();
+    }
+    if (multiUserExists($conn, $username, $email) !== false) {
+        http_response_code(400);
+        echo 'User already exists';
+        exit();
+    }
+
+    if(strlen($empId) !== 3){
+        http_response_code(400);
+        echo 'Employee ID should only contain three digits.';
+        exit();
+    }
+
+    if(employeeIdCheck($conn, $empId) !== false) {
+        http_response_code(400);
+        echo 'Employee ID already exist.';
+        exit();
+    }
+
+    if(!validate($conn, $mpwd)){
+        http_response_code(400);
+        echo "Invalid password.";
+        exit();
+    }
+
+    $create = createManager($conn, $firstName, $lastName, $username, $email, $pwd, $empId, $birthdate, $branch);
+
+    if(isset($create['error'])){
+        http_response_code(400);
+        echo 'Error: ' . $create['error'];
+        exit();
+    } else{
+        echo json_encode(['success' => 'Account Created!']);
+    }
+
+} 
+
 
 if(isset($_GET['branches']) && $_GET['branches'] === 'true'){
     $sql = "SELECT * FROM branches;";

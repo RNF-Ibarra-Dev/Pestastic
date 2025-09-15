@@ -32,6 +32,14 @@
                     Contents</div>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'add-manager.php' ? 'btn-active' : ''; ?>"
+                href="add-manager.php">
+
+                <div class="text-light fw-medium fs-5 text-shadow"><i
+                        class="bi <?= $page == 'add-manager.php' ? 'bi-person-fill-gear color-accent' : 'bi-person-gear' ?> me-3"></i>Add Manager</div>
+            </a>
+        </li>
     </ul>
 
 </aside>

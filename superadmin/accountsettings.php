@@ -79,7 +79,8 @@ require("startsession.php");
                                 <label class="form-check-label text-light user-select-none fs-5" for="showpass">Show
                                     Password</label>
                             </div>
-                            <p class="fw-light ms-1 fs-5 d-none notes-toggle">Leave password blank if you wish to retain the
+                            <p class="fw-light ms-1 fs-5 d-none notes-toggle">Leave password blank if you wish to retain
+                                the
                                 same password.</p>
                             <label for="birthdate" class="form-label fw-bold mb-0">Birthdate:</label>
                             <input type="date" class="form-control ps-2 d-none" id="birthdate" name="birthdate">
@@ -89,6 +90,7 @@ require("startsession.php");
                             <button type="button" class="btn btn-grad d-none" data-bs-target="#confirm_modal"
                                 data-bs-toggle="modal">Submit</button>
                         </div>
+
                     </div>
 
                     <div class="modal fade" id="confirm_modal" tabindex="-1" aria-hidden="true">
@@ -118,8 +120,25 @@ require("startsession.php");
             </div>
         </main>
     </div>
+
+    <div class="toast-container m-2 me-3 bottom-0 end-0 position-fixed">
+        <div class="toast align-items-center" role="alert" id="toast" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body text-dark ps-4 text-success-emphasis" id="toastmsg">
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
     <?php include('footer.links.php'); ?>
     <script>
+        function show_toast(message) {
+            $('#toastmsg').html(message);
+            var toastid = $('#toast');
+            var toast = new bootstrap.Toast(toastid);
+            toast.show();
+        }
+
         const dataUrl = "tablecontents/acc.settings.data.php";
         let birthdate = flatpickr("#birthdate", {
             dateFormat: "F j, Y"
@@ -208,8 +227,9 @@ require("startsession.php");
                 .done(async function (d) {
                     // alert(d.success);
                     toggle();
-                    $("#alert").html(d.success).fadeIn(500).delay(2000).fadeOut(1000);
+                    show_toast(d.success);
                     $("#nav_name").text(d.name);
+                    $("#accountsettings")[0].reset();
                     $("#confirm_modal").modal("hide");
                 })
                 .fail(async function (e) {
