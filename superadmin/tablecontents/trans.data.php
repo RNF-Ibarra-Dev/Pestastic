@@ -207,7 +207,7 @@ function get_chem($conn, $active = null, $branch = null)
 {
     $active = $active ?? '';
 
-    $sql = 'SELECT * FROM chemicals WHERE request = 0 AND (chemLevel > 0 OR unop_cont > 0)';
+    $sql = 'SELECT * FROM chemicals WHERE request = 0 AND (chemLevel > 0 OR unop_cont > 0) AND chem_location = "main_storage"';
 
     if ($branch !== NULL && is_numeric($branch)) {
         $sql .= " AND branch = ?";
@@ -260,7 +260,7 @@ function get_chem_edit($conn, $active = 0, $branch = null)
 {
     $active = $active === 0 ? 0 : (int) $active;
 
-    $sql = "SELECT * FROM chemicals WHERE request = 0";
+    $sql = "SELECT * FROM chemicals WHERE request = 0 AND chem_location = 'main_storage'";
 
     if ($branch !== null && is_numeric($branch)) {
         $sql .= " AND branch = ?";
@@ -308,7 +308,7 @@ function get_chem_edit($conn, $active = 0, $branch = null)
 }
 function get_more_chem($conn, $status = '', $branch = null)
 {
-    $sql = "SELECT * FROM chemicals WHERE request = 0 AND (chemLevel > 0 OR unop_cont > 0)";
+    $sql = "SELECT * FROM chemicals WHERE request = 0 AND (chemLevel > 0 OR unop_cont > 0) AND chem_location = 'main_storage'";
 
     if ($branch !== null && is_numeric($branch)) {
         $sql .= " AND branch = ?";

@@ -618,6 +618,7 @@ if (isset($_POST['singledispatch']) && $_POST['singledispatch'] === 'true') {
         exit();
     }
 
+
     $finalize = dispatch_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['saID'], $notes, $_SESSION['user_role']);
     if (isset($finalize['error'])) {
         http_response_code(400);

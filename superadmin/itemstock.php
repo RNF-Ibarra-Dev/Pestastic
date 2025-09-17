@@ -318,10 +318,8 @@ include('tablecontents/tables.php');
                                         <tr class="text-center align-middle">
                                             <th class="text-dark" scope="col">Item ID</th>
                                             <th class="text-dark">Item</th>
-                                            <th class="text-dark">Brand</th>
-                                            <th class="text-dark">Outgoing Stock Level (Opened)</th>
-                                            <th class="text-dark">Unopened Stock</th>
-                                            <th class="text-dark">Restock Threshold</th>
+                                            <th class="text-dark">Transaction ID</th>
+                                            <th class="text-dark">Amount Dispatched</th>
                                             <th class="text-dark">Actions</th>
                                         </tr>
                                     </thead>

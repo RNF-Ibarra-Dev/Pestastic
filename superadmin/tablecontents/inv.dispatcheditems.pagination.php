@@ -171,19 +171,17 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT * FROM chemicals
-            WHERE request = 0
-            AND chem_location = 'dispatched'";
+    $sql = "SELECT tc.chem_brand, tc.amt_used AS amount_dispatched, c.quantity_unit AS unit, c.id AS item_id, tc.trans_id AS transaction FROM transaction_chemicals tc JOIN chemicals c ON c.id = tc.chem_id JOIN transactions t ON t.id = tc.trans_id WHERE t.transaction_status = 'Dispatched'";
 
     $data = [];
     $type = '';
     if ($branch !== '' && $branch !== NULL) {
         $data[] = $branch;
         $type .= 'i';
-        $sql .= " AND branch = ?";
+        $sql .= " AND c.branch = ?";
     }
 
-    $sql .= " ORDER BY updated_at
+    $sql .= " ORDER BY t.updated_at
             DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -200,38 +198,36 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $name = $row["name"];
-            $brand = $row["brand"];
-            $level = $row['chemLevel'];
-            $unit = $row['quantity_unit'];
-            $opened = $level <= 0 ? "Empty" : "$level";
-            $contsize = $row['container_size'];
-            $datereceived = $row['date_received'];
-            $unopened = $row['unop_cont'];
-            $threshold = $row['restock_threshold'];
-            $loc = $row['chem_location'];
+            $id = $row['item_id'];  
+            $item_name = $row['chem_brand'];
+            $trans_id = $row['transaction'];
+            $amount_dispatched = $row['amount_dispatched'];
+            $unit = $row['unit'];
+            // $name = $row["name"];
+            // $brand = $row["brand"];
+            // $level = $row['chemLevel'];
+            // $unit = $row['quantity_unit'];
+            // $opened = $level <= 0 ? "Empty" : "$level";
+            // $contsize = $row['container_size'];
+            // $datereceived = $row['date_received'];
+            // $unopened = $row['unop_cont'];
+            // $threshold = $row['restock_threshold'];
+            // $loc = $row['chem_location'];
+            // $trans_id = $row['trans_id'];
             ?>
             <tr class="text-center">
                 <td>
                     <?= htmlspecialchars($id) ?>
                 </td>
-                <td><?= htmlspecialchars($name) ?></td>
-                <td><?= htmlspecialchars($brand) ?></td>
-                <td>
-                    <?= htmlspecialchars("$opened / $contsize $unit") ?>
-                </td>
-                <td>
-                    <?= htmlspecialchars($unopened) ?>
-                </td>
-                <td>
-                    <?= htmlspecialchars($threshold) ?>
-                </td>
+                <td><?= htmlspecialchars($item_name) ?></td>
+                <td><?= htmlspecialchars($trans_id) ?></td>
+                <td><?= htmlspecialchars("$amount_dispatched$unit") ?></td>
                 <td>
                     <button type="button" class="btn btn-sidebar border border-dark rounded-4 editbtn"
                         data-chem="<?= htmlspecialchars($id) ?>"><i class="bi bi-info-circle text-dark"></i></button>
-                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 returnbtn"
-                        data-return="<?= htmlspecialchars($id) ?>"><i class=" bi bi-box-arrow-in-left text-dark"></i></button>
+                    <a href="transactions.php?openmodal=true&id=<?= htmlspecialchars($trans_id) ?>"
+                        class="btn btn-sidebar border border-dark rounded-4 disabled-returnbtn"
+                        data-return="<?= htmlspecialchars($id) ?>"><i class=" bi bi-box-arrow-in-left text-dark"></i></a>
                 </td>
             </tr>
 

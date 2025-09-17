@@ -196,6 +196,7 @@
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
                                     <h1 class="modal-title fs-5">Add New Transaction</h1>
+
                                     <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                             class="bi text-light bi-x"></i></button>
                                 </div>
@@ -204,7 +205,7 @@
                                         class="fw-bold text-shadow mb-4 fs-4 text-uppercase text-center bg-dark bg-gradient bg-opacity-50 text-light rounded p-2">
                                         Customer Information</p>
                                     <div class="row mb-2">
-                                        <div class="col-lg-6 mb-2">
+                                        <div class="col-lg-4 mb-2">
                                             <label for="add-customerName" class="form-label fw-light">Customer Name
                                             </label>
                                             <input type="text" name="add-customerName" id="add-customerName"
@@ -212,13 +213,19 @@
                                                 autocomplete="one-time-code">
                                             <!-- <p class="text-body-secondary text-muted fw-light">Note: Include full customer name</p> -->
                                         </div>
-                                        <div class="col-lg-6 mb-2">
+                                        <div class="col-lg-5 mb-2">
                                             <label for="add-customerAddress" class="form-label fw-light">Customer Full
                                                 Address
                                             </label>
                                             <textarea name="add-customerAddress" id="add-customerAddress"
                                                 class="form-control form-add" rows="1"
                                                 placeholder="e.g B20 L64 Garnet Street Lee Grove 4 Mandaluyong, Metro Manila"></textarea>
+                                        </div>
+                                        <div class="col-lg-3 mb-2">
+                                            <label for="branch" class="form-label fw-light">Branch</label>
+                                            <select name="branch" id="add_branch" class="form-select"></select>
+                                            <p class="text-muted ms-1 mb-0"><i>Note: Branch cannot be changed later.</i>
+                                            </p>
                                         </div>
                                     </div>
 
@@ -283,14 +290,15 @@
                                             <label for="add-packageStart"
                                                 class="form-label fw-light text-nowrap">Package Warranty
                                                 Start</label>
-                                            <input placeholder="--/--/--" id="add-packageStart"
+                                            <input placeholder="--/--/--" id="add-packageStart" name="add-packageStart"
                                                 class="form-control form-add" disabled>
                                         </div>
                                         <div class="col-lg-3 mb-2">
                                             <label for="add-packageExpiry" class="form-label fw-light">Package
                                                 Expiry</label>
                                             <!-- <p class="fw-light" id="add-packageExpiry"></p> -->
-                                            <input class="fw-light form-control" id="add-packageExpiry" readonly>
+                                            <input class="fw-light form-control" id="add-packageExpiry"
+                                                name="add-packageExpiry" readonly>
                                         </div>
 
                                         <div class="col-lg-3">
@@ -395,7 +403,6 @@
                                         id="emptyInput"></p>
                                 </div>
                                 <div class="modal-footer">
-                                    <select name="branch" id="add_branch" class="form-select me-auto w-25"></select>
                                     <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
                                     <button type="button" class="btn btn-grad" disabled-id="submitAdd"
                                         data-bs-toggle="modal" data-bs-target="#confirmAdd">Proceed &
@@ -1271,7 +1278,7 @@
                     <div class="modal-dialog modal-lg modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Dispatch Transaction</h1>
+                                <h1 class="modal-title fs-5">Set Item for Dispatch</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                         class="bi text-light bi-x"></i></button>
                             </div>
@@ -1282,6 +1289,7 @@
                                     <p class="fw-light m-0 me-2">Add Chemical / Item</p><i
                                         class="bi bi-plus-circle text-light"></i>
                                 </button>
+                                <p class="text-secondary mb-0 mt-2">Please only list the items / chemicals to carry for dispatch.</p>
 
                                 <label for="dispatchnotes" class="fw-light my-2">Note:</label>
                                 <textarea name="note" class="form-control w-50" id="dispatchnotes" cols="1"

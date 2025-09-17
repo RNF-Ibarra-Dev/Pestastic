@@ -1215,14 +1215,26 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                         $chemname = get_chemical_name($conn, $chemUsed[$i]);
                         throw new Exception("Insufficient Chemical: " . $chemname);
                     } else {
-                        $amount = (int) $amtUsed[$i];
-                        $amount = !in_array((int) $amtUsed[$i], $existingChems) ? $amount * -1 : $amount;
+                        $amount = $amtUsed[$i];
+                        $amount = !in_array($amtUsed[$i], $existingChems) ? $amount * -1 : $amount;
                         // throw new Exception($amount);
 
                         $reflect = reflect_trans_chem($conn, $amount, $chemUsed[$i]);
                         if (isset($reflect['error'])) {
                             throw new Exception("New chemical error: " . $reflect['error']);
                         }
+
+                        // if ($transData['status'] === 'Dispatched') {
+                        //     $dispatch_chem = dispatch_chemical($conn, $chemUsed[$i], $transData['transId'], $amount);
+                        //     if (isset($dispatch_chem['error'])) {
+                        //         throw new Exception("Dispatch chem error: " . $dispatch_chem['error']);
+                        //     }
+                        // } else if ($transData['status'] === 'Completed') {
+                        //     $return_chem = return_dispatched_chemical($conn, $chemUsed[$i], $transData['transId'], NULL, NULL, $amount);
+                        //     if (isset($return_chem['error'])) {
+                        //         throw new Exception("Return chem error: " . $return_chem['error']);
+                        //     }
+                        // }
                     }
                     continue;
                 }
@@ -1241,9 +1253,11 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                 $difference = $prevtransamt - $amtUsed[$i];
                 $reflect = reflect_trans_chem($conn, $difference, $chemUsed[$i]);
 
+
                 if (isset($reflect['error'])) {
                     throw new Exception("Modify error: " . $reflect['error'] . 'prev amt: ' . $prevtransamt . ' Amount Used: ' . $amtUsed[$i] . json_encode($amtUsed));
                 }
+
             }
         }
 
@@ -1284,7 +1298,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                 // reverts them especially if it is reflected. only completed and dispatched are the one reflected
                 $revert = revert_v2($conn, $delChems, $transData['transId']);
                 if (isset($revert['error'])) {
-                    throw new Exception("Error: " . $revert['error'] . " 864: Current Del Chem ID: $delChems | Transaction ID: " . $transData['transId']);
+                    throw new Exception("Error: " . $revert['error'] . " Current Del Chem ID: $delChems | Transaction ID: " . $transData['transId']);
                 }
             }
             $fchems = array_merge($chemUsed, array_diff($existingChems, $delChems));
@@ -1440,34 +1454,34 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
         // }
 
 
-        if ($transData['status'] === 'Dispatched') {
-            for ($i = 0; $i < count($chemUsed); $i++) {
-                $dispatch = dispatch_chemical($conn, $chemUsed[$i], $transData['transId'], $amtUsed[$i], true);
-                if (isset($dispatch['error'])) {
-                    throw new Exception($dispatch['error']);
-                }
-            }
-        } else if ($transData['status'] === 'Completed') {
-            for ($i = 0; $i < count($chemUsed); $i++) {
-                $original_data = get_chemical($conn, $chemUsed[$i]);
+        // if ($transData['status'] === 'Dispatched') {
+        //     for ($i = 0; $i < count($chemUsed); $i++) {
+        //         $dispatch = dispatch_chemical($conn, $chemUsed[$i], $transData['transId'], $amtUsed[$i], true);
+        //         if (isset($dispatch['error'])) {
+        //             throw new Exception($dispatch['error']);
+        //         }
+        //     }
+        // } else if ($transData['status'] === 'Completed') {
+        //     for ($i = 0; $i < count($chemUsed); $i++) {
+        //         $original_data = get_chemical($conn, $chemUsed[$i]);
 
-                $amt = (float) $amtUsed[$i];
-                // throw new Exception(var_dump($original_data));
-                $cc = 0;
-                while ($amt > $original_data['container_size']) {
-                    $amt -= $original_data['container_size'];
-                    $cc++;
-                }
+        //         $amt = (float) $amtUsed[$i];
+        //         // throw new Exception(var_dump($original_data));
+        //         $cc = 0;
+        //         while ($amt > $original_data['container_size']) {
+        //             $amt -= $original_data['container_size'];
+        //             $cc++;
+        //         }
 
-                $signed_amt = (float) $amt * -1.0;
-                $signed_cc = (int) $cc * -1;
+        //         $signed_amt = (float) $amt * -1.0;
+        //         $signed_cc = (int) $cc * -1;
 
-                $return = return_dispatched_chemical($conn, $chemUsed[$i], $transData['transId'], $signed_amt, $signed_cc);
-                if (isset($return['error'])) {
-                    throw new Exception($return['error'] . $chemUsed[$i]);
-                }
-            }
-        }
+        //         $return = return_dispatched_chemical($conn, $chemUsed[$i], $transData['transId'], $signed_amt, $signed_cc);
+        //         if (isset($return['error'])) {
+        //             throw new Exception($return['error'] . $chemUsed[$i]);
+        //         }
+        //     }
+        // }
 
 
         // mysqli_rollback($conn);
@@ -3464,6 +3478,7 @@ function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
                 if (isset($reflect['error'])) {
                     throw new Exception($reflect['error']);
                 }
+
             }
             if ((float) $amtUsed[$i] != $prevtransamt) {
                 $recordchem = add_chemical_used($conn, $transid, (int) $chemUsed[$i], (float) $amtUsed[$i]);
@@ -3473,11 +3488,15 @@ function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
             }
         }
 
-        // log transaction
-        $logchems = log_transaction($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $role, $note, $status);
-        if (isset($logchems['error'])) {
-            throw new Exception($logchems['error']);
+        for ($i = 0; $i < count($chemUsed); $i++) {
+            // log transaction
+            $log_note = "Dispatched {$chemUsed[$i]} with amount used of {$amtUsed[$i]}. User Note: " . ($note != '' ? $note : 'N/A');
+            $logchems = log_transaction($conn, $transid, $chemUsed[$i], $amtUsed[$i], $branch, $user_id, $role, $log_note, $status);
+            if (isset($logchems['error'])) {
+                throw new Exception($logchems['error']);
+            }
         }
+
 
         mysqli_commit($conn);
         return true;
@@ -3908,7 +3927,7 @@ function dispatch_all_chemical($conn, $id, $transaction, $new_location = "Dispat
 }
 
 
-function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $closed_qty)
+function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $closed_qty, $total_amt_used = 0.0)
 {
     mysqli_begin_transaction($conn);
     try {
@@ -3965,10 +3984,16 @@ function return_dispatched_chemical($conn, $chem_id, $trans_id, $opened_qty, $cl
         mysqli_stmt_close($select_dispatched_amt_stmt);
 
         $unit = $original_data['quantity_unit'];
-        $closed_container_count = $closed_qty == 1 ? 0 : $closed_qty;
 
-        (float) $total_amt_used = $opened_qty + ($closed_container_count * $original_data['container_size']);
-        // throw new Exception("$total_amt_used = $opened_qty + ($closed_container_count * " . $original_data['container_size'] . ")");
+        if ($opened_qty === NULL && $closed_qty === NULL) {
+            if ($total_amt_used == 0 || $total_amt_used === NULL) {
+                throw new Exception("Invalid Quantity.");
+            }
+        } else {
+            $closed_container_count = $closed_qty == 1 ? 0 : $closed_qty;
+            (float) $total_amt_used = $opened_qty + ($closed_container_count * $original_data['container_size']);
+            // throw new Exception("$total_amt_used = $opened_qty + ($closed_container_count * " . $original_data['container_size'] . ")");
+        }
 
         if ($total_amt_used > $recorded_qty_used) {
             throw new Exception("Return amount should not exceed the dispatched amount. The dipatched amount for the transaction and chemical is $recorded_qty_used$unit only");
