@@ -4,31 +4,55 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 5;
-$rowCount = "SELECT
-                id,
-                name,
-                brand,
-                quantity_unit AS unit,
-                container_size,
-                (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
-                SUM(CASE
-                    WHEN chem_location = 'main_storage' THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
-                    ELSE 0
-                END) AS containers_in_storage,
-                SUM(CASE
-                    WHEN chem_location IN ('stock_entry', 'dispatched', 'used_outside_site', 'awaiting_pickup') THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
-                    ELSE 0
-                END) AS containers_outside_storage
-            FROM
-                chemicals
+$rowCount = "SELECT 
+                c.id,
+                c.name,
+                c.brand,
+                c.container_size,
+                c.quantity_unit,
+                SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) AS container_in,
+                SUM((CASE 
+                        WHEN t.transaction_status = 'Dispatched' THEN 
+                            (CASE 
+                                WHEN tc.amt_used = 0 THEN 0
+                                WHEN tc.amt_used < c.container_size THEN 1
+                                WHEN tc.amt_used / c.container_size < 1 AND tc.amt_used / c.container_size > 0 THEN 1
+                                ELSE 
+                                    FLOOR(tc.amt_used / c.container_size) + (CASE WHEN tc.amt_used % c.container_size > 0 THEN 1 ELSE 0 END)
+                            END) 
+                        ELSE 0 
+                    END)) AS container_out,
+                
+                (SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) +
+                SUM((CASE 
+                        WHEN t.transaction_status = 'Dispatched' THEN 
+                            (CASE 
+                                WHEN tc.amt_used = 0 THEN 0
+                                WHEN tc.amt_used < c.container_size THEN 1
+                                WHEN tc.amt_used / c.container_size < 1 AND tc.amt_used / c.container_size > 0 THEN 1
+                                ELSE 
+                                    FLOOR(tc.amt_used / c.container_size) + (CASE WHEN tc.amt_used % c.container_size > 0 THEN 1 ELSE 0 END)
+                            END) 
+                        ELSE 0 
+                    END))) AS total_containers
+            FROM 
+                transaction_chemicals tc
+            JOIN
+                chemicals c
+            ON
+                c.id = tc.chem_id
+            JOIN
+                transactions t
+            ON 
+                t.id = tc.trans_id
             WHERE
-                (chemLevel > 0 OR unop_cont > 0) 
-                AND expiryDate > NOW()
-                AND branch = {$_SESSION['branch']}
-            GROUP BY
-                name, brand, container_size
-            ORDER BY
-                id";
+                c.request = 0
+            AND
+                (c.chemLevel > 0 OR c.unop_cont > 0)
+            AND
+                c.branch = {$_SESSION['branch']}
+            GROUP BY 
+                c.name, c.brand, c.container_size;";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
@@ -168,31 +192,57 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT
-                id,
-                name,
-                brand,
-                quantity_unit AS unit,
-                container_size,
-                SUM(unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
-                SUM(CASE
-                    WHEN chem_location = 'main_storage' THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
-                    ELSE 0
-                END) AS containers_in_storage,
-                SUM(CASE
-                    WHEN chem_location IN ('stock_entry', 'dispatched', 'used_outside_site', 'awaiting_pickup') THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
-                    ELSE 0
-                END) AS containers_outside_storage
-            FROM
-                chemicals
+    $sql = "SELECT 
+                c.id,
+                c.name,
+                c.brand,
+                c.container_size,
+                c.quantity_unit,
+                SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) AS container_in,
+                SUM((CASE 
+                        WHEN t.transaction_status = 'Dispatched' THEN 
+                            (CASE 
+                                WHEN tc.amt_used = 0 THEN 0
+                                WHEN tc.amt_used < c.container_size THEN 1
+                                WHEN tc.amt_used / c.container_size < 1 AND tc.amt_used / c.container_size > 0 THEN 1
+                                ELSE 
+                                    FLOOR(tc.amt_used / c.container_size) + (CASE WHEN tc.amt_used % c.container_size > 0 THEN 1 ELSE 0 END)
+                            END) 
+                        ELSE 0 
+                    END)) AS container_out,
+                
+                (SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) +
+                SUM((CASE 
+                        WHEN t.transaction_status = 'Dispatched' THEN 
+                            (CASE 
+                                WHEN tc.amt_used = 0 THEN 0
+                                WHEN tc.amt_used < c.container_size THEN 1
+                                WHEN tc.amt_used / c.container_size < 1 AND tc.amt_used / c.container_size > 0 THEN 1
+                                ELSE 
+                                    FLOOR(tc.amt_used / c.container_size) + (CASE WHEN tc.amt_used % c.container_size > 0 THEN 1 ELSE 0 END)
+                            END) 
+                        ELSE 0 
+                    END))) AS total_containers
+            FROM 
+                transaction_chemicals tc
+            JOIN
+                chemicals c
+            ON
+                c.id = tc.chem_id
+            JOIN
+                transactions t
+            ON 
+                t.id = tc.trans_id
             WHERE
-                (chemLevel > 0 OR unop_cont > 0) 
-                AND expiryDate > NOW()
-                AND branch = {$_SESSION['branch']}
-            GROUP BY
-                name, brand, quantity_unit, container_size 
-            ORDER BY
-                name, brand
+                c.request = 0
+            AND
+                (c.chemLevel > 0 OR c.unop_cont > 0)
+            AND
+                c.branch = {$_SESSION['branch']}
+            GROUP BY 
+                c.name, c.brand, c.container_size
+            ORDER BY 
+                c.name
             DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 
     $result = mysqli_query($conn, $sql);
@@ -203,13 +253,13 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];   
+            $id = $row['id'];
             $name = $row["name"];
             $brand = $row["brand"];
-            $unit = $row['unit'];
-            $total_containers = $row['total_container_stock'];
-            $in = $row['containers_in_storage'];
-            $out = $row['containers_outside_storage'];
+            $unit = $row['quantity_unit'];
+            $total_containers = $row['total_containers'];
+            $in = $row['container_in'];
+            $out = $row['container_out'];
             // $level = $row["chemLevel"];
             // $container_count = (int) $row['unop_cont'];
             $contsize = (int) $row['container_size'];
@@ -253,32 +303,59 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
 
-    $sql = "SELECT
-                id,
-                name,
-                brand,
-                quantity_unit AS unit,
-                container_size,
-                (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) AS total_container_stock,
-                SUM(CASE
-                    WHEN chem_location = 'main_storage' THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
-                    ELSE 0
-                END) AS containers_in_storage,
-                SUM(CASE
-                    WHEN chem_location IN ('stock_entry', 'dispatched', 'used_outside_site', 'awaiting_pickup') THEN (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END))
-                    ELSE 0
-                END) AS containers_outside_storage
-            FROM
-                chemicals
+    $sql = "SELECT 
+                c.id,
+                c.name,
+                c.brand,
+                c.container_size,
+                c.quantity_unit,
+                SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) AS container_in,
+                SUM((CASE 
+                        WHEN t.transaction_status = 'Dispatched' THEN 
+                            (CASE 
+                                WHEN tc.amt_used = 0 THEN 0
+                                WHEN tc.amt_used < c.container_size THEN 1
+                                WHEN tc.amt_used / c.container_size < 1 AND tc.amt_used / c.container_size > 0 THEN 1
+                                ELSE 
+                                    FLOOR(tc.amt_used / c.container_size) + (CASE WHEN tc.amt_used % c.container_size > 0 THEN 1 ELSE 0 END)
+                            END) 
+                        ELSE 0 
+                    END)) AS container_out,
+                
+                (SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) +
+                SUM((CASE 
+                        WHEN t.transaction_status = 'Dispatched' THEN 
+                            (CASE 
+                                WHEN tc.amt_used = 0 THEN 0
+                                WHEN tc.amt_used < c.container_size THEN 1
+                                WHEN tc.amt_used / c.container_size < 1 AND tc.amt_used / c.container_size > 0 THEN 1
+                                ELSE 
+                                    FLOOR(tc.amt_used / c.container_size) + (CASE WHEN tc.amt_used % c.container_size > 0 THEN 1 ELSE 0 END)
+                            END) 
+                        ELSE 0 
+                    END))) AS total_containers
+            FROM 
+                transaction_chemicals tc
+            JOIN
+                chemicals c
+            ON
+                c.id = tc.chem_id
+            JOIN
+                transactions t
+            ON 
+                t.id = tc.trans_id
             WHERE
-                chemLevel > 0
-                AND expiryDate > NOW()
-                AND (id LIKE ? OR name LIKE ? OR brand LIKE ? OR quantity_unit LIKE ? OR container_size LIKE ?)
-                AND branch = {$_SESSION['branch']}
-            GROUP BY
-                id, name, brand, container_size, chemLevel, unop_cont, chem_location, quantity_unit, container_size
-            ORDER BY
-                id";
+                c.request = 0
+            AND
+                (c.chemLevel > 0 OR c.unop_cont > 0)
+            AND
+                c.branch = {$_SESSION['branch']}
+            AND 
+                (c.id LIKE ? OR name LIKE ? OR c.brand LIKE ? OR c.quantity_unit LIKE ? OR c.container_size LIKE ?)
+            GROUP BY 
+                c.name, c.brand, c.container_size
+            ORDER BY 
+                c.name;";
 
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -293,13 +370,13 @@ if (isset($_GET['search'])) {
     $numrows = mysqli_num_rows($result);
     if ($numrows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];   
+            $id = $row['id'];
             $name = $row["name"];
             $brand = $row["brand"];
-            $unit = $row['unit'];
-            $total_containers = $row['total_container_stock'];
-            $in = $row['containers_in_storage'];
-            $out = $row['containers_outside_storage'];
+            $unit = $row['quantity_unit'];
+            $total_containers = $row['total_containers'];
+            $in = $row['container_in'];
+            $out = $row['container_out'];
             // $level = $row["chemLevel"];
             // $container_count = (int) $row['unop_cont'];
             $contsize = (int) $row['container_size'];
