@@ -1459,9 +1459,9 @@ include('tablecontents/tables.php');
                             <th scope="col">Item No.</th>
                             <th>Item Name & Brand</th>
                             <th>Container Size</th>
-                            <th>Stored</th>
-                            <th>Used Open</th>
-                            <th>Used Close</th>
+                            <th>Total Stored</th>
+                            <th>Total Used</th>
+                            <!-- <th>Total Containers</th> -->
                             <th>Total</th>
                             <th>Actions</th>
                         </tr>

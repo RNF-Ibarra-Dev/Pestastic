@@ -9,7 +9,7 @@ $rowCount = "SELECT
                     c.brand,
                     c.container_size,
                     c.quantity_unit,
-                    SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) AS container_in,
+                    c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) AS container_in,
                     SUM((CASE 
                             WHEN t.transaction_status = 'Dispatched' THEN 
                                 (CASE 
@@ -22,7 +22,7 @@ $rowCount = "SELECT
                             ELSE 0 
                         END)) AS container_out,
                     
-                    (SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) +
+                    (c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) +
                     SUM((CASE 
                             WHEN t.transaction_status = 'Dispatched' THEN 
                                 (CASE 
@@ -61,7 +61,7 @@ function row_status($conn, $ibranch = '')
                     c.brand,
                     c.container_size,
                     c.quantity_unit,
-                    SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) AS container_in,
+                    c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) AS container_in,
                     SUM((CASE 
                             WHEN t.transaction_status = 'Dispatched' THEN 
                                 (CASE 
@@ -74,7 +74,7 @@ function row_status($conn, $ibranch = '')
                             ELSE 0 
                         END)) AS container_out,
                     
-                    (SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) +
+                    (c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) +
                     SUM((CASE 
                             WHEN t.transaction_status = 'Dispatched' THEN 
                                 (CASE 
@@ -108,7 +108,7 @@ function row_status($conn, $ibranch = '')
     // }
 
     if ($ibranch !== '' && $ibranch !== NULL) {
-        $queries[] = "t.branch = ?";
+        $queries[] = "c.branch = ?";
         $branch = (int) $ibranch;
     }
 
@@ -132,8 +132,8 @@ function row_status($conn, $ibranch = '')
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
     $row = mysqli_fetch_row($res);
-    $totalRows = $row[0] ?? 0;
-
+    // $totalRows = $row[0] ?? 0;
+    $totalRows = mysqli_num_rows($res);
     $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
 
     return ['pages' => $totalPages, 'rows' => $totalRows];
@@ -268,7 +268,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 c.brand,
                 c.container_size,
                 c.quantity_unit,
-                SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) AS container_in,
+                c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) AS container_in,
                 SUM((CASE 
                         WHEN t.transaction_status = 'Dispatched' THEN 
                             (CASE 
@@ -281,7 +281,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                         ELSE 0 
                     END)) AS container_out,
                 
-                (SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) +
+                (c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) +
                 SUM((CASE 
                         WHEN t.transaction_status = 'Dispatched' THEN 
                             (CASE 
@@ -397,7 +397,7 @@ if (isset($_GET['search'])) {
                 c.brand,
                 c.container_size,
                 c.quantity_unit,
-                SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) AS container_in,
+                c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) AS container_in,
                 SUM((CASE 
                         WHEN t.transaction_status = 'Dispatched' THEN 
                             (CASE 
@@ -410,7 +410,7 @@ if (isset($_GET['search'])) {
                         ELSE 0 
                     END)) AS container_out,
                 
-                (SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) +
+                (c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) +
                 SUM((CASE 
                         WHEN t.transaction_status = 'Dispatched' THEN 
                             (CASE 
@@ -436,7 +436,8 @@ if (isset($_GET['search'])) {
                 c.request = 0
             AND
                 (c.chemLevel > 0 OR c.unop_cont > 0)
-            AND (c.id LIKE ? OR name LIKE ? OR c.brand LIKE ? OR c.quantity_unit LIKE ? OR c.container_size LIKE ?)";
+            AND 
+                (c.id LIKE ? OR name LIKE ? OR c.brand LIKE ? OR c.quantity_unit LIKE ? OR c.container_size LIKE ?)";
 
     $data = [];
     $type = '';

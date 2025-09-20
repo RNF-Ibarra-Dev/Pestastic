@@ -4,35 +4,27 @@ require_once('../../includes/functions.inc.php');
 
 $pageRows = 5;
 $rowCount = "SELECT
-                c.id AS chem_id,
-                c.name,
-                c.brand,
-                c.quantity_unit AS unit,
-                c.container_size,
-                (c.chemLevel + (c.unop_cont * c.container_size)) AS total_stored_quantity,
-                SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count = 0
-                    THEN ABS(il.quantity)
-                    ELSE 0
-                END) AS total_used_open,
-                SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count < 0
-                    THEN ABS(il.quantity)
-                    ELSE 0
-                END) AS total_used_closed
+                c.id,
+                CONCAT(c.name, ' | ', c.brand) as item,
+                t.transaction_status,
+                CONCAT(c.container_size, ' ', c.quantity_unit) AS container_size,
+                CONCAT(SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END), ' ', c.quantity_unit) AS total_amt_used,
+                CONCAT(c.unop_cont * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END), ' ', c.quantity_unit) AS total_stored,
+                CONCAT((SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END) + c.unop_cont  * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)), ' ', c.quantity_unit) AS total_qty
             FROM
+                transaction_chemicals tc
+            JOIN
+                transactions t
+            ON
+                t.id = tc.trans_id
+            RIGHT JOIN
                 chemicals c
-            LEFT JOIN
-                inventory_log il ON c.id = il.chem_id
+            ON
+                c.id = tc.chem_id
             WHERE
                 c.request = 0
-                AND c.expiryDate > NOW()
             GROUP BY
-                c.id, c.name, c.brand, c.container_size, c.chemLevel, c.unop_cont
-            ORDER BY
-                c.id";
+                c.name, c.brand;";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
@@ -41,31 +33,25 @@ function row_status($conn, $ibranch = '')
 {
 
     $rowCount = "SELECT
-                c.id AS chem_id,
-                c.name,
-                c.brand,
-                c.quantity_unit AS unit,
-                c.container_size,
-                (c.chemLevel + (c.unop_cont * c.container_size)) AS total_stored_quantity,
-                SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count = 0
-                    THEN ABS(il.quantity)
-                    ELSE 0
-                END) AS total_used_open,
-                SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count < 0
-                    THEN ABS(il.quantity)
-                    ELSE 0
-                END) AS total_used_closed
-            FROM
-                chemicals c
-            LEFT JOIN
-                inventory_log il ON c.id = il.chem_id
-            WHERE
-                c.request = 0
-                AND c.expiryDate > NOW()";
+                    c.id,
+                    CONCAT(c.name, ' | ', c.brand) as item,
+                    t.transaction_status,
+                    CONCAT(c.container_size, ' ', c.quantity_unit) AS container_size,
+                    CONCAT(SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END), ' ', c.quantity_unit) AS total_amt_used,
+                    CONCAT(c.unop_cont * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END), ' ', c.quantity_unit) AS total_stored,
+                    CONCAT((SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END) + c.unop_cont  * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)), ' ', c.quantity_unit) AS total_qty
+                FROM
+                    transaction_chemicals tc
+                JOIN
+                    transactions t
+                ON
+                    t.id = tc.trans_id
+                RIGHT JOIN
+                    chemicals c
+                ON
+                    c.id = tc.chem_id
+                WHERE
+                    c.request = 0";
     $queries = [];
 
     // if ($entries === 'true') {
@@ -81,9 +67,9 @@ function row_status($conn, $ibranch = '')
         $rowCount .= " AND " . implode(" AND ", $queries);
     }
     $rowCount .= " GROUP BY
-                        c.id, c.name, c.brand, c.container_size, c.chemLevel, c.unop_cont
-                    ORDER BY
-                        c.id;";
+                    c.name, c.brand
+                ORDER BY
+                    c.name, c.brand;";
     $stmt = mysqli_stmt_init($conn);
     $totalRows = 0;
 
@@ -100,7 +86,7 @@ function row_status($conn, $ibranch = '')
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
     $row = mysqli_fetch_row($res);
-    $totalRows = $row[0] ?? 0;
+    $totalRows = mysqli_num_rows($res);
 
     $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
 
@@ -229,32 +215,25 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
     $limitstart = ($current - 1) * $pageRows;
 
     $sql = "SELECT
-                c.id AS chem_id,
-                c.name,
-                c.brand,
-                c.quantity_unit AS unit,
-                c.container_size,
-                (c.chemLevel + (c.unop_cont * c.container_size)) AS total_stored_quantity,
-                SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count = 0
-                    THEN ABS(il.quantity)
-                    ELSE 0
-                END) AS total_used_open,
-                SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count < 0
-                    THEN ABS(il.quantity)
-                    ELSE 0
-                END) AS total_used_closed
+                c.id,
+                CONCAT(c.name, ' | ', c.brand) as item,
+                t.transaction_status,
+                CONCAT(c.container_size, ' ', c.quantity_unit) AS container_size,
+                CONCAT(SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END), ' ', c.quantity_unit) AS total_amt_used,
+                CONCAT(c.unop_cont * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END), ' ', c.quantity_unit) AS total_stored,
+                CONCAT((SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END) + c.unop_cont  * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)), ' ', c.quantity_unit) AS total_qty
             FROM
+                transaction_chemicals tc
+            JOIN
+                transactions t
+            ON
+                t.id = tc.trans_id
+            RIGHT JOIN
                 chemicals c
-            LEFT JOIN
-                inventory_log il ON c.id = il.chem_id
+            ON
+                c.id = tc.chem_id
             WHERE
-                c.request = 0
-                AND c.chemLevel > 0
-                AND c.expiryDate > NOW()";
+                c.request = 0";
     $data = [];
     $type = '';
 
@@ -265,9 +244,9 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
     }
 
     $sql .= " GROUP BY
-                c.id, c.name, c.brand, c.container_size, c.chemLevel, c.unop_cont
+                c.name, c.brand
             ORDER BY
-                c.id DESC 
+                c.name ASC, c.brand ASC
             LIMIT " . $limitstart . ", " . $pageRows . ";";
 
     $stmt = mysqli_stmt_init($conn);
@@ -289,35 +268,25 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['chem_id'];
-            $name = $row["name"];
-            $brand = $row["brand"];
-            $unit = $row['unit'];
-            $total_stored = $row['total_stored_quantity'];
-            $total_used_open = $row['total_used_open'];
-            $total_used_closed = $row['total_used_closed'];
-            $total_qty = (float) $total_stored + (float) $total_used_open + (float) $total_used_closed;
-            // $level = $row["chemLevel"];
-            // $container_count = (int) $row['unop_cont'];
-            $contsize = (int) $row['container_size'];
-            // $total_stored = $level + ($container_count * $contsize);
-            // $unit = $row['quantity_unit'];
+            $id = $row['id'];
+            $item = $row["item"];
+            $total_amt_used = $row["total_amt_used"];
+            $total_stored = $row['total_stored'];
+            $total_qty = $row['total_qty'];
+            $contsize = $row['container_size'];
             ?>
             <tr class="text-center">
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td>
-                    <?= htmlspecialchars("$name ($brand)") ?>
+                    <?= htmlspecialchars($item) ?>
                 </td>
-                <td><?= htmlspecialchars("$contsize $unit") ?></td>
+                <td><?= htmlspecialchars($contsize) ?></td>
                 <td>
-                    <?= htmlspecialchars("$total_stored $unit") ?>
+                    <?= htmlspecialchars($total_stored) ?>
                 </td>
-                <td><?= htmlspecialchars("$total_used_open $unit") ?></td>
+                <td><?= htmlspecialchars($total_amt_used) ?></td>
                 <td>
-                    <?= htmlspecialchars("$total_used_closed $unit") ?>
-                </td>
-                <td>
-                    <?= htmlspecialchars("$total_qty $unit") ?>
+                    <?= htmlspecialchars($total_qty) ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
@@ -342,39 +311,42 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
+    $branch = $_GET['branch'];
 
     $sql = "SELECT
-                c.id AS chem_id,
-                c.name,
-                c.brand,
-                c.quantity_unit AS unit,
-                c.container_size,
-                (c.chemLevel + (c.unop_cont * c.container_size)) AS total_stored_quantity,
-                SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count = 0
-                    THEN ABS(il.quantity)
-                    ELSE 0
-                END) AS total_used_open,
-                SUM(CASE
-                    WHEN il.log_type IN ('Out', 'Used', 'Disposed', 'Trashed Item', 'Lost/Damaged Item')
-                    AND il.containers_affected_count < 0
-                    THEN ABS(il.quantity)
-                    ELSE 0
-                END) AS total_used_closed
-            FROM
+                c.id,
+                CONCAT(c.name, ' | ', c.brand) as item,
+                t.transaction_status,
+                CONCAT(c.container_size, ' ', c.quantity_unit) AS container_size,
+                CONCAT(SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END), ' ', c.quantity_unit) AS total_amt_used,
+                CONCAT(c.unop_cont * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END), ' ', c.quantity_unit) AS total_stored,
+                CONCAT((SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END) + c.unop_cont  * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)), ' ', c.quantity_unit) AS total_qty
+            FROM                
+                transaction_chemicals tc
+            JOIN
+                transactions t
+            ON
+                t.id = tc.trans_id
+            RIGHT JOIN
                 chemicals c
-            LEFT JOIN
-                inventory_log il ON c.id = il.chem_id
+            ON
+                c.id = tc.chem_id
             WHERE
                 c.request = 0
-                AND c.chemLevel > 0
-                AND c.expiryDate > NOW()    
-                AND (c.name LIKE ? OR c.brand LIKE ? OR c.quantity_unit LIKE ? OR c.container_size LIKE ? OR c.id LIKE ?)
-            GROUP BY
-                c.id, c.name, c.brand, c.container_size, c.chemLevel, c.unop_cont, c.quantity_unit
+                AND (c.name LIKE ? OR c.brand LIKE ? OR c.quantity_unit LIKE ? OR c.container_size LIKE ? OR c.id LIKE ?)";
+
+    $data = [];
+    $type = '';
+
+    if ($branch !== '' && $branch !== NULL) {
+        $data[] = $branch;
+        $type .= 'i';
+        $sql .= " AND c.branch = ? ";
+    }
+    $sql .= " GROUP BY
+                c.name, c.brand
             ORDER BY
-                c.id";
+                c.name ASC, c.brand ASC;";
 
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -383,40 +355,35 @@ if (isset($_GET['search'])) {
     }
 
     $search = "%" . $search . "%";
-    mysqli_stmt_bind_param($stmt, "sssss", $search, $search, $search, $search, $search);
+    mysqli_stmt_bind_param($stmt, "sssss$type", $search, $search, $search, $search, $search, ...$data);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $numrows = mysqli_num_rows($result);
     if ($numrows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['chem_id'];
-            $name = $row["name"];
-            $brand = $row["brand"];
-            $unit = $row['unit'];
-            $total_stored = $row['total_stored_quantity'];
-            $total_used_open = $row['total_used_open'];
-            $total_used_closed = $row['total_used_closed'];
-            $total_qty = (float) $total_stored + (float) $total_used_open + (float) $total_used_closed;
-            $contsize = (int) $row['container_size'];
+            $id = $row['id'];
+            $item = $row["item"];
+            $total_amt_used = $row["total_amt_used"];
+            $total_stored = $row['total_stored'];
+            $total_qty = $row['total_qty'];
+            $contsize = $row['container_size'];
             ?>
             <tr class="text-center">
                 <td scope="row"><?= htmlspecialchars($id) ?></td>
                 <td>
-                    <?= htmlspecialchars("$name ($brand)") ?>
+                    <?= htmlspecialchars($item) ?>
                 </td>
-                <td><?= htmlspecialchars("$contsize $unit") ?></td>
+                <td><?= htmlspecialchars($contsize) ?></td>
                 <td>
-                    <?= htmlspecialchars("$total_stored $unit") ?>
+                    <?= htmlspecialchars($total_stored) ?>
                 </td>
-                <td><?= htmlspecialchars("$total_used_open $unit") ?></td>
+                <td><?= htmlspecialchars($total_amt_used) ?></td>
                 <td>
-                    <?= htmlspecialchars("$total_used_closed $unit") ?>
-                </td>
-                <td>
-                    <?= htmlspecialchars("$total_qty $unit") ?>
+                    <?= htmlspecialchars($total_qty) ?>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center">
+                        <!-- add dispatch/return chem -->
                         <button type="button" class="btn btn-sidebar log-chem-btn" data-chem="<?= $id ?>"><i
                                 class="bi bi-journal-text" data-bs-toggle="tooltip" title="Logs"></i></button>
                         <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
@@ -424,6 +391,7 @@ if (isset($_GET['search'])) {
                     </div>
                 </td>
             </tr>
+
 
             <?php
         }

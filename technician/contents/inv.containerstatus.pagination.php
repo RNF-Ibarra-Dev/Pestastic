@@ -10,7 +10,7 @@ $rowCount = "SELECT
                 c.brand,
                 c.container_size,
                 c.quantity_unit,
-                SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) AS container_in,
+                c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) AS container_in,
                 SUM((CASE 
                         WHEN t.transaction_status = 'Dispatched' THEN 
                             (CASE 
@@ -23,7 +23,7 @@ $rowCount = "SELECT
                         ELSE 0 
                     END)) AS container_out,
                 
-                (SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) +
+                (c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) +
                 SUM((CASE 
                         WHEN t.transaction_status = 'Dispatched' THEN 
                             (CASE 
@@ -177,7 +177,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 c.brand,
                 c.container_size,
                 c.quantity_unit,
-                SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) AS container_in,
+                c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) AS container_in,
                 SUM((CASE 
                         WHEN t.transaction_status = 'Dispatched' THEN 
                             (CASE 
@@ -190,7 +190,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                         ELSE 0 
                     END)) AS container_out,
                 
-                (SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) +
+                (c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) +
                 SUM((CASE 
                         WHEN t.transaction_status = 'Dispatched' THEN 
                             (CASE 
@@ -219,7 +219,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             AND
                 c.branch = {$_SESSION['branch']}
             GROUP BY 
-                c.name, c.brand, c.container_size
+                c.id
             ORDER BY 
                 c.name
             DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
@@ -285,7 +285,7 @@ if (isset($_GET['search'])) {
                 c.brand,
                 c.container_size,
                 c.quantity_unit,
-                SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) AS container_in,
+                c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) AS container_in,
                 SUM((CASE 
                         WHEN t.transaction_status = 'Dispatched' THEN 
                             (CASE 
@@ -298,7 +298,7 @@ if (isset($_GET['search'])) {
                         ELSE 0 
                     END)) AS container_out,
                 
-                (SUM(c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)) +
+                (c.unop_cont + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END) +
                 SUM((CASE 
                         WHEN t.transaction_status = 'Dispatched' THEN 
                             (CASE 
