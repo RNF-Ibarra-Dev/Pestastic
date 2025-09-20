@@ -281,8 +281,6 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                     }
                     ?>
                 </td>
-                <td><?= htmlspecialchars($location) ?></td>
-
                 <td>
                     <div class="d-flex justify-content-center">
                         <?php
@@ -297,11 +295,6 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                                 data-id="<?= $id ?>"><i class="bi bi-x-octagon"></i></button>
                             <?php
                         } else {
-                            if ($cur_location === 'main_storage') {
-                                echo '<button type="button" class="btn btn-sidebar dispatchbtn border-0" ' . ($request === 1 ? 'disabled' : "data-dispatch='$id'") . '><i class="bi bi-truck-flatbed text-success"></i></button>';
-                            } else if ($cur_location === 'dispatched') {
-                                echo '<button type="button" class="btn btn-sidebar returnbtn border-0" ' . ($request === 1 ? 'disabled' : "data-return='$id'") . '><i class="bi bi-box-arrow-in-left text-info"></i></button>';
-                            }
                             ?>
                             <button type="button" id="editbtn" class="btn btn-sidebar editbtn" data-chem="<?= $id ?>"><i
                                     class="bi bi-info-circle"></i></button>
@@ -315,7 +308,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='7' class='text-center'>No items found.</td></tr>";
+        echo "<tr><td scope='row' colspan='6' class='text-center'>No items found.</td></tr>";
         return false;
     }
     exit();
@@ -351,7 +344,7 @@ if (isset($_GET['search'])) {
 
     $stmt = mysqli_stmt_init($conn);
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-        echo "<tr><td scope='row' colspan='7' class='text-center'>Error. Search stmt failed.</td></tr>";
+        echo "<tr><td scope='row' colspan='6' class='text-center'>Error. Search stmt failed.</td></tr>";
         exit();
     }
 
@@ -427,16 +420,8 @@ if (isset($_GET['search'])) {
                     }
                     ?>
                 </td>
-                <td><?= htmlspecialchars($location) ?></td>
                 <td>
                     <div class="d-flex justify-content-center">
-                        <?php
-                        if ($cur_location === 'main_storage') {
-                            echo '<button type="button" class="btn btn-sidebar dispatchbtn border-0" ' . ($request === 1 ? 'disabled' : "data-dispatch='$id'") . '><i class="bi bi-truck-flatbed text-success"></i></button>';
-                        } else if ($cur_location === 'dispatched') {
-                            echo '<button type="button" class="btn btn-sidebar returnbtn border-0" ' . ($request === 1 ? 'disabled' : "data-return='$id'") . '><i class="bi bi-box-arrow-in-left text-info"></i></button>';
-                        }
-                        ?>
                         <button type="button" id="editbtn" class="btn btn-sidebar editbtn border-0" data-chem="<?= $id ?>"><i
                                 class="bi bi-info-circle"></i></button>
                     </div>
@@ -447,7 +432,7 @@ if (isset($_GET['search'])) {
         }
     } else {
         // echo json_encode(['']);
-        echo "<tr><td scope='row' colspan='7' class='text-center'>Your search does not exist.</td></tr>";
+        echo "<tr><td scope='row' colspan='6' class='text-center'>Your search does not exist.</td></tr>";
     }
 }
 ?>

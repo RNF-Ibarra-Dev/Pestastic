@@ -4,36 +4,29 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 5;
-$rowCount = "SELECT * FROM chemicals
-                WHERE request = 0
-                AND chem_location = 'dispatched'
-                AND branch = {$_SESSION['branch']};";
+$rowCount = "SELECT 
+                tc.chem_brand, 
+                tc.amt_used AS amount_dispatched, 
+                c.quantity_unit AS unit, 
+                c.id AS item_id, 
+                tc.trans_id AS transaction 
+            FROM 
+                transaction_chemicals tc 
+            JOIN 
+                chemicals c
+            ON 
+                c.id = tc.chem_id 
+            JOIN 
+                transactions t 
+            ON 
+                t.id = tc.trans_id 
+            WHERE 
+                t.transaction_status = 'Dispatched'
+            AND
+                c.branch = {$_SESSION['branch']};";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
-
-function row_status($conn, $entries = false)
-{
-    $rowCount = "SELECT COUNT(*) FROM chemicals
-                WHERE request = 0
-                AND chem_location = 'dispatched';";
-
-    if ($entries) {
-        $rowCount .= "  WHERE request = 0;";
-    } else {
-        $rowCount .= ";";
-    }
-
-    $totalRows = 0;
-    $result = mysqli_query($conn, $rowCount);
-    $row = mysqli_fetch_row($result);
-    $totalRows = $row[0];
-
-    $totalPages = ceil($totalRows / $GLOBALS['pageRows']);
-
-    return ['pages' => $totalPages, 'rows' => $totalRows];
-}
-
 
 if (isset($_GET['pagenav']) && $_GET['pagenav'] == 'true') {
 
@@ -149,12 +142,29 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     $limitstart = ($current - 1) * $pageRows;
 
-    $sql = "SELECT * FROM chemicals
-            WHERE request = 0
-            AND chem_location = 'dispatched'
-            AND branch = {$_SESSION['branch']}
-            ORDER BY updated_at
-            DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
+    $sql = "SELECT 
+                tc.chem_brand, 
+                tc.amt_used AS amount_dispatched, 
+                c.quantity_unit AS unit, 
+                c.id AS item_id, 
+                tc.trans_id AS transaction 
+            FROM 
+                transaction_chemicals tc 
+            JOIN 
+                chemicals c
+            ON 
+                c.id = tc.chem_id 
+            JOIN 
+                transactions t 
+            ON 
+                t.id = tc.trans_id 
+            WHERE 
+                t.transaction_status = 'Dispatched'
+            AND
+                c.branch = {$_SESSION['branch']}
+            ORDER BY 
+                t.updated_at DESC
+            LIMIT " . $limitstart . ", " . $pageRows . ";";
 
     $result = mysqli_query($conn, $sql);
     $rows = mysqli_num_rows($result);
@@ -164,45 +174,33 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $name = $row["name"];
-            $brand = $row["brand"];
-            $level = $row['chemLevel'];
-            $unit = $row['quantity_unit'];
-            $opened = $level <= 0 ? "Empty" : "$level";
-            $contsize = $row['container_size'];
-            $datereceived = $row['date_received'];
-            $unopened = $row['unop_cont'];
-            $threshold = $row['restock_threshold'];
-            $loc = $row['chem_location'];
+            $id = $row['item_id'];
+            $item_name = $row['chem_brand'];
+            $trans_id = $row['transaction'];
+            $amount_dispatched = $row['amount_dispatched'];
+            $unit = $row['unit'];
             ?>
             <tr class="text-center">
                 <td>
                     <?= htmlspecialchars($id) ?>
                 </td>
-                <td><?= htmlspecialchars($name) ?></td>
-                <td><?= htmlspecialchars($brand) ?></td>
-                <td>
-                    <?= htmlspecialchars("$opened / $contsize $unit") ?>
-                </td>
-                <td>
-                    <?= htmlspecialchars($unopened) ?>
-                </td>
-                <td>
-                    <?= htmlspecialchars($threshold) ?>
-                </td>
+                <td><?= htmlspecialchars($item_name) ?></td>
+                <td><?= htmlspecialchars($trans_id) ?></td>
+                <td><?= htmlspecialchars("$amount_dispatched$unit") ?></td>
                 <td>
                     <button type="button" class="btn btn-sidebar border border-dark rounded-4 editbtn"
                         data-chem="<?= htmlspecialchars($id) ?>"><i class="bi bi-info-circle text-dark"></i></button>
-                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 returnbtn" data-return="<?= htmlspecialchars($id) ?>"><i
-                            class=" bi bi-box-arrow-in-left text-dark"></i></button>
+                    <a href="transactions.php?openmodal=true&id=<?= htmlspecialchars($trans_id) ?>"
+                        class="btn btn-sidebar border border-dark rounded-4 disabled-returnbtn"
+                        data-return="<?= htmlspecialchars($id) ?>"><i class=" bi bi-box-arrow-in-left text-dark"></i></a>
                 </td>
             </tr>
+
 
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='6' class='text-center'>No entry found.</td></tr>";
+        echo "<tr><td scope='row' colspan='5' class='text-center'>No entry found.</td></tr>";
     }
     mysqli_close($conn);
     exit();

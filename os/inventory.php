@@ -292,10 +292,8 @@ require("startsession.php");
                                         <tr class="text-center align-middle">
                                             <th class="text-dark" scope="col">Item ID</th>
                                             <th class="text-dark">Item</th>
-                                            <th class="text-dark">Brand</th>
-                                            <th class="text-dark">Outgoing Stock Level (Opened)</th>
-                                            <th class="text-dark">Unopened Stock</th>
-                                            <th class="text-dark">Restock Threshold</th>
+                                            <th class="text-dark">Transaction ID</th>
+                                            <th class="text-dark">Amount Dispatched</th>
                                             <th class="text-dark">Actions</th>
                                         </tr>
                                     </thead>
@@ -990,11 +988,11 @@ require("startsession.php");
                                                 (Including Opened):</label>
                                             <p id="dispatch-containerCount" class="fw-light ps-2"></p>
                                         </div>
-                                        <div class="col-lg-3 mb-2">
+                                        <!-- <div class="col-lg-3 mb-2">
                                             <label for="dispatch-cstatus" class="form-label fw-medium">Item
                                                 Location Status:</label>
                                             <p id="dispatch-cstatus" class="fw-light ps-2"></p>
-                                        </div>
+                                        </div> -->
                                     </div>
 
                                     <div class="row mb-2">
@@ -1300,7 +1298,7 @@ require("startsession.php");
                             <th>Stock Quantity</th>
                             <th>Date Received</th>
                             <th>Stock Status</th>
-                            <th>Location Status</th>
+                            <!-- <th>Location Status</th> -->
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -1340,9 +1338,8 @@ require("startsession.php");
                             <th scope="col">Item No.</th>
                             <th>Item Name & Brand</th>
                             <th>Container Size</th>
-                            <th>Stored</th>
-                            <th>Used Open</th>
-                            <th>Used Close</th>
+                            <th>Total Stored</th>
+                            <th>Total Used</th>
                             <th>Total</th>
                             <th>Actions</th>
                         </tr>

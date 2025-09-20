@@ -973,11 +973,11 @@ include('tablecontents/tables.php');
                                                 (Including Opened):</label>
                                             <p id="dispatch-containerCount" class="fw-light ps-2"></p>
                                         </div>
-                                        <div class="col-lg-3 mb-2">
+                                        <!-- <div class="col-lg-3 mb-2">
                                             <label for="dispatch-cstatus" class="form-label fw-medium">Item
                                                 Location Status:</label>
                                             <p id="dispatch-cstatus" class="fw-light ps-2"></p>
-                                        </div>
+                                        </div> -->
                                     </div>
 
                                     <div class="row mb-2">
@@ -1419,7 +1419,7 @@ include('tablecontents/tables.php');
                             <th>Stock Quantity</th>
                             <th>Date Received</th>
                             <th>Stock Status</th>
-                            <th>Location Status</th>
+                            <!-- <th>Location Status</th> -->
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -1461,7 +1461,6 @@ include('tablecontents/tables.php');
                             <th>Container Size</th>
                             <th>Total Stored</th>
                             <th>Total Used</th>
-                            <!-- <th>Total Containers</th> -->
                             <th>Total</th>
                             <th>Actions</th>
                         </tr>

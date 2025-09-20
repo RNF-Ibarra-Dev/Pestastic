@@ -219,9 +219,9 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             AND
                 c.branch = {$_SESSION['branch']}
             GROUP BY 
-                c.id
+                c.name, c.brand, c.container_size
             ORDER BY 
-                c.name
+                c.name, c.brand
             DESC LIMIT " . $limitstart . ", " . $pageRows . ";";
 
     $result = mysqli_query($conn, $sql);

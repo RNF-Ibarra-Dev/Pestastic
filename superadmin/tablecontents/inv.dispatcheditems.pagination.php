@@ -4,22 +4,35 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 $pageRows = 5;
-$rowCount = "SELECT COUNT(*) FROM chemicals
-                WHERE request = 0
-                AND chem_location = 'dispatched';";
+$rowCount = "SELECT tc.chem_brand, tc.amt_used AS amount_dispatched, c.quantity_unit AS unit, c.id AS item_id, tc.trans_id AS transaction FROM transaction_chemicals tc JOIN chemicals c ON c.id = tc.chem_id JOIN transactions t ON t.id = tc.trans_id WHERE t.transaction_status = 'Dispatched';";
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
 function row_status($conn, $ibranch = '')
 {
-    $rowCount = "SELECT COUNT(*) FROM chemicals
-                WHERE request = 0
-                AND chem_location = 'dispatched'";
+    $rowCount = "SELECT 
+                    tc.chem_brand, 
+                    tc.amt_used AS amount_dispatched, 
+                    c.quantity_unit AS unit, 
+                    c.id AS item_id, 
+                    tc.trans_id AS transaction 
+                FROM 
+                    transaction_chemicals tc 
+                JOIN 
+                    chemicals c 
+                ON 
+                    c.id = tc.chem_id
+                JOIN 
+                    transactions t 
+                ON
+                    t.id = tc.trans_id
+                WHERE 
+                    t.transaction_status = 'Dispatched'";
     $queries = [];
 
     if ($ibranch !== '' && $ibranch !== NULL) {
-        $queries[] = "branch = ?";
+        $queries[] = "c.branch = ?";
         $branch = (int) $ibranch;
     }
 
@@ -198,22 +211,11 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
 
     if ($rows > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['item_id'];  
+            $id = $row['item_id'];
             $item_name = $row['chem_brand'];
             $trans_id = $row['transaction'];
             $amount_dispatched = $row['amount_dispatched'];
             $unit = $row['unit'];
-            // $name = $row["name"];
-            // $brand = $row["brand"];
-            // $level = $row['chemLevel'];
-            // $unit = $row['quantity_unit'];
-            // $opened = $level <= 0 ? "Empty" : "$level";
-            // $contsize = $row['container_size'];
-            // $datereceived = $row['date_received'];
-            // $unopened = $row['unop_cont'];
-            // $threshold = $row['restock_threshold'];
-            // $loc = $row['chem_location'];
-            // $trans_id = $row['trans_id'];
             ?>
             <tr class="text-center">
                 <td>
@@ -234,76 +236,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='7' class='text-center'>No dispatched items found.</td></tr>";
-    }
-    mysqli_close($conn);
-    exit();
-}
-
-if (isset($_GET['search'])) {
-    $search = $_GET['search'];
-
-    $sql = "SELECT * FROM chemicals
-            WHERE request = 0
-            AND chem_location = 'dispatched'
-            AND restock_threshold >= ((CASE
-                WHEN chemLevel > 0 THEN 1
-                ELSE 0
-                END ) + unop_cont)
-            ORDER BY id";
-
-    $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        echo "<tr><td scope='row' colspan='7' class='text-center'>Error. Search stmt failed.</td></tr>";
-        exit();
-    }
-
-    $search = "%" . $search . "%";
-    mysqli_stmt_bind_param($stmt, "sssss", $search, $search, $search, $search, $search);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $numrows = mysqli_num_rows($result);
-    if ($numrows > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $name = $row["name"];
-            $brand = $row["brand"];
-            $level = $row['chemLevel'];
-            $unit = $row['quantity_unit'];
-            $opened = $level <= 0 ? "Empty" : "$level";
-            $contsize = $row['container_size'];
-            $datereceived = $row['date_received'];
-            $unopened = $row['unop_cont'];
-            $threshold = $row['restock_threshold'];
-            $loc = $row['chem_location'];
-            ?>
-            <tr class="text-center">
-                <td>
-                    <?= htmlspecialchars($id) ?>
-                </td>
-                <td><?= htmlspecialchars($name) ?></td>
-                <td><?= htmlspecialchars($brand) ?></td>
-                <td>
-                    <?= htmlspecialchars("$opened / $contsize $unit") ?>
-                </td>
-                <td>
-                    <?= htmlspecialchars($unopened) ?>
-                </td>
-                <td>
-                    <?= htmlspecialchars($threshold) ?>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 editbtn"
-                        data-chem="<?= htmlspecialchars($id) ?>"><i class="bi bi-info-circle text-dark"></i></button>
-                    <button type="button" class="btn btn-sidebar border border-dark rounded-4 restock-btn"
-                        data-chem="<?= htmlspecialchars($id) ?>"><i class=" bi bi-box text-dark"></i></button>
-                </td>
-            </tr>
-
-            <?php
-        }
-    } else {
-        echo "<tr><td scope='row' colspan='7' class='text-center'>Your search does not exist.</td></tr>";
+        echo "<tr><td scope='row' colspan='5' class='text-center'>No dispatched items found.</td></tr>";
     }
     mysqli_close($conn);
     exit();
