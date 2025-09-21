@@ -302,7 +302,7 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='8' class='text-center'>No Summary Found.</td></tr>";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>No Summary Found.</td></tr>";
     }
     mysqli_close($conn);
     exit();
@@ -396,7 +396,7 @@ if (isset($_GET['search'])) {
             <?php
         }
     } else {
-        echo "<tr><td scope='row' colspan='8' class='text-center'>Your search does not exist.</td></tr>";
+        echo "<tr><td scope='row' colspan='7' class='text-center'>Your search does not exist.</td></tr>";
     }
     mysqli_close($conn);
     exit();

@@ -2070,7 +2070,9 @@ include('tablecontents/tables.php');
 
                                 } else {
                                     $('#loader').attr('style', 'display: none !important;');
-                                    await loadpage(1, entryHidden, branch);
+                                    // await loadpage(1, entryHidden, branch);
+                                    await loadtable(1, entryHidden, branch);
+                                    await loadpagination(1, entryHidden, branch);
                                     $('#pagination').removeClass('d-none');
                                 }
                             }
@@ -2515,8 +2517,8 @@ include('tablecontents/tables.php');
                                 $('#chemStateTable').empty();
                                 $('#chemStateTable').append(searchChem);
                             } else {
-                                await loadtable2(1);
-                                await loadpagination2(1);
+                                await loadtable2(1, entryHidden, branch);
+                                await loadpagination2(1), entryHidden, branch;
                                 $('#table2pagination').show();
                             }
                         })
@@ -2554,8 +2556,8 @@ include('tablecontents/tables.php');
                                 $('#containerReportTable').empty();
                                 $('#containerReportTable').append(searchChem);
                             } else {
-                                await loadtable3(1);
-                                await loadpagination3(1);
+                                await loadtable3(1, entryHidden, branch);
+                                await loadpagination3(1, entryHidden, branch);
                                 $('#containerReportPagination').show();
                             }
                         })
