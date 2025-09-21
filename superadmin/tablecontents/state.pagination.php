@@ -9,8 +9,8 @@ $rowCount = "SELECT
                 t.transaction_status,
                 CONCAT(c.container_size, ' ', c.quantity_unit) AS container_size,
                 CONCAT(SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END), ' ', c.quantity_unit) AS total_amt_used,
-                CONCAT(c.unop_cont * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END), ' ', c.quantity_unit) AS total_stored,
-                CONCAT((SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END) + c.unop_cont  * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)), ' ', c.quantity_unit) AS total_qty
+                CONCAT(c.unop_cont * c.container_size + (CASE WHEN c.chemLevel > 0 THEN c.chemLevel ELSE 0 END), ' ', c.quantity_unit) AS total_stored,
+                CONCAT((SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END) + c.unop_cont  * c.container_size + (CASE WHEN c.chemLevel > 0 THEN c.chemLevel ELSE 0 END)), ' ', c.quantity_unit) AS total_qty
             FROM
                 transaction_chemicals tc
             JOIN
@@ -38,8 +38,8 @@ function row_status($conn, $ibranch = '')
                     t.transaction_status,
                     CONCAT(c.container_size, ' ', c.quantity_unit) AS container_size,
                     CONCAT(SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END), ' ', c.quantity_unit) AS total_amt_used,
-                    CONCAT(c.unop_cont * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END), ' ', c.quantity_unit) AS total_stored,
-                    CONCAT((SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END) + c.unop_cont  * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)), ' ', c.quantity_unit) AS total_qty
+                    CONCAT(c.unop_cont * c.container_size + (CASE WHEN c.chemLevel > 0 THEN c.chemLevel ELSE 0 END), ' ', c.quantity_unit) AS total_stored,
+                    CONCAT((SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END) + c.unop_cont  * c.container_size + (CASE WHEN c.chemLevel > 0 THEN c.chemLevel ELSE 0 END)), ' ', c.quantity_unit) AS total_qty
                 FROM
                     transaction_chemicals tc
                 JOIN
@@ -220,8 +220,8 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 t.transaction_status,
                 CONCAT(c.container_size, ' ', c.quantity_unit) AS container_size,
                 CONCAT(SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END), ' ', c.quantity_unit) AS total_amt_used,
-                CONCAT(c.unop_cont * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END), ' ', c.quantity_unit) AS total_stored,
-                CONCAT((SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END) + c.unop_cont  * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)), ' ', c.quantity_unit) AS total_qty
+                CONCAT(c.unop_cont * c.container_size + (CASE WHEN c.chemLevel > 0 THEN c.chemLevel ELSE 0 END), ' ', c.quantity_unit) AS total_stored,
+                CONCAT((SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END) + c.unop_cont  * c.container_size + (CASE WHEN c.chemLevel > 0 THEN c.chemLevel ELSE 0 END)), ' ', c.quantity_unit) AS total_qty
             FROM
                 transaction_chemicals tc
             JOIN
@@ -319,8 +319,8 @@ if (isset($_GET['search'])) {
                 t.transaction_status,
                 CONCAT(c.container_size, ' ', c.quantity_unit) AS container_size,
                 CONCAT(SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END), ' ', c.quantity_unit) AS total_amt_used,
-                CONCAT(c.unop_cont * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END), ' ', c.quantity_unit) AS total_stored,
-                CONCAT((SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END) + c.unop_cont  * c.container_size + (CASE WHEN c.chemLevel > 0 THEN 1 ELSE 0 END)), ' ', c.quantity_unit) AS total_qty
+                CONCAT(c.unop_cont * c.container_size + (CASE WHEN c.chemLevel > 0 THEN c.chemLevel ELSE 0 END), ' ', c.quantity_unit) AS total_stored,
+                CONCAT((SUM(CASE WHEN t.transaction_status IS NULL OR t.transaction_status != 'Completed' THEN 0 ELSE ABS(tc.amt_used) END) + c.unop_cont  * c.container_size + (CASE WHEN c.chemLevel > 0 THEN c.chemLevel ELSE 0 END)), ' ', c.quantity_unit) AS total_qty
             FROM                
                 transaction_chemicals tc
             JOIN

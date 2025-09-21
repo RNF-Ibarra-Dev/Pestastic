@@ -553,6 +553,8 @@ if (isset($_POST['finalsingletransact']) && $_POST['finalsingletransact'] === 't
         exit();
     }
 
+    // $final_note = "Reported Item Used";
+
     $finalize = finalize_trans($conn, $id, $chemUsed, $amtUsed, $_SESSION['branch'], $_SESSION['baID'], $notes, $_SESSION['user_role'], $author);
     if (isset($finalize['error'])) {
         http_response_code(400);
