@@ -1142,11 +1142,12 @@
                     <div class="modal-dialog modal-lg modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Finalize Transaction</h1>
+                                <h1 class="modal-title fs-5">Finalize Dispatched Transaction</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                         class="bi text-light bi-x"></i></button>
                             </div>
                             <div class="modal-body">
+                                <p class="fs-3 fw-medium">Reported Dispatched Items:</p>
                                 <div class="p-0 m-0 mb-2" id="finalize-chemBrandUsed"></div>
                                 <button type="button" id="finalize-addMoreChem"
                                     class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
@@ -1154,9 +1155,13 @@
                                         class="bi bi-plus-circle text-light"></i>
                                 </button>
 
+                                <p>Please provide the report of the remaining item quantities.</p>
                                 <label for="finalizenotes" class="fw-light my-2">Note:</label>
                                 <textarea name="note" class="form-control w-50" id="finalizeNotes" cols="1"
                                     placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
+                                <p class="text-secondary ms-2 mb-0 mt-2">
+                                    Take note that this will <strong>not</strong> mark the transaction as complete, but for finalization.
+                                </p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
@@ -1210,21 +1215,26 @@
                     <div class="modal-dialog modal-lg modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Complete Transaction</h1>
+                                <h1 class="modal-title fs-5">Complete Finalized Transaction</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                         class="bi text-light bi-x"></i></button>
                             </div>
                             <div class="modal-body">
-                                <div class="p-0 m-0 mb-2" id="complete-chemBrandUsed"></div>
+                                <p class="fs-3 fw-medium">Reported item quantity left:</p>
+                                <div class="p-0 ps-2 m-0 mb-2" id="complete-chemBrandUsed"></div>
                                 <button type="button" id="complete-addMoreChem"
-                                    class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
+                                    class="btn btn-grad ms-2 mt-auto py-2 px-3 d-flex align-items-center">
                                     <p class="fw-light m-0 me-2">Add Chemical / Item</p><i
                                         class="bi bi-plus-circle text-light"></i>
                                 </button>
 
-                                <label for="completenotes" class="fw-light my-2">Note:</label>
+                                <label for="completenotes" class="fw-light my-2">Additional Note:</label>
                                 <textarea name="note" class="form-control w-50" id="completenotes" cols="1"
                                     placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
+
+                                <p class="text-secondary ms-2 mb-0 mt-2">
+                                    Please check the items before proceeding.
+                                </p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
@@ -1289,7 +1299,8 @@
                                     <p class="fw-light m-0 me-2">Add Chemical / Item</p><i
                                         class="bi bi-plus-circle text-light"></i>
                                 </button>
-                                <p class="text-secondary mb-0 mt-2">Please only list the items / chemicals to carry for dispatch.</p>
+                                <p class="text-secondary mb-0 mt-2">Please only list the items / chemicals to carry for
+                                    dispatch.</p>
 
                                 <label for="dispatchnotes" class="fw-light my-2">Note:</label>
                                 <textarea name="note" class="form-control w-50" id="dispatchnotes" cols="1"

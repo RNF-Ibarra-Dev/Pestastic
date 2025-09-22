@@ -1173,21 +1173,25 @@
                     <div class="modal-dialog modal-lg modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
-                                <h1 class="modal-title fs-5">Complete Transaction</h1>
+                                <h1 class="modal-title fs-5">Complete Finalized Transaction</h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                         class="bi text-light bi-x"></i></button>
                             </div>
                             <div class="modal-body">
+                                <p class="fs-3 fw-bold mb-0">Reported item quantity left:</p>
                                 <div class="p-0 m-0 mb-2" id="complete-chemBrandUsed"></div>
                                 <button type="button" id="complete-addMoreChem"
                                     class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
-                                    <p class="fw-light m-0 me-2">Add Chemical</p><i
+                                    <p class="fw-light m-0 me-2">Add Chemical / Item</p><i
                                         class="bi bi-plus-circle text-light"></i>
                                 </button>
 
-                                <label for="completenotes" class="fw-light my-2">Note:</label>
+                                <label for="completenotes" class="fw-light my-2">Additional Note:</label>
                                 <textarea name="note" class="form-control w-50" id="completenotes" cols="1"
                                     placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
+                                <p class="text-secondary ms-2 mb-0 mt-2">
+                                    Please check the items before proceeding.
+                                </p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" data-bs-dismiss="modal" class="btn btn-grad">Close</button>
