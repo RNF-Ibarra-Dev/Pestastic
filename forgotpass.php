@@ -20,7 +20,7 @@ include("header.php");
 
 ?>
 
-<body class="d-flex py-4 bg-body-tertiary bg-official-login">
+<body class="d-flex py-4 bg-body-tertiary bg-official-login" id="reset_pass_body">
 
     <div
         class="w-25 d-flex flex-column align-items-center container bg-light bg-opacity-25 rounded-4 shadow-lg">
