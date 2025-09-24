@@ -16,7 +16,8 @@ require("startsession.php");
             text-shadow: 0px 1px 5px rgba(0, 0, 0, 0.3) !important;
         }
 
-        td, td button {
+        td,
+        td button {
             font-size: 1.25rem !important;
             text-shadow: 0px 1px 5px rgba(0, 0, 0, 0.3) !important;
             user-select: none;
@@ -827,6 +828,7 @@ require("startsession.php");
         </form>
 
     </div>
+
     <?php include('footer.links.php'); ?>
     <script>
         const dataurl = "tablecontents/contents.data.php";
@@ -1409,7 +1411,26 @@ require("startsession.php");
             console.log(data);
             await delete_package(data);
         })
+
+        $("table").each(function () {
+            let $table = $(this);
+
+            // get headers
+            let headers = [];
+            $table.find("thead th").each(function (i, th) {
+                headers[i] = $(th).text().trim();
+            });
+
+            // assign headers to each td
+            $table.find("tbody tr").each(function () {
+                $(this).find("td").each(function (i, td) {
+                    $(td).attr("data-label", headers[i]);
+                });
+            });
+        });
+
     </script>
+
 </body>
 
 </html>

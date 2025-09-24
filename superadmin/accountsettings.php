@@ -36,7 +36,7 @@ require("startsession.php");
                         User Information</p>
                     <div class="container bg-light bg-opacity-25 w-50 mx-auto rounded-3 p-3 pb-3">
                         <div class="d-flex flex-column gap-2 mx-3">
-                            <div class="container gap-3 p-0 d-flex justify-content-between">
+                            <div class="container two-part-inputs gap-3 p-0 d-flex flex-wrap justify-content-between">
                                 <div class="col p-0">
                                     <label for="fname" class="form-label fw-bold mb-1">First Name:</label>
                                     <input type="text" class="form-control-plaintext text-light ps-2" id="fname"
@@ -48,7 +48,7 @@ require("startsession.php");
                                         name="lname" autocomplete="off" readonly>
                                 </div>
                             </div>
-                            <div class="container gap-3 p-0 d-flex justify-content-between">
+                            <div class="container two-part-inputs gap-3 p-0 d-flex flex-wrap justify-content-between">
                                 <div class="col p-0">
                                     <label for="username" class="form-label fw-bold mb-1">Username:</label>
                                     <input type="text" class="form-control-plaintext text-light ps-2" id="username"
@@ -239,6 +239,22 @@ require("startsession.php");
 
                 })
         });
+
+        $(function () {
+            var windowWidth = $(window).width();
+            if (windowWidth <= 425) {
+                $(".two-part-inputs div").toggleClass('w-100 col col-auto');
+            }
+
+            $(window).resize(function () {
+                var windowWidth = $(window).width();
+                if (windowWidth <= 425) {
+                    $(".two-part-inputs div").addClass('w-100 col-auto').removeClass('col');
+                } else{
+                    $(".two-part-inputs div").removeClass('w-100 col-auto').addClass('col');
+                }
+            })
+        })
     </script>
 
 </body>

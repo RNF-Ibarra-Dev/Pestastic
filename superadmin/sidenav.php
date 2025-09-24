@@ -1,4 +1,4 @@
-<aside class="my-2 rounded-end-3 mx-0 sa-sidebar col-sm-2 d-flex flex-column shadow bg-light bg-opacity-25"
+<aside class="my-2 rounded-end-3 mx-0 sa-sidebar col-sm-2 d-flex flex-column shadow bg-light bg-opacity-25 hidden"
     id="sidenav">
     <button type="button" class="btn position-absolute z-3 fs-3 m-0 p-0 d-none" id="sidenav_toggle"><i
             class="bi bi-arrow-right-circle-fill text-light color-accent"></i></button>
@@ -17,8 +17,9 @@
             <a class="nav-link btn btn-sidebar my-1 text-light fw-medium fs-5 ps-2 <?= $page == 'index.php' ? 'btn-active' : ''; ?>"
                 href="index.php">
 
-                <div class="text-light fw-medium fs-5"><i
-                        class="bi <?= $page == 'index.php' ? "bi-house-fill color-accent" : "bi-house" ?> me-3"></i>Dashboard
+                <div class="text-light fw-medium fs-5 d-flex justify-items-evenly"><i
+                        class="bi <?= $page == 'index.php' ? "bi-house-fill color-accent" : "bi-house" ?> me-3"></i>
+                    <p class='m-0'>Dashboard</p>
                 </div>
             </a>
         </li>
@@ -29,9 +30,11 @@
                 aria-expanded="<?= $page == 'tech.acc.php' || $page == 'os.acc.php' ? 'true' : 'false'; ?>"
                 data-bs-target="#accounts">
 
-                <div class="text-light fw-medium fs-5"><i
-                        class="bi <?= $page == 'tech.acc.php' || $page == 'os.acc.php' ? "bi-people-fill color-accent" : "bi-people" ?> me-3"></i>Employee
-                    Accounts</div>
+                <div class="text-light fw-medium fs-5 d-flex justify-items-evenly"><i
+                        class="bi <?= $page == 'tech.acc.php' || $page == 'os.acc.php' ? "bi-people-fill color-accent" : "bi-people" ?> me-3"></i>
+                    <p class='m-0'>Employee Accounts</p>
+
+                </div>
                 <i class="bi bi-chevron-compact-left ms-auto me-3 "></i>
             </a>
             <ul id="accounts"
@@ -40,8 +43,9 @@
                     <a class="nav-link btn btn-sidebar my-1 ps-3 <?= $page == 'tech.acc.php' ? 'btn-active-dropdown' : ''; ?>"
                         href="tech.acc.php">
 
-                        <div class="text-light fw-medium fs-5"> <i
-                                class="bi <?= $page == 'tech.acc.php' ? "bi-person-badge-fill color-accent" : "bi-person-badge" ?> me-3"></i>Technicians
+                        <div class="text-light fw-medium fs-5 d-flex justify-items-evenly"> <i
+                                class="bi <?= $page == 'tech.acc.php' ? "bi-person-badge-fill color-accent" : "bi-person-badge" ?> me-3"></i>
+                            <p class='m-0'>Technicians</p>
                         </div>
                     </a>
                 </li>
@@ -49,9 +53,10 @@
                     <a class="nav-link btn btn-sidebar my-1 ps-3 <?= $page == 'os.acc.php' ? 'btn-active-dropdown' : ''; ?>"
                         href="os.acc.php">
 
-                        <div class="text-light fw-medium fs-5"><i
-                                class="bi <?= $page == 'os.acc.php' ? "bi-person-badge-fill color-accent" : "bi-person-badge" ?> me-3"></i>Operations
-                            Supervisors</div>
+                        <div class="text-light fw-medium fs-5 d-flex justify-items-evenly"><i
+                                class="bi <?= $page == 'os.acc.php' ? "bi-person-badge-fill color-accent" : "bi-person-badge" ?> me-3"></i>
+                            <p class='m-0'>Operations Supervisors</p>
+                        </div>
                     </a>
                 </li>
             </ul>
@@ -60,8 +65,9 @@
             <a class="nav-link btn btn-sidebar my-1 p-2 <?= $page == 'itemstock.php' ? 'btn-active' : ''; ?>"
                 href="itemstock.php">
 
-                <div class="text-light fw-medium fs-5"><i
-                        class="bi <?= $page == 'itemstock.php' ? "bi-box-seam-fill color-accent" : "bi-box-seam" ?> me-3"></i>Inventory
+                <div class="text-light fw-medium fs-5 d-flex justify-items-evenly"><i
+                        class="bi <?= $page == 'itemstock.php' ? "bi-box-seam-fill color-accent" : "bi-box-seam" ?> me-3"></i>
+                    <p class='m-0'>Inventory</p>
                 </div>
             </a>
         </li>
@@ -76,16 +82,19 @@
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'queue.php' ? 'btn-active' : ''; ?>"
                 href="queue.php">
 
-                <div class="text-light fw-medium fs-5"><i
-                        class="bi bi-list <?= $page == 'queue.php' ? "color-accent" : "" ?> me-3"></i>Queue</div>
+                <div class="text-light fw-medium fs-5 d-flex justify-items-evenly"><i
+                        class="bi bi-list <?= $page == 'queue.php' ? "color-accent" : "" ?> me-3"></i>
+                    <p class='m-0'>Queue</p>
+                </div>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'transactions.php' ? 'btn-active' : ''; ?>"
                 href="transactions.php">
 
-                <div class="text-light fw-medium fs-5"><i
-                        class="bi <?= $page == 'transactions.php' ? "bi-file-text-fill color-accent" : "bi-file-text" ?> me-3"></i>Transactions
+                <div class="text-light fw-medium fs-5 d-flex justify-items-evenly"><i
+                        class="bi <?= $page == 'transactions.php' ? "bi-file-text-fill color-accent" : "bi-file-text" ?> me-3"></i>
+                    <p class='m-0'>Transactions</p>
                 </div>
             </a>
         </li>
@@ -93,25 +102,34 @@
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'account.php' ? 'btn-active' : ''; ?>"
                 href="account.php">
 
-                <div class="text-light fw-medium fs-5"><i
-                        class="bi <?= $page == 'account.php' ? "bi-person-fill-add color-accent" : "bi-person-add" ?> me-3"></i>Create
-                    Employee Account</div>
+                <div class="text-light fw-medium fs-5 d-flex justify-items-evenly"><i
+                        class="bi <?= $page == 'account.php' ? "bi-person-fill-add color-accent" : "bi-person-add" ?> me-3"></i>
+                    <p class='m-0'>Create Account</p>
+                </div>
             </a>
         </li>
     </ul>
-
 </aside>
+
 
 <script>
     const sidenav = $("aside");
     const button = $("#sidenav_toggle");
 
-    $(function () {
-        $("aside#sidenav").toggleClass('hidden');
+    // $(function () {
+    //     $("aside#sidenav").toggleClass('hidden');
+
+    // })
+    $(document).on('mouseup', function (event) {
+        if (!$(event.target).closest("aside#sidenav, #sidenav_toggle").length) {
+            $("aside#sidenav").removeClass('shown').addClass('hidden');
+        }
     })
 
     $(document).on('click', "#sidenav_toggle", function () {
-        $("aside#sidenav").toggleClass('hidden');
+        $("aside#sidenav").toggleClass('hidden shown');
+        $('.sidenav_backdrop').toggleClass('visibility-hidden');
     })
+
 
 </script>

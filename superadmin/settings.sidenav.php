@@ -1,5 +1,7 @@
-<aside class="my-2 mx-0 rounded-end-3 sa-sidebar col-sm-2 d-flex flex-column shadow bg-light bg-opacity-25">
-    <div class="mt-2 d-flex align-content-center">
+<aside class="my-2 mx-0 rounded-end-3 sa-sidebar col-sm-2 d-flex flex-column shadow bg-light bg-opacity-25 hidden" id="sidenav">
+    <button type="button" class="btn position-absolute z-3 fs-3 m-0 p-0 d-none" id="sidenav_toggle"><i
+            class="bi bi-arrow-right-circle-fill text-light color-accent"></i></button>
+    <div class="mt-2 d-flex align-content-center" id="sidenav_header">
         <a href="index.php"
             class="bg-dark bg-opacity-25 mx-auto border border-light rounded-pill btn btn-sidebar overflow-hidden shadow-sm">
             <img src="../img/logo.svg" alt="Pestastic_logo" class="mx-auto my-2 img-fluid" style="max-height: 5rem">
@@ -10,7 +12,9 @@
             <a class="nav-link btn btn-sidebar my-1 text-light fw-light fs-6 ps-2 <?= $page == 'index.php' ? 'btn-active' : ''; ?>"
                 href="index.php">
 
-                <div class="text-light fw-medium text-shadow fs-5"><i class="bi bi-house me-3"></i>Dashboard</div>
+                <div class="text-light fw-medium text-shadow fs-5 d-flex justify-contents-evenly"><i class="bi bi-house me-3"></i>
+                    <p class="m-0">Dashboard</p>
+                </div>
             </a>
         </li>
         </li>
@@ -18,28 +22,53 @@
             <a class="nav-link btn btn-sidebar my-1 p-2 <?= $page == 'accountsettings.php' ? 'btn-active' : ''; ?>"
                 href="accountsettings.php">
 
-                <div class="text-light fw-medium fs-5 text-shadow"><i
-                        class="bi bi-info-circle <?= $page == 'accountsettings.php' ? 'color-accent' : '' ?> me-3"></i>Manage
-                    Information</div>
+                <div class="text-light fw-medium fs-5 text-shadow d-flex justify-contents-evenly"><i
+                        class="bi bi-info-circle <?= $page == 'accountsettings.php' ? 'color-accent' : '' ?> me-3"></i>
+                    <p class="m-0">Manage Information</p>
+                </div>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'contents.php' ? 'btn-active' : ''; ?>"
                 href="contents.php">
 
-                <div class="text-light fw-medium fs-5 text-shadow"><i
-                        class="bi <?= $page == 'contents.php' ? 'bi-file-text-fill color-accent' : 'bi-file-text' ?> me-3"></i>Manage
-                    Contents</div>
+                <div class="text-light fw-medium fs-5 text-shadow d-flex justify-contents-evenly"><i
+                        class="bi <?= $page == 'contents.php' ? 'bi-file-text-fill color-accent' : 'bi-file-text' ?> me-3"></i>
+                    <p class="m-0">Manage
+                        Contents</p>
+                </div>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link btn btn-sidebar my-1 ps-2 <?= $page == 'add-manager.php' ? 'btn-active' : ''; ?>"
                 href="add-manager.php">
 
-                <div class="text-light fw-medium fs-5 text-shadow"><i
-                        class="bi <?= $page == 'add-manager.php' ? 'bi-person-fill-gear color-accent' : 'bi-person-gear' ?> me-3"></i>Add Manager</div>
+                <div class="text-light fw-medium fs-5 text-shadow d-flex justify-contents-evenly"><i
+                        class="bi <?= $page == 'add-manager.php' ? 'bi-person-fill-gear color-accent' : 'bi-person-gear' ?> me-3"></i>
+                    <p class="m-0">Add Manager</p>
+                </div>
             </a>
         </li>
     </ul>
 
 </aside>
+
+<script>
+    const sidenav = $("aside");
+    const button = $("#sidenav_toggle");
+
+    // $(function () {
+    //     $("aside#sidenav").toggleClass('hidden');
+
+    // })
+    $(document).on('mouseup', function (event) {
+        if (!$(event.target).closest("aside#sidenav, #sidenav_toggle").length) {
+            $("aside#sidenav").removeClass('shown').addClass('hidden');
+        }
+    })
+
+    $(document).on('click', "#sidenav_toggle", function () {
+        $("aside#sidenav").toggleClass('hidden shown');
+        $('.sidenav_backdrop').toggleClass('visibility-hidden');
+    })
+</script>

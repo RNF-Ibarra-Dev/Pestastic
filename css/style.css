@@ -821,7 +821,7 @@ input.form-check-input {
     z-index: 999 !important;
     backdrop-filter: blur(10px) !important;
     height: 100% !important;
-    width: calc(100vw - 65%) !important;
+    width: 40vw;
   }
 
   #sidenav_header > a {
@@ -835,28 +835,64 @@ input.form-check-input {
 
   #sidenav_toggle {
     top: 6% !important;
-    right: -5% !important;
+    right: 0 !important;
+    transform: translateX(60%);
     transition: cubic-bezier(0.6, -0.28, 0.74, 0.05) 0.5s;
     display: unset !important;
+    position: absolute;
   }
 
   aside#sidenav.hidden {
-    transform: translate(-100%, 0%) !important;
+    transform: translateX(-100%) !important;
   }
 
   aside#sidenav {
     left: 0;
     transition: cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.5s;
+    flex: unset !important;
+    position: fixed;
+    height: 95% !important;
   }
 
-  aside#sidenav > #sidenav_toggle:hover {
+  #sidenav_toggle > i.bi-arrow-right-circle-fill {
+    display: inline-block;
+    transform-origin: center;
+    transition: cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.5s;
+  }
+
+  aside#sidenav.shown > #sidenav_toggle > i.bi-arrow-right-circle-fill {
     transform: rotate(180deg) !important;
   }
 
-  aside#sidenav.hidden > #sidenav_toggle:hover {
-    transform: scale(1) !important;
+  /* navbar */
+  #nav_name,
+  .pestastic-navbar-text > p:first-child,
+  #datetime {
+    display: none !important;
   }
 
+  .pestastic-navbar-text > .logo-img-small-screen {
+    display: block !important;
+  }
+
+  #settings > div.modal-dialog,
+  #notifications > div.modal-dialog {
+    width: 100vw !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  nav.navbar > div.container-fluid {
+    flex-wrap: nowrap !important;
+  }
+
+  /* account settings */
+  form#accountsettings > div.container,
+  form#accountsettings > p.display-6 {
+    width: 80% !important;
+  }
+
+  /* general */
   main {
     width: 98% !important;
   }
@@ -879,4 +915,62 @@ input.form-check-input {
   body.bg-official-login > div.w-25.d-flex.bg-light {
     width: 80% !important;
   }
+
+  /* sidenav */
+  aside.sa-sidebar {
+    width: 70vw;
+  }
+
+  /* notifications */
+  #notifContainer div.vr.mx-5 {
+    margin: 0 1rem !important;
+  }
+
+  /* account settings */
+  form#accountsettings > div.container,
+  form#accountsettings > p.display-6 {
+    width: 90% !important;
+  }
+
+  /* tables */
+  tbody {
+    display: flex;
+    flex-direction: column;
+  }
+  table,
+  td,
+  tr {
+    display: block;
+    border: none;
+  }
+  thead {
+    display: none;
+  }
+  tr {
+    width: 100%;
+    border: 1px solid #fff;
+  }
+}
+
+@media (width <= 320px) {
+  /* sidenav */
+  aside.sa-sidebar {
+    width: 95vw;
+  }
+
+  /* account settings */
+  form#accountsettings > div.container,
+  form#accountsettings > p.display-6 {
+    width: auto !important;
+    margin: 0 0.5rem 1rem 0.5rem !important;
+  }
+
+  /* form#accountsettings .col{
+    flex: 0 0 auto !important;
+    width: auto !important;
+  }
+
+  form#accountsettings input{
+    width: 100%;
+  } */
 }
