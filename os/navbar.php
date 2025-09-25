@@ -10,12 +10,14 @@
 </style>
 
 <nav
-    class="navbar navbar-expand-sm my-2 mx-2 rounded-4 border border-light navbar-dark bg-dark bg-opacity-50 shadow-sm">
+    class="navbar navbar-expand-sm my-2 mx-2 rounded-3 border border-light navbar-dark bg-dark bg-opacity-50 pt-1 pb-2 shadow">
     <div class="container-fluid">
-        <div class="user-select-none">
+        <div class="pestastic-navbar-text user-select-none">
             <p class="text-wrap fs-1 m-0 ms-2 text-align-center fw-bold">Pestastic Inventory Management</p>
+            <img src="../img/logo.svg"
+                class="d-none btn w-25 bg-light bg-opacity-25 mt-1 p-1 rounded-3 logo-img-small-screen">
             <?php
-            echo "<p class='ms-3 mb-0 fw-medium fs-5 text-light' id='datetime'>" . date('l, F jS, Y \| h:i A') . "</p>";
+            echo "<p class='ms-3 my-0 fw-medium text-light fs-5' id='datetime'>" . date('l, F jS, Y \| h:i:s A') . "</p>";
             ?>
         </div>
 
@@ -32,13 +34,14 @@
             <p class="text-light my-auto me-2 text-wrap text-capitalize user-select-none" id="nav_name">
                 <?= $_SESSION['fname'] . ' ' . $_SESSION['lname'] ?>
             </p>
+
         </div>
     </div>
 </nav>
 
 
 <div class="modal fade bg-dark bg-opacity-25" id="settings" tabindex="-1">
-    <div class="modal-dialog me-4 w-25 shadow-lg" style="margin-top: 5rem !important;">
+    <div class="modal-dialog me-4 w-25 shadow-lg" style="margin-top: 5rem;">
         <div class="modal-content text-dark rounded-4 border-0 shadow-lg">
             <div class="modal-header position-relative">
                 <h1 class="modal-title fs-5 mx-auto">Settings</h1>
@@ -70,7 +73,7 @@
 
 
 <div class="modal fade bg-dark bg-opacity-25" id="notifications" tabindex="-1">
-    <div class="modal-dialog me-4 w-25 shadow-lg" style="margin-top: 5rem !important;">
+    <div class="modal-dialog me-4 w-25 shadow-lg" style="margin-top: 5rem ;">
         <div class="modal-content text-dark rounded-4 border-0 shadow-lg">
             <div class="modal-header position-relative">
                 <h1 class="modal-title fs-3 fw-bold mx-auto">Alerts</h1>
@@ -112,4 +115,20 @@
     }
     updateDateTime();
     setInterval(updateDateTime, 1000);
+
+    $(function () {
+        var windowWidth = $(window).width();
+        if (windowWidth <= 768) {
+            $('#notifications > div.modal-dialog, #settings > div.modal-dialog').addClass('modal-dialog-centered');
+        }
+
+        $(window).resize(function () {
+            var windowWidth = $(window).width();
+            if (windowWidth <= 768) {
+                $('#notifications > div.modal-dialog, #settings > div.modal-dialog').addClass('modal-dialog-centered');
+            } else {
+                $('#notifications > div.modal-dialog, #settings > div.modal-dialog').removeClass('modal-dialog-centered');
+            }
+        });
+    })
 </script>

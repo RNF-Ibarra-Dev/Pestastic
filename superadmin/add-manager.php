@@ -32,7 +32,7 @@ require("startsession.php");
                 <h1 class="fs-1 text-shadow fw-bold align-middle m-0 my-auto">Add New Manager</h1>
             </div>
             <div
-                class="container p-3 w-75 d-flex justify-content-center align-items-center mt-3 rounded-3 bg-light bg-opacity-25">
+                class="p-3 mb-3 mx-2 d-flex justify-content-center align-items-center mt-3 rounded-3 bg-light bg-opacity-25">
                 <form class="row g-2 text-light" id="createacc">
 
 

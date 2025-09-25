@@ -937,18 +937,63 @@ input.form-check-input {
     display: flex;
     flex-direction: column;
   }
+
   table,
-  td,
-  tr {
+  td {
     display: block;
     border: none;
   }
+
   thead {
     display: none;
   }
+
   tr {
+    display: block;
     width: 100%;
-    border: 1px solid #fff;
+    border: 1px solid #fff !important;
+    margin: 0.50rem 0 !important;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+
+  td {
+    text-align: left;
+    font-weight: 400 !important;
+    padding-left: 1rem !important;
+  }
+
+  td:first-child {
+    padding-top: 1rem !important;
+  }
+
+  td:first-child:has(> div.row > button) {
+    padding: unset !important;
+  }
+
+  #add_trt, #add_prob, #package_addbtn{
+    border-right: 1px solid #fff;
+  }
+
+  td > input.form-check-input {
+    margin-top: 0 !important;
+    vertical-align: middle;
+  }
+
+  td > button.btn {
+    border-top: solid #fff 1px;
+    margin-top: 0.5rem !important;
+  }
+
+  td:has(> input.form-check-input)::before {
+    content: "Check (Delete):";
+    margin-right: 0.25rem;
+    vertical-align: middle;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: bold;
   }
 }
 

@@ -38,24 +38,24 @@ require("startsession.php");
                         <div class="d-flex flex-column gap-2 mx-3">
                             <div class="container two-part-inputs gap-3 p-0 d-flex flex-wrap justify-content-between">
                                 <div class="col p-0">
-                                    <label for="fname" class="form-label fw-bold mb-1">First Name:</label>
+                                    <label for="fname" class="form-label fw-bold mb-1 text-shadow">First Name:</label>
                                     <input type="text" class="form-control-plaintext text-light ps-2" id="fname"
                                         name="fname" autocomplete="off" readonly>
                                 </div>
                                 <div class="col p-0">
-                                    <label for="lname" class="form-label fw-bold mb-1">Last Name:</label>
+                                    <label for="lname" class="form-label fw-bold mb-1 text-shadow">Last Name:</label>
                                     <input type="text" class="form-control-plaintext text-light ps-2" id="lname"
                                         name="lname" autocomplete="off" readonly>
                                 </div>
                             </div>
                             <div class="container two-part-inputs gap-3 p-0 d-flex flex-wrap justify-content-between">
                                 <div class="col p-0">
-                                    <label for="username" class="form-label fw-bold mb-1">Username:</label>
+                                    <label for="username" class="form-label fw-bold mb-1 text-shadow">Username:</label>
                                     <input type="text" class="form-control-plaintext text-light ps-2" id="username"
                                         name="username" autocomplete="off" readonly>
                                 </div>
                                 <div class="col p-0">
-                                    <label for="empid" class="form-label fw-bold mb-1">Employee ID:</label>
+                                    <label for="empid" class="form-label fw-bold mb-1 text-shadow">Employee ID:</label>
                                     <input type="text" class="form-control-plaintext text-light ps-2" id="empid"
                                         name="empid" autocomplete="off" readonly>
                                 </div>

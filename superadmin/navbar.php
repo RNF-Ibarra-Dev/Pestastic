@@ -12,7 +12,7 @@
 <nav
     class="navbar navbar-expand-sm my-2 mx-2 rounded-3 border border-light navbar-dark bg-dark bg-opacity-50 pt-1 pb-2 shadow">
     <div class="container-fluid">
-        <div class="pestastic-navbar-text">
+        <div class="pestastic-navbar-text user-select-none">
             <p class="text-wrap fs-1 m-0 ms-2 text-align-center fw-bold">Pestastic Inventory Management</p>
             <img src="../img/logo.svg" class="d-none btn w-25 bg-light bg-opacity-25 mt-1 p-1 rounded-3 logo-img-small-screen">
             <?php

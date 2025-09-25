@@ -11,8 +11,7 @@ require("startsession.php");
     <title>Settings | Contents</title>
     <?php include('header.links.php'); ?>
     <style>
-        input,
-        textarea {
+        input {
             font-size: 1.25rem !important
         }
     </style>
@@ -36,7 +35,7 @@ require("startsession.php");
                         User Information</p>
                     <div class="container bg-light bg-opacity-25 w-50 mx-auto rounded-3 p-3 pb-3">
                         <div class="d-flex flex-column gap-2 mx-3">
-                            <div class="container gap-3 p-0 d-flex justify-content-between">
+                            <div class="container two-part-inputs gap-3 p-0 d-flex flex-wrap justify-content-between">
                                 <div class="col p-0">
                                     <label for="fname" class="form-label fw-bold mb-1 text-shadow">First Name:</label>
                                     <input type="text" class="form-control-plaintext text-light ps-2" id="fname"
@@ -48,7 +47,7 @@ require("startsession.php");
                                         name="lname" autocomplete="off" readonly>
                                 </div>
                             </div>
-                            <div class="container gap-3 p-0 d-flex justify-content-between">
+                            <div class="container two-part-inputs gap-3 p-0 d-flex flex-wrap justify-content-between">
                                 <div class="col p-0">
                                     <label for="username" class="form-label fw-bold mb-1 text-shadow">Username:</label>
                                     <input type="text" class="form-control-plaintext text-light ps-2" id="username"
@@ -123,8 +122,25 @@ require("startsession.php");
             </div>
         </main>
     </div>
+
+    <div class="toast-container m-2 me-3 bottom-0 end-0 position-fixed">
+        <div class="toast align-items-center" role="alert" id="toast" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body text-dark ps-4 text-success-emphasis" id="toastmsg">
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
     <?php include('footer.links.php'); ?>
     <script>
+        function show_toast(message) {
+            $('#toastmsg').html(message);
+            var toastid = $('#toast');
+            var toast = new bootstrap.Toast(toastid);
+            toast.show();
+        }
+
         const dataUrl = "contents/acc.settings.data.php";
         let birthdate = flatpickr("#birthdate", {
             dateFormat: "F j, Y"
@@ -216,7 +232,7 @@ require("startsession.php");
                 .done(async function (d) {
                     // alert(d.success);
                     toggle();
-                    $("#alert").html(d.success).fadeIn(500).delay(2000).fadeOut(1000);
+                    show_toast(d.success);
                     $("#nav_name").text(d.name);
                     $("#confirm_modal").modal('hide');
                 })
@@ -227,6 +243,22 @@ require("startsession.php");
 
                 })
         });
+
+        $(function () {
+            var windowWidth = $(window).width();
+            if (windowWidth <= 425) {
+                $(".two-part-inputs div").toggleClass('w-100 col col-auto');
+            }
+
+            $(window).resize(function () {
+                var windowWidth = $(window).width();
+                if (windowWidth <= 425) {
+                    $(".two-part-inputs div").addClass('w-100 col-auto').removeClass('col');
+                } else {
+                    $(".two-part-inputs div").removeClass('w-100 col-auto').addClass('col');
+                }
+            })
+        })
     </script>
 
 </body>

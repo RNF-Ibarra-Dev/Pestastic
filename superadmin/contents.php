@@ -1412,22 +1412,7 @@ require("startsession.php");
             await delete_package(data);
         })
 
-        $("table").each(function () {
-            let $table = $(this);
-
-            // get headers
-            let headers = [];
-            $table.find("thead th").each(function (i, th) {
-                headers[i] = $(th).text().trim();
-            });
-
-            // assign headers to each td
-            $table.find("tbody tr").each(function () {
-                $(this).find("td").each(function (i, td) {
-                    $(td).attr("data-label", headers[i]);
-                });
-            });
-        });
+       
 
     </script>
 
