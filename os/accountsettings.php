@@ -11,7 +11,7 @@ require("startsession.php");
     <title>Settings | Contents</title>
     <?php include('header.links.php'); ?>
     <style>
-        input {
+        input, textarea {
             font-size: 1.25rem !important
         }
     </style>
@@ -59,7 +59,7 @@ require("startsession.php");
                                 </div>
                             </div>
                             <label for="address" class="form-label fw-bold mb-0 text-shadow">Address:</label>
-                            <textarea name="address" id="address" rows="1"
+                            <textarea name="address" id="address" 
                                 class="form-control-plaintext text-light ps-2" style="resize: none;"
                                 readonly></textarea>
                             <label for="email" class="form-label fw-bold mb-0 text-shadow">Email:</label>

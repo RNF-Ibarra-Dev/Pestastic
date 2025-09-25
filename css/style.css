@@ -995,6 +995,24 @@ input.form-check-input {
     content: attr(data-label);
     font-weight: bold;
   }
+
+  /* dashboard */
+  table caption{
+    display: block;
+    width: 100%;
+    order: 6 !important;
+  }
+  table{
+    display: flex;
+    flex-direction: column;
+  }
+  tbody{
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+  td[data-label="View: "]::before{
+    content: unset !important;
+  }
 }
 
 @media (width <= 320px) {

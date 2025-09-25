@@ -123,8 +123,8 @@ require("startsession.php");
                 </div>
             </div>
 
-            <div class="row m-2 gap-2">
-                <div class="col bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
+            <div class="row m-2 gap-2 flex-wrap">
+                <div class="col-auto w-100 bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
                     <div class="d-flex flex-column h-100">
                         <div class="clearfix">
                             <i
@@ -139,7 +139,7 @@ require("startsession.php");
                             displayed.</p>
                     </div>
                 </div>
-                <div class="col bg-light bg-opacity-25  rounded-3 p-3 shadow">
+                <div class="col-auto w-100 bg-light bg-opacity-25  rounded-3 p-3 shadow">
                     <div class="clearfix">
                         <i
                             class="bi bi-arrow-repeat  fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
@@ -162,8 +162,8 @@ require("startsession.php");
                 </div>
             </div>
 
-            <div class="row m-2 gap-2">
-                <div class="col bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
+            <div class="row flex-wrap m-2 gap-2">
+                <div class="col-auto w-100 bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
                     <div class="d-flex flex-column h-100">
                         <div class="clearfix">
                             <i
@@ -175,7 +175,7 @@ require("startsession.php");
                         <p class="text-muted mt-3 text-light">Note: This displays data only for this month.</p>
                     </div>
                 </div>
-                <div class="col bg-light bg-opacity-25  rounded-3 p-3 shadow d-flex flex-column">
+                <div class="col-auto w-100 bg-light bg-opacity-25  rounded-3 p-3 shadow d-flex flex-column">
                     <div class="clearfix">
                         <i
                             class="bi bi-stopwatch-fill  fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
@@ -196,7 +196,7 @@ require("startsession.php");
                         <tbody id="pendingtrans" class="text-center align-middle"></tbody>
                     </table>
                 </div>
-                <div class="col bg-light bg-opacity-25  rounded-3 p-3 shadow">
+                <div class="col-auto w-100 bg-light bg-opacity-25  rounded-3 p-3 shadow">
                     <div class="clearfix">
                         <i
                             class="ms-2 fs-3 bi bi-clock-fill  float-start fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
@@ -219,8 +219,8 @@ require("startsession.php");
                 </div>
             </div>
 
-            <div class="row m-2 gap-2">
-                <div class="col bg-light bg-opacity-25  rounded-3 p-3 shadow">
+            <div class="row flex-wrap m-2 gap-2">
+                <div class="col-auto w-100 bg-light bg-opacity-25  rounded-3 p-3 shadow">
                     <div class="clearfix">
                         <i
                             class="bi bi-exclamation-circle  fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
@@ -239,7 +239,7 @@ require("startsession.php");
                         <tbody id="lowchemicals"></tbody>
                     </table>
                 </div>
-                <div class="col bg-light bg-opacity-25 rounded p-3 shadow">
+                <div class="col-auto w-100 bg-light bg-opacity-25 rounded p-3 shadow">
                     <div class="clearfix">
                         <i
                             class="bi bi-exclamation-triangle-fill fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>
@@ -426,7 +426,8 @@ require("startsession.php");
                         ],
                         borderColor: '#fff',
                         borderRadius: 5,
-                        barThickness: 30
+                        barThickness: 'flex',
+                        maxBarThickness: 30,
                     }]
                 },
                 options: {
@@ -434,7 +435,7 @@ require("startsession.php");
                     responsive: true,
                     plugins: {
                         legend: {
-                            display: false
+                            display: false,
                         },
                         tooltip: {
                             bodyColor: 'white',
@@ -444,11 +445,14 @@ require("startsession.php");
                             titleAlign: 'center',
                             backgroundColor: 'rgba(0, 0, 0, 0.8)',
                             displayColors: false
-                        },
+                        }
                     },
                     scales: {
                         x: {
                             ticks: {
+                                font:{
+                                    size: 12
+                                },
                                 color: '#fff',
                                 // minRotation: 90
                                 stepSize: 1
@@ -459,12 +463,16 @@ require("startsession.php");
                             }
                         },
                         y: {
+
                             grid: {
                                 color: 'rgba(255, 255, 255, 0.8)',
                                 borderWidth: 1
                             },
                             ticks: {
                                 color: '#fff',
+                                font:{
+                                    size: 12
+                                }
                             },
                         }
                     },
