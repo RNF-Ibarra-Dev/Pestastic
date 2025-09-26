@@ -36,14 +36,14 @@ include('tablecontents/tables.php');
         <!-- sidebar -->
         <?php include('sidenav.php'); ?>
         <!-- main content -->
-        <main class="sa-content col-sm-10 p-0 container-fluid">
+        <main class="sa-content col-sm-10 p-0 container-fluid" id="inventory_content">
             <!-- navbar -->
             <?php include('navbar.php'); ?>
             <!-- content -->
             <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2">
                 <h1 class="display-6 text-light mb-0 fw-bold text-center">Inventory Items</h1>
             </div>
-            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
+            <div class="d-flex flex-wrap gap-2 mb-2 mx-3 user-select-none text-center">
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
@@ -78,7 +78,7 @@ include('tablecontents/tables.php');
                     <p class="fs-4 fw-bold mb-0" id="count_expired"></p>
                 </div>
             </div>
-            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
+            <div class="d-flex flex-wrap gap-2 mb-2 mx-3 user-select-none text-center">
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
@@ -133,13 +133,13 @@ include('tablecontents/tables.php');
                 <button type="button" id="approvemulti"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
                         class="bi bi-clock-fill me-2" data-bs-toggle="modal" data-bs-toggle="tooltip"
-                        data-bs-target="#multiapproveModal" title="Approve multiple stocks"></i>Pending Entries</button>
+                        data-bs-target="#multiapproveModal" title="Approve multiple stocks"></i><p class="m-0">Pending Entries</p></button>
                 <button type="button" id="restockTableBtn"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
-                        class="bi bi-box-fill me-2"></i>Restock Items</button>
+                        class="bi bi-box-fill me-2"></i><p class="m-0">Restock Items</p></button>
                 <button type="button" id="dispatchedTableBtn"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
-                        class="bi bi-truck-flatbed me-2"></i>Dispatched Items</button>
+                        class="bi bi-truck-flatbed me-2"></i><p class="m-0">Dispatched Items</p></button>
                 <select
                     class="form-select select-transparent bg-light bg-opacity-25 py-2 border-0 h-100 text-light fw-bold w-25"
                     id="sortbranches" aria-label="Default select example">
@@ -3011,6 +3011,26 @@ include('tablecontents/tables.php');
                 })
         });
 
+
+        // responsive 
+
+        $(function () {
+            var width = $(window).width();
+            if (width <= 768) {
+                $("main div.hstack").addClass('flex-wrap');
+            } else {
+                $("main div.hstack").removeClass('flex-wrap');
+            }
+
+            $(window).resize(function () {
+                var width = $(window).width();
+                if (width <= 768) {
+                    $("main div.hstack").addClass('flex-wrap');
+                } else {
+                    $("main div.hstack").removeClass('flex-wrap');
+                }
+            })
+        })
 
     </script>
 </body>
