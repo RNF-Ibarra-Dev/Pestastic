@@ -21,14 +21,14 @@ require("startsession.php");
         <!-- sidebar -->
         <?php include('sidenav.php'); ?>
         <!-- main content -->
-        <main class="sa-content col-sm-10 p-0 container-fluid">
+        <main class="sa-content col-sm-10 p-0 container-fluid" id="inventory_content">
             <!-- navbar -->
             <?php include('navbar.php'); ?>
             <!-- content -->
             <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2">
                 <h1 class="display-6 text-light mb-0 fw-bold text-center">Inventory Items</h1>
             </div>
-            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
+            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center status-container">
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
@@ -63,7 +63,7 @@ require("startsession.php");
                     <p class="fs-4 fw-bold mb-0" id="count_expired"></p>
                 </div>
             </div>
-            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
+            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center status-container flex-wrap">
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
@@ -156,27 +156,27 @@ require("startsession.php");
                                     class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
                                     Main Item Information</p>
                                 <div class="row">
-                                    <div class="col-2">
+                                    <div class="col-md-2 col-auto">
                                         <p class="fw-bold">Item ID:</p>
                                         <p id="restock_id" class="ms-1"></p>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-md-2 col-auto">
                                         <p class="fw-bold">Item Name:</p>
                                         <p id="restock_name" class="ms-1"></p>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-md-2 col-auto">
                                         <p class="fw-bold">Item Brand:</p>
                                         <p id="restock_brand" class="ms-1"></p>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-md-2 col-auto">
                                         <p class="fw-bold">Expiry Date:</p>
                                         <p id="restock_expiry" class="ms-1"></p>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-md-2 col-auto">
                                         <p class="fw-bold">Item Size:</p>
                                         <p id="restock_size" class="ms-1"></p>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-md-2 col-auto">
                                         <p class="fw-bold">Restock Threshold:</p>
                                         <p id="restock_threshold" class="ms-1"></p>
                                     </div>
@@ -185,20 +185,20 @@ require("startsession.php");
                                     class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
                                     Remaining Stock Summary</p>
                                 <div class="row">
-                                    <div class="col-3">
+                                    <div class="col-md-3 col-auto">
                                         <p class="fw-bold">Current Opened/Outgoing Item Left:</p>
                                         <p id="restock_opened" class="ms-1"></p>
                                     </div>
-                                    <div class="col-3">
+                                    <div class="col-md-3 col-auto">
                                         <p class="fw-bold">Current Closed Container Left:</p>
                                         <p id="restock_ccontainer" class="ms-1"></p>
                                     </div>
-                                    <div class="col-3">
+                                    <div class="col-md-3 col-auto">
                                         <p class="fw-bold">Total Container Left:</p>
                                         <p id="restock_tcontainer" class="ms-1"></p>
                                     </div>
 
-                                    <div class="col-3">
+                                    <div class="col-md-3 col-auto">
                                         <label for="restock_value" class="form-label fw-bold">Number of items to
                                             restock:</label>
                                         <div class="d-flex">
@@ -216,7 +216,7 @@ require("startsession.php");
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-4">
+                                    <div class="col-md-4 col-auto">
                                         <label for="restock_notes" class="form-label fw-bold">Additional restock
                                             note:</label>
                                         <textarea name="note" id="restock_notes" rows="1" class="form-control"
@@ -555,7 +555,7 @@ require("startsession.php");
                                                     </label>
                                                 </div>
                                             </div>
-                                            <div class="col-3 mb-2">
+                                            <div class="col-sm-3 mb-2">
                                                 <label for="adjust_qty_unit" class="form-label fw-medium">Unit to
                                                     use:</label>
                                                 <select name="qty_unit" id="adjust_qty_unit"
@@ -720,7 +720,7 @@ require("startsession.php");
                                             <p class="fw-light text-center alert alert-warning py-1 px-3 d-none"
                                                 id="expdatewarning"></p>
                                         </div>
-                                        <div class="col-3 mb-2">
+                                        <div class="col-sm-3 mb-2">
                                             <label for="edit-notes" class="form-label fw-medium">Short Note:</label>
                                             <textarea name="edit-notes" id="edit-notes" style="resize: none !important;"
                                                 class="ps-2 form-control-plaintext" readonly></textarea>
@@ -873,7 +873,7 @@ require("startsession.php");
                                                 Note: specify expiry date or default date will be set.
                                             </div> -->
                                         </div>
-                                        <div class="col-3 mb-2">
+                                        <div class="col-sm-3 col-auto mb-2">
                                             <label for="notes" class="form-label fw-light">Short Note</label>
                                             <textarea name="notes[]" id="notes" class="form-control"
                                                 placeholder="Optional short note . . . "></textarea>
@@ -1094,7 +1094,7 @@ require("startsession.php");
                 </div>
             </form>
 
-            <form id="returnChemicalForm">
+            <!-- <form id="returnChemicalForm">
                 <input type="hidden" name="returnChemicalId" id="returnChemicalId">
                 <input type="hidden" id="return_currentLocation" name="return_currentLocation">
                 <div class="row g-2 m-0 p-0 text-dark">
@@ -1159,7 +1159,7 @@ require("startsession.php");
                                         class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
                                         Return Information</p>
                                     <div class="row mb-2">
-                                        <div class="col-5 mb-2">
+                                        <div class="col-md-5 col-auto mb-2">
                                             <label for="opened_container" class="form-label fw-medium">Returned quantity
                                                 of opened items:</label>
                                             <input type="number" name="opened_container" id="opened_container"
@@ -1248,7 +1248,7 @@ require("startsession.php");
                         </div>
                     </div>
                 </div>
-            </form>
+            </form> -->
 
             <!-- delete modal -->
             <form id="deleteForm">
@@ -2666,6 +2666,38 @@ require("startsession.php");
                 })
         });
 
+
+
+        // responsive 
+
+        $(function () {
+            var width = $(window).width();
+            if (width <= 768) {
+                $("main div.hstack, .status-container").addClass('flex-wrap');
+            } else {
+                $("main div.hstack, .status-container").removeClass('flex-wrap');
+            }
+
+            $(window).resize(function () {
+                var width = $(window).width();
+                if (width <= 768) {
+                    $("main div.hstack, .status-container").addClass('flex-wrap');
+                } else {
+                    $("main div.hstack, .status-container").removeClass('flex-wrap');
+                }
+                if (width <= 425) {
+                    $("#approvechemtable tr td > div.btn-group label").removeClass('btn-outline-dark').addClass('btn-outline-light');
+                } else {
+                    $("#approvechemtable tr td > div.btn-group label").removeClass('btn-outline-light').addClass('btn-outline-dark');
+                }
+            })
+
+            if (width <= 425) {
+                $("#approvechemtable tr td > div.btn-group label").removeClass('btn-outline-dark').addClass('btn-outline-light');
+            } else {
+                $("#approvechemtable tr td > div.btn-group label").removeClass('btn-outline-light').addClass('btn-outline-dark');
+            }
+        });
 
     </script>
 </body>

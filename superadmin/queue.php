@@ -80,7 +80,7 @@ require("startsession.php");
             <div class="row row-col-2 gap-3 px-3 m-0 d-flex justify-content-center">
 
                 <!-- calendar -->
-                <div class="col-4 mt-2 px-0">
+                <div class="col-md-4 col-auto mt-2 px-0">
                     <div class="bg-light bg-opacity-25 mb-3 py-2 shadow-sm rounded-3">
                         <h4
                             class="fw-light text-center d-flex align-items-center fw-bold fs-2 justify-content-center m-0">
@@ -122,7 +122,7 @@ require("startsession.php");
                 <div class="row row-cols-2 d-flex justify-content-center gap-3 px-3">
 
                     <div
-                        class="col flex-grow-1 py-3 px-0">
+                        class="col-md col-auto flex-grow-1 py-3 px-0">
                         <div
                             class="bg-light bg-opacity-25 mb-3 py-2 rounded-3 shadow-sm d-flex justify-content-center">
                             <h4 class="fw-light text-center text-center align-middle fs-2 fw-bold m-0"><i
@@ -135,7 +135,7 @@ require("startsession.php");
                         </div>
                     </div>
 
-                    <div class="col-4 mb-3 px-0">
+                    <div class="col-md-4 w-100 col-auto mb-3 px-0">
                         <div class="bg-light bg-opacity-25 shadow-sm rounded-3 py-2 my-3">
                             <h4 class="fw-bold justify-content-center m-0 d-flex align-items-center fs-2"><i
                                     class="bi bi-calendar-date me-2"></i>Transaction
@@ -147,7 +147,7 @@ require("startsession.php");
                 </div>
             </div>
 
-          
+        
         </main>
 
 

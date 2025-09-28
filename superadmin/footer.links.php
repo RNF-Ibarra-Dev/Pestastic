@@ -33,7 +33,7 @@
     }
 
     $(document).ajaxComplete(function () {
-        $("table").each(function () {
+        $("table:not(table.fc-scrollgrid)").each(function () {
             applyTableLabels($(this));
         });
     })

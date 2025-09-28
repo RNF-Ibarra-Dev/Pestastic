@@ -188,27 +188,27 @@ include('tablecontents/tables.php');
                                     class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
                                     Main Item Information</p>
                                 <div class="row">
-                                    <div class="col-2">
+                                    <div class="col-md-2 col-auto">
                                         <p class="fw-bold">Item ID:</p>
                                         <p id="restock_id" class="ms-1"></p>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-md-2 col-auto">
                                         <p class="fw-bold">Item Name:</p>
                                         <p id="restock_name" class="ms-1"></p>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-md-2 col-auto">
                                         <p class="fw-bold">Item Brand:</p>
                                         <p id="restock_brand" class="ms-1"></p>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-md-2 col-auto">
                                         <p class="fw-bold">Expiry Date:</p>
                                         <p id="restock_expiry" class="ms-1"></p>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-md-2 col-auto">
                                         <p class="fw-bold">Item Size:</p>
                                         <p id="restock_size" class="ms-1"></p>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-md-2 col-auto">
                                         <p class="fw-bold">Restock Threshold:</p>
                                         <p id="restock_threshold" class="ms-1"></p>
                                     </div>
@@ -217,20 +217,20 @@ include('tablecontents/tables.php');
                                     class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
                                     Remaining Stock Summary</p>
                                 <div class="row">
-                                    <div class="col-3">
+                                    <div class="col-md-3 col-auto">
                                         <p class="fw-bold">Current Opened/Outgoing Item Left:</p>
                                         <p id="restock_opened" class="ms-1"></p>
                                     </div>
-                                    <div class="col-3">
+                                    <div class="col-md-3 col-auto">
                                         <p class="fw-bold">Current Closed Container Left:</p>
                                         <p id="restock_ccontainer" class="ms-1"></p>
                                     </div>
-                                    <div class="col-3">
+                                    <div class="col-md-3 col-auto">
                                         <p class="fw-bold">Total Container Left:</p>
                                         <p id="restock_tcontainer" class="ms-1"></p>
                                     </div>
 
-                                    <div class="col-3">
+                                    <div class="col-md-3 col-auto">
                                         <label for="restock_value" class="form-label fw-bold">Number of items to
                                             restock:</label>
                                         <div class="d-flex">
@@ -248,7 +248,7 @@ include('tablecontents/tables.php');
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-4">
+                                    <div class="col-md-4 col-auto">
                                         <label for="restock_notes" class="form-label fw-bold">Additional restock
                                             note:</label>
                                         <textarea name="note" id="restock_notes" rows="1" class="form-control"
@@ -542,7 +542,7 @@ include('tablecontents/tables.php');
                                                     </label>
                                                 </div>
                                             </div>
-                                            <div class="col-3 mb-2">
+                                            <div class="col-sm-3 mb-2">
                                                 <label for="adjust_qty_unit" class="form-label fw-medium">Unit to
                                                     use:</label>
                                                 <select name="qty_unit" id="adjust_qty_unit"
@@ -706,7 +706,7 @@ include('tablecontents/tables.php');
                                             <p class="fw-light text-center alert alert-warning py-1 px-3 d-none"
                                                 id="expdatewarning"></p>
                                         </div>
-                                        <div class="col-3 mb-2">
+                                        <div class="col-sm-3 col-auto mb-2">
                                             <label for="edit-notes" class="form-label fw-medium">Short Note:</label>
                                             <textarea name="edit-notes" id="edit-notes" style="resize: none !important;"
                                                 class="ps-2 form-control-plaintext" readonly></textarea>
@@ -857,7 +857,7 @@ include('tablecontents/tables.php');
                                                 Note: specify expiry date or default date will be set.
                                             </div>
                                         </div>
-                                        <div class="col-3 mb-2">
+                                        <div class="col-sm-3 mb-2">
                                             <label for="notes" class="form-label fw-light">Short Note</label>
                                             <textarea name="notes[]" id="notes" class="form-control"
                                                 placeholder="Optional short note . . . "></textarea>
@@ -1554,17 +1554,19 @@ include('tablecontents/tables.php');
             toast.show();
         }
 
-        flatpickr("#addMoreChem input.form-date-exp", {
+        flatpickr(".form-date-exp", {
             dateFormat: "Y-m-d",
             altInput: true,
             altFormat: "F j, Y",
-            minDate: 'today'
+            minDate: 'today',
+            disableMobile: true
         });
-        flatpickr("#addMoreChem input.form-date-rec", {
+        flatpickr(".form-date-rec", {
             dateFormat: "Y-m-d",
             altInput: true,
             altFormat: "F j, Y",
-            maxDate: 'today'
+            maxDate: 'today',
+            disableMobile: true
         });
 
         $(document).on('click', "#loadChem", function () {
@@ -1595,13 +1597,15 @@ include('tablecontents/tables.php');
                         dateFormat: "Y-m-d",
                         altInput: true,
                         altFormat: "F j, Y",
-                        minDate: 'today'
+                        minDate: 'today',
+                        disableMobile: true
                     });
                     flatpickr("#addMoreChem input.form-date-rec", {
                         dateFormat: "Y-m-d",
                         altInput: true,
                         altFormat: "F j, Y",
-                        maxDate: 'today'
+                        maxDate: 'today',
+                        disableMobile: true
                     });
                 })
                 .fail(function (e, s, em) {

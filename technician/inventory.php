@@ -24,14 +24,14 @@ require("startsession.php");
         <!-- sidebar -->
         <?php include('sidenav.php'); ?>
         <!-- main content -->
-        <main class="sa-content col-sm-10 p-0 container-fluid">
+        <main class="sa-content col-sm-10 p-0 container-fluid" id="inventory_content">
             <!-- navbar -->
             <?php include('navbar.php'); ?>
             <!-- content -->
             <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2">
                 <h1 class="display-6 text-light mb-0 fw-bold text-center">Inventory Items</h1>
             </div>
-            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
+            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center status-container flex-wrap">
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
@@ -66,7 +66,7 @@ require("startsession.php");
                     <p class="fs-4 fw-bold mb-0" id="count_expired"></p>
                 </div>
             </div>
-            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
+            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center status-container flex-wrap">
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
@@ -195,20 +195,20 @@ require("startsession.php");
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-3 mb-2">
+                                    <div class="col-sm-3 col-auto mb-2">
                                         <label for="edit-dateReceived" class="form-label fw-medium">Date
                                             Received:</label>
                                         <input type="text" name="edit-receivedDate" id="edit-dateReceived"
                                             class="ps-2 form-control-plaintext form-add form-date" readonly>
                                     </div>
-                                    <div class="col-3 mb-2">
+                                    <div class="col-sm-3 col-auto mb-2">
                                         <label for="edit-expDate" class="form-label fw-medium">Expiry Date:</label>
                                         <input type="text" name="edit-expDate" id="edit-expDate"
                                             class="ps-2 form-control-plaintext form-date" autocomplete="off" readonly>
                                         <p class="fw-light text-center alert alert-warning py-1 px-3 d-none"
                                             id="expdatewarning"></p>
                                     </div>
-                                    <div class="col-3 mb-2">
+                                    <div class="col-sm-3 col-auto mb-2">
                                         <label for="edit-notes" class="form-label fw-medium">Short Note:</label>
                                         <textarea name="edit-notes" id="edit-notes" style="resize: none !important;"
                                             class="ps-2 form-control-plaintext" readonly></textarea>
@@ -220,18 +220,18 @@ require("startsession.php");
                                         class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
                                         Item Count Information</p>
                                     <div class="row mb-2 user-select-none">
-                                        <div class="col-3">
+                                        <div class="col-sm-3 col-auto">
                                             <p class="fw-medium mb-2">Opened Item Level:</p>
                                             <p class="ps-2 mb-2" id="openedContainerLevel"></p>
                                         </div>
-                                        <div class="col-3">
+                                        <div class="col-sm-3 col-auto">
                                             <p class="fw-medium mb-2">Closed Item Count:</p>
                                             <p class="ps-2 mb-2" id="closedContainerCount"></p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <p class="col fw-light alert alert-primary py-3 w-50 mx-auto d-none text-center"
+                                <p class="col-auto fw-light alert alert-primary py-3 w-50 mx-auto d-none text-center"
                                     id="reqalert"></p>
                                 <div class="row mb-2">
                                     <span class="text-body-secondary text-muted" id="addinfo"></span>
@@ -996,7 +996,7 @@ require("startsession.php");
                                                     </label>
                                                 </div>
                                             </div>
-                                            <div class="col-3 mb-2">
+                                            <div class="col-sm-3 col-auto mb-2">
                                                 <label for="adjust_qty_unit" class="form-label fw-medium">Unit to
                                                     use:</label>
                                                 <select name="qty_unit" id="adjust_qty_unit"
@@ -2085,6 +2085,37 @@ require("startsession.php");
 
             } catch (error) {
                 console.error(error);
+            }
+        });
+
+        // responsive 
+
+        $(function () {
+            var width = $(window).width();
+            if (width <= 768) {
+                $("main div.hstack, .status-container").addClass('flex-wrap');
+            } else {
+                $("main div.hstack, .status-container").removeClass('flex-wrap');
+            }
+
+            $(window).resize(function () {
+                var width = $(window).width();
+                if (width <= 768) {
+                    $("main div.hstack, .status-container").addClass('flex-wrap');
+                } else {
+                    $("main div.hstack, .status-container").removeClass('flex-wrap');
+                }
+                if (width <= 425) {
+                    $("#approvechemtable tr td > div.btn-group label").removeClass('btn-outline-dark').addClass('btn-outline-light');
+                } else {
+                    $("#approvechemtable tr td > div.btn-group label").removeClass('btn-outline-light').addClass('btn-outline-dark');
+                }
+            })
+
+            if (width <= 425) {
+                $("#approvechemtable tr td > div.btn-group label").removeClass('btn-outline-dark').addClass('btn-outline-light');
+            } else {
+                $("#approvechemtable tr td > div.btn-group label").removeClass('btn-outline-light').addClass('btn-outline-dark');
             }
         });
 
