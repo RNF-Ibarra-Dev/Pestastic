@@ -948,22 +948,22 @@ input.form-check-input {
   }
 
   /* tables */
-  tbody {
+  tbody:not(#calendar tbody) {
     display: flex;
     flex-direction: column;
   }
 
-  table,
-  td {
+  table:not(#calendar table),
+  td:not(#calendar td) {
     display: block;
     border: none;
   }
 
-  thead {
+  thead:not(#calendar thead) {
     display: none;
   }
 
-  tr {
+  tr:not(#calendar tr) {
     display: block;
     width: 100%;
     border: 1px solid #fff !important;
@@ -972,17 +972,19 @@ input.form-check-input {
     overflow: hidden;
   }
 
-  td {
+  td:not(#calendar td) {
     text-align: left;
     font-weight: 400 !important;
     padding-left: 1rem !important;
   }
 
-  td:first-child {
+  td:first-child:not(#calendar td:first-child) {
     padding-top: 1rem !important;
   }
 
-  td:first-child:has(> div.row > button) {
+  td:first-child:has(> div.row > button):not(
+      #calendar td:first-child:has(> div.row > button)
+    ) {
     padding: unset !important;
   }
 
@@ -1014,16 +1016,16 @@ input.form-check-input {
   }
 
   /* dashboard */
-  table caption {
+  table caption:not(#calendar table caption) {
     display: block;
     width: 100%;
     order: 6 !important;
   }
-  table {
+  table:not(#calendar table) {
     display: flex;
     flex-direction: column;
   }
-  tbody {
+  tbody:not(#calendar tbody) {
     margin-top: auto;
     margin-bottom: auto;
   }
@@ -1105,10 +1107,17 @@ input.form-check-input {
     color: #fff !important;
   }
 
-
   /* queue */
+  #calendar td::before {
+    content: unset !important;
+  }
 
- 
+  #queue_main #ongoingContainer,
+  #queue_main #queuecontainer,
+  #queue_main #incTransContainer {
+    box-shadow: inset 5px 5px 15px rgba(0, 0, 0, 0.2),
+      inset -5px -5px 15px rgba(0, 0, 0, 0.2);
+  }
 }
 
 @media (width <= 320px) {

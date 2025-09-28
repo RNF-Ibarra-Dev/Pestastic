@@ -70,7 +70,7 @@ if (isset($_GET['queue']) && $_GET['queue'] === 'true') {
             <?php
         }
     } else {
-        echo "<h4 class='fw-light mx-auto'>No upcoming transactions.</h4>";
+        echo "<h4 class='fw-light mx-auto w-100 text-center bg-light bg-opacity-25 py-3 rounded'>No upcoming transactions.</h4>";
     }
 }
 
@@ -227,7 +227,7 @@ if (isset($_GET['getdata']) && $_GET['getdata'] === 'ongoing') {
         }
     } else {
         ?>
-        <div class="card bg-white bg-opacity-25 mx-auto rounded border-0 text-light px-3 my-auto align-self-center">
+        <div class="card bg-white bg-opacity-25 mx-auto rounded border-0 text-light px-3 my-auto justify-self-center">
             <h5 class="fw-light text-center m-0 p-4">No Dispatched Transactions yet.</h5>
         </div>
         <?php

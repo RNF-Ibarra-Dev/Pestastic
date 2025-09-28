@@ -68,7 +68,7 @@ require("startsession.php");
         <!-- sidebar -->
         <?php include('sidenav.php'); ?>
         <!-- main content -->
-        <main class="sa-content col-sm-10 p-0 container-fluid pb-3">
+        <main class="sa-content col-sm-10 p-0 container-fluid pb-3" id="queue_main">
             <!-- navbar -->
             <?php include('navbar.php'); ?>
             <!-- content -->
@@ -80,34 +80,38 @@ require("startsession.php");
             <div class="row row-col-2 gap-3 px-3 m-0 d-flex justify-content-center">
 
                 <!-- calendar -->
-                <div class="col-md-4 col-auto mt-2 px-0">
+                <div class="col-md-4 col mt-2 px-0 d-flex flex-column">
                     <div class="bg-light bg-opacity-25 mb-3 py-2 shadow-sm rounded-3">
-                        <h4
-                            class="fw-light text-center d-flex align-items-center fw-bold fs-2 justify-content-center m-0">
+                        <div
+                            class="fw-light text-center d-flex align-items-center fw-bold fs-2 px-4 justify-content-center m-0">
                             <i class="bi bi-file-earmark-text me-2 "></i>
-                            Ongoing Transactions</h4>
+                            <p class="mb-0">Ongoing Transactions</p>
+                        </div>
                     </div>
 
-                    <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25" id="ongoingContainer" style="min-height: 32rem !important;">
-                        <div class="flex-grow-1 d-flex flex-nowrap gap-4 px-4 mb-4 mt-2 align-items-center" id="ongoing">
+                    <div class="d-flex h-100 flex-nowrap rounded-3 bg-light bg-opacity-25" id="ongoingContainer"
+                        style="min-height: 32rem !important;">
+                        <div class="flex-grow-1 d-flex flex-nowrap gap-4 px-4 mb-4 mt-2 align-items-center"
+                            id="ongoing">
                         </div>
                     </div>
                 </div>
 
                 <!-- upcoming -->
-                <div class="col-auto flex-grow-1 mt-2 px-0">
+                <div class="col d-flex flex-column flex-grow-1 mt-2 px-0">
                     <div class="mb-3 d-flex border-light bg-light bg-opacity-25 shadow-sm py-2 align-middle rounded-3">
                         <button type="button" class="btn btn-sidebar rounded-3 ms-2 text-light" id='sortrecent'>
                             <i class="bi bi-sort-up h5 m-0 d-flex align-items-center"></i>
                         </button>
-                        <h4
-                            class="fw-light m-0 justify-content-center flex-grow-1 fw-bold fs-2 d-flex align-items-center">
+                        <div
+                            class="fw-light m-0 justify-content-center flex-grow-1 fw-bold fs-2 d-flex align-items-center px-4">
                             <i class="bi bi-journal fs-2 me-2"></i>
-                            Upcoming
-                            Transactions</h5>
-                            <div style="width: 35px !important;" class="m-0 p-0"></div>
+                            <p class="mb-0">Upcoming Transactions</p>
+                        </div>
+                        <div style="width: 35px !important;" class="m-0 p-0"></div>
                     </div>
-                    <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25" id="queuecontainer" style="min-height: 32rem !important;">
+                    <div class="d-flex h-100 flex-nowrap rounded-3 bg-light bg-opacity-25" id="queuecontainer"
+                        style="min-height: 32rem !important;">
 
                         <div class=" d-flex flex-nowrap w-75 row row-cols-1 row-cols-md-3 gap-4 mt-2 mb-4 px-4 align-items-center mx-auto"
                             id="cardcontainer">
@@ -121,33 +125,36 @@ require("startsession.php");
             <div class="container-fluid">
                 <div class="row row-cols-2 d-flex justify-content-center gap-3 px-3">
 
-                    <div
-                        class="col-md col-auto flex-grow-1 py-3 px-0">
-                        <div
-                            class="bg-light bg-opacity-25 mb-3 py-2 rounded-3 shadow-sm d-flex justify-content-center">
-                            <h4 class="fw-light text-center text-center align-middle fs-2 fw-bold m-0"><i
-                                    class="bi bi-journal-minus me-2"></i> Pending Transactions</h4>
+                    <div class="col-sm-2 col flex-grow-1 d-flex flex-column py-3 px-0">
+                        <div class="bg-light bg-opacity-25 mb-3 py-2 rounded-3 shadow-sm d-flex justify-content-center">
+                            <div class="fw-light text-center text-center align-middle fs-2 fw-bold m-0 d-flex px-4">
+                                <i class="bi bi-journal-minus me-2"></i>
+                                <p class="mb-0">Pending Transactions</p>
+                            </div>
                         </div>
 
-                        <div class="d-flex flex-nowrap rounded-3 bg-light bg-opacity-25 p-3 flex-grow-1" style="min-height: 35rem !important;" id="incTransContainer">
+                        <div class="d-flex flex-nowrap rounded-3 h-100 bg-light bg-opacity-25 p-3 flex-grow-1"
+                            style="min-height: 35rem !important;" id="incTransContainer">
                             <div id="incompleteTransactions"
                                 class="mx-auto my-auto d-flex flex-nowrap justify-content-start gap-4 px-4"></div>
                         </div>
                     </div>
 
-                    <div class="col-md-4 w-100 col-auto mb-3 px-0">
+                    <div class="col-sm-4 col-12 mb-3 d-flex flex-column px-0">
                         <div class="bg-light bg-opacity-25 shadow-sm rounded-3 py-2 my-3">
-                            <h4 class="fw-bold justify-content-center m-0 d-flex align-items-center fs-2"><i
-                                    class="bi bi-calendar-date me-2"></i>Transaction
-                                Calendar
-                            </h4>
+                            <div class="fw-bold justify-content-center m-0 d-flex align-items-center fs-2 px-4"><i
+                                    class="bi bi-calendar-date me-2"></i>
+                                <p class="mb-0 text-center">Transaction
+                                    Calendar</p>
+                            </div>
                         </div>
-                        <div class="bg-light shadow-sm bg-opacity-25 rounded p-2" id="calendar" style="min-height: 35rem;"></div>
+                        <div class="bg-light shadow-sm bg-opacity-25 rounded p-2 h-100" id="calendar"
+                            style="min-height: 35rem;"></div>
                     </div>
                 </div>
             </div>
 
-        
+
         </main>
 
 
@@ -190,8 +197,7 @@ require("startsession.php");
             <div class="modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header bg-modal-title text-light">
-                        <h1 class="modal-title fs-5">Recorded Items Dispatched<span
-                                id="deployedtransid"></span></h1>
+                        <h1 class="modal-title fs-5">Recorded Items Dispatched<span id="deployedtransid"></span></h1>
                         <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                 class="bi text-light bi-x-lg"></i></button>
                     </div>
@@ -736,22 +742,22 @@ require("startsession.php");
 
         });
 
-        $(document).on('click', '.items-btn', function(){
+        $(document).on('click', '.items-btn', function () {
             let trans_id = $(this).data('item');
             console.log(trans_id);
 
             $.get(dataUrl, {
                 dispatched_items: true,
                 id: trans_id
-            }, function(d){
+            }, function (d) {
                 $("#items").empty();
                 $("#items").append(d);
                 $("#itemsModal").modal('show');
             }, 'html')
-            .fail(function(e){
-                alert("There seems to be an error fetching the dispatched items. Please try again later.");
-                console.log(e);
-            });
+                .fail(function (e) {
+                    alert("There seems to be an error fetching the dispatched items. Please try again later.");
+                    console.log(e);
+                });
         })
     </script>
 </body>
