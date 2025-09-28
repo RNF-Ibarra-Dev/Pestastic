@@ -57,6 +57,8 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
             $data['unit'] = $row['quantity_unit'];
             $data['threshold'] = $row['restock_threshold'];
             $data['location'] = $row['chem_location'];
+            $data['date_received_ymd'] = $row['date_received'];
+            $data['expDate_ymd'] = $row['expiryDate'];
         }
     } else {
         echo "Invalid ID. Make sure the chemical exist.";

@@ -99,11 +99,14 @@ table[role="presentation"] {
   min-height: unset !important;
 }
 
-tbody#itemEntryTable tr td,
-tbody#restockTable tr td,
-tbody#log_tbody tr td,
-tbody#dispatchedTable tr td {
-  color: #000 !important;
+@media (425px < width){
+
+  tbody#itemEntryTable tr td,
+  tbody#restockTable tr td,
+  tbody#log_tbody tr td,
+  tbody#dispatchedTable tr td {
+    color: #000 !important;
+  }
 }
 
 .text-light .os-table th,
@@ -905,6 +908,10 @@ input.form-check-input {
     align-items: stretch;
     flex-wrap: wrap;
   }
+
+  /* main#inventory_content .status-container > div {
+    width: 100% !important;
+  } */
 }
 
 @media (width <= 425px) {
@@ -1024,6 +1031,74 @@ input.form-check-input {
   td[data-label="View: "]::before {
     content: unset !important;
   }
+
+  /* inventory */
+
+  #inventory_content table td[data-label="Actions: "] {
+    display: flex;
+    align-items: center;
+  }
+  #inventory_content table td[data-label="Actions: "]::before {
+    margin-right: 1rem;
+  }
+  #inventory_content table td[data-label="Actions: "] > div > button {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 0.5rem;
+  }
+  #inventory_content table td[data-label="Actions: "] > div {
+    gap: 0.25rem;
+  }
+
+  #chemicalTable td[data-label="Stock Status: "] > span {
+    font-size: 1rem;
+    padding: 0.5rem 1rem !important;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.4rem;
+
+    border: 1px solid #fff;
+    border-radius: 0.5rem !important;
+  }
+  #chemicalTable td[data-label="Stock Status: "] {
+    padding: 0 !important;
+  }
+  #chemicalTable td[data-label="Stock Status: "]::before {
+    content: "";
+    /* position: unset !important;  */
+  }
+
+  #chemicalTable tr {
+    position: relative;
+  }
+
+  div.modal-body table tr {
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff !important;
+    font-size: 1.25rem;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+  }
+
+  div.modal-body table tr td{
+    color: #fff !important;
+  }
+
+  #approvechemtable td .btn-group>.btn-check:checked + .btn{
+    background: #fff;
+    color: #000 !important;
+  }
+
+  #approvechemtable td .btn.btn-sidebar{
+    border: 1px solid #fff;
+    color: #fff;
+  }
+
+  div.modal-body table td button{
+    border: 1px #fff solid !important;
+    margin: 0 .25rem .25rem .25rem;
+  }
+  div.modal-body table td button i {
+    color: #fff !important;
+  }
 }
 
 @media (width <= 320px) {
@@ -1040,11 +1115,4 @@ input.form-check-input {
   }
 
   /* inventory */
-  main#inventory_content table td[data-label="Actions: "] {
-    display: flex;
-    align-items: center;
-  }
-  main#inventory_content table td[data-label="Actions: "]::before {
-    margin-right: 1rem;
-  }
 }

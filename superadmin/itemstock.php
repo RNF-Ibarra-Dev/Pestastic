@@ -43,7 +43,7 @@ include('tablecontents/tables.php');
             <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2">
                 <h1 class="display-6 text-light mb-0 fw-bold text-center">Inventory Items</h1>
             </div>
-            <div class="d-flex flex-wrap gap-2 mb-2 mx-3 user-select-none text-center">
+            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center status-container">
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
@@ -78,7 +78,7 @@ include('tablecontents/tables.php');
                     <p class="fs-4 fw-bold mb-0" id="count_expired"></p>
                 </div>
             </div>
-            <div class="d-flex flex-wrap gap-2 mb-2 mx-3 user-select-none text-center">
+            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center status-container">
                 <div class="bg-light bg-opacity-25 rounded ps-3 pe-2 py-2 flex-fill flex-wrap w-100 d-flex flex-column">
                     <div class="clearfix">
                         <i
@@ -133,13 +133,19 @@ include('tablecontents/tables.php');
                 <button type="button" id="approvemulti"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
                         class="bi bi-clock-fill me-2" data-bs-toggle="modal" data-bs-toggle="tooltip"
-                        data-bs-target="#multiapproveModal" title="Approve multiple stocks"></i><p class="m-0">Pending Entries</p></button>
+                        data-bs-target="#multiapproveModal" title="Approve multiple stocks"></i>
+                    <p class="m-0">Pending Entries</p>
+                </button>
                 <button type="button" id="restockTableBtn"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
-                        class="bi bi-box-fill me-2"></i><p class="m-0">Restock Items</p></button>
+                        class="bi bi-box-fill me-2"></i>
+                    <p class="m-0">Restock Items</p>
+                </button>
                 <button type="button" id="dispatchedTableBtn"
                     class="btn btn-sidebar bg-light bg-opacity-25 rounded w-25 py-2 px-2 text-light fw-bold d-flex align-content-center justify-content-center"><i
-                        class="bi bi-truck-flatbed me-2"></i><p class="m-0">Dispatched Items</p></button>
+                        class="bi bi-truck-flatbed me-2"></i>
+                    <p class="m-0">Dispatched Items</p>
+                </button>
                 <select
                     class="form-select select-transparent bg-light bg-opacity-25 py-2 border-0 h-100 text-light fw-bold w-25"
                     id="sortbranches" aria-label="Default select example">
@@ -166,7 +172,7 @@ include('tablecontents/tables.php');
                 <input type="hidden" name="id" id="id_input">
                 <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static"
                     id="restockFunctionModal" tabindex="0">
-                    <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-dialog modal-fullscreen-md-down  modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title">
                                 <h1 class="modal-title fs-5 text-light">
@@ -262,7 +268,7 @@ include('tablecontents/tables.php');
                 </div>
 
                 <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="restockConfirm" tabindex="0">
-                    <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-dialog modal-fullscreen-md-down  modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title">
                                 <h1 class="modal-title fs-5 text-light">
@@ -296,7 +302,7 @@ include('tablecontents/tables.php');
             <!-- dispatched modal -->
             <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="dispatchedItemsModal"
                 tabindex="0">
-                <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-dialog modal-fullscreen-md-down  modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title">
                             <h1 class="modal-title fs-5 text-light">
@@ -342,7 +348,7 @@ include('tablecontents/tables.php');
             <!-- restock modal -->
             <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="restockModal"
                 tabindex="0">
-                <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-dialog modal-fullscreen-md-down  modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title">
                             <h1 class="modal-title fs-5 text-light">
@@ -391,7 +397,7 @@ include('tablecontents/tables.php');
             <!-- inventory log modal -->
             <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="inventorylogmodal"
                 tabindex="0">
-                <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-dialog modal-fullscreen-md-down  modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title">
                             <h1 class="modal-title fs-5 text-light">
@@ -438,7 +444,7 @@ include('tablecontents/tables.php');
             <!-- individual chemical modal -->
             <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="chemicallogmodal"
                 tabindex="0">
-                <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-dialog modal-fullscreen-md-down  modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title">
                             <h1 class="modal-title fs-5 text-light">
@@ -497,31 +503,31 @@ include('tablecontents/tables.php');
                                         <p class="text-body-secondary text-center fw-light">Adjust item levels
                                             accordingly.</p>
                                         <div class="row mb-2 px-2">
-                                            <div class="col-lg-3 mb-2">
+                                            <div class="col-sm-3 mb-2">
                                                 <label for="adjust-name" class="form-label fw-medium">Item
                                                     Name:</label>
                                                 <input type="text" id="adjust-name"
                                                     class="form-control-plaintext chem-name" readonly>
                                             </div>
-                                            <div class="col-lg-3 mb-2">
+                                            <div class="col-sm-3 mb-2">
                                                 <label for="adjust-curlevel" class="form-label fw-medium">Currently
                                                     Available:</label>
                                                 <p id="adjust-curlevel" class="mt-1 mb-0">
                                                 </p>
                                             </div>
-                                            <div class="col-lg-3 mb-2">
+                                            <div class="col-sm-3 mb-2">
                                                 <label for="adjust-dispatched" class="form-label fw-medium">Currently
                                                     Dispatched/In Use:</label>
                                                 <p id="adjust-dispatched" class="mt-1 mb-0">
                                                 </p>
                                             </div>
-                                            <div class="col-lg-3 mb-2">
+                                            <div class="col-sm-3 mb-2">
                                                 <label for="adjust-user" class="form-label fw-medium">User:</label>
                                                 <p id="adjust-user" class="mt-1 mb-0 text-capitalize">
                                                     <?= $_SESSION['fname'] . ' ' . $_SESSION['lname'] ?>
                                                 </p>
                                             </div>
-                                            <div class="col-lg-3 mb-2">
+                                            <div class="col-sm-3 mb-2">
                                                 <label for="adjust-qty" class="form-label fw-medium">Quantity:</label>
                                                 <div class="d-flex">
                                                     <input type="number" class="form-control ps-2" id="adjust-qty"
@@ -544,7 +550,7 @@ include('tablecontents/tables.php');
                                                 <p class="text-body-secondary">Note: This is only for adjustment. The
                                                     original unit will remain unchanged.</p>
                                             </div>
-                                            <div class="col-lg-3 mb-2" style="display: none;"
+                                            <div class="col-sm-3 mb-2" style="display: none;"
                                                 id="adjust-containerinput">
                                                 <label class="form-label fw-medium" for="adjust-container">
                                                     Item Count:
@@ -557,7 +563,7 @@ include('tablecontents/tables.php');
                                                 <p class="fw-light">Note. Containers with different capacity should be
                                                     added as a separate item.</p>
                                             </div>
-                                            <div class="col-lg-3 mb-2">
+                                            <div class="col-sm-3 mb-2">
                                                 <label for="adjust-logtype" class="form-label fw-medium">Adjustment
                                                     Type:</label>
                                                 <select name="logtype" class="form-select" id="adjust-logtype">
@@ -586,7 +592,7 @@ include('tablecontents/tables.php');
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-3 mb-2">
+                                            <div class="col-sm-3 mb-2">
                                                 <label for="adjust-notes" class="form-label fw-medium">Notes:</label>
                                                 <textarea name="notes" id="adjust-notes" rows="1"
                                                     class="ps-2 form-control"
@@ -619,7 +625,7 @@ include('tablecontents/tables.php');
                 <div class="row g-2 text-dark">
                     <div class="modal fade text-dark modal-edit" id="editModal" tabindex="-1" aria-labelledby="edit"
                         aria-hidden="true">
-                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                        <div class="modal-dialog modal-fullscreen-md-down  modal-xl modal-dialog-scrollable">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
                                     <h1 class="modal-title fs-5">
@@ -638,25 +644,25 @@ include('tablecontents/tables.php');
 
                                     <div class="row mb-2">
 
-                                        <div class="col-lg-3 mb-2">
+                                        <div class="col-sm-3 mb-2">
                                             <label for="edit-name" class="form-label fw-medium">Item Name:</label>
                                             <input type="text" name="edit-name" id="edit-name"
                                                 class="ps-2 form-control-plaintext" readonly autocomplete="off">
                                         </div>
-                                        <div class="col-lg-3 mb-2">
+                                        <div class="col-sm-3 mb-2">
                                             <label for="edit-chemBrand" class="form-label fw-medium">Item
                                                 Brand:</label>
                                             <input type="text" name="edit-chemBrand" id="edit-chemBrand"
                                                 class="ps-2 form-control-plaintext" readonly autocomplete="off">
                                         </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="edit-contSize" class="form-label fw-medium">Item
                                                 Size:</label>
                                             <input type="number" name="edit-containerSize" id="edit-contSize"
                                                 class="form-control-plaintext ps-2" readonly
                                                 autocomplete="one-time-code">
                                         </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="view-chemUnit" class="form-label fw-medium">Item
                                                 Unit:</label>
                                             <p id="view-chemUnit" class=" ps-2"></p>
@@ -674,7 +680,7 @@ include('tablecontents/tables.php');
                                                 <option value="canister">Canister</option>
                                             </select>
                                         </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="edit-restockThreshold" class="form-label fw-medium">Restock
                                                 Threshold:</label>
                                             <input type="number" name="edit-restockThreshold" id="edit-restockThreshold"
@@ -687,13 +693,15 @@ include('tablecontents/tables.php');
                                         <div class="col-3 mb-2">
                                             <label for="edit-dateReceived" class="form-label fw-medium">Date
                                                 Received:</label>
+                                            <p id="date-received-text" class="mb-0 ps-2"></p>
                                             <input type="date" name="edit-receivedDate" id="edit-dateReceived"
-                                                class="ps-2 form-control-plaintext form-add form-date" disabled>
+                                                class="ps-2 form-control-plaintext form-add form-date d-none" disabled>
                                         </div>
                                         <div class="col-3 mb-2">
                                             <label for="edit-expDate" class="form-label fw-medium">Expiry Date:</label>
+                                            <p id="exp-date-text" class="mb-0 ps-2"></p>
                                             <input type="date" name="edit-expDate" id="edit-expDate"
-                                                class="ps-2 form-control-plaintext form-date" autocomplete="off"
+                                                class="ps-2 form-control-plaintext form-date d-none" autocomplete="off"
                                                 disabled>
                                             <p class="fw-light text-center alert alert-warning py-1 px-3 d-none"
                                                 id="expdatewarning"></p>
@@ -744,7 +752,7 @@ include('tablecontents/tables.php');
                 <!-- edit confirmation -->
                 <div class="modal fade text-dark modal-edit" id="confirmEdit" tabindex="0"
                     aria-labelledby="verifyChanges" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-fullscreen-md-down ">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5" id="verifyChanges">Save Changes</h1>
@@ -755,7 +763,7 @@ include('tablecontents/tables.php');
                                 <div class="row mb-2">
                                     <label for="pass" class="form-label fw-light">Change item information? Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
-                                    <div class="col-lg-6 mb-2">
+                                    <div class="col-sm-6 mb-2">
                                         <input type="password" name="saPwd" class="form-control" id="pwd">
                                     </div>
                                 </div>
@@ -778,7 +786,7 @@ include('tablecontents/tables.php');
                 <div class="row g-2 text-dark">
                     <div class="modal-xl modal fade text-dark modal-edit" data-bs-backdrop="static" id="addModal"
                         tabindex="-1" aria-labelledby="create" aria-hidden="true">
-                        <div class="modal-dialog">
+                        <div class="modal-dialog modal-fullscreen-md-down ">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
                                     <i class="bi bi-plus-square me-2"></i>
@@ -788,22 +796,22 @@ include('tablecontents/tables.php');
                                 </div>
                                 <div class="modal-body">
                                     <div class="row mb-2">
-                                        <div class="col-lg-3 mb-2">
+                                        <div class="col-sm-3 mb-2">
                                             <label for="name" class="form-label fw-light">Item Name</label>
                                             <input type="text" name="name[]" id="add-name" class="form-control form-add"
                                                 autocomplete="one-time-code">
                                         </div>
-                                        <div class="col-lg-3 mb-2">
+                                        <div class="col-sm-3 mb-2">
                                             <label for="chemBrand" class="form-label fw-light">Item Brand</label>
                                             <input type="text" name="chemBrand[]" id="add-chemBrand"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="chemLevel" class="form-label fw-light">Item Size</label>
                                             <input type="text" name="containerSize[]" id="add-chemLevel"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="add-chemUnit" class="form-label fw-light">Item
                                                 Unit:</label>
                                             <select name="chemUnit[]" id="add-chemUnit" class="form-select"
@@ -820,14 +828,14 @@ include('tablecontents/tables.php');
                                                 <option value="canister">Canister</option>
                                             </select>
                                         </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="chemLevel" class="form-label fw-light">Item Count:</label>
                                             <input type="text" name="containerCount[]" id="add-chemLevel"
                                                 class="form-control form-add" autocomplete="one-time-code">
                                         </div>
                                     </div>
                                     <div class="row mb-2">
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="restockThreshold" class="form-label fw-light">Restock
                                                 Threshold:</label>
                                             <input type="number" name="restockThreshold[]" id="restockThreshold"
@@ -836,12 +844,12 @@ include('tablecontents/tables.php');
                                                 Note: Set threshold where chemical container count should be restocked immediately.
                                             </div> -->
                                         </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="expDate" class="form-label fw-light">Date Received</label>
                                             <input type="date" name="receivedDate[]" id="add-dateReceived"
                                                 class="form-control form-add form-date-rec">
                                         </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="expDate" class="form-label fw-light">Expiry Date</label>
                                             <input type="date" name="expDate[]" id="add-expDate"
                                                 class="form-control form-add form-date">
@@ -879,7 +887,7 @@ include('tablecontents/tables.php');
                     </div>
                 </div>
                 <div class="modal fade text-dark modal-edit" id="areyousureaboutthat" data-bs-backdrop="static">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-fullscreen-md-down ">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title">
                                 <h1 class="modal-title fs-5 text-light">Cancel New Item Stock Entry?</h1>
@@ -901,7 +909,7 @@ include('tablecontents/tables.php');
                     aria-labelledby="confirmAdd" aria-hidden="true">
                     <!-- <input type="hidden" id="idForDeletion" name="id">
                 <input type="hidden" id="delChemId" name="chemid"> -->
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-fullscreen-md-down ">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5" id="verifyAdd">Add New Item</h1>
@@ -912,7 +920,7 @@ include('tablecontents/tables.php');
                                 <div class="row mb-2">
                                     <label for="pass" class="form-label fw-light">Add Item? Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
-                                    <div class="col-lg-6 mb-2">
+                                    <div class="col-sm-6 mb-2">
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
                                     </div>
                                 </div>
@@ -938,7 +946,7 @@ include('tablecontents/tables.php');
                 <div class="row g-2 m-0 p-0 text-dark">
                     <div class=" modal fade text-dark modal-edit" data-bs-backdrop="static" id="dispatchChemModal"
                         tabindex="-1" aria-labelledby="create" aria-hidden="true">
-                        <div class="modal-dialog modal-xl">
+                        <div class="modal-dialog modal-fullscreen-md-down  modal-xl">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
                                     <h1 class="modal-title fs-5">Set Transaction Item Dispatch</h1>
@@ -950,30 +958,30 @@ include('tablecontents/tables.php');
                                         class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto user-select-none">
                                         Item Information</p>
                                     <div class="row mb-2">
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="dispatchName" class="form-label fw-medium">Item
                                                 Name:</label>
                                             <p id="dispatchName" class="fw-light ps-2"></p>
                                         </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="dispatch-chemBrand" class="form-label fw-medium">Item
                                                 Brand:</label>
                                             <p id="dispatch-chemBrand" class="fw-light ps-2"></p>
                                         </div>
 
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="dispatch-contSize" class="form-label fw-medium">Item
                                                 Size:</label>
                                             <p id="dispatch-contSize" class="fw-light ps-2"></p>
                                         </div>
 
-                                        <div class="col-lg-3 mb-2">
+                                        <div class="col-sm-3 mb-2">
                                             <label for="dispatch-containerCount" class="form-label fw-medium">Item
                                                 Count
                                                 (Including Opened):</label>
                                             <p id="dispatch-containerCount" class="fw-light ps-2"></p>
                                         </div>
-                                        <!-- <div class="col-lg-3 mb-2">
+                                        <!-- <div class="col-sm-3 mb-2">
                                             <label for="dispatch-cstatus" class="form-label fw-medium">Item
                                                 Location Status:</label>
                                             <p id="dispatch-cstatus" class="fw-light ps-2"></p>
@@ -981,7 +989,7 @@ include('tablecontents/tables.php');
                                     </div>
 
                                     <div class="row mb-2">
-                                        <div class="col-lg-4 mb-2">
+                                        <div class="col-sm-4 mb-2">
                                             <label for="dispatchValue" class="form-label fw-medium">Number of items
                                                 to dispatch:</label>
                                             <input type="number" name="dispatchValue" id="dispatchValue"
@@ -999,7 +1007,7 @@ include('tablecontents/tables.php');
                                             <label class="btn btn-outline-dark" for="dispatchAll">Dispatch
                                                 Everything</label>
                                         </div>
-                                        <div class="col-lg-4 mb-2">
+                                        <div class="col-sm-4 mb-2">
                                             <label for="dispatch-transaction" class="form-label fw-medium">Select
                                                 Transaction Dispatch:</label>
                                             <select name="dispatch-transaction" id="dispatch-transaction"
@@ -1045,7 +1053,7 @@ include('tablecontents/tables.php');
 
                 <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="dispatchConfirmationModal"
                     tabindex="0" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-fullscreen-md-down ">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5" id="verifyAdd">Dispatch Item</h1>
@@ -1056,7 +1064,7 @@ include('tablecontents/tables.php');
                                 <div class="row mb-2">
                                     <label for="pass" class="form-label fw-light">Dispatch Item? Enter Manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
-                                    <div class="col-lg-6 mb-2">
+                                    <div class="col-sm-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control">
                                     </div>
                                 </div>
@@ -1081,7 +1089,7 @@ include('tablecontents/tables.php');
                 <div class="row g-2 m-0 p-0 text-dark">
                     <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="returnChemModal"
                         tabindex="-1" aria-labelledby="create" aria-hidden="true">
-                        <div class="modal-dialog modal-xl ">
+                        <div class="modal-dialog modal-fullscreen-md-down  modal-xl ">
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
                                     <h1 class="modal-title fs-5">Return Dispatched Item</h1>
@@ -1093,23 +1101,23 @@ include('tablecontents/tables.php');
                                         class="text-center fw-bold fs-5 bg-secondary text-light bg-opacity-50 rounded py-1 w-50 mx-auto">
                                         Item Information</p>
                                     <div class="row mb-2">
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="returnName" class="form-label fw-medium">Item
                                                 Name:</label>
                                             <p id="returnName" class="fw-light ps-2"></p>
                                         </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="return-chemBrand" class="form-label fw-medium">Item
                                                 Brand:</label>
                                             <p id="return-chemBrand" class="fw-light ps-2"></p>
                                         </div>
 
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="return-contSize" class="form-label fw-medium">Item
                                                 Size:</label>
                                             <p id="return-contSize" class="fw-light ps-2"></p>
                                         </div>
-                                        <div class="col-lg-4 mb-2">
+                                        <div class="col-sm-4 mb-2">
                                             <label for="return-cstatus" class="form-label fw-medium">Item Location
                                                 Status:</label>
                                             <p id="return-cstatus" class="fw-light ps-2"></p>
@@ -1129,7 +1137,7 @@ include('tablecontents/tables.php');
                                             <p class="fw-medium mb-2">Closed Item Count:</p>
                                             <p class="ps-2 mb-2 fw-light" id="return_closedContainerCount"></p>
                                         </div>
-                                        <div class="col-lg-2 mb-2">
+                                        <div class="col-sm-2 mb-2">
                                             <label for="return-containerCount" class="form-label fw-medium">Total
                                                 Items:</label>
                                             <p id="return-containerCount" class="fw-light ps-2"></p>
@@ -1167,7 +1175,7 @@ include('tablecontents/tables.php');
                                     </div>
 
                                     <div class="row mb-2">
-                                        <div class="col-lg-4 mb-2">
+                                        <div class="col-sm-4 mb-2">
                                             <label for="return_transaction" class="form-label fw-medium">Select
                                                 Dispatched Transaction:</label>
                                             <select name="return_transaction" id="return_transaction"
@@ -1201,7 +1209,7 @@ include('tablecontents/tables.php');
 
                 <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="returnConfirmationModal"
                     tabindex="0" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-fullscreen-md-down ">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5" id="verifyAdd">Return Item</h1>
@@ -1213,7 +1221,7 @@ include('tablecontents/tables.php');
                                     <label for="pass" class="form-label fw-light">Return Item? Enter Operations
                                         Supervisor
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
-                                    <div class="col-lg-6 mb-2">
+                                    <div class="col-sm-6 mb-2">
                                         <input type="password" name="baPwd" class="form-control">
                                     </div>
                                 </div>
@@ -1237,7 +1245,7 @@ include('tablecontents/tables.php');
                 <input type="hidden" id="delChemId" name="chemid">
                 <div class="modal fade text-dark modal-edit" id="deleteModal" tabindex="0"
                     aria-labelledby="verifyChanges" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-fullscreen-md-down ">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5" id="verifyChanges">Item Deletion</h1>
@@ -1249,7 +1257,7 @@ include('tablecontents/tables.php');
                                     <label for="pass" class="form-label fw-light">Are you sure you want to
                                         delete this product? Enter Manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
-                                    <div class="col-lg-6 mb-2">
+                                    <div class="col-sm-6 mb-2">
                                         <input type="password" name="saPwd" class="form-control" id="manPass">
                                     </div>
                                 </div>
@@ -1273,7 +1281,7 @@ include('tablecontents/tables.php');
             <form id="multiapprove">
                 <div class="modal modal-xl fade text-dark modal-edit" data-bs-backdrop="static" id="multiapproveModal"
                     tabindex="0" aria-labelledby="confirmAdd" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-dialog modal-fullscreen-md-down  modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title">
                                 <h1 class="modal-title fs-5 text-light">
@@ -1332,7 +1340,7 @@ include('tablecontents/tables.php');
 
                 <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="confirmmultiapprove"
                     tabindex="0">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-fullscreen-md-down ">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5">Confirmation</h1>
@@ -1345,7 +1353,7 @@ include('tablecontents/tables.php');
                                         entries?
                                         Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
-                                    <div class="col-lg-6 mb-2">
+                                    <div class="col-sm-6 mb-2">
                                         <input type="password" name="saPwd" class="form-control"
                                             id="confirmapprove-inputpwd">
                                     </div>
@@ -1371,7 +1379,7 @@ include('tablecontents/tables.php');
             <!-- single approval modal | acts as confirmation modal (?) -->
             <form id="confirmapprove">
                 <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="approveModal" tabindex="0">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-fullscreen-md-down ">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5" id="verifyChanges">Entry Approval</h1>
@@ -1383,7 +1391,7 @@ include('tablecontents/tables.php');
                                     <label for="approve-inputpwd" class="form-label fw-light">Approve Item <span
                                             id="chemname"></span>? Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
-                                    <div class="col-lg-6 mb-2">
+                                    <div class="col-sm-6 mb-2">
                                         <input type="hidden" name="id" id="approve-id">
                                         <input type="password" name="saPwd" class="form-control" id="approve-inputpwd">
                                     </div>
@@ -2198,12 +2206,25 @@ include('tablecontents/tables.php');
                 })
         }
 
-        flatpickr("#edit-dateReceived, #add-dateReceived", {
+        const f_date_received = flatpickr("#edit-dateReceived", {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y",
+            maxDate: 'today'
+        });
+
+        const f_exp_date = flatpickr("#edit-expDate", {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y",
+            // minDate: 'today'
+        });
+        flatpickr("#add-dateReceived", {
             dateFormat: "Y-m-d",
             maxDate: 'today'
         });
 
-        flatpickr("#edit-expDate, #add-expDate", {
+        flatpickr("#add-expDate", {
             dateFormat: "Y-m-d",
             minDate: 'today'
         });
@@ -2227,11 +2248,11 @@ include('tablecontents/tables.php');
 
         function toggle() {
             $('#submitEdit').toggleClass('d-none');
-            $('#view-chemUnit, #edit-chemUnit').toggleClass('d-none');
+            $('#view-chemUnit, #edit-chemUnit, #date-received-text, #exp-date-text, #edit-dateReceived + input, #edit-expDate + input').toggleClass('d-none');
             $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount, #edit-restockThreshold').attr('readonly', function (i, a) {
                 return a ? false : true;
             });
-            $("#edit-expDate, #edit-dateReceived, #edit-chemUnit").attr('disabled', function (i, a) {
+            $("#edit-expDate + input, #edit-dateReceived + input, #edit-chemUnit, #edit-expDate, #edit-dateReceived").attr('disabled', function (i, a) {
                 return a ? false : true;
             });
 
@@ -2239,7 +2260,7 @@ include('tablecontents/tables.php');
                 return a.includes('Close Edit') ? 'Edit' : 'Close Edit';
             });
             $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived, #edit-contSize, #edit-containerCount, #edit-restockThreshold').toggleClass('form-control-plaintext form-control');
-
+            $("#edit-expDate + input, #edit-dateReceived + input").toggleClass('form-control-plaintext');
             return toggled = toggled ? false : true;
         }
 
@@ -2265,7 +2286,7 @@ include('tablecontents/tables.php');
             let id = $(this).data('chem');
             let deets = await get_chem_details(id);
             var details = JSON.parse(deets);
-            // console.log(details);
+            console.log(details);
 
             $('#submitEdit, #toggleEditBtn').attr('disabled', function () {
                 return details.req == 1 ? true : false;
@@ -2292,8 +2313,10 @@ include('tablecontents/tables.php');
             $('#edit-chemLevel').val(details.level);
             $('#edit-contSize').val(details.container_size);
             $('#edit-containerCount').val(details.unop_cont);
-            $('#edit-dateReceived').val(details.daterec);
-            $('#edit-expDate').val(details.expDate);
+            $('#date-received-text').text(details.daterec);
+            f_date_received.setDate(details.date_received_ymd);
+            f_exp_date.setDate(details.expDate_ymd);
+            $('#exp-date-text').text(details.expDate);
             $('#edit-notes').val(details.notes);
             $('#edit-chemUnit').val(details.unit);
             $('#edit-restockThreshold').val(details.threshold);
@@ -3017,20 +3040,31 @@ include('tablecontents/tables.php');
         $(function () {
             var width = $(window).width();
             if (width <= 768) {
-                $("main div.hstack").addClass('flex-wrap');
+                $("main div.hstack, .status-container").addClass('flex-wrap');
             } else {
-                $("main div.hstack").removeClass('flex-wrap');
+                $("main div.hstack, .status-container").removeClass('flex-wrap');
             }
 
             $(window).resize(function () {
                 var width = $(window).width();
                 if (width <= 768) {
-                    $("main div.hstack").addClass('flex-wrap');
+                    $("main div.hstack, .status-container").addClass('flex-wrap');
                 } else {
-                    $("main div.hstack").removeClass('flex-wrap');
+                    $("main div.hstack, .status-container").removeClass('flex-wrap');
+                }
+                if (width <= 425) {
+                    $("#approvechemtable tr td > div.btn-group label").removeClass('btn-outline-dark').addClass('btn-outline-light');
+                } else {
+                    $("#approvechemtable tr td > div.btn-group label").removeClass('btn-outline-light').addClass('btn-outline-dark');
                 }
             })
-        })
+
+            if (width <= 425) {
+                $("#approvechemtable tr td > div.btn-group label").removeClass('btn-outline-dark').addClass('btn-outline-light');
+            } else {
+                $("#approvechemtable tr td > div.btn-group label").removeClass('btn-outline-light').addClass('btn-outline-dark');
+            }
+        });
 
     </script>
 </body>

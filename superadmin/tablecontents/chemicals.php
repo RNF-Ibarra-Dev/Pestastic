@@ -333,23 +333,23 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
             $request = (int) $row['request'];
             ?>
             <tr class="text-center">
-                <td>
+                <td data-label="Item ID: ">
                     <?= htmlspecialchars($id) ?>
                 </td>
-                <td><?= htmlspecialchars($name) ?></td>
-                <td><?= htmlspecialchars($brand) ?></td>
-                <td>
+                <td data-label="Item Name: "><?= htmlspecialchars($name) ?></td>
+                <td data-label="Item Brand: "><?= htmlspecialchars($brand) ?></td>
+                <td data-label="Container Size: ">
                     <?= htmlspecialchars("$contsize $unit") ?>
                 </td>
-                <td>
+                <td data-label="Date Received: ">
                     <?= htmlspecialchars($dr) ?>
                 </td>
-                <td>
+                <td data-label="Expiry Date: ">
                     <?= htmlspecialchars($e) ?>
                 </td>
-                <td><?= htmlspecialchars($ab) ?></td>
-                <td>
-                    <div class="d-flex justify-content-center">
+                <td data-label="Added by: "><?= htmlspecialchars($ab) ?></td>
+                <td data-label="Approve: ">
+                    <!-- <div class="d-flex justify-content-center"> -->
                         <?php
                         if ($request === 1) {
                             ?>
@@ -364,9 +364,9 @@ if (isset($_GET['stock']) && $_GET['stock'] === 'true') {
                             ?>
                             <p class="text-muted">Item approved.</p>
                         <?php } ?>
-                    </div>
+                    <!-- </div> -->
                 </td>
-                <td>
+                <td data-label="Delete Entry: ">
                     <?php
                     if ($request === 1) {
                         ?>
@@ -512,6 +512,8 @@ if (isset($_GET['chemDetails']) && $_GET['chemDetails'] === 'true') {
             $data['unit'] = $row['quantity_unit'];
             $data['threshold'] = $row['restock_threshold'];
             $data['location'] = $row['chem_location'];
+            $data['date_received_ymd'] = $row['date_received'];
+            $data['expDate_ymd'] = $row['expiryDate'];
         }
     } else {
         echo "Invalid ID. Make sure the chemical exist.";

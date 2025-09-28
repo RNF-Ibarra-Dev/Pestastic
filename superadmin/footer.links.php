@@ -8,22 +8,31 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
 <script src='fullcalendar/dist/index.global.js'></script>
-<script> 
-function applyTableLabels($table) {
+<script>
+    function applyTableLabels($table) {
         let headers = [];
         $table.find("thead th").each(function (i, th) {
-            headers[i] = $(th).text().trim();
+
+            let header = $(th).find("input").length > 0;
+
+            let content = header ? null : $(th).text().trim();
+
+            headers[i] = content;
+
         });
 
         $table.find("tbody tr").each(function () {
             $(this).find("td").each(function (i, td) {
-                $(td).attr("data-label", headers[i].length ? headers[i] + ': ' : '');
+                if (headers[i]) {
+                    $(td).attr("data-label", headers[i] + ": ");
+                } else {
+                    $(td).removeAttr("data-label");
+                }
             });
         });
     }
 
     $(document).ajaxComplete(function () {
-        // on page load
         $("table").each(function () {
             applyTableLabels($(this));
         });

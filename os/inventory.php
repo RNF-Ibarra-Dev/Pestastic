@@ -706,13 +706,16 @@ require("startsession.php");
                                         <div class="col-3 mb-2">
                                             <label for="edit-dateReceived" class="form-label fw-medium">Date
                                                 Received:</label>
+                                            <p id="date-received-text" class="mb-0 ps-2"></p>
+
                                             <input type="date" name="edit-receivedDate" id="edit-dateReceived"
-                                                class="ps-2 form-control-plaintext form-add form-date" disabled>
+                                                class="ps-2 form-control-plaintext form-add form-date d-none" disabled>
                                         </div>
                                         <div class="col-3 mb-2">
                                             <label for="edit-expDate" class="form-label fw-medium">Expiry Date:</label>
+                                            <p id="exp-date-text" class="mb-0 ps-2"></p>
                                             <input type="date" name="edit-expDate" id="edit-expDate"
-                                                class="ps-2 form-control-plaintext form-date" autocomplete="off"
+                                                class="ps-2 form-control-plaintext form-date d-none" autocomplete="off"
                                                 disabled>
                                             <p class="fw-light text-center alert alert-warning py-1 px-3 d-none"
                                                 id="expdatewarning"></p>
@@ -1879,25 +1882,39 @@ require("startsession.php");
                 })
         }
 
-        flatpickr("#edit-dateReceived, #add-dateReceived", {
+        flatpickr("#add-dateReceived", {
             dateFormat: "Y-m-d",
             maxDate: 'today'
         });
 
-        flatpickr("#edit-expDate, #add-expDate", {
+        flatpickr("#add-expDate", {
             dateFormat: "Y-m-d",
             minDate: 'today'
         })
+
+        const f_date_received = flatpickr("#edit-dateReceived", {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y",
+            maxDate: 'today'
+        });
+
+        const f_exp_date = flatpickr("#edit-expDate", {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y",
+            // minDate: 'today'
+        });
 
         let toggled = false;
 
         function toggle() {
             $('#submitEdit').toggleClass('d-none');
-            $('#view-chemUnit, #edit-chemUnit, #view-location, #edit-location').toggleClass('d-none');
+            $('#view-chemUnit, #edit-chemUnit, #date-received-text, #exp-date-text, #edit-dateReceived + input, #edit-expDate + input').toggleClass('d-none');
             $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-contSize, #edit-containerCount, #edit-restockThreshold').attr('readonly', function (i, a) {
                 return a ? false : true;
             });
-            $("#edit-expDate, #edit-dateReceived, #edit-chemUnit").attr('disabled', function (i, a) {
+            $("#edit-expDate + input, #edit-dateReceived + input, #edit-chemUnit, #edit-expDate, #edit-dateReceived").attr('disabled', function (i, a) {
                 return a ? false : true;
             });
 
@@ -1905,7 +1922,7 @@ require("startsession.php");
                 return a.includes('Close Edit') ? 'Edit' : 'Close Edit';
             });
             $('#edit-notes, #edit-name, #edit-chemBrand, #edit-chemLevel, #edit-expDate, #edit-dateReceived, #edit-contSize, #edit-containerCount, #edit-restockThreshold').toggleClass('form-control-plaintext form-control');
-
+            $("#edit-expDate + input, #edit-dateReceived + input").toggleClass('form-control-plaintext');
             return toggled = toggled ? false : true;
         }
 
@@ -1942,8 +1959,10 @@ require("startsession.php");
             $('#edit-chemLevel').val(details.level);
             $('#edit-contSize').val(details.container_size);
             $('#edit-containerCount').val(details.unop_cont);
-            $('#edit-dateReceived').val(details.daterec);
-            $('#edit-expDate').val(details.expDate);
+            $('#date-received-text').text(details.daterec);
+            f_date_received.setDate(details.date_received_ymd);
+            f_exp_date.setDate(details.expDate_ymd);
+            $('#exp-date-text').text(details.expDate);
             $('#edit-notes').val(details.notes);
             $('#edit-chemUnit').val(details.unit);
             $('#edit-restockThreshold').val(details.threshold);
