@@ -710,7 +710,7 @@ function add_chemical_used($conn, $transactionId, $chemUsedId, $amtUsed = 0.0)
     mysqli_stmt_bind_param($stmt, "iisd", $transactionId, $chemUsedId, $chemBrand, $amount);
     mysqli_stmt_execute($stmt);
 
-    if (!mysqli_stmt_affected_rows($stmt) > 0) {
+    if (mysqli_stmt_affected_rows($stmt) == 0) {
         mysqli_stmt_close($stmt);
         return false;
     }
@@ -3516,14 +3516,15 @@ function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
             }
         }
 
-        for ($i = 0; $i < count($chemUsed); $i++) {
+        // for ($i = 0; $i < count($chemUsed); $i++) {
             // log transaction
-            $log_note = "Dispatched {$chemUsed[$i]} with amount used of {$amtUsed[$i]}. User Note: " . ($note != '' ? $note : 'N/A');
-            $logchems = log_transaction($conn, $transid, $chemUsed[$i], $amtUsed[$i], $branch, $user_id, $role, $log_note, $status);
+            // $log_note = "Dispatched {$chemUsed[$i]} with amount used of {$amtUsed[$i]}. User Note: " . ($note != '' ? $note : 'N/A');
+            $log_note = $note != '' ? $note : 'N/A';
+            $logchems = log_transaction($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $role, $log_note, $status);
             if (isset($logchems['error'])) {
                 throw new Exception($logchems['error']);
             }
-        }
+        // }
 
 
         mysqli_commit($conn);

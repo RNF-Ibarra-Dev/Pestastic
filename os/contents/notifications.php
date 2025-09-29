@@ -153,7 +153,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
                     <div class='fw-medium w-100 fs-5 py-2 d-flex align-items-center justify-content-start mb-0'>
                         <i class='bi bi-calendar-event-fill fs-4 ms-3 text-body-tertiary fw-light account-settings-icon'></i>
-                        <div class='vr mx-5+'></div>
+                        <div class='vr mx-5'></div>
                         <p class='text-start m-0 p-0'>There are <span class='text-info'>$num</span> upcoming $msg waiting to be dispatched.</p>
                     </div>
                 </a>
