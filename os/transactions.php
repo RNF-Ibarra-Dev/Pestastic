@@ -1860,6 +1860,8 @@
         let etd = $('#view-treatmentDate');
         editTransDate = flatpickr(etd, {
             dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y"
             // placeholder: "--/--/--"
             // minDate: new Date().fp_incr(1),
         });
@@ -1873,6 +1875,8 @@
         let startdate = $('#view-start');
         packageStartDate = flatpickr(startdate, {
             dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y"
             // minDate: new Date().fp_incr(1),
         });
 
@@ -1906,7 +1910,7 @@
 
                 return attr ? false : true;
             });
-            $("#view-start, #view_wstart, #view-expiry, #view_wexpiry, #w_expiry_note, #view-treatmentDate, #t_viewdate, #t_viewtime, #view-treatmentTime").toggleClass('d-none');
+            $("#view-start, #view-start + input, #view_wstart, #view-expiry, #view_wexpiry, #w_expiry_note, #view-treatmentDate, #t_viewdate, #t_viewtime, #view-treatmentTime, #view-treatmentDate + input, #view-treatmentTime + input").toggleClass('d-none');
 
             $('#view-technicians-label').toggleClass('visually-hidden');
             $('#view-technicians').toggleClass('visually-hidden');
