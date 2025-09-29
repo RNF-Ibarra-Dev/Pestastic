@@ -706,7 +706,8 @@ function add_chemical_used($conn, $transactionId, $chemUsedId, $amtUsed = 0.0)
         exit();
     }
     // $amount = 
-    mysqli_stmt_bind_param($stmt, "iisd", $transactionId, $chemUsedId, $chemBrand, $amtUsed);
+    $amount = (float) $amtUsed;
+    mysqli_stmt_bind_param($stmt, "iisd", $transactionId, $chemUsedId, $chemBrand, $amount);
     mysqli_stmt_execute($stmt);
 
     if (!mysqli_stmt_affected_rows($stmt) > 0) {
