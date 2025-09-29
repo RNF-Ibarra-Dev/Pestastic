@@ -154,7 +154,7 @@ function get_prob($conn, $checked = null)
 function get_chem($conn, $active = null)
 {
     $active = $active == null ? '' : $active;
-    $sql = "SELECT * FROM chemicals WHERE request = 0 AND chemLevel != 0 AND branch = {$_SESSION['branch']} ORDER BY id DESC;";
+    $sql = "SELECT * FROM chemicals WHERE request = 0 AND chem_location = 'main_storage' AND (chemLevel > 0 OR unop_cont > 0) AND branch = {$_SESSION['branch']} ORDER BY id DESC;";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
@@ -182,7 +182,7 @@ function get_chem($conn, $active = null)
 function get_chem_edit($conn, $active = 0)
 {
     $active = $active === 0 ? 0 : (int) $active;
-    $sql = "SELECT * FROM chemicals WHERE branch = {$_SESSION['branch']} ORDER BY id DESC;";
+    $sql = "SELECT * FROM chemicals WHERE request = 0 AND branch = {$_SESSION['branch']} AND chem_location = 'main_storage' ORDER BY id DESC;";
     $result = mysqli_query($conn, $sql);
 
     if (!$result) {
