@@ -687,9 +687,10 @@
                                     <div class="row mb-2 d-none" id="edit-status-col">
                                         <!-- edit -->
                                         <div class="col-lg-6 d-flex flex-column">
-                                            <label for="edit-status" class="form-label"
+                                            <label for="edit-status" class="label fw-bold form-label"
                                                 id='label-edit-status'>Transaction Status:</label>
-                                            <select name="edit-status" id="edit-status" class="form-select ">
+                                            <p id="edit-status" class="mb-0 ps-2"></p>
+                                            <!-- <select name="edit-status" id="edit-status" class="form-select ">
                                                 <option value="" selected>Select Status</option>
                                                 <option value="Pending">Pending</option>
                                                 <option value="Accepted">Accepted</option>
@@ -697,7 +698,7 @@
                                                 <option value="Finalizing">Finalizing</option>
                                                 <option value="Completed">Completed</option>
                                                 <option value="Cancelled">Cancelled</option>
-                                            </select>
+                                            </select> -->
                                             <p class="alert alert-warning py-1 mt-2" style="display: none !important;">
                                             </p>
                                         </div>
@@ -1965,18 +1966,18 @@
 
         })
 
-        $(document).on('change', '#edit-status', function () {
-            let sts = $(this).val();
-            $('#edit-addMoreChem').data('status', sts);
+        // $(document).on('change', '#edit-status', function () {
+        //     let sts = $(this).val();
+        //     $('#edit-addMoreChem').data('status', sts);
 
-            if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched') {
-                $('#edit-chemBrandUsed input.form-control').prop('disabled', false);
-                $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
-            } else {
-                $('#edit-chemBrandUsed input.form-control').val('-').prop('disabled', true);
-                $('#edit-chemBrandUsed input.form-control').removeAttr('name');
-            }
-        });
+        //     if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched') {
+        //         $('#edit-chemBrandUsed input.form-control').prop('disabled', false);
+        //         $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
+        //     } else {
+        //         $('#edit-chemBrandUsed input.form-control').val('-').prop('disabled', true);
+        //         $('#edit-chemBrandUsed input.form-control').removeAttr('name');
+        //     }
+        // });
 
         async function edit(name, transId = null) {
             try {
@@ -2363,13 +2364,13 @@
                         }
                     }
 
-                    if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {
-                        $("#edit-status option[value='Accepted']").prop('disabled', true);
-                        $("#edit-status option[value='Pending']").prop('disabled', true);
-                    } else {
-                        $("#edit-status option[value='Accepted']").prop('disabled', false);
-                        $("#edit-status option[value='Pending']").prop('disabled', false);
-                    }
+                    // if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {
+                    //     $("#edit-status option[value='Accepted']").prop('disabled', true);
+                    //     $("#edit-status option[value='Pending']").prop('disabled', true);
+                    // } else {
+                    //     $("#edit-status option[value='Accepted']").prop('disabled', false);
+                    //     $("#edit-status option[value='Pending']").prop('disabled', false);
+                    // }
 
                     if (d.void_request === 1) {
                         $('#editbtn').hide().attr('disabled', true);
@@ -2409,7 +2410,7 @@
                     $('#edit-note').val(d.notes ?? '');
                     $('#view-note').html(d.notes == null || d.notes == '' ? 'No existing note.' : d.notes);
 
-                    $('#edit-status').val(d.transaction_status);
+                    $('#edit-status').text(d.transaction_status);
 
                     $('#edit-addMoreChem').attr('data-status', d.transaction_status);
 
@@ -2533,7 +2534,7 @@
         }
 
         // new
-        $(document).on('change', '#add-status, #edit-status', function () {
+        $(document).on('change', '#add-status', function () {
             let sel = $(this);
             if (sel.val() === 'Voided') {
                 sel.next().fadeOut().fadeIn(750).html("Note: Voiding a transaction completely will require Manager approval. Ignore to continue.");
@@ -2564,7 +2565,7 @@
 
         // new
         $("#addModal, #details-modal").on('hidden.bs.modal', async function () {
-            $("#add-status, #edit-status").next().hide();
+            $("#add-status").next().hide();
         });
 
         async function check_emptyrow(row) {

@@ -179,87 +179,87 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $problems = $_POST['pest_problems'] ?? []; //array
     $chemUsed = $_POST['edit_chemBrandUsed'] ?? []; //arrya
     $amtUsed = $_POST['edit-amountUsed'] ?? []; //array
-    $status = $_POST['edit-status'];
+    // $status = $_POST['edit-status'];
     $note = $_POST['edit-note'] ?? null;
     $saPwd = $_POST['edit-saPwd'];
     $upby = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
 
-    $allowedUpdateStatus = ['Pending', 'Accepted', 'Finalizing', 'Cancelled', 'Dispatched', 'Completed'];
+    // $allowedUpdateStatus = ['Pending', 'Accepted', 'Finalizing', 'Cancelled', 'Dispatched', 'Completed'];
 
     // add updated by 
-    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatmentTime) || empty($problems) || empty($chemUsed) || empty($status) || empty($ttype) || empty($address)) {
+    if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatmentTime) || empty($problems) || empty($chemUsed) || empty($ttype) || empty($address)) {
         http_response_code(400);
         echo "All input fields are required.";
         exit();
     }
 
-    $oStatus = check_status($conn, $transId);
-    if ($status === 'Pending' || $status === 'Cancelled' || $status === 'Accepted') {
-        $today = date("Y-m-d");
-        if ($treatmentDate < $today) {
-            http_response_code(400);
-            echo "Invalid treatment date.";
-            exit();
-        }
-        if ($status === 'Cancelled' && $oStatus === 'Pending') {
-            http_response_code(400);
-            echo "Transaction should be approved first before cancelling treatment date.";
-            exit();
-        }
-    }
+    // $oStatus = check_status($conn, $transId);
+    // if ($status === 'Pending' || $status === 'Cancelled' || $status === 'Accepted') {
+    //     $today = date("Y-m-d");
+    //     if ($treatmentDate < $today) {
+    //         http_response_code(400);
+    //         echo "Invalid treatment date.";
+    //         exit();
+    //     }
+    //     if ($status === 'Cancelled' && $oStatus === 'Pending') {
+    //         http_response_code(400);
+    //         echo "Transaction should be approved first before cancelling treatment date.";
+    //         exit();
+    //     }
+    // }
 
-    if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
-        if ($oStatus === 'Finalizing' && $status === 'Dispatched') {
-            http_response_code(400);
-            echo "Error. You cannot go back once finalizing phase is set.";
-            exit();
-        }
+    // if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
+    //     if ($oStatus === 'Finalizing' && $status === 'Dispatched') {
+    //         http_response_code(400);
+    //         echo "Error. You cannot go back once finalizing phase is set.";
+    //         exit();
+    //     }
 
-        if ($oStatus === 'Dispatched' && ($status === 'Pending' || $status === 'Accepted')) {
-            http_response_code(400);
-            echo "Error. You cannot go back once the technicians are dispatched. Please cancel the transaction first.";
-            exit();
-        }
+    //     if ($oStatus === 'Dispatched' && ($status === 'Pending' || $status === 'Accepted')) {
+    //         http_response_code(400);
+    //         echo "Error. You cannot go back once the technicians are dispatched. Please cancel the transaction first.";
+    //         exit();
+    //     }
 
-        if (empty($amtUsed)) {
-            http_response_code(400);
-            echo "Amount Used is required for the current Status.";
-            exit();
-        }
-        for ($i = 0; $i < count($amtUsed); $i++) {
-            if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
-                http_response_code(400);
-                echo "Error. Invalid Amount Used.";
-                exit();
-            }
-        }
-    }
+    //     if (empty($amtUsed)) {
+    //         http_response_code(400);
+    //         echo "Amount Used is required for the current Status.";
+    //         exit();
+    //     }
+    //     for ($i = 0; $i < count($amtUsed); $i++) {
+    //         if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
+    //             http_response_code(400);
+    //             echo "Error. Invalid Amount Used.";
+    //             exit();
+    //         }
+    //     }
+    // }
 
-    if (!in_array($status, $allowedUpdateStatus)) {
-        http_response_code(400);
-        echo "Invalid status set. Please try again.";
-        exit();
-    }
+    // if (!in_array($status, $allowedUpdateStatus)) {
+    //     http_response_code(400);
+    //     echo "Invalid status set. Please try again.";
+    //     exit();
+    // }
 
     // no transId
-    if (!$oStatus) {
-        http_response_code(400);
-        echo 'Unknown transaction ID.';
-        exit();
-    } elseif (isset($oStatus['error'])) {
-        // stmt error
-        http_response_code(400);
-        echo $oStatus['error'];
-        exit();
-    }
+    // if (!$oStatus) {
+    //     http_response_code(400);
+    //     echo 'Unknown transaction ID.';
+    //     exit();
+    // } elseif (isset($oStatus['error'])) {
+    //     // stmt error
+    //     http_response_code(400);
+    //     echo $oStatus['error'];
+    //     exit();
+    // }
 
-    if (!in_array($oStatus, $allowedUpdateStatus)) {
-        // if status is not pending or accepted
-        http_response_code(400);
-        echo 'Invalid Status. Completed and voided transactions cannot be edited.';
-        exit();
-    }
+    // if (!in_array($oStatus, $allowedUpdateStatus)) {
+    //     // if status is not pending or accepted
+    //     http_response_code(400);
+    //     echo 'Invalid Status. Completed and voided transactions cannot be edited.';
+    //     exit();
+    // }
 
     if ($package != 'none') {
         if (!in_array($package, $packageIds)) {
@@ -276,6 +276,8 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     } else {
         $package = null;
     }
+
+    $status = check_status($conn, $transId);
 
     $data = [
         'transId' => $transId,
