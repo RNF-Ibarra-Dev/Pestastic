@@ -2121,13 +2121,18 @@ function validate($conn, $password)
     $row = mysqli_fetch_assoc($result);
 
     $saPwd = $row['saPwd'];
-    $verifiedPwd = password_verify($password, $saPwd);
-    if ($verifiedPwd) {
+    // $verifiedPwd = password_verify($password, $saPwd);
+    // if ($verifiedPwd) {
+    //     return true;
+    //     // header("location: ../superadmin/tech.acc.php?error=passwordcorrect");
+    // } else {
+    //     return false;
+    // }
+
+    if($saPwd == $password){
         return true;
-        // header("location: ../superadmin/tech.acc.php?error=passwordcorrect");
-    } else {
-        return false;
     }
+    return false;
 }
 function validateTech($conn, $password)
 {
