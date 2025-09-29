@@ -1376,12 +1376,9 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
         $chemAR = 0;
 
-        if ($transData['status'] === 'Pending' || $transData['status'] === 'Accepted') {
-            $amtUsed = [];
-            for ($i = 0; $i < count($chemUsed); $i++) {
-                $amtUsed[$i] = 0;
-            }
-        }
+        // if ($transData['status'] === 'Pending' || $transData['status'] === 'Accepted') {
+
+        // }
 
         // throw new Exception(var_dump($chemUsed) . var_dump($amtUsed) . $transData['status'] . $transData['transId']);
         if ($transData['status'] === 'Dispatched' || $transData['status'] === 'Finalizing' || $transData['status'] === 'Completed') {
@@ -1403,16 +1400,38 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                     if (!$chemNames) {
                         throw new Exception('failed to fetch chemical name');
                     }
-                    mysqli_stmt_bind_param($chemStmt, 'iisi', $transData['transId'], $chemUsed[$i], $chemNames, $amtUsed[$i]);
+                    mysqli_stmt_bind_param($chemStmt, 'iisd', $transData['transId'], $chemUsed[$i], $chemNames, $amtUsed[$i]);
                     mysqli_stmt_execute($chemStmt);
                     $chemAR += mysqli_stmt_affected_rows($chemStmt);
                     if (!mysqli_stmt_affected_rows($chemStmt) > 0) {
                         throw new Exception("Chemical transaction update failed. Please try again later.");
                     }
                 }
+                mysqli_stmt_close($chemStmt);
             } else {
                 throw new Exception('chemical count error.');
             }
+        } else if ($transData['status'] === 'Pending' || $transData['status'] === 'Accepted') {
+            $chem_stmt = mysqli_stmt_init($conn);
+            $chem_sql = "INSERT INTO transaction_chemicals (trans_id, chem_id, chem_brand) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE chem_brand = VALUES(chem_brand);";
+
+            if (!mysqli_stmt_prepare($chem_stmt, $chem_sql)) {
+                throw new Exception("An error occured when preparing the statement. Please try again later.");
+            }
+            for ($i = 0; $i < count($chemUsed); $i++) {
+                $chemNames = get_chemical_name($conn, $chemUsed[$i]);
+                if (!$chemNames) {
+                    throw new Exception('failed to fetch chemical name');
+                }
+                mysqli_stmt_bind_param($chem_stmt, 'iis', $transData['transId'], $chemUsed[$i], $chemNames);
+                mysqli_stmt_execute($chem_stmt);
+                if (!mysqli_stmt_affected_rows($chem_stmt) > 0) {
+                    throw new Exception("Chemical transaction update failed. Please try again later.");
+                }
+            }
+            mysqli_stmt_close($chem_stmt);
+        } else {
+            throw new Exception("Error. Invalid Transaction Status.");
         }
 
         $pestAR = 0;
@@ -3517,13 +3536,13 @@ function dispatch_trans($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id,
         }
 
         // for ($i = 0; $i < count($chemUsed); $i++) {
-            // log transaction
-            // $log_note = "Dispatched {$chemUsed[$i]} with amount used of {$amtUsed[$i]}. User Note: " . ($note != '' ? $note : 'N/A');
-            $log_note = $note != '' ? $note : 'N/A';
-            $logchems = log_transaction($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $role, $log_note, $status);
-            if (isset($logchems['error'])) {
-                throw new Exception($logchems['error']);
-            }
+        // log transaction
+        // $log_note = "Dispatched {$chemUsed[$i]} with amount used of {$amtUsed[$i]}. User Note: " . ($note != '' ? $note : 'N/A');
+        $log_note = $note != '' ? $note : 'N/A';
+        $logchems = log_transaction($conn, $transid, $chemUsed, $amtUsed, $branch, $user_id, $role, $log_note, $status);
+        if (isset($logchems['error'])) {
+            throw new Exception($logchems['error']);
+        }
         // }
 
 
