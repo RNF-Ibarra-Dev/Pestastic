@@ -32,11 +32,19 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $addedBy = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
     $branch = $_POST['branch'] ?? NULL;
 
+    if (!validate_no_numbers($customerName)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'error', 'errorMessage' => "Customer name should only contain alphabets without numbers."]);
+        exit();
+    }
+
     if (!is_numeric($branch)) {
         http_response_code(400);
         echo json_encode(['type' => 'invalid_id', 'errorMessage' => "Invalid Branch."]);
         exit();
     }
+
+
 
     $branch_ids = get_branches_array($conn);
     if (!in_array($branch, $branch_ids)) {
@@ -70,9 +78,9 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
             echo json_encode(['type' => 'invalid_id', 'errorMessage' => $treatment['error']]);
             exit();
         }
-        if (empty($session)) {
+        if (empty($session) || !is_numeric($session)) {
             http_response_code(400);
-            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Session count is required."]);
+            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Invalid Session Count."]);
             exit();
         }
         if (empty($pstart) || empty($pexp)) {
@@ -197,6 +205,12 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         exit();
     }
 
+    if (!validate_no_numbers($customerName)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'error', 'errorMessage' => "Customer name should only contain alphabets without numbers."]);
+        exit();
+    }
+
     $oStatus = check_status($conn, $transId);
     if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
         if ($oStatus === 'Finalizing' && $status === 'Dispatched') {
@@ -252,6 +266,11 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         if (isset($treatment['error'])) {
             http_response_code(400);
             echo json_encode(['type' => 'invalid_id', 'errorMessage' => $treatment['error']]);
+            exit();
+        }
+        if (empty($session) || !is_numeric($session)) {
+            http_response_code(400);
+            echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Invalid Session Count."]);
             exit();
         }
     } else {

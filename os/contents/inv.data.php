@@ -110,6 +110,24 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 
     // location and threshold error handling
 
+    if (!is_numeric($containerSize)) {
+        http_response_code(400);
+        echo "Invalid container size.";
+        exit;
+    }
+
+    if (!is_numeric($containerCount)) {
+        http_response_code(400);
+        echo "Invalid stock count.";
+        exit;
+    }
+
+    if (!is_numeric($threshold)) {
+        http_response_code(400);
+        echo "Invalid restock threshold.";
+        exit;
+    }
+
     if (!in_array($unit, $units)) {
         http_response_code(400);
         echo "Error. Invalid Unit.";
@@ -119,6 +137,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     if (empty($expDate)) {
         $usualexp = strtotime("+2years");
         $expDate = date('Y-m-d', $usualexp);
+        $note .= empty($note) ? '' : ' ' . " (Expiry date automatically generated two years from the uploaded date.)";
     }
 
     if (strtotime($expDate) < strtotime($dateRec)) {
@@ -162,7 +181,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
     $loggedUsn = $_SESSION['baUsn'];
     $branch = $_SESSION['branch'];
     $empId = $_SESSION['empId'];
-    
+
     $notes = $_POST['notes'];
     $name = $_POST['name'] ?? [];
     $receivedDate = $_POST['receivedDate'] ?? [];
@@ -177,23 +196,37 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
 
     $addedBy = "[$loggedId] - $loggedUsn";
 
+    $three_years = strtotime("+2 years");
+    $default_expiry = date("Y-m-d", $three_years);
+
     for ($i = 0; $i < count($name); $i++) {
+        $rownum = $i + 1;
         if (!is_numeric($containerSize[$i])) {
             http_response_code(400);
-            echo "{$name[$i]} has invalid container size.";
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has invalid container size.";
             exit;
         }
 
         if (!is_numeric($containerCount[$i])) {
             http_response_code(400);
-            echo "{$name[$i]} has invalid stock count.";
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has invalid stock count.";
             exit;
         }
 
         if (!is_numeric($threshold[$i])) {
             http_response_code(400);
-            echo "{$name[$i]} has invalid restock threshold.";
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has invalid restock threshold.";
             exit;
+        }
+
+        if (!in_array($unit[$i], $units)) {
+            http_response_code(400);
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has invalid quantity unit.";
+            exit();
+        }
+        if (empty($expDate[$i]) || $expDate == '') {
+            $expDate[$i] = $default_expiry;
+            $note .= empty($note) ? '' : ' ' . " (Expiry date automatically generated two years from the updated date.)";
         }
     }
 
@@ -201,15 +234,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         http_response_code(400);
         echo 'Fields cannot be empty.';
         exit;
-    }
-
-    $three_years = strtotime("+3 years");
-    $default_expiry = date("Y-m-d", $three_years);
-
-    for ($i = 0; $i < count($expDate); $i++) {
-        if (empty($expDate[$i]) || $expDate == '') {
-            $expDate[$i] = $default_expiry;
-        }
     }
 
     if (empty($baPwd)) {
@@ -298,23 +322,28 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
             <div class="col-lg-3 mb-2">
                 <label for="name-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Name</label>
                 <input type="text" name="name[]" id="name-<?= htmlspecialchars($uid) ?>" class="form-control form-add"
-                    autocomplete="one-time-code">
+                    autocomplete="one-time-code" placeholder="e.g., Cypermethrin 10%" required>
+                <div class="invalid-feedback">Please put a valid item name.</div>
             </div>
             <div class="col-lg-3 mb-2">
                 <label for="chemBrand-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Brand</label>
                 <input type="text" name="chemBrand[]" id="chemBrand-<?= htmlspecialchars($uid) ?>"
-                    class="form-control form-add" autocomplete="one-time-code">
+                    class="form-control form-add" autocomplete="one-time-code" placeholder="e.g., Sevin 85 Insecticide"
+                    required>
+                <div class="invalid-feedback">Please put a valid item brand.</div>
             </div>
             <div class="col-lg-2 mb-2">
                 <label for="containerSize-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Size</label>
                 <input type="text" name="containerSize[]" id="containerSize-<?= htmlspecialchars($uid) ?>"
-                    class="form-control form-add" autocomplete="one-time-code">
+                    class="form-control form-add" autocomplete="one-time-code" placeholder="e.g., 1L" required>
+                <div class="invalid-feedback">Please put a valid item size. Should not
+                    contain letters.</div>
             </div>
             <div class="col-lg-2 mb-2">
                 <label for="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Unit:</label>
                 <select name="chemUnit[]" id="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-select"
-                    autocomplete="one-time-code">
-                    <option value="" selected>Choose Item Unit</option>
+                    autocomplete="one-time-code" required>
+                    <option value="" selected>Item Unit</option>
                     <option value="mg">mg</option>
                     <option value="g">g</option>
                     <option value="kg">kg</option>
@@ -325,12 +354,15 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
                     <option value="pc">Piece</option>
                     <option value="canister">Canister</option>
                 </select>
+                <div class="invalid-feedback">Choose an item unit.</div>
             </div>
             <div class="col-lg-2 mb-2">
                 <label for="containerCount-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item
                     Count</label>
                 <input type="text" name="containerCount[]" id="containerCount-<?= htmlspecialchars($uid) ?>"
-                    class="form-control form-add" autocomplete="one-time-code">
+                    class="form-control form-add" autocomplete="one-time-code" placeholder="e.g., 10 stocks" required>
+                <div class="invalid-feedback">Please put a valid count. Should be a number.
+                </div>
             </div>
 
         </div>
@@ -339,22 +371,27 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
                 <label for="restockThreshold-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Restock
                     Threshold:</label>
                 <input type="number" name="restockThreshold[]" id="restockThreshold-<?= htmlspecialchars($uid) ?>"
-                    class="form-control" autocomplete="one-time-code">
+                    class="form-control" autocomplete="one-time-code" placeholder="low stock when x" required>
+                <div class="invalid-feedback">Please put a valid threshold. Should be a
+                    number.</div>
             </div>
             <div class="col-2 mb-2">
                 <label for="recDate-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Date Received</label>
                 <input type="date" name="receivedDate[]" id="recDate-<?= htmlspecialchars($uid) ?>"
-                    class="form-control form-add form-date-rec">
+                    class="form-control form-add form-date-rec" placeholder="--/--/--" required>
+                <div class="invalid-feedback">Please put a valid date.</div>
             </div>
             <div class="col-2 mb-2">
                 <label for="expDate-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Expiry Date</label>
                 <input type="date" name="expDate[]" id="expDate-<?= htmlspecialchars($uid) ?>"
-                    class="form-control form-add form-date-exp">
+                    class="form-control form-add form-date-exp" placeholder="--/--/--" required>
+                <div class="invalid-feedback">Please put a valid date.</div>
             </div>
             <div class="col-3 mb-2">
                 <label for="notes-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Short Note</label>
                 <textarea name="notes[]" id="notes-<?= htmlspecialchars($uid) ?>" class="form-control"
-                    placeholder="Optional short note . . . "></textarea>
+                    placeholder="Optional short note . . . " required></textarea>
+                <div class="invalid-feedback">Short note is recommended but not required. Ignore to continue.</div>
             </div>
         </div>
         <div class="mb-2 d-flex">

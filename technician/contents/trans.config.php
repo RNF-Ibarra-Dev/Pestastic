@@ -79,9 +79,9 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
             echo $treatment['error'];
             exit();
         }
-        if (empty($session)) {
+        if (empty($session) || !is_numeric($session)) {
             http_response_code(400);
-            echo "Session count is required.";
+            echo "Invalid Session Count.";
             exit();
         }
         if (empty($pstart) || empty($pexp)) {
@@ -100,6 +100,12 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($problems) || empty($chemUsed) || empty($status) || empty($t_type) || empty($address)) {
         http_response_code(400);
         echo "All input fields are required.";
+        exit();
+    }
+
+    if (!validate_no_numbers($customerName)) {
+        http_response_code(400);
+        echo "Customer name should only contain alphabets without numbers.";
         exit();
     }
 

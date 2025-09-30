@@ -209,8 +209,10 @@
                                             <label for="add-customerName" class="form-label fw-light">Customer Name
                                             </label>
                                             <input type="text" name="add-customerName" id="add-customerName"
-                                                class="form-control form-add" placeholder="Enter name"
-                                                autocomplete="one-time-code">
+                                                 class="form-control form-add"
+                                                placeholder="Enter name" autocomplete="one-time-code">
+                                            <div class="invalid-feedback">Invalid name. Should only require letters and
+                                                spaces.</div>
                                             <!-- <p class="text-body-secondary text-muted fw-light">Note: Include full customer name</p> -->
                                         </div>
                                         <div class="col-lg-5 mb-2">
@@ -1160,7 +1162,8 @@
                                 <textarea name="note" class="form-control w-50" id="finalizeNotes" cols="1"
                                     placeholder="e.g. Used 200ml Termicide for kitchen and 100ml for bathroom."></textarea>
                                 <p class="text-secondary ms-2 mb-0 mt-2">
-                                    Take note that this will <strong>not</strong> mark the transaction as complete, but for finalization.
+                                    Take note that this will <strong>not</strong> mark the transaction as complete, but
+                                    for finalization.
                                 </p>
                             </div>
                             <div class="modal-footer">
@@ -1700,7 +1703,7 @@
 
                     $('#add-session').attr('disabled', true);
                     $('#add-treatment').attr('disabled', false);
-                    $('#add-packageStart').attr('disabled', true);
+                    $('#add-packageStart, #add-packageStart + input.flatpickr-mobile').attr('disabled', true);
                     $('#add-packageExpiry').attr('disabled', true);
 
                     $('#addTransaction')[0].reset();
@@ -1973,8 +1976,8 @@
 
         let etd = $('#view-treatmentDate');
         editTransDate = flatpickr(etd, {
-            dateFormat: "Y-m-d", 
-            altInput: true, 
+            dateFormat: "Y-m-d",
+            altInput: true,
             altFormat: "F j, Y"
             // placeholder: "--/--/--"
             // minDate: new Date().fp_incr(1),
@@ -1989,7 +1992,7 @@
         let startdate = $('#view-start');
         packageStartDate = flatpickr(startdate, {
             dateFormat: "Y-m-d",
-            altInput: true, 
+            altInput: true,
             altFormat: "F j, Y"
             // minDate: new Date().fp_incr(1),
         });
@@ -2591,13 +2594,13 @@
                 ae = $('#add-packageExpiry').val();
                 $('#add-session').attr('disabled', true).val('');
                 $('#add-treatment').attr('disabled', false).val(at);
-                $('#add-packageStart').attr('disabled', true).val('');
+                $('#add-packageStart, #add-packageStart + input.flatpickr-mobile').attr('disabled', true).val('');
                 $('#add-packageExpiry').attr('disabled', true).val('');
             } else {
                 at = $('#add-treatment').val();
                 $('#add-session').attr('disabled', false).val(a_s);
                 $('#add-treatment').attr('disabled', true).val('');
-                $('#add-packageStart').attr('disabled', false).val(aps);
+                $('#add-packageStart, #add-packageStart + input.flatpickr-mobile').attr('disabled', false).val(aps);
                 $('#add-packageExpiry').attr('disabled', false).val(ae);
             }
         });
@@ -3368,6 +3371,16 @@
             }
             update_checks();
         });
+
+        // var name_regex = "/[a-zA-Z ]+/"
+        // $(document).on("keyup", "#add-customerName, #edit-customerName", function () {
+        //     var customer_name = $(this).val();
+        //     if (name_regex.test(customer_name)) {
+        //         $(this).removeClass('is-invalid').addClass('is-valid');
+        //     } else {
+        //         $(this).removeClass('is-valid').addClass('is-invalid');
+        //     }
+        // });
     </script>
 
 </body>

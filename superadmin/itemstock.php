@@ -799,19 +799,22 @@ include('tablecontents/tables.php');
                                         <div class="col-sm-3 mb-2">
                                             <label for="name" class="form-label fw-light">Item Name</label>
                                             <input type="text" name="name[]" id="add-name" class="form-control form-add"
-                                                autocomplete="one-time-code" placeholder="e.g., Cypermethrin 10%" required>
+                                                autocomplete="one-time-code" placeholder="e.g., Cypermethrin 10%"
+                                                required>
                                             <div class="invalid-feedback">Please put a valid item name.</div>
                                         </div>
                                         <div class="col-sm-3 mb-2">
                                             <label for="chemBrand" class="form-label fw-light">Item Brand</label>
                                             <input type="text" name="chemBrand[]" id="add-chemBrand"
-                                                class="form-control form-add" autocomplete="one-time-code" placeholder="e.g., Sevin 85 Insecticide" required>
+                                                class="form-control form-add" autocomplete="one-time-code"
+                                                placeholder="e.g., Sevin 85 Insecticide" required>
                                             <div class="invalid-feedback">Please put a valid item brand.</div>
                                         </div>
                                         <div class="col-sm-2 mb-2">
                                             <label for="chemLevel" class="form-label fw-light">Item Size</label>
                                             <input type="number" name="containerSize[]" id="add-chemLevel"
-                                                class="form-control form-add" autocomplete="one-time-code" placeholder="e.g., 1L" required>
+                                                class="form-control form-add" autocomplete="one-time-code"
+                                                placeholder="e.g., 1L" required>
                                             <div class="invalid-feedback">Please put a valid item size. Should not
                                                 contain letters.</div>
                                         </div>
@@ -836,7 +839,8 @@ include('tablecontents/tables.php');
                                         <div class="col-sm-2 mb-2">
                                             <label for="chemLevel" class="form-label fw-light">Item Stock Count:</label>
                                             <input type="number" name="containerCount[]" id="add-chemLevel"
-                                                class="form-control form-add" autocomplete="one-time-code" placeholder="e.g., 10 stocks" required>
+                                                class="form-control form-add" autocomplete="one-time-code"
+                                                placeholder="e.g., 10 stocks" required>
                                             <div class="invalid-feedback">Please put a valid count. Should be a number.
                                             </div>
                                         </div>
@@ -846,7 +850,8 @@ include('tablecontents/tables.php');
                                             <label for="restockThreshold" class="form-label fw-light">Restock
                                                 Threshold:</label>
                                             <input type="number" name="restockThreshold[]" id="restockThreshold"
-                                                class="form-control" autocomplete="one-time-code" placeholder="low stock when x" required>
+                                                class="form-control" autocomplete="one-time-code"
+                                                placeholder="low stock when x" required>
                                             <div class="invalid-feedback">Please put a valid threshold. Should be a
                                                 number.</div>
                                             <!-- <div class="text-body-secondary fw-light text-muted mt-2">
@@ -856,7 +861,8 @@ include('tablecontents/tables.php');
                                         <div class="col-sm-2 mb-2">
                                             <label for="expDate" class="form-label fw-light">Date Received</label>
                                             <input type="date" name="receivedDate[]" id="add-dateReceived"
-                                                class="form-control form-add form-date-rec" placeholder="--/--/--" required>
+                                                class="form-control form-add form-date-rec" placeholder="--/--/--"
+                                                required>
                                             <div class="invalid-feedback">Please put a valid date.</div>
                                         </div>
                                         <div class="col-sm-2 mb-2">
@@ -870,7 +876,10 @@ include('tablecontents/tables.php');
                                         <div class="col-sm-3 mb-2">
                                             <label for="notes" class="form-label fw-light">Short Note</label>
                                             <textarea name="notes[]" id="notes" class="form-control"
-                                                placeholder="optional short note"></textarea>
+                                                placeholder="optional short note" required></textarea>
+                                            <div class="invalid-feedback">Short note is recommended but not required.
+                                                Ignore to continue.</div>
+
                                         </div>
                                         <div id="addMoreChem"></div>
                                         <hr class="mt-2 mb-3">
@@ -936,7 +945,8 @@ include('tablecontents/tables.php');
                                     <label for="pass" class="form-label fw-light">Add Item? Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-sm-6 mb-2">
-                                        <input type="password" name="saPwd" class="form-control" id="addPwd" placeholder="xxxxxx" required>
+                                        <input type="password" name="saPwd" class="form-control" id="addPwd"
+                                            placeholder="xxxxxx" required>
                                         <div class="invalid-feedback">Please enter your password.</div>
                                     </div>
                                 </div>
@@ -1586,6 +1596,7 @@ include('tablecontents/tables.php');
         });
 
         $(document).on('click', "#loadChem", function () {
+            $("#addForm").removeClass('was-validated');
             $("#addMoreChem").empty();
             $("#addForm")[0].reset();
 
@@ -1593,6 +1604,7 @@ include('tablecontents/tables.php');
                 add_select_branches: true
             })
                 .done(function (d) {
+                    $("#add_target_branch").empty();
                     $("#add_target_branch").append(d);
                 })
                 .fail(function (e) {
@@ -1600,6 +1612,7 @@ include('tablecontents/tables.php');
                     alert('There is an error at loading branches. Please try again later.');
                 })
         });
+
 
         $(document).on('click', '.remove-btn', function () {
             $(this).parent().parent().remove();

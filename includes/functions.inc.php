@@ -4,6 +4,14 @@
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
+function validate_no_numbers($character)
+{
+    if (preg_match("/^[A-Za-z ]*$/", $character)) {
+        return true;
+    }
+    return false;
+}
+
 function emptyInputSignup($firstName, $lastName, $username, $email, $pwd, $pwdRepeat)
 {
     $result;

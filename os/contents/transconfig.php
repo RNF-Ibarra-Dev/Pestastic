@@ -42,6 +42,12 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     // add created by
     $addedBy = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
 
+    if (!validate_no_numbers($customerName)) {
+        http_response_code(400);
+        echo "Customer name should only contain alphabets without numbers.";
+        exit();
+    }
+
     if ($package === 'none' || $package === NULL) {
         if (empty($treatment)) {
             http_response_code(400);
@@ -61,9 +67,9 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
             echo $treatment['error'];
             exit();
         }
-        if (empty($session)) {
+        if (empty($session) || !is_numeric($session)) {
             http_response_code(400);
-            echo "Session count is required.";
+            echo "Invalid Session Count.";
             exit();
         }
         if (empty($pstart) || empty($pexp)) {
@@ -75,7 +81,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
 
     if (!in_array($status, $required_os_status)) {
         http_response_code(400);
-        echo "Invalid status access. Please try again.";
+        echo "Invalid status. Please try again.";
         exit();
     }
 
@@ -84,7 +90,6 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         echo "All input fields are required.";
         exit();
     }
-
 
     if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
         if (empty($amtUsed)) {
@@ -186,6 +191,11 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
 
 
     // $allowedUpdateStatus = ['Pending', 'Accepted', 'Finalizing', 'Cancelled', 'Dispatched', 'Completed'];
+    if (!validate_no_numbers($customerName)) {
+        http_response_code(400);
+        echo "Customer name should only contain alphabets without numbers.";
+        exit();
+    }
 
     // add updated by 
     if (empty($customerName) || empty($techId) || empty($treatmentDate) || empty($treatmentTime) || empty($problems) || empty($chemUsed) || empty($ttype) || empty($address)) {
@@ -193,6 +203,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         echo "All input fields are required.";
         exit();
     }
+
 
     // $oStatus = check_status($conn, $transId);
     // if ($status === 'Pending' || $status === 'Cancelled' || $status === 'Accepted') {
@@ -271,6 +282,11 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         if (isset($treatment['error'])) {
             http_response_code(400);
             echo $treatment['error'];
+            exit();
+        }
+        if (empty($session) || !is_numeric($session)) {
+            http_response_code(400);
+            echo "Invalid Session Count.";
             exit();
         }
     } else {

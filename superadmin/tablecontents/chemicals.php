@@ -53,6 +53,24 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     $expDate = date("Y-m-d", strtotime($ed));
     $dateRec = date("Y-m-d", strtotime($dr));
 
+    if (!is_numeric($containerSize)) {
+        http_response_code(400);
+        echo "Invalid container size.";
+        exit;
+    }
+
+    if (!is_numeric($containerCount)) {
+        http_response_code(400);
+        echo "Invalid stock count.";
+        exit;
+    }
+
+    if (!is_numeric($threshold)) {
+        http_response_code(400);
+        echo "Invalid restock threshold.";
+        exit;
+    }
+
     if (empty($name) || empty($brand) || empty($unit)) {
         http_response_code(400);
         echo 'Make sure to fill up required forms.';
@@ -62,6 +80,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     if (empty($expDate)) {
         $usualexp = strtotime("+2years");
         $expDate = date('Y-m-d', $usualexp);
+        $note .= empty($note) ? '' : ' ' . " (Expiry date automatically generated two years from the uploaded date.)";
     }
 
     if (strtotime($expDate) < strtotime($dateRec)) {
@@ -124,23 +143,38 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
 
     $addedBy = "[$loggedId] - $loggedUsn";
 
+    $three_years = strtotime("+2 years");
+    $default_expiry = date("Y-m-d", $three_years);
+
     for ($i = 0; $i < count($name); $i++) {
+        $rownum = $i + 1;
         if (!is_numeric($containerSize[$i])) {
             http_response_code(400);
-            echo "{$name[$i]} has invalid container size.";
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has invalid container size.";
             exit;
         }
 
         if (!is_numeric($containerCount[$i])) {
             http_response_code(400);
-            echo "{$name[$i]} has invalid stock count.";
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has invalid stock count.";
             exit;
         }
 
         if (!is_numeric($threshold[$i])) {
             http_response_code(400);
-            echo "{$name[$i]} has invalid restock threshold.";
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has invalid restock threshold.";
             exit;
+        }
+
+        if (!in_array($unit[$i], $units)) {
+            http_response_code(400);
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has invalid quantity unit.";
+            exit();
+        }
+
+        if (empty($expDate[$i]) || $expDate == '') {
+            $expDate[$i] = $default_expiry;
+            $note .= empty($note) ? '' : ' ' . " (Expiry date automatically generated two years from the updated date.)";
         }
     }
 
@@ -150,14 +184,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         exit;
     }
 
-    $three_years = strtotime("+3 years");
-    $default_expiry = date("Y-m-d", $three_years);
-
-    for ($i = 0; $i < count($expDate); $i++) {
-        if (empty($expDate[$i]) || $expDate == '') {
-            $expDate[$i] = $default_expiry;
-        }
-    }
 
     if (empty($saPwd)) {
         http_response_code(400);
@@ -165,11 +191,14 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         exit;
     }
 
+
+
     if (!validate($conn, $saPwd)) {
         http_response_code(400);
         echo 'Wrong Password.';
         exit;
     }
+
 
 
     $data = [
@@ -428,7 +457,8 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
             <div class="col-lg-3 mb-2">
                 <label for="chemBrand-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Brand</label>
                 <input type="text" name="chemBrand[]" id="chemBrand-<?= htmlspecialchars($uid) ?>"
-                    class="form-control form-add" autocomplete="one-time-code" placeholder="e.g., Sevin 85 Insecticide">
+                    class="form-control form-add" autocomplete="one-time-code" placeholder="e.g., Sevin 85 Insecticide"
+                    required>
                 <div class="invalid-feedback">Please put a valid item brand.</div>
             </div>
             <div class="col-lg-2 mb-2">
@@ -441,8 +471,8 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
             <div class="col-lg-2 mb-2">
                 <label for="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Item Unit:</label>
                 <select name="chemUnit[]" id="chemUnit-<?= htmlspecialchars($uid) ?>" class="form-select"
-                    autocomplete="one-time-code">
-                    <option value="" selected>Choose Item Unit</option>
+                    autocomplete="one-time-code" required>
+                    <option value="" selected>Item Unit</option>
                     <option value="mg">mg</option>
                     <option value="g">g</option>
                     <option value="kg">kg</option>
@@ -490,7 +520,8 @@ if (isset($_GET['addrow']) && $_GET['addrow'] === 'true') {
             <div class="col-3 mb-2">
                 <label for="notes-<?= htmlspecialchars($uid) ?>" class="form-label fw-light">Short Note</label>
                 <textarea name="notes[]" id="notes-<?= htmlspecialchars($uid) ?>" class="form-control"
-                    placeholder="optional short note"></textarea>
+                    placeholder="optional short note" required></textarea>
+                <div class="invalid-feedback">Short note is recommended but not required. Ignore to continue.</div>
             </div>
         </div>
         <div class="mb-2 d-flex">
