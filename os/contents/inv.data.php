@@ -77,7 +77,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     $id = $_POST['edit-id'];
     $checkReq = check_request($conn, $id);
     if ($checkReq) {
-        echo "Unable to edit unapproved chemical.";
+        echo "Unable to edit item entry.";
         exit();
     }
 
@@ -162,6 +162,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
     $loggedUsn = $_SESSION['baUsn'];
     $branch = $_SESSION['branch'];
     $empId = $_SESSION['empId'];
+    
     $notes = $_POST['notes'];
     $name = $_POST['name'] ?? [];
     $receivedDate = $_POST['receivedDate'] ?? [];
@@ -175,6 +176,26 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
     $baPwd = $_POST['baPwd'];
 
     $addedBy = "[$loggedId] - $loggedUsn";
+
+    for ($i = 0; $i < count($name); $i++) {
+        if (!is_numeric($containerSize[$i])) {
+            http_response_code(400);
+            echo "{$name[$i]} has invalid container size.";
+            exit;
+        }
+
+        if (!is_numeric($containerCount[$i])) {
+            http_response_code(400);
+            echo "{$name[$i]} has invalid stock count.";
+            exit;
+        }
+
+        if (!is_numeric($threshold[$i])) {
+            http_response_code(400);
+            echo "{$name[$i]} has invalid restock threshold.";
+            exit;
+        }
+    }
 
     if (empty($name) || empty($brand) || empty($unit) || empty($containerCount) || empty($containerSize)) {
         http_response_code(400);

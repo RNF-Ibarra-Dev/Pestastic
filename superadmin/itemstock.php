@@ -782,7 +782,7 @@ include('tablecontents/tables.php');
             </form>
 
             <!-- add new chemical -->
-            <form id="addForm">
+            <form id="addForm" novalidate>
                 <div class="row g-2 text-dark">
                     <div class="modal-xl modal fade text-dark modal-edit" data-bs-backdrop="static" id="addModal"
                         tabindex="-1" aria-labelledby="create" aria-hidden="true">
@@ -799,23 +799,27 @@ include('tablecontents/tables.php');
                                         <div class="col-sm-3 mb-2">
                                             <label for="name" class="form-label fw-light">Item Name</label>
                                             <input type="text" name="name[]" id="add-name" class="form-control form-add"
-                                                autocomplete="one-time-code">
+                                                autocomplete="one-time-code" placeholder="e.g., Cypermethrin 10%" required>
+                                            <div class="invalid-feedback">Please put a valid item name.</div>
                                         </div>
                                         <div class="col-sm-3 mb-2">
                                             <label for="chemBrand" class="form-label fw-light">Item Brand</label>
                                             <input type="text" name="chemBrand[]" id="add-chemBrand"
-                                                class="form-control form-add" autocomplete="one-time-code">
+                                                class="form-control form-add" autocomplete="one-time-code" placeholder="e.g., Sevin 85 Insecticide" required>
+                                            <div class="invalid-feedback">Please put a valid item brand.</div>
                                         </div>
                                         <div class="col-sm-2 mb-2">
                                             <label for="chemLevel" class="form-label fw-light">Item Size</label>
-                                            <input type="text" name="containerSize[]" id="add-chemLevel"
-                                                class="form-control form-add" autocomplete="one-time-code">
+                                            <input type="number" name="containerSize[]" id="add-chemLevel"
+                                                class="form-control form-add" autocomplete="one-time-code" placeholder="e.g., 1L" required>
+                                            <div class="invalid-feedback">Please put a valid item size. Should not
+                                                contain letters.</div>
                                         </div>
                                         <div class="col-sm-2 mb-2">
                                             <label for="add-chemUnit" class="form-label fw-light">Item
                                                 Unit:</label>
                                             <select name="chemUnit[]" id="add-chemUnit" class="form-select"
-                                                autocomplete="one-time-code">
+                                                autocomplete="one-time-code" required>
                                                 <option value="" selected>Item Unit</option>
                                                 <option value="mg">mg</option>
                                                 <option value="g">g</option>
@@ -827,11 +831,14 @@ include('tablecontents/tables.php');
                                                 <option value="pc">Piece</option>
                                                 <option value="canister">Canister</option>
                                             </select>
+                                            <div class="invalid-feedback">Choose an item unit.</div>
                                         </div>
                                         <div class="col-sm-2 mb-2">
-                                            <label for="chemLevel" class="form-label fw-light">Item Count:</label>
-                                            <input type="text" name="containerCount[]" id="add-chemLevel"
-                                                class="form-control form-add" autocomplete="one-time-code">
+                                            <label for="chemLevel" class="form-label fw-light">Item Stock Count:</label>
+                                            <input type="number" name="containerCount[]" id="add-chemLevel"
+                                                class="form-control form-add" autocomplete="one-time-code" placeholder="e.g., 10 stocks" required>
+                                            <div class="invalid-feedback">Please put a valid count. Should be a number.
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
@@ -839,7 +846,9 @@ include('tablecontents/tables.php');
                                             <label for="restockThreshold" class="form-label fw-light">Restock
                                                 Threshold:</label>
                                             <input type="number" name="restockThreshold[]" id="restockThreshold"
-                                                class="form-control" autocomplete="one-time-code">
+                                                class="form-control" autocomplete="one-time-code" placeholder="low stock when x" required>
+                                            <div class="invalid-feedback">Please put a valid threshold. Should be a
+                                                number.</div>
                                             <!-- <div class="text-body-secondary fw-light text-muted mt-2">
                                                 Note: Set threshold where chemical container count should be restocked immediately.
                                             </div> -->
@@ -847,12 +856,13 @@ include('tablecontents/tables.php');
                                         <div class="col-sm-2 mb-2">
                                             <label for="expDate" class="form-label fw-light">Date Received</label>
                                             <input type="date" name="receivedDate[]" id="add-dateReceived"
-                                                class="form-control form-add form-date-rec">
+                                                class="form-control form-add form-date-rec" placeholder="--/--/--" required>
+                                            <div class="invalid-feedback">Please put a valid date.</div>
                                         </div>
                                         <div class="col-sm-2 mb-2">
                                             <label for="expDate" class="form-label fw-light">Expiry Date</label>
                                             <input type="date" name="expDate[]" id="add-expDate"
-                                                class="form-control form-add form-date">
+                                                class="form-control form-add form-date" required placeholder="--/--/--">
                                             <div class="text-body-secondary fw-light text-muted mt-2">
                                                 Note: specify expiry date or default date will be set.
                                             </div>
@@ -860,7 +870,7 @@ include('tablecontents/tables.php');
                                         <div class="col-sm-3 mb-2">
                                             <label for="notes" class="form-label fw-light">Short Note</label>
                                             <textarea name="notes[]" id="notes" class="form-control"
-                                                placeholder="Optional short note . . . "></textarea>
+                                                placeholder="optional short note"></textarea>
                                         </div>
                                         <div id="addMoreChem"></div>
                                         <hr class="mt-2 mb-3">
@@ -868,8 +878,13 @@ include('tablecontents/tables.php');
                                             <button type="button" class="btn btn-grad" id="addMoreChemBtn"><i
                                                     class="bi bi-plus-circle-dotted  me-2"></i> Add More
                                                 Item</button>
-                                            <select name="target_branch" id="add_target_branch"
-                                                class="form-select w-50"></select>
+                                            <div class="d-flex flex-column">
+                                                <select name="target_branch" id="add_target_branch"
+                                                    class="form-select w-100" required></select>
+                                                <div class="invalid-feedback"> Warning. Please select a target branch.
+                                                </div>
+
+                                            </div>
                                         </div>
 
 
@@ -921,7 +936,8 @@ include('tablecontents/tables.php');
                                     <label for="pass" class="form-label fw-light">Add Item? Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-sm-6 mb-2">
-                                        <input type="password" name="saPwd" class="form-control" id="addPwd">
+                                        <input type="password" name="saPwd" class="form-control" id="addPwd" placeholder="xxxxxx" required>
+                                        <div class="invalid-feedback">Please enter your password.</div>
                                     </div>
                                 </div>
                                 <p class="text-center alert alert-info w-75 mx-auto" style="display: none !important;"
