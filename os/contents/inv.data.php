@@ -110,15 +110,9 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 
     // location and threshold error handling
 
-    if (!is_numeric($containerSize)) {
+    if (!is_numeric($contSize)) {
         http_response_code(400);
         echo "Invalid container size.";
-        exit;
-    }
-
-    if (!is_numeric($containerCount)) {
-        http_response_code(400);
-        echo "Invalid stock count.";
         exit;
     }
 
@@ -134,23 +128,17 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         exit();
     }
 
-    if ($threshold > 10) {
-        http_response_code(400);
-        echo "Item has exceeded maximum restock threshold limit.";
-        exit;
-    }
+        if ($threshold > 10) {
+            http_response_code(400);
+            echo "Item has exceeded maximum restock threshold limit.";
+            exit;
+        }
 
-    if ($containerCount > 100) {
-        http_response_code(400);
-        echo "Item has exceeded maximum stock count limit.";
-        exit;
-    }
-
-    if ($containerSize > 10000) {
-        http_response_code(400);
-        echo  "Item has exceeded maximum container size limit.";
-        exit;
-    }
+        if ($contSize > 10000) {
+            http_response_code(400);
+            echo  "Item has exceeded maximum container size limit.";
+            exit;
+        }
 
     if (empty($expDate)) {
         $usualexp = strtotime("+2years");

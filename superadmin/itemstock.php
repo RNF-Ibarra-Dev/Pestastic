@@ -812,7 +812,7 @@ include('tablecontents/tables.php');
                                         </div>
                                         <div class="col-sm-2 mb-2">
                                             <label for="chemLevel" class="form-label fw-light">Item Size</label>
-                                            <input type="number" name="containerSize[]" id="add-chemLevel"
+                                            <input type="number" step="any" name="containerSize[]" id="add-chemLevel"
                                                 class="form-control form-add" autocomplete="one-time-code"
                                                 placeholder="e.g., 1L" required>
                                             <div class="invalid-feedback">Please put a valid item size. Should not
@@ -1178,7 +1178,7 @@ include('tablecontents/tables.php');
                                         <div class="col-5 mb-2">
                                             <label for="opened_container" class="form-label fw-medium">Returned quantity
                                                 of opened items:</label>
-                                            <input type="number" name="opened_container" id="opened_container"
+                                            <input type="number" step="any" name="opened_container" id="opened_container"
                                                 class="form-control w-50" autocomplete="one-time-code">
                                             <p class="text-body-secondary mt-1">Note: This should not exceed the
                                                 quantity of

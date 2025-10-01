@@ -53,15 +53,9 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     $expDate = date("Y-m-d", strtotime($ed));
     $dateRec = date("Y-m-d", strtotime($dr));
 
-    if (!is_numeric($containerSize)) {
+    if (!is_numeric($contSize)) {
         http_response_code(400);
         echo "Invalid container size.";
-        exit;
-    }
-
-    if (!is_numeric($containerCount)) {
-        http_response_code(400);
-        echo "Invalid stock count.";
         exit;
     }
 
@@ -77,13 +71,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         exit;
     }
 
-    if ($containerCount > 100) {
-        http_response_code(400);
-        echo "Item has exceeded maximum stock count limit.";
-        exit;
-    }
-
-    if ($containerSize > 10000) {
+    if ($contSize > 10000) {
         http_response_code(400);
         echo "Item has exceeded maximum container size limit.";
         exit;

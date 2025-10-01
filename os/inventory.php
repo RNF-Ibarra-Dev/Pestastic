@@ -828,7 +828,7 @@ require("startsession.php");
 
                                         <div class="col-lg-2 mb-2">
                                             <label for="chemLevel" class="form-label fw-light">Item Size</label>
-                                            <input type="text" name="containerSize[]" id="add-chemLevel"
+                                            <input type="number" step="any" name="containerSize[]" id="add-chemLevel"
                                                 class="form-control form-add" autocomplete="one-time-code"
                                                 placeholder="e.g., 1L" required>
                                             <div class="invalid-feedback">Please put a valid item size. Should not
