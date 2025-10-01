@@ -134,6 +134,24 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         exit();
     }
 
+    if ($threshold > 10) {
+        http_response_code(400);
+        echo "Item has exceeded maximum restock threshold limit.";
+        exit;
+    }
+
+    if ($containerCount > 100) {
+        http_response_code(400);
+        echo "Item has exceeded maximum stock count limit.";
+        exit;
+    }
+
+    if ($containerSize > 10000) {
+        http_response_code(400);
+        echo  "Item has exceeded maximum container size limit.";
+        exit;
+    }
+
     if (empty($expDate)) {
         $usualexp = strtotime("+2years");
         $expDate = date('Y-m-d', $usualexp);
@@ -227,6 +245,24 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
         if (empty($expDate[$i]) || $expDate == '') {
             $expDate[$i] = $default_expiry;
             $note .= empty($note) ? '' : ' ' . " (Expiry date automatically generated two years from the updated date.)";
+        }
+
+        if ($threshold[$i] > 10) {
+            http_response_code(400);
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has exceeded maximum restock threshold limit.";
+            exit;
+        }
+
+        if ($containerCount[$i] > 100) {
+            http_response_code(400);
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has exceeded maximum stock count limit.";
+            exit;
+        }
+
+        if ($containerSize[$i] > 10000) {
+            http_response_code(400);
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has exceeded maximum container size limit.";
+            exit;
         }
     }
 

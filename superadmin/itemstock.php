@@ -1769,26 +1769,8 @@ include('tablecontents/tables.php');
                     $('#confirmmultiapprove').modal('hide');
                 }
             } catch (error) {
-                let err = error.responseJSON;
-                console.log(error.responseText);
-                switch (err.error) {
-                    case 'emptyfield':
-                        $('input#confirmapprove-inputpwd').addClass('border border-warning-subtle').fadeIn(400);
-                        $('#approvemulti-errmsg').removeClass('visually-hidden').html(err.msg).hide().fadeIn(400).delay(1500).fadeOut(1000);
-                        break;
-                    case 'wrongpwd':
-                        $('input#confirmapprove-inputpwd').addClass('border border-danger-subtle').fadeIn(400);
-                        $('#approvemulti-errmsg').removeClass('visually-hidden').html(err.msg).hide().fadeIn(400).delay(1500).fadeOut(1000);
-                        break;
-                    case 'function':
-                        // console.log(error.responseJSON.pwd);
-                        $('input#confirmapprove-inputpwd').addClass('border border-danger-subtle').fadeIn(400);
-                        $('#approvemulti-errmsg').removeClass('visually-hidden').html(error.responseJSON.error).hide().fadeIn(400).delay(1500).fadeOut(1000);
-                        break;
-                    default:
-                        alert('unknown error. Please contact administration.');
-                        break;
-                }
+                console.log(error);
+               $('#approvemulti-errmsg').removeClass('visually-hidden').html(error.responseText).hide().fadeIn(400).delay(1500).fadeOut(1000);
             }
         });
 

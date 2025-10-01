@@ -57,5 +57,11 @@
         $("table:not(table.fc-scrollgrid)").each(function () {
             applyTableLabels($(this));
         });
-    })
+    });
+
+    document.querySelectorAll('.modal').forEach((modal) => {
+        modal.addEventListener('hide.bs.modal', () => {
+            document.activeElement.blur();
+        });
+    });
 </script>

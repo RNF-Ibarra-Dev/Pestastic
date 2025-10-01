@@ -71,6 +71,24 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         exit;
     }
 
+    if ($threshold > 10) {
+        http_response_code(400);
+        echo "Item has exceeded maximum restock threshold limit.";
+        exit;
+    }
+
+    if ($containerCount > 100) {
+        http_response_code(400);
+        echo "Item has exceeded maximum stock count limit.";
+        exit;
+    }
+
+    if ($containerSize > 10000) {
+        http_response_code(400);
+        echo "Item has exceeded maximum container size limit.";
+        exit;
+    }
+
     if (empty($name) || empty($brand) || empty($unit)) {
         http_response_code(400);
         echo 'Make sure to fill up required forms.';
@@ -176,7 +194,27 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
             $expDate[$i] = $default_expiry;
             $note .= empty($note) ? '' : ' ' . " (Expiry date automatically generated two years from the updated date.)";
         }
+
+        if ($threshold[$i] > 10) {
+            http_response_code(400);
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has exceeded maximum restock threshold limit.";
+            exit;
+        }
+
+        if ($containerCount[$i] > 100) {
+            http_response_code(400);
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has exceeded maximum stock count limit.";
+            exit;
+        }
+
+        if ($containerSize[$i] > 10000) {
+            http_response_code(400);
+            echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has exceeded maximum container size limit.";
+            exit;
+        }
     }
+
+
 
     if (empty($name) || empty($brand) || empty($unit) || empty($containerCount) || empty($containerSize)) {
         http_response_code(400);
@@ -305,27 +343,18 @@ if (isset($_POST['approvemultiple']) && $_POST['approvemultiple'] === 'true') {
     $rejected_stocks = $_POST['stock_reject'] ?? [];
     $pwd = $_POST['saPwd'];
 
-    if (empty($stocks) || empty($pwd)) {
+    if (empty($stocks) && empty($rejected_stocks)) {
         http_response_code(400);
-        if (empty($stocks)) {
-            echo json_encode(['error' => 'emptyfield', 'msg' => 'Select at least one stock to approve.']);
-        } else {
-            echo json_encode(['error' => 'emptyfield', 'msg' => 'Empty password.']);
-        }
+        echo 'Select at least one stock to approve or reject.';
         exit();
     }
 
-    if (!validate($conn, $pwd)) {
-        http_response_code(400);
-        echo json_encode(['error' => 'pwd', 'msg' => 'Incorrect Password.']);
-        exit();
-    }
 
     if (!empty($rejected_stocks)) {
         $reject = reject_stocks($conn, $rejected_stocks);
         if (!isset($reject['success'])) {
             http_response_code(400);
-            echo json_encode(['error' => 'function', 'msg' => $reject['msg']]);
+            echo $reject['msg'];
             exit();
         }
     }
@@ -334,12 +363,28 @@ if (isset($_POST['approvemultiple']) && $_POST['approvemultiple'] === 'true') {
         $approve = approve_stock($conn, $stocks);
         if (!isset($approve['success'])) {
             http_response_code(400);
-            echo json_encode(['error' => 'function', 'msg' => $approve['msg'] . $approve['ids']]);
+            echo  $approve['msg'] . $approve['ids'];
             exit();
         }
     }
+
+    if (!validate($conn, $pwd)) {
+        http_response_code(400);
+        echo  'Incorrect Password.';
+        exit();
+    }
+
+    $msg = [];
+    if(!empty($stocks)){
+        $msg[] = count($stocks) . ' stock entries approved';
+    }
+    if(!empty($rejected_stocks)){
+        $msg[] = count($rejected_stocks) . ' stock entries rejected';
+    }
+    $success_msg = implode(" and ", $msg);
+
     http_response_code(200);
-    echo json_encode(['success' => 'Stock approved and added to inventory officially.']);
+    echo json_encode(['success' => $success_msg]);
     exit();
 }
 
