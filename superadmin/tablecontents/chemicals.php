@@ -53,6 +53,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     $expDate = date("Y-m-d", strtotime($ed));
     $dateRec = date("Y-m-d", strtotime($dr));
 
+
+
     if (!is_numeric($contSize)) {
         http_response_code(400);
         echo "Invalid container size.";
@@ -82,6 +84,19 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         echo 'Make sure to fill up required forms.';
         exit();
     }
+
+    if (!preg_match('/[a-zA-Z]/', $name)) {
+        http_response_code(400);
+        echo 'Item name must contain letters.';
+        exit();
+    }
+
+    if (!preg_match('/[a-zA-Z]/', $brand)) {
+        http_response_code(400);
+        echo 'Item brand must contain letters.';
+        exit();
+    }
+
 
     if (empty($expDate)) {
         $usualexp = strtotime("+2years");
@@ -200,16 +215,25 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
             echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has exceeded maximum container size limit.";
             exit;
         }
+
+        if (!preg_match('/[a-zA-Z]/', $name[$i])) {
+            http_response_code(400);
+            echo "Row $rownum name must contain letters.";
+            exit();
+        }
+
+        if (!preg_match('/[a-zA-Z]/', $brand[$i])) {
+            http_response_code(400);
+            echo "Row $rownum brand must contain letters.";
+            exit();
+        }
+
+           if (empty($name[$i]) || empty($brand[$i]) || empty($unit[$i]) || empty($containerCount[$i]) || empty($containerSize[$i])) {
+            http_response_code(400);
+            echo 'Fields cannot be empty.';
+            exit;
+        }
     }
-
-
-
-    if (empty($name) || empty($brand) || empty($unit) || empty($containerCount) || empty($containerSize)) {
-        http_response_code(400);
-        echo "Fields cannot be empty.";
-        exit;
-    }
-
 
     if (empty($saPwd)) {
         http_response_code(400);
@@ -351,22 +375,22 @@ if (isset($_POST['approvemultiple']) && $_POST['approvemultiple'] === 'true') {
         $approve = approve_stock($conn, $stocks);
         if (!isset($approve['success'])) {
             http_response_code(400);
-            echo  $approve['msg'] . $approve['ids'];
+            echo $approve['msg'] . $approve['ids'];
             exit();
         }
     }
 
     if (!validate($conn, $pwd)) {
         http_response_code(400);
-        echo  'Incorrect Password.';
+        echo 'Incorrect Password.';
         exit();
     }
 
     $msg = [];
-    if(!empty($stocks)){
+    if (!empty($stocks)) {
         $msg[] = count($stocks) . ' stock entries approved';
     }
-    if(!empty($rejected_stocks)){
+    if (!empty($rejected_stocks)) {
         $msg[] = count($rejected_stocks) . ' stock entries rejected';
     }
     $success_msg = implode(" and ", $msg);

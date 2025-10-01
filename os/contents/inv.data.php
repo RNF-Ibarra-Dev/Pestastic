@@ -108,6 +108,18 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
         exit();
     }
 
+    if(!preg_match('/[a-zA-Z]/', $name)){
+        http_response_code(400);
+        echo 'Item name must contain letters.';
+        exit();
+    }
+
+    if(!preg_match('/[a-zA-Z]/', $brand)){
+        http_response_code(400);
+        echo 'Item brand must contain letters.';
+        exit();
+    }
+
     // location and threshold error handling
 
     if (!is_numeric($contSize)) {
@@ -252,13 +264,26 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
             echo ($name[$i] == '' ? "Item on row $rownum " : $name[$i]) . " has exceeded maximum container size limit.";
             exit;
         }
+        
+        if (!preg_match('/[a-zA-Z]/', $name[$i])) {
+            http_response_code(400);
+            echo "Row $rownum name must contain letters.";
+            exit();
+        }
+
+        if (!preg_match('/[a-zA-Z]/', $brand[$i])) {
+            http_response_code(400);
+            echo "Row $rownum brand must contain letters.";
+            exit();
+        }
+
+        if (empty($name[$i]) || empty($brand[$i]) || empty($unit[$i]) || empty($containerCount[$i]) || empty($containerSize[$i])) {
+            http_response_code(400);
+            echo 'Fields cannot be empty.';
+            exit;
+        }
     }
 
-    if (empty($name) || empty($brand) || empty($unit) || empty($containerCount) || empty($containerSize)) {
-        http_response_code(400);
-        echo 'Fields cannot be empty.';
-        exit;
-    }
 
     if (empty($baPwd)) {
         http_response_code(400);
