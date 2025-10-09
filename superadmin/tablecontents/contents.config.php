@@ -22,6 +22,15 @@ if (isset($_POST['add-treatment']) && $_POST['add-treatment'] === 'true') {
         echo json_encode(['error' => "Empty Treatment Name."]);
         exit();
     }
+
+    $tnames = find_treatment($conn, $branch);
+
+    if (in_array($trt, $tnames)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'This branch already offers this treatment.']);
+        exit();
+    }
+    
     $branches = get_branches_array($conn);
 
     if (!in_array($branch, $branches)) {
@@ -60,7 +69,7 @@ if (isset($_POST['edit']) && $_POST['edit'] === 'true') {
 
     if (!is_numeric($id)) {
         http_response_code(400);
-        echo json_encode(['error' => 'Invalid Treatment ID.' . $id]);
+        echo json_encode(['error' => 'Invalid Treatment ID.' . $id] . ' Please try again later.');
         exit();
     }
 
@@ -76,6 +85,13 @@ if (isset($_POST['edit']) && $_POST['edit'] === 'true') {
         exit();
     }
     $branches = get_branches_array($conn);
+    $tnames = find_treatment($conn, $branch);
+
+    if (in_array($trt, $tnames)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'This branch already offers this treatment.']);
+        exit();
+    }
 
     if (!in_array($branch, $branches)) {
         http_response_code(400);
@@ -96,7 +112,7 @@ if (isset($_POST['edit']) && $_POST['edit'] === 'true') {
         exit();
     } elseif ($edit) {
         http_response_code(200);
-        echo json_encode(['success' => "Treatment $trt Added."]);
+        echo json_encode(['success' => "Treatment $trt modified."]);
         exit();
     } else {
         http_response_code(400);
@@ -142,6 +158,7 @@ if (isset($_POST['addProb']) && $_POST['addProb'] === 'true') {
         echo json_encode(['error' => 'Duplicate Pest Problem Names.']);
         exit();
     }
+    $pproblems = pest_prob_names($conn);
 
     for ($i = 0; $i < count($prob); $i++) {
         $prob[$i] = trim($prob[$i]);
@@ -149,6 +166,11 @@ if (isset($_POST['addProb']) && $_POST['addProb'] === 'true') {
             http_response_code(400);
             echo json_encode(['error' => 'Invalid Treatment Name ' . $prob[$i]]);
             exit();
+        }
+        if (in_array($prob[$i], $pproblems)) {
+            http_response_code(400);
+            echo json_encode(['error' => "Pest problem '{$prob[$i]}' already exist."]);
+            exit;
         }
     }
 
@@ -201,6 +223,13 @@ if (isset($_POST['editprob']) && $_POST['editprob'] === 'true') {
         http_response_code(400);
         echo json_encode(['error' => 'Invalid Password.']);
         exit();
+    }
+
+    $pproblems = pest_prob_names($conn);
+    if (in_array($prob, $pproblems)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Pest problem already exist.']);
+        exit;
     }
 
     $edit = edit_pprob($conn, $id, $prob);
@@ -260,12 +289,19 @@ if (isset($_POST['branchadd']) && $_POST['branchadd'] === 'true') {
         exit();
     }
 
+    $bnames = get_branch_names($conn);
+
     for ($i = 0; $i < count($branch); $i++) {
         $branch[$i] = trim($branch[$i]);
         if (!preg_match("/^[a-zA-Z\s'-]*$/", $branch[$i])) {
             http_response_code(400);
             echo json_encode(['error' => 'Invalid Branch Name ' . $branch[$i]]);
             exit();
+        }
+        if (in_array($branch[$i], $bnames)) {
+            http_response_code(400);
+            echo json_encode(['error' => "Branch '{$branch[$i]}' already exist."]);
+            exit;
         }
     }
 
@@ -283,6 +319,8 @@ if (isset($_POST['branchadd']) && $_POST['branchadd'] === 'true') {
             exit();
         }
     }
+
+
 
     if (!validate($conn, $pwd)) {
         http_response_code(400);
@@ -334,6 +372,13 @@ if (isset($_POST['branchedit']) && $_POST['branchedit'] === 'true') {
         http_response_code(400);
         echo json_encode(['error' => 'Inputs should not be empty.']);
         exit();
+    }
+
+    $bnames = get_branch_names($conn);
+    if (in_array($branch, $bnames)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Branch already exist.']);
+        exit;
     }
 
     if (!validate($conn, $pwd)) {
@@ -546,7 +591,7 @@ if (isset($_POST['packagedel']) && $_POST['packagedel'] === 'true') {
             echo json_encode(['error' => "Invalid ID $id."]);
             exit();
         }
-        if (empty($id[$i])){
+        if (empty($id[$i])) {
             http_response_code(400);
             echo json_encode(['error' => "Some data are empty. Please refresh your browser."]);
             exit();
