@@ -2097,9 +2097,10 @@
                 wval = $('#view-start').val();
                 weval = $('#view-expiry').val();
                 $('#view-start').val('');
+                packageStartDate.clear();
                 $('#view-expiry').val('');
                 $('#view-start, #view-expiry').removeAttr('name');
-                $('#view-start, #view-expiry').attr('disabled', true);
+                $('#view-start, #view-start + input, #view-expiry').attr('disabled', true);
             } else {
                 $('#edit-treatment').val(tval);
                 $('#edit-treatment').removeAttr('name');
@@ -2111,8 +2112,9 @@
 
                 $('#view-start').attr('name', 'edit-start');
                 $('#view-expiry').attr('name', 'edit-expiry');
-                $('#view-start, #view-expiry').attr('disabled', false);
+                $('#view-start, #view-start + input, #view-expiry').attr('disabled', false);
                 $('#view-start').val(wval);
+                packageStartDate.setDate(wval);
                 $('#view-expiry').val(weval);
 
             }
