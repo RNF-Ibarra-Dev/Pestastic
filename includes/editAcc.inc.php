@@ -25,9 +25,15 @@ if (isset($_POST["configure_tech"]) && $_POST['configure_tech'] === 'true') {
         exit();
     }
 
+    if (!is_numeric($contactNo)) {
+        http_response_code(400);
+        echo "Contact number should only contain numbers.";
+        exit();
+    }
+
     if (strlen($contactNo) !== 11) {
         http_response_code(400);
-        echo "Invalid Contact Number.";
+        echo "Contact number should only contain 11 numbers.";
         exit();
     }
 
@@ -99,7 +105,7 @@ if (isset($_POST["configure_tech"]) && $_POST['configure_tech'] === 'true') {
         exit();
     }
 
-    if(strlen($empId) !== 3){
+    if (strlen($empId) !== 3) {
         http_response_code(400);
         echo "Invalid Employee ID.";
         exit();
@@ -141,15 +147,15 @@ if (isset($_POST["configure_os"]) && $_POST['configure_os'] === 'true') {
     $birthdate = $_POST['birthdate'];
     $contactNo = $_POST["contactNo"];
 
-    if(empty($contactNo)){
+    if (!is_numeric($contactNo)) {
         http_response_code(400);
-        echo "Incomplete Input.";
+        echo "Contact number should only contain numbers.";
         exit();
     }
-    
+
     if (strlen($contactNo) !== 11) {
         http_response_code(400);
-        echo "Invalid Contact Number.";
+        echo "Contact number should only contain 11 numbers.";
         exit();
     }
 
@@ -201,14 +207,14 @@ if (isset($_POST["configure_os"]) && $_POST['configure_os'] === 'true') {
             exit();
         }
     }
-    
+
     if (employeeIdCheck($conn, $empId, $id) !== false) {
         http_response_code(400);
         echo "Employee ID already exists.";
         exit();
     }
 
-    if(strlen($empId) !== 3){
+    if (strlen($empId) !== 3) {
         http_response_code(400);
         echo "Invalid Employee ID.";
         exit();

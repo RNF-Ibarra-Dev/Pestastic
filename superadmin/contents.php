@@ -929,7 +929,7 @@ require("startsession.php");
                     $('#trtmnt_table_alert').html(d.success).fadeIn(750).delay(5000).fadeOut(2000);
                 })
                 .fail(function (e) {
-                    // console.log(e);
+                    console.log(e);
                     $('#trtmnt_edit_alert').html(e.responseJSON.error).fadeIn(750).delay(5000).fadeOut(2000);
                 })
         });
@@ -1267,6 +1267,19 @@ require("startsession.php");
             }
         });
 
+        function package_branch_treatments(container, branch_id, active) {
+            $.get(dataurl, { append: container, branch: branch_id, active: active }, function (d) {
+                $(`#${container}`).empty();
+                $(`#${container}`).append(d);
+            })
+        }
+
+        $(document).on('change', '#add_package_branch', function () {
+            let branch = $(this).val();
+            // console.log(branch);
+            package_branch_treatments('add_package_trt', branch);
+        })
+
         $("#package_add_form").on('click', '#package_add_row', function () {
             $.get(dataurl, {
                 addpackagerow: true
@@ -1310,11 +1323,15 @@ require("startsession.php");
                 })
         });
 
+        $(document).on('change', "#edit_package_branch", function(){
+            let branch = $(this).val();
+            package_branch_treatments('edit_package_trt', branch);
+        })
+
         $("#packages").on('click', '.package-edit', async function () {
             $('#package_edit_form')[0].reset();
             let id = $(this).data('package');
             // console.log(id);
-            await append('edit_package_trt');
             await append('edit_package_branch');
 
             $.get(dataurl, {
@@ -1331,6 +1348,8 @@ require("startsession.php");
                     $("#edit_package_warranty").val(d.year_warranty);
                     $("#edit_package_branch").val(d.branch);
                     $("#edit_package_trt").val(d.treatment);
+                    await package_branch_treatments('edit_package_trt', d.branch, d.treatment);
+
                 })
                 .fail(function (e) {
                     alert(e);
@@ -1412,7 +1431,7 @@ require("startsession.php");
             await delete_package(data);
         })
 
-       
+
 
     </script>
 

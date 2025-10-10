@@ -294,10 +294,16 @@ if (isset($_GET['append']) && $_GET['append'] === 'packages') {
     }
 }
 
-function package_options($conn)
+function package_options($conn, $branch = NULL, $active = NULL)
 {
-    $sql = "SELECT * FROM treatments;";
-    $res = mysqli_query($conn, $sql);
+    $sql = "SELECT * FROM treatments WHERE branch = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if(!mysqli_stmt_prepare($stmt, $sql)){
+        return['error' => 'Package options statement preparation error.'];
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $branch);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
 
     if (mysqli_num_rows($res) > 0) {
     ?>
@@ -307,7 +313,7 @@ function package_options($conn)
             $id = $row['id'];
             $name = $row['t_name'];
         ?>
-            <option value="<?= htmlspecialchars($id) ?>"><?= htmlspecialchars($name) ?></option>
+            <option value="<?= htmlspecialchars($id) ?>" <?=$id == $active ? 'selected' : ''?>><?= htmlspecialchars($name) ?></option>
         <?php
         }
     } else {
@@ -318,7 +324,9 @@ function package_options($conn)
 }
 
 if (isset($_GET['append']) && ($_GET['append'] === 'add_package_trt' || $_GET['append'] === 'edit_package_trt')) {
-    package_options($conn);
+    $branch = $_GET['branch'] ?? NULL;
+    $active = $_GET['active'] ?? NULL;
+    package_options($conn, $branch, $active);
 }
 
 if (isset($_GET['addpackagerow']) && $_GET['addpackagerow'] === 'true') {

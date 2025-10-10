@@ -2529,6 +2529,50 @@ function get_branches_array($conn)
     return $branches;
 }
 
+function get_branch_names($conn)
+{
+    $bname = [];
+    $sql = "SELECT name FROM branches;";
+    $res = mysqli_query($conn, $sql);
+    while ($row = mysqli_fetch_assoc($res)) {
+        $bname[] = $row['name'];
+    }
+    return $bname;
+}
+
+function find_treatment($conn, $branch_id)
+{
+    $tname = [];
+    $sql = "SELECT t_name FROM treatments WHERE branch = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'Treatment checking statement failed.'];
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $branch_id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    while ($row = mysqli_fetch_assoc($res)) {
+        $tname[] = $row['t_name'];
+    }
+    return $tname;
+}
+
+function pest_prob_names($conn)
+{
+    $names = [];
+
+    $sql = "SELECT * FROM pest_problems;";
+    $res = mysqli_query($conn, $sql);
+    while ($row = mysqli_fetch_assoc($res)) {
+        $names[] = $row['problems'];
+    }
+
+    return $names;
+
+}
+
 function get_treatment_details($conn, $id)
 {
     $sql = "SELECT * FROM treatments WHERE id = ?;";
