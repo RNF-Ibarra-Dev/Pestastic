@@ -162,7 +162,15 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
         }
     }
 
-    $response['countbadge'] .= "<span class='position-absolute translate-middle badge rounded-pill bg-danger' style='top: unset !important' id='notifNum'>" . $response['count'];
+    $response['countbadge'] .= $response['countbadge'] == 0 ? '' : "<span class='position-absolute translate-middle badge rounded-pill bg-danger' style='top: unset !important' id='notifNum'>" . $response['count'];
+    if(empty($response['notif']) || $response['notif'] == ''){
+        $response['notif'] .= " <li class='list-group-item p-0'>
+                <p
+                    class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
+                   No alerts for now.
+                </p>
+            </li>";
+    }
     echo json_encode($response);
     exit();
 }

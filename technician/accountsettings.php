@@ -29,12 +29,12 @@ require("startsession.php");
             <?php include('navbar.php'); ?>
             <!-- content -->
             <div class="container-fluid p-0 d-flex">
-                <form id="accountsettings" class="my-5">
+                <form id="accountsettings" class="my-5 mx-auto">
                     <input type="hidden" name="id" id="id">
                     <p
-                        class="display-6  text-center fw-bold text-shadow mb-3 bg-light bg-opacity-25 rounded-3 py-3 mx-auto w-50">
+                        class="display-6  text-center fw-bold text-shadow mb-3 bg-light bg-opacity-25 rounded-3 py-3 mx-auto w-100">
                         User Information</p>
-                    <div class="container bg-light bg-opacity-25 w-50 mx-auto rounded-3 p-3 pb-3">
+                    <div class="container bg-light bg-opacity-25 w-100 mx-auto rounded-3 p-3 pb-3">
                         <div class="d-flex flex-column gap-2 mx-3">
                             <div class="container two-part-inputs flex-wrap gap-3 p-0 d-flex justify-content-between">
                                 <div class="col p-0">
