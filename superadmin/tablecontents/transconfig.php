@@ -653,3 +653,138 @@ if (isset($_POST['singledispatch']) && $_POST['singledispatch'] === 'true') {
         exit();
     }
 }
+
+
+if (isset($_POST['new_ir']) && $_POST['new_ir'] === 'true') {
+    $property_type = $_POST['property_type'] ?? NULL;
+    $customer_name = $_POST['customer_name'];
+    $total_area = $_POST['total_area'];
+    // $total_area_unit = $_POST['total_area_unit'];
+    $total_floors = $_POST['total_floors'];
+    $total_rooms = $_POST['total_rooms'];
+    $property_loc = $_POST['property_location'];
+    $exposed_soil = $_POST['exposed_soil_ans'];
+    $infestation_loc = $_POST['infestation_location'];
+
+    $pest_problems = $_POST['pest_problems'] ?? [];
+
+    $existing_pc = $_POST['existing_pc_provider'] ?? NULL;
+    $last_treatment = $_POST['existing_provider_last_treatment'] ?? NULL;
+    $last_treatment_date = $_POST['last_treatment_date'] ?? NULL;
+    $note = $_POST['note'];
+    $branch = $_POST['branch'];
+    $no_treatment_history = isset($_POST['no_treatment_history']);
+
+    $valid_property_types = ['residential', 'commercial'];
+    if ($property_type === NULL) {
+        http_response_code(400);
+        echo "Property type required.";
+        exit;
+    }
+
+    if (!preg_match('/^[a-zA-Z0-9 -]*$/', $customer_name)) {
+        http_response_code(400);
+        echo "Invalid customer name.";
+        exit;
+    }
+
+    if ($customer_name == '') {
+        http_response_code(400);
+        echo "Customer name should not be empty.";
+        exit;
+    }
+
+    if (!in_array($property_type, $valid_property_types)) {
+        http_response_code(400);
+        echo "Invalid property type.";
+        exit();
+    }
+
+    if (!is_numeric($total_area)) {
+        http_response_code(400);
+        echo "Invalid total area.";
+        exit;
+    }
+
+    if (!is_numeric($total_floors)) {
+        http_response_code(400);
+        echo "Invalid total number of floors.";
+        exit;
+    }
+
+    if (!is_numeric($total_rooms)) {
+        http_response_code(400);
+        echo "Invalid total number of rooms.";
+        exit;
+    }
+
+    if (empty($property_loc)) {
+        http_response_code(400);
+        echo "Property location is required.";
+        exit;
+    }
+
+    if (empty($pest_problems)) {
+        http_response_code(400);
+        echo "Reported pest problem is required.";
+        exit;
+    }
+
+    if (empty($infestation_loc)) {
+        http_response_code(400);
+        echo "Infestation location is required  .";
+        exit;
+    }
+
+    $valid_termite_only_answers = ['yes', 'no', 'no_termite'];
+    if (!in_array($exposed_soil, $valid_termite_only_answers)) {
+        http_response_code(400);
+        echo "Invalid termite only question answer.";
+        exit;
+    }
+
+    // if no treatment history is checked -> treatment history is valid
+    if (!$no_treatment_history) {
+        if ($existing_pc === 'no') {
+            if (empty($last_treatment)) {
+                http_response_code(400);
+                echo "Last treatment is required.";
+                exit;
+            }
+            if (empty($last_treatment_date)) {
+                http_response_code(400);
+                echo "Last treatment date is required.";
+                exit;
+            }
+            $existing_pc = 0;
+        } else if ($existing_pc === 'yes') {
+            $last_treatment = NULL;
+            $last_treatment_date = NULL;
+            $existing_pc = 1;
+        } else {
+            http_response_code(400);
+            echo "An error occured when recording the existing provider answer. Please refresh the page and try again.";
+            exit;
+        }
+    }
+
+    if (!is_numeric($branch)) {
+        http_response_code(400);
+        echo "Invalid branch selected. Please try again.";
+        exit;
+    }
+
+    $add = add_inspection_report($conn, $property_type, $total_area, "sqm", $total_floors, $total_rooms, $property_loc, $exposed_soil, $infestation_loc, $pest_problems, $existing_pc, $last_treatment, $last_treatment_date, $note, $customer_name, $branch);
+
+    if (isset($add['error'])) {
+        http_response_code(400);
+        echo $add['error'];
+    } else if ($add) {
+        http_response_code(200);
+        echo json_encode(['success' => 'Inspection Report Added.']);
+    } else {
+        http_response_code(400);
+        echo "An unknown error occured. Please try again later.";
+    }
+    exit;
+}

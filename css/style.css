@@ -45,7 +45,8 @@ th {
 }
 
 label.fw-bold,
-label.fw-light {
+label.fw-light,
+.modal-body p.fw-bold.fs-5 {
   font-size: 1.15rem !important;
   font-weight: 600 !important;
   color: #313131 !important;
@@ -139,7 +140,9 @@ form {
 #addTransaction input.form-check-input,
 #viewEditForm input.form-check-input,
 #dispatchChemicalForm input.form-check-input,
-#editModal input.form-check-input {
+#editModal input.form-check-input,
+#inspection_select_modal input.form-check-input,
+#ir_details_modal input.form-check-input {
   border: 1px solid #16404d !important;
   background-color: #bababa !important;
 }
@@ -148,7 +151,9 @@ form {
 #addTransaction input.form-check-input:checked,
 #viewEditForm input.form-check-input:checked,
 #dispatchChemicalForm input.form-check-input:checked,
-#editModal input.form-check-input:checked {
+#editModal input.form-check-input:checked,
+#inspection_select_modal input.form-check-input:checked,
+#ir_details_modal input.form-check-input:checked {
   background-color: #2f855d !important;
 }
 
@@ -643,6 +648,11 @@ table tr td,
 table tr th {
   background-color: rgba(255, 255, 255, 0.2) !important;
   color: #fff !important;
+}
+
+.modal table tr td,
+.modal table tr th {
+  color: #000 !important;
 }
 
 table tr td button {

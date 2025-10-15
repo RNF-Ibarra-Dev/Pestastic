@@ -115,7 +115,7 @@ if (isset($_GET['getChem']) && $_GET['getChem'] == 'add') {
     $branch = $_GET['branch'] ?? NULL;
     get_tech($conn, $active, $branch);
 } else if (isset($_GET['getProb']) && $_GET['getProb'] == 'true') {
-    $checked = $_GET['checked'];
+    $checked = $_GET['checked'] ?? NULL;
     get_prob($conn, $checked);
 } else if (isset($_GET['getMoreChem']) && $_GET['getMoreChem'] == 'true') {
     $status = $_GET['status'];
@@ -810,7 +810,7 @@ if (isset($_GET['get_branch']) && $_GET['get_branch'] === 'add_branch') {
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) > 0) {
-        echo "<option value='NULL' selected>Select Transaction Branch</option>";
+        echo "<option value='NULL' selected>Select Branch</option>";
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];
             $name = $row['name'];
@@ -1076,7 +1076,7 @@ if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
         echo "<tr><td scope='row' colspan='6' class='text-center text-dark'>Statment preparation failed.</td></tr>";
         exit;
     }
-    if($branch !== 0){
+    if ($branch !== 0) {
         mysqli_stmt_bind_param($stmt, 'i', $branch);
     }
     mysqli_stmt_execute($stmt);
@@ -1214,4 +1214,57 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
         mysqli_stmt_close($stmt);
         exit();
     }
+}
+
+
+if (isset($_GET['get_ir']) && $_GET['get_ir'] === 'true') {
+    $sql = "SELECT * FROM inspection_reports;";
+    $res = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($res) > 0) {
+        echo "<option value='' selected>Select report</option>";
+        while ($row = mysqli_fetch_assoc($res)) {
+            $id = $row['id'];
+            ?>
+            <option value="<?= htmlspecialchars($id) ?>">Transaction No. <?= htmlspecialchars($id) ?></option>
+            <?php
+        }
+    } else{
+        ?> 
+        <option selected disabled>No inspection reports found.</option>
+        <?php
+    }
+}
+
+if(isset($_GET['ir_details']) && $_GET['ir_details'] === 'true'){
+    $ir_id = $_GET['id'];
+    if(!is_numeric($ir_id)){
+        http_response_code(400);
+        echo "ID passed not valid.";
+        exit;
+    }
+
+    $sql = "SELECT * FROM inspection_reports WHERE id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+    if(!mysqli_stmt_prepare($stmt, $sql)){
+        http_response_code(400);
+        echo "Statement error when fetching report details. Please try again later.";
+        exit;
+    }
+    mysqli_stmt_bind_param($stmt, 'i', $ir_id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    if(mysqli_num_rows($res) > 0){
+        $row = mysqli_fetch_assoc($res);
+        echo json_encode($row);
+        mysqli_stmt_close($stmt);
+        exit;
+    } 
+
+    http_response_code(400);
+    echo "Data not found.";
+    mysqli_stmt_close($stmt);
+    exit;
+
 }

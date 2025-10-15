@@ -4380,3 +4380,73 @@ function restock_item($conn, $id, $restock_value, $author, $user_id, $user_role,
         ];
     }
 }
+
+function ir_reported_pest($conn, $problems, $ir_id){
+    $sql = "INSERT INTO inspection_problems (inspection_id, pest_problem) VALUES (?, ?);";
+    $stmt = mysqli_stmt_init($conn);
+
+    if(!mysqli_stmt_prepare($stmt, $sql)){
+        return ['error' => 'Prepared statement failed at adding inspection reported pest problems. Please try again later.'];
+    }
+
+    for($i = 0; $i < count($problems); $i++){
+        mysqli_stmt_bind_param($stmt, 'ii', $ir_id, $problems[$i]);
+        mysqli_stmt_execute($stmt);
+        if(mysqli_stmt_affected_rows($stmt) === 0){
+            return ['error' => 'Failed to add inspection reported pest problems. Please try again later.'];
+        }
+    }
+    mysqli_stmt_close($stmt);
+    return true;
+}
+
+function add_inspection_report($conn, $property_type, $total_area, $unit, $total_floors, $total_rooms, $property_loc, $exposed_soil_ans, $infestation_loc, $pest_problems, $existing_pc_ans, $last_treatment, $last_treatment_date, $note, $customer_name, $branch)
+{
+    mysqli_begin_transaction($conn);
+    try {
+
+        $sql = "INSERT INTO inspection_reports (property_type, total_floor_area, floor_area_unit, total_floor_num, total_room, property_location, reported_pest_problem_location, exposed_soil_outside_property, existing_pest_provider, last_treatment, last_treatment_date, notes, branch, customer)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_stmt_init($conn);
+
+        if(!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("Prepared statement failed at adding inspection report. Please try again later.");
+        }
+
+        mysqli_stmt_bind_param($stmt, 'sdsiisssisssis', 
+                                $property_type, //s
+                                $total_area, //d
+                                $unit, //s
+                                $total_floors, //i 
+                                $total_rooms, //i
+                                $property_loc, //s
+                                $infestation_loc, //s
+                                $exposed_soil_ans, //s 
+                                $existing_pc_ans, //i
+                                $last_treatment, //s
+                                $last_treatment_date, //s
+                                $note, //s
+                                $branch, //i
+                                $customer_name //s
+                            );
+        mysqli_stmt_execute($stmt);
+        if( mysqli_stmt_affected_rows($stmt) === 0) {
+            throw new Exception("Failed to add inspection report. Please try again later.");
+        }
+        $ir_id = mysqli_insert_id($conn);
+        mysqli_stmt_close($stmt);
+
+        $reported_problems = ir_reported_pest($conn, $pest_problems, $ir_id);
+        if(isset($reported_problems['error'])){
+            throw new Exception($reported_problems['error']);
+        }
+
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at line ' . $e->getFile()
+        ];
+    }
+}
