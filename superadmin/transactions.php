@@ -212,104 +212,124 @@
                         </div>
                         <div class="modal-body">
                             <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <input type="text" name="customer_name" id="ir_customer"
-                                        class="form-control-plaintext ir-input" autocomplete="off">
-                                    <label for="ir_customer" class="form-label fw-bold fs-5">Customer Name:</label>
+                                <div class="col-md-3">
+                                    <p class="form-label fw-bold fs-5">Inspection Report ID:</p>
+                                    <p class="ps-2 m-0" id="ir_inspection_id"></p>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
+                                    <label for="ir_customer" class="form-label fw-bold fs-5">Customer Name:</label>
+                                    <input type="text" name="customer_name" id="ir_customer"
+                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
+                                </div>
+                                <div class="col-md-5">
                                     <label for="ir_property_type" class="form-label fw-bold fs-5">Property Type:</label>
                                     <select name="property_type" id="ir_property_type" class="form-select"
-                                        autocomplete="off">
+                                        autocomplete="off" disabled>
                                         <option value="residential">Residential Property</option>
                                         <option value="commercial">Commercial Property</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <input type="text" name="total_floor_area" id="ir_floor_area"
-                                        class="form-control-plaintext ir-input" autocomplete="off" readonly>
+                                <div class="col-md-4">
                                     <label for="ir_floor_area" class="form-label fw-bold fs-5">Total floor area:</label>
+                                    <div class="d-flex align-items-center">
+                                        <input type="number" step="0.01" min="0.00" name="total_floor_area"
+                                            id="ir_floor_area"
+                                            class="form-control-plaintext ir-input ps-2 w-25 text-center"
+                                            autocomplete="off" readonly>
+                                        <p class="mb-0 ms-2" id="ir_floor_area_unit"></p>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="ir_property_type" class="form-label fw-bold fs-5">Property Type:</label>
-                                    <input name="property_type" id="ir_property_type" class="form-control-plaintext"
-                                        autocomplete="off" readonly>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <input type="text" name="total_floors" id="ir_total_floors"
-                                        class="form-control-plaintext ir-input" autocomplete="off" readonly>
+                                <div class="col-md-4">
                                     <label for="ir_total_floors" class="form-label fw-bold fs-5">Total number of
                                         floors:</label>
+                                    <div class="d-flex align-items-center">
+                                        <input type="number" name="total_floors" min="0" id="ir_total_floors"
+                                            class="form-control-plaintext ir-input ps-2 w-15 text-center"
+                                            autocomplete="off" readonly>
+                                        <p class="mb-0 ms-2">floor/s</p>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label for="ir_total_rooms" class="form-label fw-bold fs-5">Total property
                                         rooms:</label>
-                                    <input name="total_rooms" id="ir_total_rooms" class="form-control-plaintext"
-                                        autocomplete="off" readonly>
+                                    <div class="d-flex align-items-center">
+                                        <input type="number" name="total_rooms" min="0" id="ir_total_rooms"
+                                            class="form-control-plaintext ps-2 w-15 text-center ir-input"
+                                            autocomplete="off" readonly>
+                                        <p class="mb-0 ms-2">room/s</p>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-md-6">
-                                    <input type="text" name="location" id="ir_location"
-                                        class="form-control-plaintext ir-input" autocomplete="off" readonly>
                                     <label for="ir_location" class="form-label fw-bold fs-5">Location:</label>
+                                    <input type="text" name="location" id="ir_location"
+                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="ir_total_rooms" class="form-label fw-bold fs-5">Reported pest
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-md">
+                                    <label for="ir_pproblems_list" class="form-label fw-bold fs-5">Reported pest
                                         problems:</label>
-                                    <ul class="list-group list-group-flush" id="ir_pproblems_list"></ul>
-                                    <div id="ir_pest_problem_container" class="ir-input"></div>
+                                    <ul class="list-group list-group-flush display-toggle w-50" id="ir_pproblems_list">
+                                    </ul>
+                                    <div id="ir_pest_problem_container"
+                                        class="ps-2 d-none display-toggle d-flex justify-content-center gap-2 flex-wrap">
+                                    </div>
                                 </div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-md-6">
-                                    <input type="text" name="location_seen" id="ir_location_seen"
-                                        class="form-control-plaintext ir-input" autocomplete="off" readonly>
                                     <label for="ir_location_seen" class="form-label fw-bold fs-5">Infestation location
                                         (First seen):</label>
+                                    <input type="text" name="location_seen" id="ir_location_seen"
+                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" name="existing_pc" id="ir_existing_pc"
-                                        class="form-control-plaintext ir-input" autocomplete="off" readonly>
                                     <label for="ir_existing_pc" class="form-label fw-bold fs-5">Existing pest control
                                         provider:</label>
+                                    <input type="text" name="existing_pc" id="ir_existing_pc"
+                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
                                 </div>
                             </div>
                             <div class="row mb-2" id="ir_existing_pc_details">
                                 <div class="col-md-6">
-                                    <input type="text" name="latest_treatment" id="ir_latest_treatment"
-                                        class="form-control-plaintext ir-input" autocomplete="off" readonly>
                                     <label for="ir_latest_treatment" class="form-label fw-bold fs-5">Latest treatment
                                         type:</label>
-                                    <div class="form-check form-check-inline d-flex flex-row align-items-center gap-2">
-                                        <input class="form-check-input" name="no_treatment_history" type="checkbox"
+                                    <input type="text" name="latest_treatment" id="ir_latest_treatment"
+                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
+                                    <p class="ir-input ps-2 fw-light mb-0" id="ir_treatment_history_display"></p>
+                                    <div class="form-check form-check-inline d-flex flex-row align-items-center gap-2 d-none mt-1"
+                                        id="no_trt_history_chkbx">
+                                        <input class="form-check-input ps-2" name="no_treatment_history" type="checkbox"
                                             id="ir_no_treatment_history">
                                         <label class="form-check-label fw-light fs-5" for="ir_no_treatment_history">No
                                             treatment history</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="text" name="last_treatment" id="ir_last_treatment"
-                                        class="form-control-plaintext ir-input" autocomplete="off" readonly>
                                     <label for="ir_last_treatment" class="form-label fw-bold fs-5">Last treatment
                                         date:</label>
+                                    <input type="text" name="last_treatment" id="ir_last_treatment"
+                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
                                 </div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-md-6">
-                                    <textarea type="text" name="note" id="ir_note"
-                                        class="form-control-plaintext ir-input" autocomplete="off" readonly style="resize: none;"></textarea>
                                     <label for="ir_note" class="form-label fw-bold fs-5">Additional notes:</label>
+                                    <textarea type="text" name="note" id="ir_note"
+                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly
+                                        style="resize: none;"></textarea>
                                 </div>
                             </div>
+                            <small class="m-0 text-muted fw-light" id="ir_metadata"></small>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-grad" data-bs-target="#inspection_report_modal"
                                 data-bs-toggle="modal">Back</button>
+                            <button type="button" class="btn btn-grad" id="ir_edit_toggle">Edit</button>
                             <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -3875,18 +3895,88 @@
             }
         });
 
+        let ir_toggled = false;
+        function toggle_ir() {
+            $(".ir-input").toggleClass('form-control-plaintext form-control');
+            $(".ir-input").prop('readonly', ir_toggled);
+            $("#ir_property_type").prop('disabled', ir_toggled);
+            $("#no_trt_history_chkbx, #ir_treatment_history_display, .display-toggle").toggleClass('d-none');
+            $("#ir_edit_toggle").text(ir_toggled ? 'Edit' : 'Cancel edit');
+            // $("")
+            return ir_toggled = !ir_toggled ? true : false;
+        }
+
+        $("#ir_details_modal").on('click', '#ir_edit_toggle', function () {
+            toggle_ir();
+        });
+
         $("#ir_table").on('click', '.ir-detail-btn', function () {
             let ir_id = $(this).data('ir-id');
-            console.log(ir_id);
+            // console.log(ir_id);
 
             $.get(transUrl, { ir_details: 'true', id: ir_id }, function (d) {
                 console.log(d);
-
+                $("#ir_inspection_id").text(d.id);
+                $("#ir_customer").val(d.customer);
+                $("#ir_property_type").val(d.property_type);
+                $("#ir_floor_area").val(d.total_floor_area);
+                $("#ir_floor_area_unit").text(d.floor_area_unit);
+                $("#ir_total_floors").val(d.total_floor_num);
+                $("#ir_total_rooms").val(d.total_room);
+                $("#ir_location").val(d.property_location);
+                $("#ir_location_seen").val(d.reported_pest_problem_location);
+                let epc = d.existing_pest_provider;
+                $("#ir_existing_pc").val(epc == 1 ? "Yes" : "No");
+                let lt = d.last_treatment;
+                $("#ir_latest_treatment").val(lt == null ? "None" : lt);
+                let ltd = d.last_treatment_date;
+                $("#ir_last_treatment").val(ltd == null ? "None" : ltd);
+                $("#ir_note").val(d.notes);
+                $("#ir_treatment_history_display").text(function () {
+                    if (((lt && ltd) == null) && epc == 0) {
+                        $("#ir_no_treatment_history").prop('checked', 'checked');
+                        return "Note: This customer has no treatment history.";
+                    }
+                    $("#ir_no_treatment_history").prop('checked', false);
+                    return '';
+                });
+                d.created_by = d.created_by == '' ? 'No user recorded.' : d.created_by;
+                d.updated_by = d.updated_by == '' ? 'No user recorded.' : d.updated_by;
+                let addinfo = `Created at ${d.add_at} by ${d.created_by}` + (d.upat == d.add_at ? '' : `<br> Updated at ${d.up_at} by ${d.updated_by}`) + `<br> ${d.branch.name} - ${d.branch.location}`;
+                $("#ir_metadata").html(addinfo);
             }, 'json')
                 .fail(function (e) {
                     console.log(e);
                 })
-            // fetch ir details
+            if (ir_toggled) {
+                toggle_ir();
+            }
+
+            $.get(
+                transUrl,
+                {
+                    ir_pest_problems: 'true',
+                    id: ir_id
+                },
+                function (d) {
+                    $("#ir_pproblems_list").empty();
+                    $("#ir_pproblems_list").append(d);
+                },
+                'html'
+            )
+                .fail(function (e) {
+                    console.log(e);
+                });
+
+            $.get(transUrl, { ir_problems_array: 'true', id: ir_id }, function (d) {
+                $("#ir_pest_problem_container").empty();
+                $("#ir_pest_problem_container").append(d);
+                // console.log(d);
+            }, 'html')
+                .fail(function (e) {
+                    console.log(e);
+                });
+
             $("#inspection_report_modal").modal('hide');
             $("#ir_details_modal").modal('show');
         });
@@ -3894,7 +3984,9 @@
         $("#inspection_select_modal").on('change', '#no_treatment_history', function () {
             let checked = $(this).is(':checked');
             $(".existing-pc-form").prop('disabled', checked);
-        })
+        });
+
+
 
     </script>
 

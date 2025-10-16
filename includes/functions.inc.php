@@ -4400,20 +4400,20 @@ function ir_reported_pest($conn, $problems, $ir_id){
     return true;
 }
 
-function add_inspection_report($conn, $property_type, $total_area, $unit, $total_floors, $total_rooms, $property_loc, $exposed_soil_ans, $infestation_loc, $pest_problems, $existing_pc_ans, $last_treatment, $last_treatment_date, $note, $customer_name, $branch)
+function add_inspection_report($conn, $property_type, $total_area, $unit, $total_floors, $total_rooms, $property_loc, $exposed_soil_ans, $infestation_loc, $pest_problems, $existing_pc_ans, $last_treatment, $last_treatment_date, $note, $customer_name, $branch, $created_by)
 {
     mysqli_begin_transaction($conn);
     try {
 
-        $sql = "INSERT INTO inspection_reports (property_type, total_floor_area, floor_area_unit, total_floor_num, total_room, property_location, reported_pest_problem_location, exposed_soil_outside_property, existing_pest_provider, last_treatment, last_treatment_date, notes, branch, customer)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO inspection_reports (property_type, total_floor_area, floor_area_unit, total_floor_num, total_room, property_location, reported_pest_problem_location, exposed_soil_outside_property, existing_pest_provider, last_treatment, last_treatment_date, notes, branch, customer, created_by)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = mysqli_stmt_init($conn);
 
         if(!mysqli_stmt_prepare($stmt, $sql)) {
             throw new Exception("Prepared statement failed at adding inspection report. Please try again later.");
         }
 
-        mysqli_stmt_bind_param($stmt, 'sdsiisssisssis', 
+        mysqli_stmt_bind_param($stmt, 'sdsiisssisssiss', 
                                 $property_type, //s
                                 $total_area, //d
                                 $unit, //s
@@ -4427,7 +4427,8 @@ function add_inspection_report($conn, $property_type, $total_area, $unit, $total
                                 $last_treatment_date, //s
                                 $note, //s
                                 $branch, //i
-                                $customer_name //s
+                                $customer_name, //s
+                                $created_by //s
                             );
         mysqli_stmt_execute($stmt);
         if( mysqli_stmt_affected_rows($stmt) === 0) {

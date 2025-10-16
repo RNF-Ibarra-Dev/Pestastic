@@ -5,7 +5,7 @@ require_once '../../includes/functions.inc.php';
 // var_dump($_POST);
 require_once 'arrays.php';
 
-$author = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
+$author = $_SESSION['fname'] . ' ' . $_SESSION['lname'] . "Employee ID: " . $_SESSION['empId'];
 $role = "superadmin";
 $user = $_SESSION['saID'];
 $branch = $_SESSION['branch'];
@@ -774,7 +774,7 @@ if (isset($_POST['new_ir']) && $_POST['new_ir'] === 'true') {
         exit;
     }
 
-    $add = add_inspection_report($conn, $property_type, $total_area, "sqm", $total_floors, $total_rooms, $property_loc, $exposed_soil, $infestation_loc, $pest_problems, $existing_pc, $last_treatment, $last_treatment_date, $note, $customer_name, $branch);
+    $add = add_inspection_report($conn, $property_type, $total_area, "sqm", $total_floors, $total_rooms, $property_loc, $exposed_soil, $infestation_loc, $pest_problems, $existing_pc, $last_treatment, $last_treatment_date, $note, $customer_name, $branch, $author);
 
     if (isset($add['error'])) {
         http_response_code(400);

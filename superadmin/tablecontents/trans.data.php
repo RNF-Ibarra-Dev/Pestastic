@@ -196,6 +196,7 @@ function get_prob($conn, $checked = null)
     while ($row = mysqli_fetch_assoc($result)) {
         $id = $row['id'];
         $problem = $row['problems'];
+        // echo var_dump($checked);
         ?>
         <input type="checkbox" value="<?= $id ?>" name="pest_problems[]" class="btn-check" id="add-<?= $id ?>"
             autocomplete="off" <?= in_array($problem, $checked) ? 'checked' : '' ?>>
@@ -1229,16 +1230,16 @@ if (isset($_GET['get_ir']) && $_GET['get_ir'] === 'true') {
             <option value="<?= htmlspecialchars($id) ?>">Transaction No. <?= htmlspecialchars($id) ?></option>
             <?php
         }
-    } else{
-        ?> 
+    } else {
+        ?>
         <option selected disabled>No inspection reports found.</option>
         <?php
     }
 }
 
-if(isset($_GET['ir_details']) && $_GET['ir_details'] === 'true'){
+if (isset($_GET['ir_details']) && $_GET['ir_details'] === 'true') {
     $ir_id = $_GET['id'];
-    if(!is_numeric($ir_id)){
+    if (!is_numeric($ir_id)) {
         http_response_code(400);
         echo "ID passed not valid.";
         exit;
@@ -1246,7 +1247,7 @@ if(isset($_GET['ir_details']) && $_GET['ir_details'] === 'true'){
 
     $sql = "SELECT * FROM inspection_reports WHERE id = ?;";
     $stmt = mysqli_stmt_init($conn);
-    if(!mysqli_stmt_prepare($stmt, $sql)){
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
         http_response_code(400);
         echo "Statement error when fetching report details. Please try again later.";
         exit;
@@ -1255,16 +1256,87 @@ if(isset($_GET['ir_details']) && $_GET['ir_details'] === 'true'){
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
-    if(mysqli_num_rows($res) > 0){
+    if (mysqli_num_rows($res) > 0) {
         $row = mysqli_fetch_assoc($res);
+        $row['up_at'] = date("F j, Y", strtotime($row['updated_at']));
+        $row['add_at'] = date("F j, Y", strtotime($row['added_at']));
+        $row['branch'] = get_branch_details($conn, $row['branch']);
         echo json_encode($row);
         mysqli_stmt_close($stmt);
         exit;
-    } 
+    }
 
     http_response_code(400);
     echo "Data not found.";
     mysqli_stmt_close($stmt);
     exit;
 
+}
+
+if (isset($_GET['ir_pest_problems']) && $_GET['ir_pest_problems'] === 'true') {
+    $id = $_GET['id'];
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo "Invalid ID passed.";
+        exit;
+    }
+    $sql = "SELECT p.problems FROM pest_problems p JOIN inspection_problems ip ON ip.pest_problem = p.id WHERE ip.inspection_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "Fetching database statement error.";
+        exit;
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($res) > 0) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            // $pp = get_pest_problem_details($conn, $row['pest_problem']);
+            // $pprob = $pp['problems'];
+            $pprob = $row['problems'];
+            ?>
+            <li class="list-group-item"><?= htmlspecialchars($pprob) ?></li>
+            <?php
+        }
+    } else {
+        ?>
+        <li class="list-group-item">No reported pest problem.</li>
+        <?php
+    }
+    mysqli_stmt_close($stmt);
+    exit;
+}
+
+if (isset($_GET['ir_problems_array']) && $_GET['ir_problems_array'] === 'true') {
+    $id = $_GET['id'];
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo "Invalid ID passed.";
+        exit;
+    }
+    $sql = "SELECT p.problems FROM pest_problems p JOIN inspection_problems ip ON ip.pest_problem = p.id WHERE ip.inspection_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        http_response_code(400);
+        echo "Fetching database statement error.";
+        exit;
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $problems = [];
+    while ($row = mysqli_fetch_assoc($res)) {
+        $problems[] = $row['problems'];
+    }
+
+    // echo var_dump($problems);
+    get_prob($conn, $problems);
+    mysqli_stmt_close($stmt);
+    exit;
 }
