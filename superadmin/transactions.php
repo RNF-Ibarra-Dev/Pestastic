@@ -151,12 +151,16 @@
                     autocomplete="one-time-code">
                 <button id="ir_btn"
                     class="btn btn-sidebar position-relative text-light py-2 w-25 px-2 bg-light bg-opacity-25"><i
-                        class="bi bi-file-earmark-text me-2"></i> Inspection Reports
+                        class="bi bi-file-earmark-text me-2"></i>
+                    <p class="mb-0">
+                        Inspection Reports
+                    </p>
                 </button>
                 <button id="voidreqbtn"
                     class="btn btn-sidebar position-relative text-light py-2 w-25 px-2 bg-light bg-opacity-25"><i
-                        class="bi bi-x-circle me-2"></i> Void
-                    Requests
+                        class="bi bi-x-circle me-2"></i>
+                    <p class="mb-0">Void
+                        Requests</p>
                     <span
                         class="position-absolute top-0 start-100 translate-middle p-2 bg-warning btn btn-sidebar rounded-circle visually-hidden">
                     </span>
@@ -199,142 +203,196 @@
             <!-- modals -->
 
             <!-- inspection report details -->
-            <div class="modal fade text-dark" data-bs-backdrop="static" id="ir_details_modal" tabindex="-1"
-                aria-labelledby="create" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header bg-modal-title text-light">
-                            <h1 class="modal-title fs-5 fw-bold">
-                                Inspection Reports <span class="fw-light text-light">|</span> Details
-                            </h1>
-                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
-                                    class="bi text-light bi-x"></i></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row mb-2">
-                                <div class="col-md-3">
-                                    <p class="form-label fw-bold fs-5">Inspection Report ID:</p>
-                                    <p class="ps-2 m-0" id="ir_inspection_id"></p>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="ir_customer" class="form-label fw-bold fs-5">Customer Name:</label>
-                                    <input type="text" name="customer_name" id="ir_customer"
-                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
-                                </div>
-                                <div class="col-md-5">
-                                    <label for="ir_property_type" class="form-label fw-bold fs-5">Property Type:</label>
-                                    <select name="property_type" id="ir_property_type" class="form-select"
-                                        autocomplete="off" disabled>
-                                        <option value="residential">Residential Property</option>
-                                        <option value="commercial">Commercial Property</option>
-                                    </select>
-                                </div>
+            <form id="ir_edit_form">
+
+                <div class="modal fade text-dark" data-bs-backdrop="static" id="ir_details_modal" tabindex="-1"
+                    aria-labelledby="create" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5 fw-bold">
+                                    Inspection Reports <span class="fw-light text-light">|</span> Details
+                                </h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                        class="bi text-light bi-x"></i></button>
                             </div>
-                            <div class="row mb-2">
-                                <div class="col-md-4">
-                                    <label for="ir_floor_area" class="form-label fw-bold fs-5">Total floor area:</label>
-                                    <div class="d-flex align-items-center">
-                                        <input type="number" step="0.01" min="0.00" name="total_floor_area"
-                                            id="ir_floor_area"
-                                            class="form-control-plaintext ir-input ps-2 w-25 text-center"
-                                            autocomplete="off" readonly>
-                                        <p class="mb-0 ms-2" id="ir_floor_area_unit"></p>
+                            <div class="modal-body">
+                                <input type="hidden" name="ir_id" id="ir_details_id">
+                                <div class="row mb-2">
+                                    <div class="col-md-3">
+                                        <p class="form-label fw-bold fs-5">Inspection Report ID:</p>
+                                        <p class="ps-2 m-0" id="ir_inspection_id"></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="ir_customer" class="form-label fw-bold fs-5">Customer Name:</label>
+                                        <input type="text" name="customer_name" id="ir_customer"
+                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label for="ir_property_type" class="form-label fw-bold fs-5">Property
+                                            Type:</label>
+                                        <p class="mb-0 ps-2 text-capitalize" id="ir_property_type_display"></p>
+                                        <select name="property_type" id="ir_property_type" class="form-select d-none"
+                                            autocomplete="off" disabled>
+                                            <option value="residential">Residential Property</option>
+                                            <option value="commercial">Commercial Property</option>
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="ir_total_floors" class="form-label fw-bold fs-5">Total number of
-                                        floors:</label>
-                                    <div class="d-flex align-items-center">
-                                        <input type="number" name="total_floors" min="0" id="ir_total_floors"
-                                            class="form-control-plaintext ir-input ps-2 w-15 text-center"
-                                            autocomplete="off" readonly>
-                                        <p class="mb-0 ms-2">floor/s</p>
+                                <div class="row mb-2">
+                                    <div class="col-md-4">
+                                        <label for="ir_floor_area" class="form-label fw-bold fs-5">Total floor
+                                            area:</label>
+                                        <div class="d-flex align-items-center">
+                                            <input type="number" step="0.01" min="0.00" name="total_floor_area"
+                                                id="ir_floor_area"
+                                                class="form-control-plaintext ir-input ps-2 w-25 text-center"
+                                                autocomplete="off" readonly>
+                                            <p class="mb-0 ms-2" id="ir_floor_area_unit"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="ir_total_floors" class="form-label fw-bold fs-5">Total number of
+                                            floors:</label>
+                                        <div class="d-flex align-items-center">
+                                            <input type="number" name="total_floors" min="0" id="ir_total_floors"
+                                                class="form-control-plaintext ir-input ps-2 w-15 text-center"
+                                                autocomplete="off" readonly>
+                                            <p class="mb-0 ms-2">floor/s</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="ir_total_rooms" class="form-label fw-bold fs-5">Total property
+                                            rooms:</label>
+                                        <div class="d-flex align-items-center">
+                                            <input type="number" name="total_rooms" min="0" id="ir_total_rooms"
+                                                class="form-control-plaintext ps-2 w-15 text-center ir-input"
+                                                autocomplete="off" readonly>
+                                            <p class="mb-0 ms-2">room/s</p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="ir_total_rooms" class="form-label fw-bold fs-5">Total property
-                                        rooms:</label>
-                                    <div class="d-flex align-items-center">
-                                        <input type="number" name="total_rooms" min="0" id="ir_total_rooms"
-                                            class="form-control-plaintext ps-2 w-15 text-center ir-input"
-                                            autocomplete="off" readonly>
-                                        <p class="mb-0 ms-2">room/s</p>
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <label for="ir_location" class="form-label fw-bold fs-5">Location:</label>
+                                        <input type="text" name="location" id="ir_location"
+                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="ir_exposed_soil" class="form-label fw-bold fs-5">Exposed soil
+                                            outside property (For termite problems):</label>
+                                        <p class="ps-2 mb-0 text-capitalize" id="ir_exposed_soil_display"></p>
+                                        <select name="exposed_soil" id="ir_exposed_soil" class="form-select d-none">
+                                            <option value="yes">Yes</option>
+                                            <option value="no">No</option>
+                                            <option value="no_termite">No termite</option>
+                                        </select>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <label for="ir_location" class="form-label fw-bold fs-5">Location:</label>
-                                    <input type="text" name="location" id="ir_location"
-                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-md">
-                                    <label for="ir_pproblems_list" class="form-label fw-bold fs-5">Reported pest
-                                        problems:</label>
-                                    <ul class="list-group list-group-flush display-toggle w-50" id="ir_pproblems_list">
-                                    </ul>
-                                    <div id="ir_pest_problem_container"
-                                        class="ps-2 d-none display-toggle d-flex justify-content-center gap-2 flex-wrap">
+                                <div class="row mb-2">
+                                    <div class="col-md">
+                                        <label for="ir_pproblems_list" class="form-label fw-bold fs-5">Reported pest
+                                            problems:</label>
+                                        <ul class="list-group list-group-flush display-toggle w-50"
+                                            id="ir_pproblems_list">
+                                        </ul>
+                                        <div id="ir_pest_problem_container"
+                                            class="ps-2 d-none display-toggle d-flex justify-content-center gap-2 flex-wrap">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <label for="ir_location_seen" class="form-label fw-bold fs-5">Infestation location
-                                        (First seen):</label>
-                                    <input type="text" name="location_seen" id="ir_location_seen"
-                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="ir_existing_pc" class="form-label fw-bold fs-5">Existing pest control
-                                        provider:</label>
-                                    <input type="text" name="existing_pc" id="ir_existing_pc"
-                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
-                                </div>
-                            </div>
-                            <div class="row mb-2" id="ir_existing_pc_details">
-                                <div class="col-md-6">
-                                    <label for="ir_latest_treatment" class="form-label fw-bold fs-5">Latest treatment
-                                        type:</label>
-                                    <input type="text" name="latest_treatment" id="ir_latest_treatment"
-                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
-                                    <p class="ir-input ps-2 fw-light mb-0" id="ir_treatment_history_display"></p>
-                                    <div class="form-check form-check-inline d-flex flex-row align-items-center gap-2 d-none mt-1"
-                                        id="no_trt_history_chkbx">
-                                        <input class="form-check-input ps-2" name="no_treatment_history" type="checkbox"
-                                            id="ir_no_treatment_history">
-                                        <label class="form-check-label fw-light fs-5" for="ir_no_treatment_history">No
-                                            treatment history</label>
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <label for="ir_location_seen" class="form-label fw-bold fs-5">Infestation
+                                            location
+                                            (First seen):</label>
+                                        <input type="text" name="location_seen" id="ir_location_seen"
+                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="ir_existing_pc" class="form-label fw-bold fs-5">Existing pest
+                                            control
+                                            provider:</label>
+                                        <input type="text" name="existing_pc" id="ir_existing_pc"
+                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="ir_last_treatment" class="form-label fw-bold fs-5">Last treatment
-                                        date:</label>
-                                    <input type="text" name="last_treatment" id="ir_last_treatment"
-                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
+                                <div class="row mb-2" id="ir_existing_pc_details">
+                                    <div class="col-md-6">
+                                        <label for="ir_latest_treatment" class="form-label fw-bold fs-5">Latest
+                                            treatment
+                                            type:</label>
+                                        <input type="text" name="latest_treatment" id="ir_latest_treatment"
+                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
+                                        <p class="ir-input ps-2 fw-light mb-0" id="ir_treatment_history_display"></p>
+                                        <div class="form-check form-check-inline d-flex flex-row align-items-center gap-2 d-none mt-1"
+                                            id="no_trt_history_chkbx">
+                                            <input class="form-check-input ps-2" name="no_treatment_history"
+                                                type="checkbox" id="ir_no_treatment_history">
+                                            <label class="form-check-label fw-light fs-5"
+                                                for="ir_no_treatment_history">No
+                                                treatment history</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="ir_last_treatment" class="form-label fw-bold fs-5">Last treatment
+                                            date:</label>
+                                        <p id="ir_last_treatment_display" class="ps-2 mb-0"></p>
+                                        <input type="text" name="last_treatment" id="ir_last_treatment"
+                                            class="form-control ps-2 d-none" autocomplete="off" readonly>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <label for="ir_note" class="form-label fw-bold fs-5">Additional notes:</label>
-                                    <textarea type="text" name="note" id="ir_note"
-                                        class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly
-                                        style="resize: none;"></textarea>
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <label for="ir_note" class="form-label fw-bold fs-5">Additional notes:</label>
+                                        <textarea type="text" name="note" id="ir_note"
+                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly
+                                            style="resize: none;"></textarea>
+                                    </div>
                                 </div>
+                                <button type="button" class="w-75 mx-auto my-2 btn btn-grad ir-confirm-btn d-none"
+                                    data-bs-toggle="modal" data-bs-target="#ir_edit_confirm">Confirm
+                                    changes</button>
+                                <small class="m-0 text-muted fw-light" id="ir_metadata"></small>
                             </div>
-                            <small class="m-0 text-muted fw-light" id="ir_metadata"></small>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-grad" data-bs-target="#inspection_report_modal"
-                                data-bs-toggle="modal">Back</button>
-                            <button type="button" class="btn btn-grad" id="ir_edit_toggle">Edit</button>
-                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-target="#inspection_report_modal"
+                                    data-bs-toggle="modal">Back</button>
+                                <button type="button" class="btn btn-grad" id="ir_edit_toggle">Edit</button>
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="ir_edit_confirm" tabindex="0"
+                    aria-labelledby="confirmAdd" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Confirm report changes</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="ir_modify_pwd" class="form-label fw-light">Modify report? Enter manager
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="password" class="form-control" id="ir_modify_pwd">
+                                    </div>
+                                </div>
+                                <p class='text-center alert alert-info p-3 w-75 mx-auto my-0' style="display: none;"
+                                    id="ir_modify_alert"></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-target="#ir_details_modal"
+                                    data-bs-toggle="modal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Modify report</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
 
             <!-- inspection report table -->
             <div class="modal fade text-dark" data-bs-backdrop="static" id="inspection_report_modal" tabindex="-1"
@@ -377,38 +435,35 @@
                 </div>
             </div>
 
-            <div class="modal fade text-dark" data-bs-backdrop="static" id="inspection_select_modal" tabindex="-1"
-                aria-labelledby="create" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header bg-modal-title text-light">
-                            <h1 class="modal-title fs-5 fw-bold">
-                                Inspection Report
-                            </h1>
-                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
-                                    class="bi text-light bi-x"></i></button>
-                        </div>
-                        <div class="modal-body">
-                            <p
-                                class="fs-4 bg-secondary bg-opacity-50 fw-bold rounded w-100 text-center text-light py-2">
-                                Select Inspection Report</p>
+            <form id="new_inspection_report">
+                <div class="modal fade text-dark" data-bs-backdrop="static" id="inspection_select_modal" tabindex="-1"
+                    aria-labelledby="create" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5 fw-bold">
+                                    Inspection Report
+                                </h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                        class="bi text-light bi-x"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <p
+                                    class="fs-4 bg-secondary bg-opacity-50 fw-bold rounded w-100 text-center text-light py-2">
+                                    Select Inspection Report</p>
 
-                            <label for="inspection_select" class="form-label fw-bold fs-5">Available Inspection
-                                Reports:</label>
-                            <select name="inspection_select" class="form-select w-50" id="inspection_select">
-                            </select>
+                                <label for="inspection_select" class="form-label fw-bold fs-5">Available Inspection
+                                    Reports:</label>
+                                <select name="inspection_select" class="form-select w-50" id="inspection_select">
+                                </select>
 
-                            <div id="create_inspection_container">
+                                <div id="create_inspection_container">
 
-                                <div class="d-flex w-100 justify-content-center my-3 align-items-center">
-                                    <hr class="w-50">
-                                    <p class="text-muted m-0">&nbsp;OR&nbsp;</p>
-                                    <hr class="w-50">
-                                </div>
-
-                                <!-- create new inspection report -->
-                                <form id="new_inspection_report">
-
+                                    <div class="d-flex w-100 justify-content-center my-3 align-items-center">
+                                        <hr class="w-50">
+                                        <p class="text-muted m-0">&nbsp;OR&nbsp;</p>
+                                        <hr class="w-50">
+                                    </div>
                                     <p
                                         class="fs-4 bg-secondary bg-opacity-50 fw-bold rounded w-100 text-center text-light py-2">
                                         New Inspection Report</p>
@@ -564,23 +619,54 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <p class="alert alert-info py-2 w-75 my-3 mx-auto text-center fw-medium"
-                                        id="new_ir_alert" style="display: none;">
-                                    </p>
-                                    <button type="submit" class="btn btn-grad w-75 mx-auto">Create Inspection
-                                        Report</button>
-                                </form>
 
+                                    <button type="button" data-bs-target="#ir_confirm" data-bs-toggle="modal"
+                                        class="btn btn-grad w-75 mx-auto">Create Inspection
+                                        Report</button>
+
+
+                                </div>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-grad" data-bs-toggle="modal" disabled>Proceed</button>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                    disabled>Proceed</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="ir_confirm" tabindex="0"
+                    aria-labelledby="confirmAdd" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5" id="verifyAdd">Verification</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="ir_confirm_pwd" class="form-label fw-light">Add transaction? Enter
+                                        manager
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="password" class="form-control" id="ir_confirm_pwd">
+                                    </div>
+                                </div>
+                                <p class="alert alert-info py-2 w-75 my-3 mx-auto text-center fw-medium"
+                                    id="new_ir_alert" style="display: none;">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-target="#inspection_select_modal"
+                                    data-bs-toggle="modal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Create Report</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
 
             <form id="addTransaction">
                 <div class="row g-2 text-dark m-0">
@@ -3836,6 +3922,7 @@
                 data: $(this).serialize() + "&new_ir=true"
             }).done(function (d) {
                 $("#new_inspection_report")[0].reset();
+
                 $.get(
                     transUrl,
                     {
@@ -3859,6 +3946,13 @@
 
         let ltd = document.getElementById('last_treatment_date');
         last_treatment_date = flatpickr(ltd, {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d"
+        });
+
+        let ltd_details = document.getElementById('ir_last_treatment');
+        details_ltd = flatpickr(ltd_details, {
             altInput: true,
             altFormat: "F j, Y",
             dateFormat: "Y-m-d"
@@ -3898,9 +3992,14 @@
         let ir_toggled = false;
         function toggle_ir() {
             $(".ir-input").toggleClass('form-control-plaintext form-control');
+            $("#ir_last_treatment, #ir_last_treatment + input").toggleClass('d-none', ir_toggled);
             $(".ir-input").prop('readonly', ir_toggled);
-            $("#ir_property_type").prop('disabled', ir_toggled);
-            $("#no_trt_history_chkbx, #ir_treatment_history_display, .display-toggle").toggleClass('d-none');
+
+            // select inputs
+            $("#ir_property_type, #ir_exposed_soil").prop('disabled', ir_toggled);
+            $("#ir_property_type, #ir_property_type_display, #ir_exposed_soil, #ir_exposed_soil_display").toggleClass('d-none');
+
+            $("#no_trt_history_chkbx, #ir_treatment_history_display, .display-toggle, .ir-confirm-btn, #ir_last_treatment_display").toggleClass('d-none');
             $("#ir_edit_toggle").text(ir_toggled ? 'Edit' : 'Cancel edit');
             // $("")
             return ir_toggled = !ir_toggled ? true : false;
@@ -3910,8 +4009,14 @@
             toggle_ir();
         });
 
+        $("#ir_details_modal").on('change', '#ir_no_treatment_history', function () {
+            let checked = $(this).is(':checked');
+            $("#ir_latest_treatment, #ir_last_treatment, #ir_last_treatment + input").prop('disabled', checked);
+        })
+
         $("#ir_table").on('click', '.ir-detail-btn', function () {
             let ir_id = $(this).data('ir-id');
+            $("#ir_details_id").val(ir_id);
             // console.log(ir_id);
 
             $.get(transUrl, { ir_details: 'true', id: ir_id }, function (d) {
@@ -3923,20 +4028,33 @@
                 $("#ir_floor_area_unit").text(d.floor_area_unit);
                 $("#ir_total_floors").val(d.total_floor_num);
                 $("#ir_total_rooms").val(d.total_room);
+                $("#ir_property_type_display").text(d.property_type + ' Property');
+                $("#ir_exposed_soil_display").text(d.exposed_soil_outside_property == 'no_termite' ? 'No termite' : d.exposed_soil_outside_property);
                 $("#ir_location").val(d.property_location);
+                $("#ir_exposed_soil").val(d.exposed_soil_outside_property);
                 $("#ir_location_seen").val(d.reported_pest_problem_location);
                 let epc = d.existing_pest_provider;
                 $("#ir_existing_pc").val(epc == 1 ? "Yes" : "No");
                 let lt = d.last_treatment;
                 $("#ir_latest_treatment").val(lt == null ? "None" : lt);
                 let ltd = d.last_treatment_date;
-                $("#ir_last_treatment").val(ltd == null ? "None" : ltd);
+                if (ltd == null) {
+                    $("#ir_last_treatment_display").text('None');
+                    $("#ir_last_treatment + input").prop('placeholder', '--/--/--');
+                    details_ltd.clear();
+                } else {
+                    details_ltd.setDate(ltd);
+                    $("#ir_last_treatment_display").text(d.ltd);
+                }
+                // $("#ir_last_treatment").val(ltd == null ? "None" : details_ltd.setDate(ltd));
                 $("#ir_note").val(d.notes);
                 $("#ir_treatment_history_display").text(function () {
-                    if (((lt && ltd) == null) && epc == 0) {
+                    if (lt == null && ltd == null) {
                         $("#ir_no_treatment_history").prop('checked', 'checked');
+                        $("#ir_latest_treatment, #ir_last_treatment, #ir_last_treatment + input").prop('disabled', true);
                         return "Note: This customer has no treatment history.";
                     }
+                    $("#ir_latest_treatment, #ir_last_treatment, #ir_last_treatment + input").prop('disabled', false);
                     $("#ir_no_treatment_history").prop('checked', false);
                     return '';
                 });
@@ -3986,7 +4104,28 @@
             $(".existing-pc-form").prop('disabled', checked);
         });
 
+        $(document).on('submit', '#ir_edit_form', function (e) {
+            e.preventDefault();
+            console.log($(this).serializeArray());
 
+            $.ajax({
+                method: 'POST',
+                data: $(this).serialize() + "&modify_ir=true",
+                dataType: 'json',
+                url: submitUrl
+            })
+                .done(function (d) {
+                    console.log(d);
+                    $("#ir_edit_confirm").modal('hide');
+                    toggle_ir();
+                    $("#ir_details_modal").modal('show');
+                    $("#ir_modify_alert").text(d.success).fadeIn().delay(5000).fadeOut();
+                })
+                .fail(function (e) {
+                    $("#ir_modify_alert").text(e.responseText).fadeIn().delay(5000).fadeOut();
+                    console.log(e);
+                })
+        })
 
     </script>
 

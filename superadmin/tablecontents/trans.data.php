@@ -1261,6 +1261,7 @@ if (isset($_GET['ir_details']) && $_GET['ir_details'] === 'true') {
         $row['up_at'] = date("F j, Y", strtotime($row['updated_at']));
         $row['add_at'] = date("F j, Y", strtotime($row['added_at']));
         $row['branch'] = get_branch_details($conn, $row['branch']);
+        $row['ltd'] = date("F j, Y", strtotime($row['last_treatment_date']));
         echo json_encode($row);
         mysqli_stmt_close($stmt);
         exit;
