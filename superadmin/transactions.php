@@ -338,7 +338,7 @@
                                         <label for="ir_last_treatment" class="form-label fw-bold fs-5">Last treatment
                                             date:</label>
                                         <p id="ir_last_treatment_display" class="ps-2 mb-0"></p>
-                                        <input type="text" name="last_treatment" id="ir_last_treatment"
+                                        <input type="text" name="last_treatment_date" id="ir_last_treatment"
                                             class="form-control ps-2 d-none" autocomplete="off" readonly>
                                     </div>
                                 </div>

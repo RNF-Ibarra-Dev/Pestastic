@@ -4381,18 +4381,19 @@ function restock_item($conn, $id, $restock_value, $author, $user_id, $user_role,
     }
 }
 
-function ir_reported_pest($conn, $problems, $ir_id){
+function ir_reported_pest($conn, $problems, $ir_id)
+{
     $sql = "INSERT INTO inspection_problems (inspection_id, pest_problem) VALUES (?, ?);";
     $stmt = mysqli_stmt_init($conn);
 
-    if(!mysqli_stmt_prepare($stmt, $sql)){
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
         return ['error' => 'Prepared statement failed at adding inspection reported pest problems. Please try again later.'];
     }
 
-    for($i = 0; $i < count($problems); $i++){
+    for ($i = 0; $i < count($problems); $i++) {
         mysqli_stmt_bind_param($stmt, 'ii', $ir_id, $problems[$i]);
         mysqli_stmt_execute($stmt);
-        if(mysqli_stmt_affected_rows($stmt) === 0){
+        if (mysqli_stmt_affected_rows($stmt) === 0) {
             return ['error' => 'Failed to add inspection reported pest problems. Please try again later.'];
         }
     }
@@ -4409,37 +4410,188 @@ function add_inspection_report($conn, $property_type, $total_area, $unit, $total
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = mysqli_stmt_init($conn);
 
-        if(!mysqli_stmt_prepare($stmt, $sql)) {
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
             throw new Exception("Prepared statement failed at adding inspection report. Please try again later.");
         }
 
-        mysqli_stmt_bind_param($stmt, 'sdsiisssisssiss', 
-                                $property_type, //s
-                                $total_area, //d
-                                $unit, //s
-                                $total_floors, //i 
-                                $total_rooms, //i
-                                $property_loc, //s
-                                $infestation_loc, //s
-                                $exposed_soil_ans, //s 
-                                $existing_pc_ans, //i
-                                $last_treatment, //s
-                                $last_treatment_date, //s
-                                $note, //s
-                                $branch, //i
-                                $customer_name, //s
-                                $created_by //s
-                            );
+        mysqli_stmt_bind_param(
+            $stmt,
+            'sdsiisssisssiss',
+            $property_type, //s
+            $total_area, //d
+            $unit, //s
+            $total_floors, //i 
+            $total_rooms, //i
+            $property_loc, //s
+            $infestation_loc, //s
+            $exposed_soil_ans, //s 
+            $existing_pc_ans, //i
+            $last_treatment, //s
+            $last_treatment_date, //s
+            $note, //s
+            $branch, //i
+            $customer_name, //s
+            $created_by //s
+        );
         mysqli_stmt_execute($stmt);
-        if( mysqli_stmt_affected_rows($stmt) === 0) {
+        if (mysqli_stmt_affected_rows($stmt) === 0) {
             throw new Exception("Failed to add inspection report. Please try again later.");
         }
         $ir_id = mysqli_insert_id($conn);
         mysqli_stmt_close($stmt);
 
         $reported_problems = ir_reported_pest($conn, $pest_problems, $ir_id);
-        if(isset($reported_problems['error'])){
+        if (isset($reported_problems['error'])) {
             throw new Exception($reported_problems['error']);
+        }
+
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at line ' . $e->getFile()
+        ];
+    }
+}
+
+function get_inspection_problems($conn, $ir_id)
+{
+    $sql = "SELECT pest_problem FROM inspection_problems WHERE inspection_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'Fetching inspection problems stmt error.'];
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $ir_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $problems = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $problems[] = $row['pest_problem'];
+    }
+
+    if (empty($problems)) {
+        return ['error' => 'Reported pest problems not found.'];
+    }
+    mysqli_stmt_close($stmt);
+    return $problems;
+}
+
+function delete_inspection_problems($conn, $ir_id, $pest_problems)
+{
+    $sql = "DELETE FROM inspection_problems WHERE pest_problem = ? AND inspection_id = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'Statement error when deleting inspection reported problems. Please try again.'];
+    }
+
+    for ($i = 0; $i < count($pest_problems); $i++) {
+        mysqli_stmt_bind_param($stmt, 'ii', $pest_problems[$i], $ir_id);
+        mysqli_stmt_execute($stmt);
+        if (!mysqli_stmt_affected_rows($stmt) > 0) {
+            return ['error' => "Failed to delete inspection reported problems with id {$pest_problems[$i]}. Please try again."];
+        }
+    }
+    mysqli_stmt_close($stmt);
+    return true;
+}
+
+function update_inspection_problems($conn, $ir_id, $pest_problems)
+{
+    $sql = "INSERT INTO inspection_problems (inspection_id, pest_problem) VALUES (?, ?) ON DUPLICATE KEY UPDATE inspection_id = VALUES(inspection_id), pest_problem = VALUES(pest_problem);";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        return ['error' => 'Statement error when adding inspection reported problems. Please try again.'];
+    }
+
+    for ($i = 0; $i < count($pest_problems); $i++) {
+        mysqli_stmt_bind_param($stmt, 'ii', $ir_id, $pest_problems[$i]);
+        mysqli_stmt_execute($stmt);
+        if (!mysqli_stmt_affected_rows($stmt) > 0) {
+            return ['error' => "Failed to add inspection reported problems with id {$pest_problems[$i]}. Please try again."];
+        }
+    }
+    mysqli_stmt_close($stmt);
+    return true;
+}
+
+function modify_ir($conn, $ir_id, $customer, $property_type, $floor_area, $total_floors, $rooms, $location, $pest_problems, $location_seen, $existing_pc, $exposed_soil, $latest_treatment_type, $last_treatment_date, $note, $author)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "UPDATE 
+                    inspection_reports 
+                SET 
+                    customer = ?, 
+                    property_type = ?, 
+                    total_floor_area = ?, 
+                    total_floor_num = ?, 
+                    total_room = ?, 
+                    property_location = ?, 
+                    reported_pest_problem_location = ?, --location seen 
+                    exposed_soil_outside_property = ?, 
+                    existing_pest_provider = ?, 
+                    last_treatment = ?, --latest treatment
+                    last_treatment_date = ?, 
+                    notes = ?, 
+                    updated_by = ? 
+                WHERE 
+                    id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception("Statement failed to prepare. Please try again.");
+        }
+
+        mysqli_stmt_bind_param(
+            $stmt,
+            'ssdiisssissssi',
+            $customer, //s
+            $property_type, //s
+            $floor_area, //d
+            $total_floors, //i
+            $rooms, //i
+            $location, //s
+            $location_seen, //s
+            $exposed_soil, //s
+            $existing_pc, //i
+            $latest_treatment_type, //s
+            $last_treatment_date, //s
+            $notes, //s
+            $author, //s
+            $ir_id //i
+        );
+        mysqli_stmt_execute($stmt);
+        if (mysqli_affected_rows($conn) === 0) {
+            throw new Exception("Failed to update report. Please try again.");
+        }
+        mysqli_stmt_close($stmt);
+
+        $old_problems = get_inspection_problems($conn, $ir_id);
+        if (isset($old_problems['error'])) {
+            throw new Exception($old_problems['error']);
+        }
+
+        $problems_to_delete = array_values(array_diff($old_problems, $pest_problems));
+        if (!empty($problems_to_delete)) {
+            $delete = delete_inspection_problems($conn, $ir_id, $problems_to_delete);
+            if (isset($delete['error'])) {
+                throw new Exception($delete['error']);
+            }
+        } 
+        
+        if (empty(array_diff($old_problems, $pest_problems)) && empty(array_diff($pest_problems, $old_problems))) {
+            mysqli_commit($conn);
+            return true;
+        } else {
+            $update = update_inspection_problems($conn, $ir_id, $pest_problems);
+            if (isset($update['error'])) {
+                throw new Exception($update['error']);
+            }
         }
 
         mysqli_commit($conn);

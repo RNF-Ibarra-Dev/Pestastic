@@ -842,8 +842,8 @@ if (isset($_POST['modify_ir']) && $_POST['modify_ir'] === 'true') {
     $exposed_soil = $_POST['exposed_soil'];
 
     $no_treatment_history = isset($_POST['no_treatment_history']);
-    $latest_treatment = $_POST['latest_treatment'] ?? NULL;
-    $last_treatment = $_POST['last_treatment'] ?? NULL;
+    $latest_treatment = $_POST['latest_treatment'] ?? NULL; // last treatment type
+    $last_treatment_date = $_POST['last_treatment_date'] ?? NULL;
 
     $note = $_POST['note'];
     $password = $_POST['password'];
@@ -853,37 +853,31 @@ if (isset($_POST['modify_ir']) && $_POST['modify_ir'] === 'true') {
         echo "Invalid report ID. Please try again later.";
         exit;
     }
-
     if (!preg_match("/^[0-9a-zA-Z -]*$/", $name)) {
         http_response_code(400);
         echo "Invalid customer name.";
         exit;
     }
-
     if (!in_array($property_type, $valid_property_types)) {
         http_response_code(400);
         echo "Invalid property type.";
         exit;
     }
-
     if (!is_numeric($total_floor_area)) {
         http_response_code(400);
         echo "Invalid total floor area.";
         exit;
     }
-
     if ($total_floor_area <= 0.0) {
         http_response_code(400);
         echo "Total floor area must be greater than zero.";
         exit;
     }
-
     if (!is_numeric($total_floors)) {
         http_response_code(400);
         echo "Invalid total floors.";
         exit;
     }
-
     if ($total_floors <= 0) {
         http_response_code(400);
         echo "Total floors must be greater than zero.";
@@ -899,19 +893,16 @@ if (isset($_POST['modify_ir']) && $_POST['modify_ir'] === 'true') {
         echo "Total rooms must be greater than zero.";
         exit;
     }
-
     if (empty($location)) {
         http_response_code(400);
         echo "Property location is required.";
         exit;
     }
-
     if (empty($pest_problems)) {
         http_response_code(400);
         echo "Reported pest problem is required.";
         exit;
     }
-
     foreach ($pest_problems as $problem) {
         if (!is_numeric($problem)) {
             http_response_code(400);
@@ -919,30 +910,26 @@ if (isset($_POST['modify_ir']) && $_POST['modify_ir'] === 'true') {
             exit;
         }
     }
-
     if (!in_array($exposed_soil, $valid_termite_only_answers)) {
         http_response_code(400);
         echo "Invalid answer to exposed soil outside property.";
         exit;
     }
-
     if (empty($location_seen)) {
         http_response_code(400);
         echo "Infestation location is required.";
         exit;
     }
-
     if (!preg_match("/^[0-9a-zA-Z -]*$/", $location_seen)) {
         http_response_code(400);
         echo "Invalid infestation location. Special characters are not allowed.";
         exit;
     }
-
     if (!$no_treatment_history) {
         if ($existing_pc === 'no') {
             if (empty($last_treatment)) {
                 http_response_code(400);
-                echo "Last treatment is required.";
+                echo "Last treatment performed is required.";
                 exit;
             }
             if (empty($last_treatment_date)) {
@@ -961,13 +948,25 @@ if (isset($_POST['modify_ir']) && $_POST['modify_ir'] === 'true') {
             exit;
         }
     }
-
     if(!validate($conn, $password)){
         http_response_code(400);
         echo "Invalid password.";
         exit;
     }
 
-    
+    $update = modify_ir($conn, $id, $name, $property_type, $total_floor_area, $total_floors, $total_rooms, $location, $pest_problems, $location_seen, $existing_pc, $exposed_soil, $latest_treatment, $last_treatment_date, $note, $author);
+    if(isset($update['error'])){
+        http_response_code(400);
+        echo $update['error'];
+        exit();
+    } else if($update){
+        http_response_code(200);
+        echo json_encode(['success' => 'Inspection Report Updated.']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo "An unknown error occured. Please try again later.";
+        exit();
+    }
 
 }
