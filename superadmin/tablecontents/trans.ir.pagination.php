@@ -319,8 +319,9 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td><?= htmlspecialchars($created) ?></td>
                 <td><?= $created == $updated ? 'Not updated yet.' : $updated ?></td>
                 <td>
-                    <div class="d-flex justify-content-center">
-                        <button data-ir-id="<?= $id ?>" class="btn btn-sidebar me-2 ir-detail-btn text-dark shadow-sm border border-light">Details</button>
+                    <div class="d-flex justify-content-center gap-2">
+                        <button data-ir-id="<?= $id ?>" class="btn btn-sidebar ir-detail-btn text-dark shadow-sm border border-light"><i class="bi-info fs-5"></i></button>
+                        <button data-ir-id-delete="<?= $id ?>" class="btn btn-sidebar ir-delete-btn text-dark shadow-sm border border-light"><i class="bi-trash fs-5"></i></button>
                     </div>
                 </td>
             </tr>

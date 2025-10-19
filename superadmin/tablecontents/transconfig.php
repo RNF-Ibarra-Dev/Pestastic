@@ -920,14 +920,19 @@ if (isset($_POST['modify_ir']) && $_POST['modify_ir'] === 'true') {
         echo "Infestation location is required.";
         exit;
     }
-    if (!preg_match("/^[0-9a-zA-Z -]*$/", $location_seen)) {
+    if (!preg_match("/^[0-9a-zA-Z (),.-]*$/", $location_seen)) {
         http_response_code(400);
         echo "Invalid infestation location. Special characters are not allowed.";
         exit;
     }
+    if ($existing_pc !== 'yes' && $existing_pc !== 'no') {
+        http_response_code(400);
+        echo "Invalid existing pest control provider answer.";
+        exit;
+    }
     if (!$no_treatment_history) {
         if ($existing_pc === 'no') {
-            if (empty($last_treatment)) {
+            if (empty($latest_treatment)) {
                 http_response_code(400);
                 echo "Last treatment performed is required.";
                 exit;
@@ -939,7 +944,7 @@ if (isset($_POST['modify_ir']) && $_POST['modify_ir'] === 'true') {
             }
             $existing_pc = 0;
         } else if ($existing_pc === 'yes') {
-            $last_treatment = NULL;
+            $latest_treatment = NULL;
             $last_treatment_date = NULL;
             $existing_pc = 1;
         } else {
@@ -948,18 +953,21 @@ if (isset($_POST['modify_ir']) && $_POST['modify_ir'] === 'true') {
             exit;
         }
     }
-    if(!validate($conn, $password)){
+
+
+
+    if (!validate($conn, $password)) {
         http_response_code(400);
         echo "Invalid password.";
         exit;
     }
 
     $update = modify_ir($conn, $id, $name, $property_type, $total_floor_area, $total_floors, $total_rooms, $location, $pest_problems, $location_seen, $existing_pc, $exposed_soil, $latest_treatment, $last_treatment_date, $note, $author);
-    if(isset($update['error'])){
+    if (isset($update['error'])) {
         http_response_code(400);
         echo $update['error'];
         exit();
-    } else if($update){
+    } else if ($update) {
         http_response_code(200);
         echo json_encode(['success' => 'Inspection Report Updated.']);
         exit();
@@ -968,5 +976,36 @@ if (isset($_POST['modify_ir']) && $_POST['modify_ir'] === 'true') {
         echo "An unknown error occured. Please try again later.";
         exit();
     }
+}
 
+if(isset($_POST['delete_ir']) && $_POST['delete_ir'] === 'true'){
+    $id = $_POST['ir_id'];
+    $password = $_POST['password'];
+
+    if (!is_numeric($id)) {
+        http_response_code(400);
+        echo "Invalid inspection report ID. Please try again later.";
+        exit();
+    }
+
+    if (!validate($conn, $password)) {
+        http_response_code(400);
+        echo "Invalid password.";
+        exit();
+    }
+
+    $delete = delete_ir($conn, $id);
+    if (isset($delete['error'])) {
+        http_response_code(400);
+        echo $delete['error'];
+        exit();
+    } else if ($delete) {
+        http_response_code(200);
+        echo json_encode(['success' => 'Inspection Report Deleted.']);
+        exit();
+    } else {
+        http_response_code(400);
+        echo "An unknown error occured. Please try again later.";
+        exit();
+    }
 }

@@ -310,11 +310,22 @@
                                             class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="ir_existing_pc" class="form-label fw-bold fs-5">Existing pest
+                                        <!-- <label for="ir_existing_pc" class="form-label fw-bold fs-5">Existing pest
                                             control
-                                            provider:</label>
-                                        <input type="text" name="existing_pc" id="ir_existing_pc"
-                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
+                                            provider:</label> -->
+                                        <p class="fw-bold fs-5 mb-2">Existing pest control provider:</p>
+                                        <!-- <input type="text" name="existing_pc" id="ir_existing_pc"
+                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly> -->
+                                        <p id="ir_existing_pc" class="ps-2"></p>
+                                        <div class="btn-group mb-2 d-none" id="existing_btn_group">
+                                            <input type="radio" class="btn-check" name="existing_pc" value="yes"
+                                                id="ir_yes" autocomplete="off">
+                                            <label for="ir_yes" class="btn btn-outline-dark fw-medium">Yes</label>
+
+                                            <input type="radio" class="btn-check" name="existing_pc" value="no"
+                                                id="ir_no" autocomplete="off">
+                                            <label for="ir_no" class="btn btn-outline-dark fw-medium">No</label>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row mb-2" id="ir_existing_pc_details">
@@ -388,6 +399,39 @@
                                 <button type="button" class="btn btn-grad" data-bs-target="#ir_details_modal"
                                     data-bs-toggle="modal">Go back</button>
                                 <button type="submit" class="btn btn-grad">Modify report</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form id="delete_ir_form">
+                <input type="hidden" id="ir_delete_id" name="ir_id">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="ir_delete_modal" tabindex="0"
+                    aria-labelledby="confirmAdd" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Confirm report deletion</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="ir_delete_confirmation_pwd" class="form-label fw-light">Delete report? Enter manager
+                                        <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="password" class="form-control" id="ir_delete_confirmation_pwd">
+                                        <p class="text-muted mb-0">Note: This action is irreversible. Proceed with caution.</p>
+                                    </div>
+                                </div>
+                                <p class='text-center alert alert-info p-3 w-75 mx-auto my-0' style="display: none;"
+                                    id="ir_delete_alert"></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-target="#inspection_report_modal"
+                                    data-bs-toggle="modal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Delete report</button>
                             </div>
                         </div>
                     </div>
@@ -3992,12 +4036,12 @@
         let ir_toggled = false;
         function toggle_ir() {
             $(".ir-input").toggleClass('form-control-plaintext form-control');
-            $("#ir_last_treatment, #ir_last_treatment + input").toggleClass('d-none', ir_toggled);
+            $("#ir_last_treatment, #ir_last_treatment + input, #existing_btn_group").toggleClass('d-none', ir_toggled);
             $(".ir-input").prop('readonly', ir_toggled);
 
             // select inputs
             $("#ir_property_type, #ir_exposed_soil").prop('disabled', ir_toggled);
-            $("#ir_property_type, #ir_property_type_display, #ir_exposed_soil, #ir_exposed_soil_display").toggleClass('d-none');
+            $("#ir_property_type, #ir_property_type_display, #ir_exposed_soil, #ir_exposed_soil_display, #ir_existing_pc").toggleClass('d-none');
 
             $("#no_trt_history_chkbx, #ir_treatment_history_display, .display-toggle, .ir-confirm-btn, #ir_last_treatment_display").toggleClass('d-none');
             $("#ir_edit_toggle").text(ir_toggled ? 'Edit' : 'Cancel edit');
@@ -4009,16 +4053,22 @@
             toggle_ir();
         });
 
+        $("#ir_details_modal").on('change', '#ir_yes, #ir_no', function () {
+            let checked = $("#ir_yes").is(':checked');
+            let no_history_checked = $("#ir_no_treatment_history").is(':checked');
+
+            $("#ir_no_treatment_history, #ir_latest_treatment, #ir_last_treatment, #ir_last_treatment + input").prop('disabled', checked);
+            if (!checked) {
+                $("#ir_latest_treatment, #ir_last_treatment, #ir_last_treatment + input").prop('disabled', no_history_checked);
+            }
+        });
+
         $("#ir_details_modal").on('change', '#ir_no_treatment_history', function () {
             let checked = $(this).is(':checked');
             $("#ir_latest_treatment, #ir_last_treatment, #ir_last_treatment + input").prop('disabled', checked);
         })
 
-        $("#ir_table").on('click', '.ir-detail-btn', function () {
-            let ir_id = $(this).data('ir-id');
-            $("#ir_details_id").val(ir_id);
-            // console.log(ir_id);
-
+        function load_report(ir_id) {
             $.get(transUrl, { ir_details: 'true', id: ir_id }, function (d) {
                 console.log(d);
                 $("#ir_inspection_id").text(d.id);
@@ -4034,7 +4084,18 @@
                 $("#ir_exposed_soil").val(d.exposed_soil_outside_property);
                 $("#ir_location_seen").val(d.reported_pest_problem_location);
                 let epc = d.existing_pest_provider;
-                $("#ir_existing_pc").val(epc == 1 ? "Yes" : "No");
+                $("#ir_existing_pc").text(epc == 1 ? "Yes" : "No");
+                if (epc == 1) {
+                    $("#ir_existing_pc").text("Yes");
+                    $("#ir_yes").prop('checked', 'checked');
+                    $("#ir_no").prop('checked', false);
+                    $("#ir_no_treatment_history").prop('disabled', true);
+                } else {
+                    $("#ir_no_treatment_history").prop('disabled', false);
+                    $("#ir_existing_pc").text("No");
+                    $("#ir_yes").prop('checked', false);
+                    $("#ir_no").prop('checked', 'checked');
+                }
                 let lt = d.last_treatment;
                 $("#ir_latest_treatment").val(lt == null ? "None" : lt);
                 let ltd = d.last_treatment_date;
@@ -4094,6 +4155,13 @@
                 .fail(function (e) {
                     console.log(e);
                 });
+        }
+
+        $("#ir_table").on('click', '.ir-detail-btn', function () {
+            let ir_id = $(this).data('ir-id');
+            $("#ir_details_id").val(ir_id);
+            // console.log(ir_id);
+            load_report(ir_id);
 
             $("#inspection_report_modal").modal('hide');
             $("#ir_details_modal").modal('show');
@@ -4118,6 +4186,8 @@
                     console.log(d);
                     $("#ir_edit_confirm").modal('hide');
                     toggle_ir();
+                    show_toast(d.success);
+                    load_report($("#ir_details_id").val());
                     $("#ir_details_modal").modal('show');
                     $("#ir_modify_alert").text(d.success).fadeIn().delay(5000).fadeOut();
                 })
@@ -4125,7 +4195,36 @@
                     $("#ir_modify_alert").text(e.responseText).fadeIn().delay(5000).fadeOut();
                     console.log(e);
                 })
-        })
+        });
+
+        $("#inspection_report_modal").on('click', '.ir-delete-btn', function () {
+            let id = $(this).data('ir-id-delete');
+            $("#ir_delete_id").val(id);
+            $("#inspection_report_modal").modal('hide');
+            $("#ir_delete_modal").modal('show');
+        });
+
+        $(document).on('submit', '#delete_ir_form', function (e) {
+            e.preventDefault();
+            console.log($(this).serializeArray());
+
+            $.ajax({
+                method: 'POST',
+                data: $(this).serialize() + "&delete_ir=true",
+                dataType: 'json',
+                url: submitUrl
+            })
+                .done(function (d) {
+                    console.log(d);
+                    $("#ir_delete_modal").modal('hide');
+                    show_toast(d.success);
+                    $("#inspection_report_modal").modal('show');
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $("#ir_delete_alert").text(e.responseText).fadeIn().delay(5000).fadeOut();
+                })
+        });
 
     </script>
 

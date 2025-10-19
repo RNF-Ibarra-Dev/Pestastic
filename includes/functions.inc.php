@@ -4511,8 +4511,8 @@ function update_inspection_problems($conn, $ir_id, $pest_problems)
     for ($i = 0; $i < count($pest_problems); $i++) {
         mysqli_stmt_bind_param($stmt, 'ii', $ir_id, $pest_problems[$i]);
         mysqli_stmt_execute($stmt);
-        if (!mysqli_stmt_affected_rows($stmt) > 0) {
-            return ['error' => "Failed to add inspection reported problems with id {$pest_problems[$i]}. Please try again."];
+        if (mysqli_stmt_errno($stmt)) {
+            return ['error' => "Failed to add inspection reported problems with id {$pest_problems[$i]}. Please try again. " . mysqli_stmt_error($stmt)];
         }
     }
     mysqli_stmt_close($stmt);
@@ -4532,10 +4532,10 @@ function modify_ir($conn, $ir_id, $customer, $property_type, $floor_area, $total
                     total_floor_num = ?, 
                     total_room = ?, 
                     property_location = ?, 
-                    reported_pest_problem_location = ?, --location seen 
+                    reported_pest_problem_location = ?,
                     exposed_soil_outside_property = ?, 
                     existing_pest_provider = ?, 
-                    last_treatment = ?, --latest treatment
+                    last_treatment = ?, 
                     last_treatment_date = ?, 
                     notes = ?, 
                     updated_by = ? 
@@ -4561,13 +4561,13 @@ function modify_ir($conn, $ir_id, $customer, $property_type, $floor_area, $total
             $existing_pc, //i
             $latest_treatment_type, //s
             $last_treatment_date, //s
-            $notes, //s
+            $note, //s
             $author, //s
             $ir_id //i
         );
         mysqli_stmt_execute($stmt);
-        if (mysqli_affected_rows($conn) === 0) {
-            throw new Exception("Failed to update report. Please try again.");
+        if (mysqli_stmt_errno($stmt)) {
+            throw new Exception("Failed to update report. Please try again. " . mysqli_stmt_error($stmt));
         }
         mysqli_stmt_close($stmt);
 
@@ -4582,8 +4582,8 @@ function modify_ir($conn, $ir_id, $customer, $property_type, $floor_area, $total
             if (isset($delete['error'])) {
                 throw new Exception($delete['error']);
             }
-        } 
-        
+        }
+
         if (empty(array_diff($old_problems, $pest_problems)) && empty(array_diff($pest_problems, $old_problems))) {
             mysqli_commit($conn);
             return true;
@@ -4595,6 +4595,32 @@ function modify_ir($conn, $ir_id, $customer, $property_type, $floor_area, $total
         }
 
         mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return [
+            'error' => $e->getMessage() . ' at line ' . $e->getLine() . ' at line ' . $e->getFile()
+        ];
+    }
+}
+
+function delete_ir($conn, $id)
+{
+    mysqli_begin_transaction($conn);
+    try {
+        $sql = "DELETE FROM inspection_reports WHERE id = ?;";
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            throw new Exception('Prepared statement failed at deleting inspection report. Please try again later.');
+        }
+
+        mysqli_stmt_bind_param($stmt, 'i', $id);
+        mysqli_stmt_execute($stmt);
+        if (mysqli_stmt_errno($stmt)) {
+            throw new Exception('Failed to delete inspection report. Please try again later.' . mysqli_stmt_error($stmt));
+        }
+        mysqli_stmt_close($stmt);
         return true;
     } catch (Exception $e) {
         mysqli_rollback($conn);
