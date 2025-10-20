@@ -2,7 +2,7 @@
 require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
-$pageRows = 8;
+$pageRows = 4;
 $rowCount = 'SELECT * FROM inspection_reports;';
 $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);

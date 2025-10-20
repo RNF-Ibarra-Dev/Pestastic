@@ -716,7 +716,7 @@ if (isset($_POST['new_ir']) && $_POST['new_ir'] === 'true') {
         exit;
     }
 
-    if ($total_floor_area <= 0.0) {
+    if ($total_area <= 0.0) {
         http_response_code(400);
         echo "Total floor area must be greater than zero.";
         exit;
@@ -764,7 +764,7 @@ if (isset($_POST['new_ir']) && $_POST['new_ir'] === 'true') {
         exit;
     }
 
-    if (!preg_match("/^[0-9a-zA-Z -]*$/", $location_seen)) {
+    if (!preg_match("/^[0-9a-zA-Z -]*$/", $infestation_loc)) {
         http_response_code(400);
         echo "Invalid infestation location. Special characters are not allowed.";
         exit;

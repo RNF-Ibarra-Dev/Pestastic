@@ -1227,7 +1227,7 @@ if (isset($_GET['get_ir']) && $_GET['get_ir'] === 'true') {
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
             ?>
-            <option value="<?= htmlspecialchars($id) ?>">Transaction No. <?= htmlspecialchars($id) ?></option>
+            <option value="<?= htmlspecialchars($id) ?>">Report No. <?= htmlspecialchars($id) ?></option>
             <?php
         }
     } else {

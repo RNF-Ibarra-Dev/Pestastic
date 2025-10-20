@@ -4621,6 +4621,7 @@ function delete_ir($conn, $id)
             throw new Exception('Failed to delete inspection report. Please try again later.' . mysqli_stmt_error($stmt));
         }
         mysqli_stmt_close($stmt);
+        mysqli_commit($conn);
         return true;
     } catch (Exception $e) {
         mysqli_rollback($conn);

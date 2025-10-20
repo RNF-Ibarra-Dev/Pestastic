@@ -150,7 +150,8 @@
                     type="search" placeholder="Search transactions . . ." id="searchbar" name="searchTrans"
                     autocomplete="one-time-code">
                 <button id="ir_btn"
-                    class="btn btn-sidebar position-relative text-light py-2 w-25 px-2 bg-light bg-opacity-25"><i
+                    class="btn btn-sidebar position-relative text-light py-2 w-25 px-2 bg-light bg-opacity-25"
+                    data-bs-target="#inspection_report_modal" data-bs-toggle="modal"><i
                         class="bi bi-file-earmark-text me-2"></i>
                     <p class="mb-0">
                         Inspection Reports
@@ -172,8 +173,7 @@
                         class="bi bi-calendar2-check me-2"></i>Finalizing Transactions</button>
                 <div class="vr"></div>
                 <button type="button" id="addbtn" class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3"
-                    disabled-data-bs-toggle="modal" disabled-data-bs-target="#addModal"><i
-                        class="bi bi-file-earmark-plus"></i></button>
+                    data-bs-toggle="modal" data-bs-target="#add_ir"><i class="bi bi-file-earmark-plus"></i></button>
                 <button type="button" class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3"
                     id="add_inspection" data-bs-target="#inspection_select_modal" data-bs-toggle="modal">
                     <i class="bi bi-file-earmark-plus"></i>
@@ -364,6 +364,11 @@
                                 <button type="button" class="w-75 mx-auto my-2 btn btn-grad ir-confirm-btn d-none"
                                     data-bs-toggle="modal" data-bs-target="#ir_edit_confirm">Confirm
                                     changes</button>
+                                <button type="button" id="delete_ir_details"
+                                    class="w-75 mx-auto my-2 btn btn-grad ir-confirm-btn d-none" data-bs-toggle="modal"
+                                    data-bs-target="#ir_delete_modal">
+                                    Delete report
+                                </button>
                                 <small class="m-0 text-muted fw-light" id="ir_metadata"></small>
                             </div>
                             <div class="modal-footer">
@@ -418,11 +423,14 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="ir_delete_confirmation_pwd" class="form-label fw-light">Delete report? Enter manager
+                                    <label for="ir_delete_confirmation_pwd" class="form-label fw-light">Delete report?
+                                        Enter manager
                                         <?= $_SESSION['saUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
-                                        <input type="password" name="password" class="form-control" id="ir_delete_confirmation_pwd">
-                                        <p class="text-muted mb-0">Note: This action is irreversible. Proceed with caution.</p>
+                                        <input type="password" name="password" class="form-control"
+                                            id="ir_delete_confirmation_pwd">
+                                        <p class="text-muted mb-0">Note: This action is irreversible. Proceed with
+                                            caution.</p>
                                     </div>
                                 </div>
                                 <p class='text-center alert alert-info p-3 w-75 mx-auto my-0' style="display: none;"
@@ -453,11 +461,8 @@
                         <div class="modal-body">
                             <div class="table-responsive-sm d-flex justify-content-center">
                                 <table class="table align-middle table-hover m-3 mt-2 os-table w-100 text-light">
-                                    <caption class="text-light text-muted">List of all transactions. For faster
-                                        transaction approval,
-                                        click
-                                        'Pending' under the status column.</caption>
-                                    <thead class="text-center">
+                                    <caption class="text-muted">List of all available inspection reports.</caption>
+                                    <thead class="text-center  align-middle">
                                         <tr>
                                             <th scope="row">Inspection ID</th>
                                             <th>Customer Name</th>
@@ -468,9 +473,20 @@
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="ir_table"></tbody>
+                                    <tbody id="ir_table">
+                                        <tr>
+                                            <td colspan="7">
+                                                <div class="d-flex justify-content-center">
+                                                    <div class="spinner-border" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </div>
+                            <div id="ir_pagination"></div>
                         </div>
                         <div class="modal-footer"> <button type="button" class="btn btn-grad"
                                 data-bs-dismiss="modal">Close</button>
@@ -623,7 +639,7 @@
                                             <div class="d-flex gap-2">
                                                 <div class="w-100">
                                                     <label for="existing_provider_last_treatment"
-                                                        class="existing_label form-label fw-bold fs-5 d-none">Latest
+                                                        class=" form-label fw-bold fs-5">Latest
                                                         treatment type:</label>
                                                     <input type="text" name="existing_provider_last_treatment"
                                                         id="existing_provider_last_treatment"
@@ -640,7 +656,7 @@
                                                 </div>
                                                 <div class="w-100">
                                                     <label for="last_treatment_date"
-                                                        class="existing_label form-label fw-bold fs-5 d-none">Last
+                                                        class=" form-label fw-bold fs-5">Last
                                                         treatment
                                                         date:</label>
                                                     <input type="text" name="last_treatment_date"
@@ -713,6 +729,32 @@
             </form>
 
             <form id="addTransaction">
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="add_ir" tabindex="0"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Add Transaction</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <label for="select_ir_trans" class="form-label fw-bold fs-5">Select inspection
+                                    report:</label>
+                                <select name="inspection_report" id="select_ir_trans" class="form-select w-50"></select>
+                                <p class="mb-1 text-muted ps-1">Inspection report is required in order to proceed.</p>
+
+                                <button type="button" class="btn btn-grad w-50 mx-auto d-none mt-2"
+                                    id="ir_add_proceed_btn">Proceed</button>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-target="#inspection_select_modal"
+                                    data-bs-toggle="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row g-2 text-dark m-0">
                     <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="addModal" tabindex="-1"
                         aria-labelledby="create" aria-hidden="true">
@@ -720,9 +762,6 @@
                             <div class="modal-content">
                                 <div class="modal-header bg-modal-title text-light">
                                     <h1 class="modal-title fs-5">Add New Transaction</h1>
-
-                                    <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
-                                            class="bi text-light bi-x"></i></button>
                                 </div>
                                 <div class="modal-body">
                                     <p
@@ -744,7 +783,7 @@
                                                 Address
                                             </label>
                                             <textarea name="add-customerAddress" id="add-customerAddress"
-                                                class="form-control form-add" rows="1"
+                                                class="form-control form-add" rows="2"
                                                 placeholder="e.g B20 L64 Garnet Street Lee Grove 4 Mandaluyong, Metro Manila"></textarea>
                                         </div>
                                         <div class="col-lg-3 mb-2">
@@ -924,12 +963,23 @@
                                                 class="form-control" rows="1"></textarea>
                                         </div>
                                     </div>
+                                    <div class="row mb-2">
+                                        <div class="col-lg-6 d-flex justify-content-between">
+                                            <div>
+                                                <p class="fw-bold mb-0 fs-5">Selected inspection report:</p>
+                                                <span class="ps-2 my-2" id="add_selected_ir"></span>
+                                            </div>
+                                            <button id="show_ir_details" class="btn btn-grad my-auto me-3">View
+                                                report</button>
+                                        </div>
+                                    </div>
 
                                     <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
                                         id="emptyInput"></p>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                        data-bs-target="#confirm_close">Cancel</button>
                                     <button type="button" class="btn btn-grad" disabled-id="submitAdd"
                                         data-bs-toggle="modal" data-bs-target="#confirmAdd">Proceed &
                                         Confirm</button>
@@ -945,8 +995,6 @@
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5" id="verifyAdd">Verification</h1>
-                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
-                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
@@ -963,6 +1011,24 @@
                                 <button type="button" class="btn btn-grad" data-bs-target="#addModal"
                                     data-bs-toggle="modal">Go back</button>
                                 <button type="submit" class="btn btn-grad" id="submitAdd">Add Transaction</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="confirm_close" tabindex="0"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                            </div>
+                            <div class="modal-body">
+                                <p class="fs-5 text-center mb-0 fw-bold">Data input will get lost. Discard transaction
+                                    creation?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-target="#addModal"
+                                    data-bs-toggle="modal">Go back</button>
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Discard</button>
                             </div>
                         </div>
                     </div>
@@ -2210,7 +2276,36 @@
             ]);
         })
 
-        $(document).on('click', '#addbtn', async function () {
+        // inspection report changes 
+        $("#add_ir").on('change', '#select_ir_trans', function () {
+            if ($(this).val() !== '') {
+                $("#ir_add_proceed_btn").toggleClass('d-none', false);
+                $("#add_selected_ir").text($(this).val());
+                $("button#show_ir_details").prop("data-ir-id", $(this).val());
+            } else {
+                $("#ir_add_proceed_btn").toggleClass('d-none', true);
+                $("#add_selected_ir").text('');
+                $("button#show_ir_details").prop("data-ir-id", '');
+            }
+        });
+
+        $("#add_ir").on('click', '#ir_add_proceed_btn', function () {
+            $("#add_ir").modal('hide');
+            load_add_trans();
+        });
+        // add_selected_ir
+        $(document).on('shown.bs.modal', '#add_ir', function () {
+            $("#ir_add_proceed_btn").toggleClass('d-none', true);
+            $.get(transUrl, { get_ir: 'true' }, function (d) {
+                $("#select_ir_trans").empty();
+                $("#select_ir_trans").append(d);
+            }).fail(function (e) {
+                console.log(e);
+            });
+        });
+
+        async function load_add_trans() {
+
             let form = 'add';
             try {
                 const load = await Promise.all([
@@ -2239,7 +2334,8 @@
             } catch (error) {
                 console.log('add get error.')
             }
-        });
+        }
+
 
 
         async function add_packages(branch = null) {
@@ -3951,7 +4047,14 @@
 
         $("#inspection_select_modal").on('change', '#existing_pc__yes, #existing_pc__no', function () {
             let checked = $("#existing_pc__no").is(':checked');
-            $("#existing_provider_last_treatment, #last_treatment_date, #last_treatment_date + input").prop('disabled', !checked);
+            let no_history_checked = $("#no_treatment_history").is(':checked');
+            $("#existing_provider_last_treatment, #last_treatment_date, #last_treatment_date + input").prop('disabled', function () {
+                if ((checked && no_history_checked) || !checked) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
             $(".existing_label").toggleClass('d-none', !checked);
         });
 
@@ -4012,25 +4115,54 @@
             }
         });
 
-        $(document).on('click', '#ir_btn', async function () {
+        async function load_ir_table(page = 1) {
             let branch = $("#sortbranches").val();
-            let ir = await $.get(
+            await $.get(
                 'tablecontents/trans.ir.pagination.php',
                 {
                     table: 'true',
-                    branch: branch
+                    branch: branch,
+                    currentpage: page
                 }, function (d) {
                     $("#ir_table").empty();
                     $("#ir_table").append(d);
+                    return true;
                 },
                 'html'
             ).fail(function (e) {
                 console.log(e);
+                return false;
             });
+        }
 
-            if (ir) {
-                $("#inspection_report_modal").modal('show');
-            }
+        async function load_ir_pagination(page = 1) {
+            let branch = $("#sortbranches").val();
+            await $.get('tablecontents/trans.ir.pagination.php', {
+                paginate: 'true',
+                active: page,
+                branch: branch
+            }, function (d) {
+                $("#ir_pagination").empty();
+                $("#ir_pagination").append(d);
+                return true;
+            }, 'html').fail(function (e) {
+                console.log(e);
+                return false;
+            });
+        }
+
+        $("#inspection_report_modal").on('click', '.page-link', async function (e) {
+            e.preventDefault();
+            let branch = $("#sortbranches").val();
+            let currentpage = $(this).data('page');
+
+            await load_ir_table(currentpage);
+            await load_ir_pagination(currentpage);
+        });
+
+        $(document).on('shown.bs.modal', '#inspection_report_modal', async function () {
+            await load_ir_table();
+            await load_ir_pagination();
         });
 
         let ir_toggled = false;
@@ -4218,6 +4350,7 @@
                     console.log(d);
                     $("#ir_delete_modal").modal('hide');
                     show_toast(d.success);
+                    $(this)[0].reset();
                     $("#inspection_report_modal").modal('show');
                 })
                 .fail(function (e) {
@@ -4225,6 +4358,8 @@
                     $("#ir_delete_alert").text(e.responseText).fadeIn().delay(5000).fadeOut();
                 })
         });
+
+        // $(document).on('click', '#delete_ir_details, .ir-delete-btn')
 
     </script>
 
