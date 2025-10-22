@@ -27,7 +27,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                 in stock.</p></div>
             </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
     $pt = "SELECT * FROM transactions WHERE transaction_status = 'pending' AND void_request = 0;";
@@ -48,7 +48,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 
@@ -70,7 +70,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 
@@ -93,7 +93,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 
@@ -115,7 +115,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 
@@ -137,7 +137,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 
@@ -158,7 +158,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 
@@ -179,7 +179,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 

@@ -8,103 +8,6 @@ $countResult = mysqli_query($conn, $rowCount);
 $totalRows = mysqli_num_rows($countResult);
 $totalPages = ceil($totalRows / $pageRows);
 
-if (isset($_GET['search'])) {
-    $search = $_GET['search'];
-    $istatus = $_GET['status'] ?? '';
-    $ibranch = $_GET['branch'] ?? '';
-
-    $sql = "SELECT * FROM transactions WHERE (id LIKE ? OR treatment_date LIKE ? OR customer_name LIKE ?
-                    OR treatment LIKE ?)";
-
-    $data = [];
-    $types = '';
-    $queries = [];
-
-    if ($istatus !== '' && $istatus !== NULL) {
-        $data[] = (string) $istatus;
-        $types .= "s";
-        $queries[] = "transaction_status = ?";
-    }
-
-    if ($ibranch !== '' && $ibranch !== NULL) {
-        $data[] = (int) $ibranch;
-        $types .= "i";
-        $queries[] = "branch = ?";
-    }
-
-    if (!empty($data)) {
-        $sql .= " AND " . implode(" AND ", $queries);
-    }
-
-    $sql .= " EXCEPT SELECT * FROM transactions WHERE void_request = 1 ORDER BY id DESC;";
-
-
-    $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        echo 'ERROR STMT';
-        exit();
-    }
-
-    $ssearch = "%" . $search . "%";
-    // $sstatus = "%" . $status . "%";
-
-    if (!empty($data)) {
-        mysqli_stmt_bind_param($stmt, "ssss$types", $ssearch, $ssearch, $ssearch, $ssearch, ...$data);
-    } else {
-        mysqli_stmt_bind_param($stmt, 'ssss', $ssearch, $ssearch, $ssearch, $ssearch, );
-    }
-
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $rows = mysqli_num_rows($result);
-    if ($rows > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $customerName = $row['customer_name'];
-            $treatmentDate = $row['treatment_date'];
-            $td = date("F j, Y", strtotime($treatmentDate));
-            $treatment = $row['treatment'];
-            $today = date("Y-m-d");
-            $t_name = treatment_name($conn, $treatment);
-            $createdAt = $row['created_at'];
-            $updatedAt = $row['updated_at'];
-            $status = $row['transaction_status'];
-            $cr = (int) $row['complete_request'];
-
-            ?>
-            <tr class="text-center">
-                <td scope="row"><?= $id ?></td>
-                <td><?= htmlspecialchars($customerName) ?></td>
-                <td><?= $status === 'Cancelled' || ($treatmentDate < $today && ($status === 'Accepted' || $status === 'Pending')) ? "<p class='btn btn-sidebar m-0 rounded-pill bg-dark bg-opacity-25 ps-2 text-warning resched-btn' data-cancelled-id='$id'><i class='bi bi-exclamation-lg'></i>Reschedule Transaction</p>" : htmlspecialchars($td) ?>
-                </td>
-                <td><?= htmlspecialchars($t_name) ?></td>
-                <td>
-                    <?=
-                        $status === 'Pending' ? "<span id='pendingbtn' data-pending-id='$id' class='pending-btn w-50 border border-light border-opacity-50 shadow-sm text-wrap py-2 text-shadow text-light badge btn btn-sidebar rounded-pill text-bg-warning bg-opacity-25'>Pending</span>" :
-                        ($status === 'Accepted' ? "<span data-accepted='$id' class='accepted-btn btn btn-sidebar badge rounded-pill text-bg-success bg-opacity-50 w-50 border border-light border-opacity-50 shadow-sm text-wrap py-2 text-shadow'>$status</span>" :
-                            ($status === 'Finalizing' ? "<span data-finalize-id='$id' class='badge rounded-pill text-bg-primary bg-opacity-50 w-50 border border-light border-opacity-50 shadow-sm text-wrap py-2 text-shadow btn btn-sidebar finalizing-btn'>$status</span>" :
-                                ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-50 shadow-sm text-wrap py-2 text-shadow'>$status</span>" :
-                                    ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-50 shadow-sm text-wrap py-2 text-shadow'>$status</span>" :
-                                        ($status === 'Cancelled' ? "<span data-cancelled-id='$id' class='cancel-btn badge rounded-pill btn btn-sidebar text-bg-secondary bg-opacity-50 w-50 border border-light border-opacity-50 shadow-sm text-wrap py-2 text-shadow'>$status</span>" :
-                                            ($status === 'Dispatched' ? "<span data-dispatched-id='$id' class='dispatched-btn btn btn-sidebar badge rounded-pill btn btn-sidebar text-bg-warning text-light bg-opacity-50 w-50 border border-light border-opacity-50 shadow-sm text-wrap py-2 text-shadow'>$status</span>" : $status))))))
-
-                        ?>
-                </td>
-                <td>
-                    <div class="d-flex justify-content-center">
-                        <button id="tableDetails" disable-data-bs-toggle="modal" disabled-data-bs-target="#details-modal"
-                            data-trans-id="<?= $id ?>" class="btn btn-sidebar me-2">Details</button>
-                    </div>
-                </td>
-            </tr>
-
-
-            <?php
-        }
-    } else {
-        echo "<tr><td scope='row' colspan='6' class='text-center'>Search not found.</td></tr>";
-    }
-}
 
 function row_status($conn, $ibranch = '')
 {
@@ -322,7 +225,6 @@ if (isset($_GET['table']) && $_GET['table'] == 'true') {
                 <td>
                     <div class="d-flex justify-content-center gap-2">
                         <button data-ir-id="<?= $id ?>" class="btn btn-sidebar ir-detail-btn text-dark shadow-sm border border-light"><i class="bi-info fs-5"></i></button>
-                        <button data-ir-id-delete="<?= $id ?>" class="btn btn-sidebar ir-delete-btn text-dark shadow-sm border border-light"><i class="bi-trash fs-5"></i></button>
                     </div>
                 </td>
             </tr>

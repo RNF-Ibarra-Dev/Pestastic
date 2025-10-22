@@ -31,6 +31,13 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     $saPwd = $_POST['saPwd'];
     $addedBy = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
     $branch = $_POST['branch'] ?? NULL;
+    $inspection_report = $_POST['inspection_report'];
+
+    if (!is_numeric($inspection_report)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'error', 'errorMessage' => 'Invalid Inspection Report ID passed.']);
+        exit;
+    }
 
     if (!validate_no_numbers($customerName)) {
         http_response_code(400);
@@ -88,6 +95,8 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
             echo json_encode(['type' => 'emptyinput', 'errorMessage' => "Missing Package Warranty Start."]);
             exit();
         }
+        $pexp = date("Y-m-d", strtotime($pexp));
+
     }
 
     if (!in_array($status, $allStatus)) {
@@ -96,28 +105,28 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-    if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
-        if (empty($amtUsed)) {
+    // if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
+    if (empty($amtUsed)) {
+        http_response_code(400);
+        echo "Amount Used is required for the current Status.";
+        exit();
+    }
+    for ($i = 0; $i < count($amtUsed); $i++) {
+        if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
             http_response_code(400);
-            echo "Amount Used is required for the current Status.";
+            echo "Error. Invalid Amount Used.";
             exit();
         }
-        for ($i = 0; $i < count($amtUsed); $i++) {
-            if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
-                http_response_code(400);
-                echo "Error. Invalid Amount Used.";
-                exit();
-            }
-        }
     }
+    // }
 
-    if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
-        if (count($amtUsed) !== count($chemUsed)) {
-            http_response_code(400);
-            echo "Chemical used and amount used count mismatched. Please refresh the page and try again.";
-            exit();
-        }
+    // if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
+    if (count($amtUsed) !== count($chemUsed)) {
+        http_response_code(400);
+        echo "Chemical used and amount used count mismatched. Please refresh the page and try again.";
+        exit();
     }
+    // }
 
     if (empty($saPwd)) {
         // header('Content-Type: application/json');
@@ -133,7 +142,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-    $transaction = newTransaction($conn, $customerName, $address, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp, $addedBy, $amtUsed, $user, $role, $branch);
+    $transaction = newTransaction($conn, $customerName, $address, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp, $addedBy, $amtUsed, $user, $role, $branch, $inspection_report);
 
     if (isset($transaction['error'])) {
         http_response_code(400);
@@ -195,7 +204,13 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $note = $_POST['edit-note'] ?? null;
     $saPwd = $_POST['edit-saPwd'];
     $upby = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
+    $inspection_report = $_POST['inspection_report'];
 
+    if (!is_numeric($inspection_report)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'error', 'errorMessage' => 'Invalid Inspection Report ID passed.']);
+        exit;
+    }
 
     $allowedUpdateStatus = ['Pending', 'Accepted', 'Finalizing', 'Cancelled', 'Dispatched'];
 
@@ -212,32 +227,32 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     }
 
     $oStatus = check_status($conn, $transId);
-    if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
-        if ($oStatus === 'Finalizing' && $status === 'Dispatched') {
-            http_response_code(400);
-            echo "Error. You cannot go back once finalizing phase is set.";
-            exit();
-        }
+    // if ($status === 'Dispatched' || $status === 'Finalizing' || $status === 'Completed') {
+    if ($oStatus === 'Finalizing' && $status === 'Dispatched') {
+        http_response_code(400);
+        echo "Error. You cannot go back once finalizing phase is set.";
+        exit();
+    }
 
-        if ($oStatus === 'Dispatched' && ($status === 'Pending' || $status === 'Accepted')) {
-            http_response_code(400);
-            echo "Error. You cannot go back once the technicians are dispatched. Please cancel the transaction first.";
-            exit();
-        }
+    if ($oStatus === 'Dispatched' && ($status === 'Pending' || $status === 'Accepted')) {
+        http_response_code(400);
+        echo "Error. You cannot go back once the technicians are dispatched. Please cancel the transaction first.";
+        exit();
+    }
 
-        if (empty($amtUsed)) {
+    if (empty($amtUsed)) {
+        http_response_code(400);
+        echo "Amount Used is required for the current Status.";
+        exit();
+    }
+    for ($i = 0; $i < count($amtUsed); $i++) {
+        if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
             http_response_code(400);
-            echo "Amount Used is required for the current Status.";
+            echo "Error. Invalid Amount Used.";
             exit();
-        }
-        for ($i = 0; $i < count($amtUsed); $i++) {
-            if (empty($amtUsed[$i]) || !is_numeric($amtUsed[$i]) || $amtUsed[$i] <= 0) {
-                http_response_code(400);
-                echo "Error. Invalid Amount Used.";
-                exit();
-            }
         }
     }
+    // }
 
     // no transId
     if (!$oStatus) {
@@ -298,7 +313,8 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         'upby' => $upby,
         'branch' => $_SESSION['branch'],
         'userid' => $_SESSION['saID'],
-        'role' => 'superadmin'
+        'role' => 'superadmin',
+        'inspection_report' => $inspection_report
     ];
 
     if (!validate($conn, $saPwd)) {
@@ -978,7 +994,7 @@ if (isset($_POST['modify_ir']) && $_POST['modify_ir'] === 'true') {
     }
 }
 
-if(isset($_POST['delete_ir']) && $_POST['delete_ir'] === 'true'){
+if (isset($_POST['delete_ir']) && $_POST['delete_ir'] === 'true') {
     $id = $_POST['ir_id'];
     $password = $_POST['password'];
 

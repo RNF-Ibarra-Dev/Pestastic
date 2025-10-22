@@ -93,7 +93,9 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 <script>
-    $(document).ready(async function () {
+    let notif_audio = new Audio('../sounds/notification.wav');
+
+    async function get_notif() {
         $.ajax({
             url: 'contents/notifications.php',
             method: 'GET',
@@ -110,8 +112,10 @@
             .fail(function (e) {
                 console.log(e);
             });
-    })
-
+    }
+    get_notif();
+    setInterval(get_notif, 6000);
+    
     function updateDateTime() {
         document.getElementById('datetime').textContent = moment().format('dddd, MMMM Do, YYYY | hh:mm:ss A');
     }
@@ -133,4 +137,16 @@
             }
         });
     })
+
+    async function check_new_transactions() {
+        $.get('contents/polling.php', {}, function (d) {
+            if (d.new) {
+                show_toast("New Transaction Added. Transaction ID: " + d.latest_id);
+                notif_audio.play();
+            }
+        }, 'json').fail(function (e) {
+            console.log(e);
+        });
+    }
+    setInterval(check_new_transactions, 3000);
 </script>

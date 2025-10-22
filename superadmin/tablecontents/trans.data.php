@@ -347,7 +347,7 @@ function get_more_chem($conn, $status = '', $branch = null)
         <div class="col-lg-6 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
                 <input type="number" step="any" step="0.01" maxlength="4" id="add-amountUsed-<?= $id ?>"
-                    class="form-control amt-used-input form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? "name='add-amountUsed[]'" : 'disabled' ?>>
+                    class="form-control amt-used-input form-add me-3" autocomplete="one-time-code" name='add-amountUsed[]'>
             </div>
             <span class="form-text mt-2 mb-auto">-
             </span>
@@ -723,8 +723,8 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
         <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
                 <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light">Amount:</label>
-                <input type="number" step="any" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $idd ?>"
-                    class="form-control form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? '' : 'disabled' ?>>
+                <input type="number" step="any" name='edit-amountUsed[]' maxlength="4" id="edit-amountUsed-<?= $idd ?>"
+                    class="form-control form-add me-3" autocomplete="one-time-code" >
             </div>
             <!-- change this line to select -->
             <span class="form-text mt-auto ms-2 mb-2">
@@ -963,7 +963,7 @@ if (isset($_POST['pack_exp']) && $_POST['pack_exp'] === 'true') {
         return $duration['error'];
     }
 
-    $fdate = date("Y-m-d", strtotime($date . "+ $duration years"));
+    $fdate = date("F j, Y", strtotime($date . "+ $duration years"));
 
     echo $fdate;
     exit();
@@ -1092,7 +1092,7 @@ if (isset($_GET['finalizetrans']) && $_GET['finalizetrans'] === 'true') {
             $treatmentDate = $row['treatment_date'];
             $td = date('F j, Y', strtotime($treatmentDate));
             $updatedat = $row['updated_at'];
-            $ua = date("h:i A", strtotime($updatedat));
+            $ua = date("F j, Y - h:i A", strtotime($updatedat));
             $request = $row['void_request'];
             $upby = $row['updated_by'];
             $branch_details = get_branch_details($conn, $row['branch']);
@@ -1166,9 +1166,9 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
                     <div class="d-flex flex-column">
                         <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
                             id="edit-amountUsed-label">Amount:</label>
-                        <input type="number" step="any" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $id ?>"
+                        <input type="number" step="any" name='edit-amountUsed[]' id="edit-amountUsed-<?= $id ?>"
                             class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>"
-                            <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
+                            >
                     </div>
                     <span class="form-text mt-auto mx-3 mb-2">
                         <?= $unit ?>
@@ -1201,8 +1201,8 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
                 <div class="d-flex flex-column">
                     <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light"
                         id="edit-amountUsed-label">Amount:</label>
-                    <input type="number" step="any" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $idd ?>"
-                        class="form-control form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
+                    <input type="number" step="any" name='edit-amountUsed[]'maxlength="4" id="edit-amountUsed-<?= $idd ?>"
+                        class="form-control form-add me-3" autocomplete="one-time-code" >
                 </div>
                 <span class="form-text mt-auto mx-3 mb-2">
                     -
@@ -1226,8 +1226,11 @@ if (isset($_GET['get_ir']) && $_GET['get_ir'] === 'true') {
         echo "<option value='' selected>Select report</option>";
         while ($row = mysqli_fetch_assoc($res)) {
             $id = $row['id'];
+            $customer = $row['customer'];
+            $branch = $row['branch'];
+            $location = $row['property_location'];
             ?>
-            <option value="<?= htmlspecialchars($id) ?>">Report No. <?= htmlspecialchars($id) ?></option>
+            <option value="<?= htmlspecialchars($id) ?>" data-c-name="<?=htmlspecialchars($customer)?>" data-branch="<?=htmlspecialchars($branch)?>" data-loc="<?=htmlspecialchars($location)?>">Report No. <?= htmlspecialchars("$id - $customer") ?></option>
             <?php
         }
     } else {

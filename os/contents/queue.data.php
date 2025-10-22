@@ -210,7 +210,7 @@ if (isset($_GET['getdata']) && $_GET['getdata'] === 'ongoing') {
                             <li class="list-group-item d-flex p-0 m-0">
                                 <button type="button" id="dispatchedtechbtn"
                                     class="btn btn-sidebar mx-auto w-100 rounded-0 text-light fw-bold fs-5 bg-opacity-0"
-                                    data-tech="<?= htmlspecialchars($id) ?>">Dispatched Technicians</button>
+                                    data-tech="<?= htmlspecialchars($id) ?>">Assigned Technicians</button>
                             </li>
                             <li class="list-group-item d-flex p-0 m-0">
                                 <button type="button" id="reviewBtn"

@@ -14,7 +14,8 @@
     <div class="container-fluid">
         <div class="pestastic-navbar-text user-select-none">
             <p class="text-wrap fs-1 m-0 ms-2 text-align-center fw-bold">Pestastic Inventory Management</p>
-            <img src="../img/logo.svg" class="d-none btn w-25 bg-light bg-opacity-25 mt-1 p-1 rounded-3 logo-img-small-screen">
+            <img src="../img/logo.svg"
+                class="d-none btn w-25 bg-light bg-opacity-25 mt-1 p-1 rounded-3 logo-img-small-screen">
             <?php
             echo "<p class='ms-3 my-0 fw-medium text-light fs-5' id='datetime'>" . date('l, F jS, Y \| h:i:s A') . "</p>";
             ?>
@@ -101,7 +102,9 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 <script>
-    $(document).ready(async function () {
+    let notif_audio = new Audio('../sounds/notification.wav');
+
+    async function get_notif() {
         $.ajax({
             url: 'tablecontents/notifications.php',
             method: 'GET',
@@ -113,12 +116,13 @@
             .done(function (d) {
                 $('#notifContainer').append(d.notif);
                 $('#notifbtn').append(d.countbadge);
-                console.log(d);
             })
             .fail(function (e) {
                 console.log(e);
             });
-    })
+    }
+    get_notif();
+    setInterval(get_notif, 6000);
 
     function updateDateTime() {
         document.getElementById('datetime').textContent = moment().format('dddd, MMMM Do, YYYY | hh:mm:ss A');
@@ -126,19 +130,32 @@
     updateDateTime();
     setInterval(updateDateTime, 1000);
 
-    $(function(){
+    $(function () {
         var windowWidth = $(window).width();
-        if(windowWidth <= 768){
+        if (windowWidth <= 768) {
             $('#notifications > div.modal-dialog, #settings > div.modal-dialog').addClass('modal-dialog-centered');
         }
 
-        $(window).resize(function(){
+        $(window).resize(function () {
             var windowWidth = $(window).width();
-            if(windowWidth <= 768){
+            if (windowWidth <= 768) {
                 $('#notifications > div.modal-dialog, #settings > div.modal-dialog').addClass('modal-dialog-centered');
             } else {
                 $('#notifications > div.modal-dialog, #settings > div.modal-dialog').removeClass('modal-dialog-centered');
             }
         });
-    })
+    });
+
+    // let last_seen_id = 0;
+    async function check_new_transactions() {
+        $.get('tablecontents/polling.php', {}, function (d) {
+            if (d.new) {
+                show_toast("New Transaction Added. Transaction ID: " + d.latest_id);
+                notif_audio.play();
+            }
+        }, 'json').fail(function (e) {
+            console.log(e);
+        });
+    }
+    setInterval(check_new_transactions, 3000);
 </script>

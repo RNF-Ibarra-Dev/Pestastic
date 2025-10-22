@@ -152,7 +152,7 @@
                 <button id="ir_btn"
                     class="btn btn-sidebar position-relative text-light py-2 w-25 px-2 bg-light bg-opacity-25"
                     data-bs-target="#inspection_report_modal" data-bs-toggle="modal"><i
-                        class="bi bi-file-earmark-text me-2"></i>
+                        class="bi bi-file-earmark-text"></i>
                     <p class="mb-0">
                         Inspection Reports
                     </p>
@@ -169,22 +169,22 @@
 
                 <button type="button" id="recentlyCompleted" data-bs-target="#finalizetransactionmodal"
                     data-bs-toggle="modal"
-                    class="btn w-50 rounded btn-sidebar bg-light bg-opacity-25 border-0 text-light py-2 px-1 "><i
+                    class="btn rounded btn-sidebar bg-light bg-opacity-25 border-0 text-light py-2 px-3 "><i
                         class="bi bi-calendar2-check me-2"></i>Finalizing Transactions</button>
                 <div class="vr"></div>
                 <button type="button" id="addbtn" class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3"
-                    data-bs-toggle="modal" data-bs-target="#add_ir"><i class="bi bi-file-earmark-plus"></i></button>
-                <button type="button" class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3"
-                    id="add_inspection" data-bs-target="#inspection_select_modal" data-bs-toggle="modal">
-                    <i class="bi bi-file-earmark-plus"></i>
+                    data-bs-toggle="modal" data-bs-target="#add_ir" title="Add Transaction"><i
+                        class="bi bi-file-earmark-plus"></i></button>
+                <button type="button" title="Add Inspection Report"
+                    class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3" id="add_inspection"
+                    data-bs-target="#inspection_select_modal" data-bs-toggle="modal">
+                    <i class="bi bi-clipboard-plus"></i>
                 </button>
             </div>
 
             <div class="table-responsive-sm d-flex justify-content-center">
                 <table class="table align-middle table-hover m-3 mt-2 os-table w-100 text-light">
-                    <caption class="text-light text-muted">List of all transactions. For faster transaction approval,
-                        click
-                        'Pending' under the status column.</caption>
+                    <caption class="text-light text-muted">List of all transactions.</caption>
                     <thead class="text-center">
                         <tr>
                             <th scope="row">Transaction ID</th>
@@ -372,7 +372,7 @@
                                 <small class="m-0 text-muted fw-light" id="ir_metadata"></small>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-grad" data-bs-target="#inspection_report_modal"
+                                <button type="button" id="ir_back_btn" class="btn btn-grad" data-bs-target="#inspection_report_modal"
                                     data-bs-toggle="modal">Back</button>
                                 <button type="button" class="btn btn-grad" id="ir_edit_toggle">Edit</button>
                                 <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
@@ -502,28 +502,23 @@
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5 fw-bold">
-                                    Inspection Report
+                                    Create Inspection Report
                                 </h1>
                                 <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
                                         class="bi text-light bi-x"></i></button>
                             </div>
                             <div class="modal-body">
-                                <p
+                                <!-- <p
                                     class="fs-4 bg-secondary bg-opacity-50 fw-bold rounded w-100 text-center text-light py-2">
                                     Select Inspection Report</p>
 
                                 <label for="inspection_select" class="form-label fw-bold fs-5">Available Inspection
                                     Reports:</label>
                                 <select name="inspection_select" class="form-select w-50" id="inspection_select">
-                                </select>
+                                </select> -->
 
                                 <div id="create_inspection_container">
 
-                                    <div class="d-flex w-100 justify-content-center my-3 align-items-center">
-                                        <hr class="w-50">
-                                        <p class="text-muted m-0">&nbsp;OR&nbsp;</p>
-                                        <hr class="w-50">
-                                    </div>
                                     <p
                                         class="fs-4 bg-secondary bg-opacity-50 fw-bold rounded w-100 text-center text-light py-2">
                                         New Inspection Report</p>
@@ -680,17 +675,13 @@
                                         </div>
                                     </div>
 
-                                    <button type="button" data-bs-target="#ir_confirm" data-bs-toggle="modal"
-                                        class="btn btn-grad w-75 mx-auto">Create Inspection
-                                        Report</button>
-
-
                                 </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-grad" data-bs-toggle="modal"
-                                    disabled>Proceed</button>
+                                <button type="button" class="btn btn-grad" data-bs-target="#ir_confirm"
+                                    data-bs-toggle="modal">Create Inspection
+                                    Report</button>
                             </div>
                         </div>
                     </div>
@@ -743,13 +734,14 @@
                                     report:</label>
                                 <select name="inspection_report" id="select_ir_trans" class="form-select w-50"></select>
                                 <p class="mb-1 text-muted ps-1">Inspection report is required in order to proceed.</p>
-
-                                <button type="button" class="btn btn-grad w-50 mx-auto d-none mt-2"
+                                <button type="button" class="btn btn-grad w-50 mx-auto mt-3" id="add_create_new_ir"
+                                    data-bs-target="#inspection_select_modal" data-bs-toggle="modal">Create new
+                                    report</button>
+                                <button type="button" class="btn btn-grad w-50 mx-auto d-none mt-3"
                                     id="ir_add_proceed_btn">Proceed</button>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-grad" data-bs-target="#inspection_select_modal"
-                                    data-bs-toggle="modal">Cancel</button>
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
                             </div>
                         </div>
                     </div>
@@ -789,7 +781,9 @@
                                         <div class="col-lg-3 mb-2">
                                             <label for="branch" class="form-label fw-light">Branch</label>
                                             <select name="branch" id="add_branch" class="form-select"></select>
-                                            <p class="text-muted ms-1 mb-0"><i>Note: Branch cannot be changed later.</i>
+                                            <!-- <input type="hidden" name="branch" id="add_branch"> -->
+                                            <p class="text-muted ms-1 mb-0"><i>Note: Branch is selected from the report.
+                                                    Change with caution.</i>
                                             </p>
                                         </div>
                                     </div>
@@ -913,7 +907,7 @@
                                                 <input type="number" maxlength="4" id="add-amountUsed"
                                                     name="add-amountUsed[]"
                                                     class="form-control amt-used-input form-add me-3"
-                                                    autocomplete="one-time-code" disabled>
+                                                    autocomplete="one-time-code">
                                             </div>
                                             <span class="form-text mt-auto mb-2">-</span>
                                             <button type="button" id="addMoreChem"
@@ -927,6 +921,8 @@
                                     </div>
                                     <p class="alert alert-warning py-1 mt-1 w-50 mx-auto text-center amt-used-alert"
                                         style="display: none;"></p>
+                                    <p class="text-muted fst-italic">Note: Amount used will not be reflected unless
+                                        transaction is dispatched or completed.</p>
                                     <div class="row mb-2">
                                         <div class="dropdown-center col-lg-6 mb-2">
                                             <label for="add-technicianName" class="form-label fw-light">Technicians
@@ -969,7 +965,7 @@
                                                 <p class="fw-bold mb-0 fs-5">Selected inspection report:</p>
                                                 <span class="ps-2 my-2" id="add_selected_ir"></span>
                                             </div>
-                                            <button id="show_ir_details" class="btn btn-grad my-auto me-3">View
+                                            <button id="show_ir_details" class="btn btn-grad mt-auto me-3">View
                                                 report</button>
                                         </div>
                                     </div>
@@ -1256,6 +1252,8 @@
                                     </div>
                                     <p class="alert alert-warning py-1 mt-1 w-50 mx-auto text-center amt-used-alert"
                                         style="display: none;"></p>
+                                    <p class="text-muted fst-italic">Note: Amount used will not be reflected unless
+                                        transaction is dispatched or completed.</p>
                                     <div class="row mb-2">
                                         <div class="col-lg-6">
                                             <!-- edit technician choices/select, toggle visually-hidden when edit is on -->
@@ -1303,10 +1301,19 @@
                                         <!-- template add chemical -->
                                     </div>
 
-                                    <div class="row mb-2 d-none" id="edit-status-col">
+                                    <div class="row mb-2">
                                         <!-- edit -->
-                                        <div class="col-lg-4">
-                                            <label for="edit-status" class="form-label"
+                                        <div class="col-lg-4 d-flex justify-content-between">
+                                            <div>
+                                                <p class="fw-bold fs-5 mb-0">Inspection Report ID:
+                                                </p>
+                                                <p id="view-label-ir" class="ps-2 my-2"></p>
+                                            </div>
+                                            <button type="button" id="view_inspection_report_btn"
+                                                class="btn btn-grad me-2 mt-auto">View report</button>
+                                        </div>
+                                        <div class="col-lg-4 d-none" id="edit-status-col">
+                                            <label for="edit-status" class="form-label fw-bold"
                                                 id='label-edit-status'>Transaction Status:</label>
                                             <select name="edit-status" id="edit-status" class="form-select ">
                                                 <option value="" selected>Select Status</option>
@@ -1318,8 +1325,9 @@
                                                 <option value="Cancelled">Cancelled</option>
                                                 <option value="Voided">Voided</option>
                                             </select>
+                                            <p id="statusNote" class="text-muted fw-light d-none ms-2"></p>
                                         </div>
-                                        <p id="statusNote" class="text-muted fw-light d-none ms-2"></p>
+
                                     </div>
 
                                     <p id="transvoidalert"
@@ -2278,15 +2286,34 @@
 
         // inspection report changes 
         $("#add_ir").on('change', '#select_ir_trans', function () {
+            const selected = $(this).find('option:selected');
             if ($(this).val() !== '') {
                 $("#ir_add_proceed_btn").toggleClass('d-none', false);
-                $("#add_selected_ir").text($(this).val());
-                $("button#show_ir_details").prop("data-ir-id", $(this).val());
+                $("#add_create_new_ir").toggleClass('d-none', true);
+                $("#add_selected_ir").text("IR No.: " + $(this).val());
+                $("button#show_ir_details").data("ir-id", $(this).val());
+                let customer_name = selected.data('c-name');
+                $("#add-customerName").val(customer_name);
+                let branch = selected.data('branch');
+                $("#add_branch").val(branch);
+                let loc = selected.data('loc');
+                $("#add-customerAddress").val(loc);
             } else {
                 $("#ir_add_proceed_btn").toggleClass('d-none', true);
-                $("#add_selected_ir").text('');
-                $("button#show_ir_details").prop("data-ir-id", '');
+                $("#add_create_new_ir").toggleClass('d-none', false);
+                $("#add_selected_ir").text('No IR Selected');
+                $("button#show_ir_details").data("ir-id", '');
             }
+        });
+
+        $(document).on('click', "#addbtn", function () {
+            $('#addTransaction')[0].reset();
+        })
+
+        $(document).on('shown.bs.modal', "#add_ir", function () {
+            $("#ir_add_proceed_btn").toggleClass('d-none', true);
+            $("#add_create_new_ir").toggleClass('d-none', false);
+            $("#add_selected_ir").text('');
         });
 
         $("#add_ir").on('click', '#ir_add_proceed_btn', function () {
@@ -2295,6 +2322,7 @@
         });
         // add_selected_ir
         $(document).on('shown.bs.modal', '#add_ir', function () {
+
             $("#ir_add_proceed_btn").toggleClass('d-none', true);
             $.get(transUrl, { get_ir: 'true' }, function (d) {
                 $("#select_ir_trans").empty();
@@ -2302,6 +2330,14 @@
             }).fail(function (e) {
                 console.log(e);
             });
+        });
+
+        $("#addModal").on('click', '#show_ir_details', async function () {
+            let id = $(this).data('ir-id');
+            console.log(id);
+            await load_report(id);
+            $("#addModal").modal('hide');
+            $("#ir_details_modal").modal('show');
         });
 
         async function load_add_trans() {
@@ -2319,13 +2355,13 @@
                     get_branches('add_branch')
                 ]);
                 if (load) {
-
+                    let branch = $('#select_ir_trans').find('option:selected').data('branch');
+                    $('#add_branch').val(branch);
                     $('#add-session').attr('disabled', true);
                     $('#add-treatment').attr('disabled', false);
                     $('#add-packageStart, #add-packageStart + input.flatpickr-mobile').attr('disabled', true);
                     $('#add-packageExpiry').attr('disabled', true);
 
-                    $('#addTransaction')[0].reset();
                     $('#addTechContainer').empty();
                     $('#add-chemContainer').empty();
                     $('#addModal').modal('show');
@@ -2468,33 +2504,33 @@
             await add_used_chem(sts, branch);
         })
 
-        $(document).on('change', "#add-status", function () {
-            let sts = $(this).val();
+        // $(document).on('change', "#add-status", function () {
+        //     let sts = $(this).val();
 
-            $('#addMoreChem').data('status', sts);
+        //     $('#addMoreChem').data('status', sts);
 
-            if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched') {
-                $('input.form-control.amt-used-input').prop('disabled', false);
-                $('input.form-control.amt-used-input').attr('name', 'add-amountUsed[]');
-            } else {
-                $('input.form-control.amt-used-input').val('-').prop('disabled', true);
-                $('input.form-control.amt-used-input').removeAttr('name');
-            }
+        //     if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched') {
+        //         $('input.form-control.amt-used-input').prop('disabled', false);
+        //         $('input.form-control.amt-used-input').attr('name', 'add-amountUsed[]');
+        //     } else {
+        //         $('input.form-control.amt-used-input').val('-').prop('disabled', true);
+        //         $('input.form-control.amt-used-input').removeAttr('name');
+        //     }
 
-        })
+        // })
 
-        $(document).on('change', '#edit-status', function () {
-            let sts = $(this).val();
-            $('#edit-addMoreChem').data('status', sts);
+        // $(document).on('change', '#edit-status', function () {
+        //     let sts = $(this).val();
+        //     $('#edit-addMoreChem').data('status', sts);
 
-            if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched' || sts === 'Voided') {
-                $('#edit-chemBrandUsed input.form-control').prop('disabled', false);
-                $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
-            } else {
-                $('#edit-chemBrandUsed input.form-control').val('-').prop('disabled', true);
-                $('#edit-chemBrandUsed input.form-control').removeAttr('name');
-            }
-        });
+        //     if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched' || sts === 'Voided') {
+        //         $('#edit-chemBrandUsed input.form-control').prop('disabled', false);
+        //         $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
+        //     } else {
+        //         $('#edit-chemBrandUsed input.form-control').val('-').prop('disabled', true);
+        //         $('#edit-chemBrandUsed input.form-control').removeAttr('name');
+        //     }
+        // });
 
         // append chem row function
         async function add_used_chem(status = '', branch = null) {
@@ -2692,18 +2728,18 @@
             return toggled = true;
         }
 
-        $(document).on('change', '#edit-status', function () {
-            let sts = $(this).val();
-            $('#edit-addMoreChem').data('status', sts);
+        // $(document).on('change', '#edit-status', function () {
+        //     let sts = $(this).val();
+        //     $('#edit-addMoreChem').data('status', sts);
 
-            if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched') {
-                $('#edit-chemBrandUsed input.form-control').prop('disabled', false);
-                $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
-            } else {
-                $('#edit-chemBrandUsed input.form-control').val('-').prop('disabled', true);
-                $('#edit-chemBrandUsed input.form-control').removeAttr('name');
-            }
-        });
+        //     if (sts === 'Completed' || sts === 'Finalizing' || sts === 'Dispatched') {
+        //         $('#edit-chemBrandUsed input.form-control').prop('disabled', false);
+        //         $('#edit-chemBrandUsed input.form-control').attr('name', 'edit-amountUsed[]');
+        //     } else {
+        //         $('#edit-chemBrandUsed input.form-control').val('-').prop('disabled', true);
+        //         $('#edit-chemBrandUsed input.form-control').removeAttr('name');
+        //     }
+        // });
 
         async function edit(name, transId = null, additional_data = null) {
             try {
@@ -2852,6 +2888,18 @@
             });
         });
 
+        $("#viewEditForm").on('click', '#view_inspection_report_btn', function () {
+            let id = $(this).data('ir-id');
+            // console.log(id);
+            load_report(id);
+            $("#details-modal").modal('hide');
+            $("#ir_details_modal").modal('show');
+        });
+
+        $(document).on('click', '#view_inspection_report_btn', function () {
+            $("#ir_details_modal #ir_back_btn").attr('data-bs-target', '#details-modal');
+        })
+
         async function view_transaction(transId) {
             try {
                 const details = await $.ajax({
@@ -2868,12 +2916,21 @@
                     console.log(details);
                     let d = details.success;
                     $('#view-transId').val(d.id);
+                    $("#view-label-ir").text("IR No. " + d.inspection_report);
+                    if (d.inspection_report == 0) {
+                        $("#view_inspection_report_btn").prop("disabled", true);
+                        $("#view_inspection_report_btn").data("ir-id", '');
+                        $("#view-label-ir").text("IR No. " + d.inspection_report);
+                    } else {
+                        $("#view_inspection_report_btn").prop("disabled", false);
+                        $("#view_inspection_report_btn").data("ir-id", d.inspection_report);
+                    }
                     $('#view-customerName').val(d.customer_name ?? `Name not set.`);
                     editTransDate.clear();
                     editTransDate.setDate(d.treatment_date);
                     // packageExpDate.clear();
                     // packageExpDate.setDate(d.pack_exp ?? '--/--/--');
-                    $('#view-expiry').val(d.pack_exp ?? '--/--/--');
+                    $('#view-expiry').val(d.package_end ?? '--/--/--');
                     packageStartDate.clear();
                     packageStartDate.setDate(d.pack_start ?? '--/--/--');
                     $('#list-status').empty();
@@ -2923,24 +2980,24 @@
                         }
                     }
 
-                    if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {
-                        $("#edit-status option[value='Accepted']").prop('disabled', true);
-                        $("#edit-status option[value='Pending']").prop('disabled', true);
-                    } else {
-                        $("#edit-status option[value='Accepted']").prop('disabled', false);
-                        $("#edit-status option[value='Pending']").prop('disabled', false);
-                    }
+                    // if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {
+                    //     $("#edit-status option[value='Accepted']").prop('disabled', true);
+                    //     $("#edit-status option[value='Pending']").prop('disabled', true);
+                    // } else {
+                    //     $("#edit-status option[value='Accepted']").prop('disabled', false);
+                    //     $("#edit-status option[value='Pending']").prop('disabled', false);
+                    // }
 
-                    if (d.void_request === 1) {
-                        $('#editbtn').hide().attr('disabled', true);
-                        $("#viewEditForm #requestvoidbtn").hide().prop('disabled', true).attr('data-bs-target', '');
-                        $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
-                    }
+                    // if (d.void_request === 1) {
+                    //     $('#editbtn').hide().attr('disabled', true);
+                    //     $("#viewEditForm #requestvoidbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                    //     $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
+                    // }
 
-                    if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {
-                        $('#edit-chemBrandUsed input.form-control.form-add').attr('disabled', false);
-                        $('#edit-chemBrandUsed input.form-control.form-add').attr('name', 'edit-amountUsed[]');
-                    }
+                    // if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {
+                    //     $('#edit-chemBrandUsed input.form-control.form-add').attr('disabled', false);
+                    //     $('#edit-chemBrandUsed input.form-control.form-add').attr('name', 'edit-amountUsed[]');
+                    // }
 
                     if (d.package_id != null) {
                         // package assigned
@@ -3032,7 +3089,7 @@
             }
         }
 
-        $(document).on('focus', '#view-start', async function (e) {
+        $(document).on('focus', '#view-start, #view-start + input', async function (e) {
             let package_id = $('#edit-package-select').val();
             if (!$.isNumeric(package_id)) {
                 alert('Please Select a package! Invalid package ID.');
@@ -4200,7 +4257,7 @@
             $("#ir_latest_treatment, #ir_last_treatment, #ir_last_treatment + input").prop('disabled', checked);
         })
 
-        function load_report(ir_id) {
+        async function load_report(ir_id) {
             $.get(transUrl, { ir_details: 'true', id: ir_id }, function (d) {
                 console.log(d);
                 $("#ir_inspection_id").text(d.id);
@@ -4294,10 +4351,15 @@
             $("#ir_details_id").val(ir_id);
             // console.log(ir_id);
             load_report(ir_id);
+            $("#ir_back_btn").attr('data-bs-target', '#inspection_report_modal');
 
             $("#inspection_report_modal").modal('hide');
             $("#ir_details_modal").modal('show');
         });
+
+        $("#addModal").on('click', "#show_ir_details", function () {
+            $("#ir_back_btn").attr("data-bs-target", "#addModal");
+        })
 
         $("#inspection_select_modal").on('change', '#no_treatment_history', function () {
             let checked = $(this).is(':checked');

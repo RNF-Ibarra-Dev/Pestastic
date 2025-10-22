@@ -886,18 +886,18 @@ function log_transaction($conn, $transid, $chemids, $qty, $branch, $user_id, $ro
     }
 }
 
-function newTransaction($conn, $customerName, $address, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note, $pstart, $pend, $addedby, $amtUsed, $user_id = 0, $user_role = '', $branch = 1)
+function newTransaction($conn, $customerName, $address, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note, $pstart, $pend, $addedby, $amtUsed, $user_id = 0, $user_role = '', $branch = 1, $inspection_report)
 {
 
     mysqli_begin_transaction($conn);
     try {
-        $transSql = "INSERT INTO transactions (customer_name, customer_address, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at, package_id, treatment_type, session_no, notes, pack_start, pack_exp, created_by, branch, updated_by) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        $transSql = "INSERT INTO transactions (customer_name, customer_address, treatment_date, transaction_time, treatment, transaction_status, created_at, updated_at, package_id, treatment_type, session_no, notes, pack_start, pack_exp, created_by, branch, updated_by, inspection_report) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         $transStmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($transStmt, $transSql)) {
             throw new Exception('Stmt Failed: ' . mysqli_stmt_error($transStmt));
         }
-        mysqli_stmt_bind_param($transStmt, 'ssssssisissssis', $customerName, $address, $treatmentDate, $treatmentTime, $treatment, $status, $package, $type, $session, $note, $pstart, $pend, $addedby, $branch, $addedby);
+        mysqli_stmt_bind_param($transStmt, 'ssssssisissssisi', $customerName, $address, $treatmentDate, $treatmentTime, $treatment, $status, $package, $type, $session, $note, $pstart, $pend, $addedby, $branch, $addedby, $inspection_report);
         mysqli_stmt_execute($transStmt);
 
         if (mysqli_stmt_affected_rows($transStmt) > 0) {
@@ -916,11 +916,11 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
             }
 
             // set amt used to 0
-            if ($status === "Pending" || $status === "Accepted") {
-                for ($i = 0; $i < count($chemUsed); $i++) {
-                    $amtUsed[$i] = 0;
-                }
-            }
+            // if ($status === "Pending" || $status === "Accepted") {
+            //     for ($i = 0; $i < count($chemUsed); $i++) {
+            //         $amtUsed[$i] = 0;
+            //     }
+            // }
             // ONLY records chem and amount used for the transaction
             for ($i = 0; $i < count($chemUsed); $i++) {
                 $level = get_chem_level($conn, $chemUsed[$i]);
@@ -1333,7 +1333,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
         $transSql = "UPDATE transactions SET treatment_date = ?, customer_name = ?, 
         treatment = ?, transaction_status = ?, customer_address = ?, transaction_time = ?, 
-        treatment_type = ?, package_id = ?, pack_start = ?, pack_exp = ?, session_no = ?, notes = ?, updated_by = ?, branch = ? WHERE id = ?;";
+        treatment_type = ?, package_id = ?, pack_start = ?, pack_exp = ?, session_no = ?, notes = ?, updated_by = ?, branch = ?, inspection_report = ? WHERE id = ?;";
         $transStmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($transStmt, $transSql)) {
@@ -1342,7 +1342,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
         mysqli_stmt_bind_param(
             $transStmt,
-            'sssssssississii',
+            'sssssssississiii',
             $transData['treatmentDate'],
             $transData['customer'],
             $transData['treatment'],
@@ -1357,7 +1357,8 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
             $transData['note'],
             $transData['upby'],
             $transData['branch'],
-            $transData['transId']
+            $transData['transId'],
+            $transData['inspection_report']
         );
         // throw new Exception($transData['treatment']);
         mysqli_stmt_execute($transStmt);
