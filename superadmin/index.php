@@ -262,11 +262,26 @@ require("startsession.php");
             </div>
         </main>
     </div>
+    <div class="toast-container m-2 me-3 bottom-0 end-0 position-fixed">
+        <div class="toast align-items-center" role="alert" id="toast" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body text-dark ps-4 text-success-emphasis" id="toastmsg">
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
 
 
     <?php include("footer.links.php"); ?>
 
     <script>
+        function show_toast(message) {
+            $('#toastmsg').html(message);
+            var toastid = $('#toast');
+            var toast = new bootstrap.Toast(toastid);
+            toast.show();
+        }
         const dataurl = 'tablecontents/index.data.php';
 
         $(document).ready(async function () {
@@ -450,7 +465,7 @@ require("startsession.php");
                     scales: {
                         x: {
                             ticks: {
-                                font:{
+                                font: {
                                     size: 12
                                 },
                                 color: '#fff',
@@ -470,7 +485,7 @@ require("startsession.php");
                             },
                             ticks: {
                                 color: '#fff',
-                                font:{
+                                font: {
                                     size: 12
                                 }
                             },

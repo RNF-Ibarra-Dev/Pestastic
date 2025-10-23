@@ -911,7 +911,7 @@
                                             <div class="d-flex flex-column">
                                                 <label for="add-amountUsed" class="form-label fw-light">Amount
                                                     Used</label>
-                                                <input type="number" maxlength="4" id="add-amountUsed"
+                                                <input type="number" maxlength="4" id="add-amountUsed" step="any"
                                                     name="add-amountUsed[]"
                                                     class="form-control amt-used-input form-add me-3"
                                                     autocomplete="one-time-code">

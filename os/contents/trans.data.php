@@ -228,7 +228,7 @@ function get_more_chem($conn, $status = '')
         <div class="col-lg-6 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
                 <input type="number" step="any" maxlength="4" id="add-amountUsed-<?= $id ?>"
-                    class="form-control amt-used-input form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? "name='add-amountUsed[]'" : 'disabled' ?>>
+                    class="form-control amt-used-input form-add me-3" autocomplete="one-time-code" name='add-amountUsed[]'>
             </div>
             <span class="form-text mt-2 mb-auto">-
             </span>
@@ -587,9 +587,8 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
                     <div class="d-flex flex-column">
                         <label for="edit-amountUsed-<?= $id ?>" class="form-label fw-light"
                             id="edit-amountUsed-label">Amount:</label>
-                        <input type="number" step="any" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $id ?>"
-                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>"
-                            <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
+                        <input type="number" step="any" name='edit-amountUsed[]' maxlength="4" id="edit-amountUsed-<?= $id ?>"
+                            class="form-control form-add me-3" autocomplete="one-time-code" value="<?= $amtUsed ?>">
                     </div>
                     <span class="form-text mt-auto mx-3 mb-2">
                         <?= $unit ?>
@@ -621,8 +620,8 @@ if (isset($_GET['getChem']) && ($_GET['getChem'] == 'edit' || $_GET['getChem'] =
                 <div class="d-flex flex-column">
                     <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light"
                         id="edit-amountUsed-label">Amount:</label>
-                    <input type="number" step="any" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $idd ?>"
-                        class="form-control form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === 'Dispatched' || $status === 'Completed' ? '' : 'disabled' ?>>
+                    <input type="number" step="any" name='edit-amountUsed[]' maxlength="4" id="edit-amountUsed-<?= $idd ?>"
+                        class="form-control form-add me-3" autocomplete="one-time-code">
                 </div>
                 <span class="form-text mt-auto mx-3 mb-2">
                     -
@@ -655,8 +654,8 @@ if (isset($_GET['addrow']) && $_GET['addrow'] == 'true') {
         <div class="col-lg-4 mb-2 ps-0 d-flex justify-content-evenly">
             <div class="d-flex flex-column">
                 <label for="edit-amountUsed-<?= $idd ?>" class="form-label fw-light">Amount:</label>
-                <input type="number" step="any" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? "name='edit-amountUsed[]'" : "" ?> maxlength="4" id="edit-amountUsed-<?= $idd ?>"
-                    class="form-control form-add me-3" autocomplete="one-time-code" <?= $status === 'Finalizing' || $status === "Dispatched" || $status === "Completed" ? '' : 'disabled' ?>>
+                <input type="number" step="any" name='edit-amountUsed[]' maxlength="4" id="edit-amountUsed-<?= $idd ?>"
+                    class="form-control form-add me-3" autocomplete="one-time-code">
             </div>
             <!-- change this line to select -->
             <span class="form-text mt-auto ms-2 mb-2">

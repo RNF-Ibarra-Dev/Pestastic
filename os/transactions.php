@@ -818,7 +818,7 @@
                                                 <label for="add-amountUsed" class="form-label fw-light">Amount
                                                     Used</label>
                                                 <input type="number" maxlength="4" id="add-amountUsed"
-                                                    name="add-amountUsed[]"
+                                                    name="add-amountUsed[]" step="any"
                                                     class="form-control amt-used-input form-add me-3"
                                                     autocomplete="one-time-code">
                                             </div>
@@ -2996,10 +2996,10 @@
                         $("#viewEditForm #modalcancelbtn").hide().prop('disabled', true).attr('data-bs-target', '');
                     }
 
-                    if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {
-                        $('#edit-chemBrandUsed input.form-control.form-add').attr('disabled', false);
-                        $('#edit-chemBrandUsed input.form-control.form-add').attr('name', 'edit-amountUsed[]');
-                    }
+                    // if (d.transaction_status === 'Finalizing' || d.transaction_status === 'Dispatched') {
+                    //     $('#edit-chemBrandUsed input.form-control.form-add').attr('disabled', false);
+                    //     $('#edit-chemBrandUsed input.form-control.form-add').attr('name', 'edit-amountUsed[]');
+                    // }
 
                     if (d.package_id !== null) {
                         // package assigned

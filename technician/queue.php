@@ -151,7 +151,7 @@ require("startsession.php");
                 </div>
             </div>
 
-            
+
         </main>
 
 
@@ -210,8 +210,8 @@ require("startsession.php");
         </div>
 
         <form id="reschedForm">
-            <div class="modal fade text-dark modal-edit" id="reschedModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="create"
-                aria-hidden="true">
+            <div class="modal fade text-dark modal-edit" id="reschedModal" tabindex="-1" data-bs-backdrop="static"
+                aria-labelledby="create" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
@@ -237,8 +237,8 @@ require("startsession.php");
                 </div>
 
             </div>
-            <div class="modal fade text-dark modal-edit" id="confirm_resched" tabindex="-1" data-bs-backdrop="static" aria-labelledby="create"
-                aria-hidden="true">
+            <div class="modal fade text-dark modal-edit" id="confirm_resched" tabindex="-1" data-bs-backdrop="static"
+                aria-labelledby="create" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
@@ -247,7 +247,8 @@ require("startsession.php");
                                     class="bi text-light bi-x"></i></button>
                         </div>
                         <div class="modal-body">
-                            <label for="resched_pwd" class="form-label">Reschedule transaction? Enter<?= $_SESSION['techUsn'] ?>'s
+                            <label for="resched_pwd" class="form-label">Reschedule transaction?
+                                Enter<?= $_SESSION['techUsn'] ?>'s
                                 password to continue.'</label>
                             <input type="password" class="form-control w-50" name="pwd" id="resched_pwd">
 
@@ -322,7 +323,16 @@ require("startsession.php");
                 </div>
             </div>
         </div> -->
-
+        <div class="toast-container m-2 me-3 bottom-0 end-0 position-fixed">
+            <div class="toast align-items-center" role="alert" id="toast" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body text-dark ps-4 text-success-emphasis" id="toastmsg">
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
 
 
     </div>
@@ -331,6 +341,12 @@ require("startsession.php");
     ?>
 
     <script>
+        function show_toast(message) {
+            $('#toastmsg').html(message);
+            var toastid = $('#toast');
+            var toast = new bootstrap.Toast(toastid);
+            toast.show();
+        }
         const dataUrl = "contents/queue.data.php";
         const submitUrl = "contents/queue.config.php";
 
