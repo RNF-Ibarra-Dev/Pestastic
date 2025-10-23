@@ -64,46 +64,47 @@ if (isset($_GET['search'])) {
     $result = mysqli_stmt_get_result($stmt);
     $rows = mysqli_num_rows($result);
     if ($rows > 0) {
-        $id = $row['id'];
-        $customerName = $row['customer_name'];
-        $treatmentDate = $row['treatment_date'];
-        $td = date("F j, Y", strtotime($treatmentDate));
-        $today = date("Y-m-d");
-        $treatment = $row['treatment'];
-        $t_name = treatment_name($conn, $treatment);
-        $createdAt = $row['created_at'];
-        $updatedAt = $row['updated_at'];
-        $status = $row['transaction_status'];
-        $cr = (int) $row['complete_request'];
-        ?>
-        <tr class="text-center">
-            <td scope="row"><?= htmlspecialchars($id) ?></td>
-            <td><?= htmlspecialchars($customerName) ?></td>
-            <td><?= $status === 'Cancelled' || ($treatmentDate < $today && ($status === 'Accepted' || $status === 'Pending')) ? "<p class='shadow-sm py-1 m-0 rounded-pill bg-dark bg-opacity-25 px-3 text-warning'>Transaction needs reschedule.</p>" : htmlspecialchars($td) ?>
-            </td>
-            <td><?= htmlspecialchars($t_name) ?></td>
-            <td>
-                <?=
-                    $status === 'Pending' ? "<span id='pendingbtn' class='w-50 text-light badge rounded-pill text-bg-warning bg-opacity-25 py-2 text-wrap text-shadow'>Pending</span>" :
-                    ($status === 'Accepted' ? "<span data-accepted='$id' class='accepted-btn btn btn-sidebar badge rounded-pill text-bg-success bg-opacity-50 w-50 py-2 text-wrap border border-light border-opacity-50 shadow-sm text-shadow'>$status</span>" :
-                        ($status === 'Finalizing' ? "<span class='badge rounded-pill text-bg-primary bg-opacity-50 w-50 py-2 text-wrap text-shadow'>$status</span>" :
-                            ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-50 py-2 text-wrap text-shadow'>$status</span>" :
-                                ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-50 py-2 text-wrap text-shadow'>$status</span>" :
-                                    ($status === 'Cancelled' ? "<span class='shadow-sm badge rounded-pill text-wrap text-bg-secondary bg-opacity-50 w-50 py-2 text-shadow'>$status</span>" :
-                                        ($status === 'Dispatched' ? "<span data-dispatched-id='$id' class='dispatched-btn btn btn-sidebar border text-wrap border-light border-opacity-50 badge shadow-sm rounded-pill btn btn-sidebar text-bg-warning text-light bg-opacity-50 w-50 py-2 text-shadow'>$status</span>" : $status))))))
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $customerName = $row['customer_name'];
+            $treatmentDate = $row['treatment_date'];
+            $td = date("F j, Y", strtotime($treatmentDate));
+            $today = date("Y-m-d");
+            $treatment = $row['treatment'];
+            $t_name = treatment_name($conn, $treatment);
+            $createdAt = $row['created_at'];
+            $updatedAt = $row['updated_at'];
+            $status = $row['transaction_status'];
+            $cr = (int) $row['complete_request'];
+            ?>
+            <tr class="text-center">
+                <td scope="row"><?= htmlspecialchars($id) ?></td>
+                <td><?= htmlspecialchars($customerName) ?></td>
+                <td><?= $status === 'Cancelled' || ($treatmentDate < $today && ($status === 'Accepted' || $status === 'Pending')) ? "<p class='shadow-sm py-1 m-0 rounded-pill bg-dark bg-opacity-25 px-3 text-warning'>Transaction needs reschedule.</p>" : htmlspecialchars($td) ?>
+                </td>
+                <td><?= htmlspecialchars($t_name) ?></td>
+                <td>
+                    <?=
+                        $status === 'Pending' ? "<span id='pendingbtn' class='w-50 text-light badge rounded-pill text-bg-warning bg-opacity-25 py-2 text-wrap text-shadow'>Pending</span>" :
+                        ($status === 'Accepted' ? "<span data-accepted='$id' class='accepted-btn btn btn-sidebar badge rounded-pill text-bg-success bg-opacity-50 w-50 py-2 text-wrap border border-light border-opacity-50 shadow-sm text-shadow'>$status</span>" :
+                            ($status === 'Finalizing' ? "<span class='badge rounded-pill text-bg-primary bg-opacity-50 w-50 py-2 text-wrap text-shadow'>$status</span>" :
+                                ($status === 'Voided' ? "<span class='badge rounded-pill text-bg-danger bg-opacity-50 w-50 py-2 text-wrap text-shadow'>$status</span>" :
+                                    ($status === 'Completed' ? "<span class='badge rounded-pill text-bg-info bg-opacity-25 text-light w-50 py-2 text-wrap text-shadow'>$status</span>" :
+                                        ($status === 'Cancelled' ? "<span class='shadow-sm badge rounded-pill text-wrap text-bg-secondary bg-opacity-50 w-50 py-2 text-shadow'>$status</span>" :
+                                            ($status === 'Dispatched' ? "<span data-dispatched-id='$id' class='dispatched-btn btn btn-sidebar border text-wrap border-light border-opacity-50 badge shadow-sm rounded-pill btn btn-sidebar text-bg-warning text-light bg-opacity-50 w-50 py-2 text-shadow'>$status</span>" : $status))))))
 
-                    ?>
-            </td>
-            <td>
-                <div class="d-flex justify-content-center">
-                    <button id="tableDetails" data-trans-id="<?= $id ?>" class="btn btn-sidebar me-2">Details</button>
-                </div>
-            </td>
-        </tr>
+                        ?>
+                </td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <button id="tableDetails" data-trans-id="<?= $id ?>" class="btn btn-sidebar me-2">Details</button>
+                    </div>
+                </td>
+            </tr>
 
 
-        <?php
-
+            <?php
+        }
     } else {
         echo "<tr><td scope='row' colspan='6' class='text-center'>Search not found.</td></tr>";
     }

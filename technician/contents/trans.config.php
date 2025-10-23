@@ -50,6 +50,19 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
     // echo var_dump(strtotime($pstart), strtotime($pexp));
     // exit();
 
+    $inspection_report = $_POST['inspection_report'];
+
+    if (!is_numeric($inspection_report)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'error', 'errorMessage' => 'Invalid Inspection Report ID passed.']);
+        exit;
+    }
+    if (!validate_no_numbers($customerName)) {
+        http_response_code(400);
+        echo json_encode(['type' => 'error', 'errorMessage' => "Customer name should only contain alphabets without numbers."]);
+        exit();
+    }
+
     if (strtotime($pexp) < strtotime($pstart)) {
         http_response_code(400);
         echo "Invalid Package Expiry Date.";
@@ -121,7 +134,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
         exit();
     }
 
-    $transaction = newTransaction($conn, $customerName, $address, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp, $addedBy, $amtUsed, $user, $role, $branch);
+    $transaction = newTransaction($conn, $customerName, $address, $techId, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $problems, $package, $t_type, $session, $note, $pstart, $pexp, $addedBy, $amtUsed, $user, $role, $branch, $inspection_report);
 
     if (isset($transaction['error'])) {
         http_response_code(400);

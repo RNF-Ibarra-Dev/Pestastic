@@ -126,10 +126,10 @@
                     autocomplete="one-time-code">
                 <button type="button" id="recentlyCompleted" data-bs-target="#finalizetransactionmodal"
                     data-bs-toggle="modal"
-                    class="btn w-50 rounded btn-sidebar bg-light bg-opacity-25 border-0 text-light py-2 px-1 "><i
-                        class="bi bi-calendar2-check me-2"></i>Finalizing Transactions</button>
+                    class="btn w-50 rounded btn-sidebar bg-light bg-opacity-25 border-0 text-light py-2 px-1 d-flex justify-content-center gap-2 flex-wrap"><i
+                        class="bi bi-calendar2-check"></i>Finalizing Transactions</button>
                 <button id="ir_btn"
-                    class="btn btn-sidebar position-relative text-light py-2 w-25 px-2 bg-light bg-opacity-25"
+                    class="btn btn-sidebar position-relative text-light py-2 w-50 px-2 bg-light bg-opacity-25 d-flex justify-content-center gap-2 flex-wrap"
                     data-bs-target="#inspection_report_modal" data-bs-toggle="modal"><i
                         class="bi bi-file-earmark-text"></i>
                     <p class="mb-0">
@@ -138,16 +138,12 @@
                 </button>
                 <button type="button" id="requestvoidbtn" data-bs-target="#requestedvoidtransactions"
                     data-bs-toggle="modal"
-                    class="btn w-50 rounded btn-sidebar bg-light bg-opacity-25 border-0 text-light py-2 px-1 "><i
-                        class="bi bi-file-earmark-x me-2"></i>Requested Void Transactions</button>
+                    class="btn w-50 rounded btn-sidebar bg-light bg-opacity-25 border-0 text-light py-2 px-1  d-flex justify-content-center gap-2 flex-wrap"><i
+                        class="bi bi-file-earmark-x"></i>Requested Void Transactions</button>
                 <div class="vr"></div>
                 <button type="button" id="addbtn" class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3"
                     data-bs-toggle="modal" data-bs-target="#add_ir" title="Add Transaction"><i
                         class="bi bi-file-earmark-plus"></i></button>
-                <!-- <button type="button" id="addbtn" title="Add Transaction"
-                    class="btn btn-sidebar rounded border-0 bg-light bg-opacity-25 text-light py-2 px-3 "
-                    disabled-data-bs-toggle="modal" disabled-data-bs-target="#addModal"><i
-                        class="bi bi-file-earmark-plus"></i></button> -->
                 <button type="button" title="Add Inspection Report"
                     class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3" id="add_inspection"
                     data-bs-target="#inspection_select_modal" data-bs-toggle="modal">
@@ -175,14 +171,12 @@
 
             <!-- modals -->
 
-            <!-- inspection reports -->
-
             <!-- inspection report details -->
             <form id="ir_edit_form">
 
                 <div class="modal fade text-dark" data-bs-backdrop="static" id="ir_details_modal" tabindex="-1"
                     aria-labelledby="create" aria-hidden="true">
-                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5 fw-bold">
@@ -384,7 +378,7 @@
             <!-- inspection report table -->
             <div class="modal fade text-dark" data-bs-backdrop="static" id="inspection_report_modal" tabindex="-1"
                 aria-labelledby="create" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
                             <h1 class="modal-title fs-5 fw-bold">
@@ -434,7 +428,7 @@
             <form id="new_inspection_report">
                 <div class="modal fade text-dark" data-bs-backdrop="static" id="inspection_select_modal" tabindex="-1"
                     aria-labelledby="create" aria-hidden="true">
-                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5 fw-bold">
@@ -2927,11 +2921,11 @@
                     $("#view-label-ir").text("IR No. " + d.inspection_report);
                     if (d.inspection_report == 0) {
                         $("#view_inspection_report_btn").prop("disabled", true);
-                        $("#view_inspection_report_btn").data("ir-id", '');
-                        $("#view-label-ir").text("IR No. " + d.inspection_report);
+                        $("#view_inspection_report_btn").removeAttr("data-ir-id");
+                        $("#view-label-ir").text("No IR reported.");
                     } else {
                         $("#view_inspection_report_btn").prop("disabled", false);
-                        $("#view_inspection_report_btn").data("ir-id", d.inspection_report);
+                        $("#view_inspection_report_btn").attr("data-ir-id", d.inspection_report);
                     }
                     $('#view-customerName').val(d.customer_name ?? `Name not set.`);
                     editTransDate.clear();

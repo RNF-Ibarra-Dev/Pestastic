@@ -3,10 +3,12 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
+    $last_count = $_SESSION['notif_last_count'] ?? 0;
     $response = [
         'notif' => '',
         'count' => 0,
-        'countbadge' => ''
+        'countbadge' => '',
+        'new' => false
     ];
 
     $ls = "SELECT * FROM chemicals WHERE (unop_cont + (CASE WHEN chemLevel > 0 THEN 1 ELSE 0 END)) < restock_threshold AND request = 0;";
@@ -203,6 +205,27 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
     }
 
     $response['countbadge'] .= "<span class='position-absolute translate-middle badge rounded-pill bg-danger' style='top: unset !important' id='notifNum'>" . $response['count'];
+    
+    if($last_count == 0){
+        $last_count = $response['count'];
+        $_SESSION['notif_last_count'] = $response['count'];
+    } 
+
+    if($last_count < $response['count']){
+        $response['new'] = true;
+    } else{
+        $response['new'] = false;
+    }
+
+    if (empty($response['notif']) || $response['notif'] == '') {
+        $response['notif'] .= " <li class='list-group-item p-0'>
+                <p
+                    class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
+                    No alerts for now.
+                </p>
+            </li>";
+    }
     echo json_encode($response);
+    mysqli_close($conn);
     exit();
 }

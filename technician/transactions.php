@@ -130,15 +130,27 @@ require("startsession.php");
                     data-bs-toggle="modal"
                     class="btn w-50 rounded btn-sidebar bg-light bg-opacity-25 border-0 text-light py-2 px-1 "><i
                         class="bi bi-calendar2-check me-2"></i>Finalizing Transactions</button>
+                <button id="ir_btn"
+                    class="btn btn-sidebar position-relative text-light d-flex flex-wrap gap-2 justify-content-center py-2 w-50 px-2 bg-light bg-opacity-25"
+                    data-bs-target="#inspection_report_modal" data-bs-toggle="modal"><i
+                        class="bi bi-file-earmark-text"></i>
+                    <p class="mb-0">
+                        Inspection Reports
+                    </p>
+                </button>
                 <button type="button" id="requestvoidbtn" data-bs-target="#requestedvoidtransactions"
                     data-bs-toggle="modal"
                     class="btn w-50 rounded btn-sidebar bg-light bg-opacity-25 border-0 text-light py-2 px-1 "><i
                         class="bi bi-file-earmark-x me-2"></i>Requested Void Transactions</button>
                 <div class="vr"></div>
-                <button type="button" id="addbtn" title="Add Transaction"
-                    class="btn btn-sidebar rounded border-0 bg-light bg-opacity-25 text-light py-2 px-3 "
-                    disabled-data-bs-toggle="modal" disabled-data-bs-target="#addModal"><i
+                <button type="button" id="addbtn" class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3"
+                    data-bs-toggle="modal" data-bs-target="#add_ir" title="Add Transaction"><i
                         class="bi bi-file-earmark-plus"></i></button>
+                <button type="button" title="Add Inspection Report"
+                    class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3" id="add_inspection"
+                    data-bs-target="#inspection_select_modal" data-bs-toggle="modal">
+                    <i class="bi bi-clipboard-plus"></i>
+                </button>
             </div>
 
 
@@ -163,9 +175,503 @@ require("startsession.php");
             </div>
 
 
-
             <!-- modals -->
+
+            <!-- inspection report details -->
+            <form id="ir_edit_form">
+
+                <div class="modal fade text-dark" data-bs-backdrop="static" id="ir_details_modal" tabindex="-1"
+                    aria-labelledby="create" aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5 fw-bold">
+                                    Inspection Reports <span class="fw-light text-light">|</span> Details
+                                </h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                        class="bi text-light bi-x"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="ir_id" id="ir_details_id">
+                                <div class="row mb-2">
+                                    <div class="col-md-3">
+                                        <p class="form-label fw-bold fs-5">Inspection Report ID:</p>
+                                        <p class="ps-2 m-0" id="ir_inspection_id"></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="ir_customer" class="form-label fw-bold fs-5">Customer Name:</label>
+                                        <input type="text" name="customer_name" id="ir_customer"
+                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label for="ir_property_type" class="form-label fw-bold fs-5">Property
+                                            Type:</label>
+                                        <p class="mb-0 ps-2 text-capitalize" id="ir_property_type_display"></p>
+                                        <select name="property_type" id="ir_property_type" class="form-select d-none"
+                                            autocomplete="off" disabled>
+                                            <option value="residential">Residential Property</option>
+                                            <option value="commercial">Commercial Property</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-4">
+                                        <label for="ir_floor_area" class="form-label fw-bold fs-5">Total floor
+                                            area:</label>
+                                        <div class="d-flex align-items-center">
+                                            <input type="number" step="0.01" min="0.00" name="total_floor_area"
+                                                id="ir_floor_area"
+                                                class="form-control-plaintext ir-input ps-2 w-25 text-center"
+                                                autocomplete="off" readonly>
+                                            <p class="mb-0 ms-2" id="ir_floor_area_unit"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="ir_total_floors" class="form-label fw-bold fs-5">Total number of
+                                            floors:</label>
+                                        <div class="d-flex align-items-center">
+                                            <input type="number" name="total_floors" min="0" id="ir_total_floors"
+                                                class="form-control-plaintext ir-input ps-2 w-15 text-center"
+                                                autocomplete="off" readonly>
+                                            <p class="mb-0 ms-2">floor/s</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="ir_total_rooms" class="form-label fw-bold fs-5">Total property
+                                            rooms:</label>
+                                        <div class="d-flex align-items-center">
+                                            <input type="number" name="total_rooms" min="0" id="ir_total_rooms"
+                                                class="form-control-plaintext ps-2 w-15 text-center ir-input"
+                                                autocomplete="off" readonly>
+                                            <p class="mb-0 ms-2">room/s</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <label for="ir_location" class="form-label fw-bold fs-5">Location:</label>
+                                        <input type="text" name="location" id="ir_location"
+                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="ir_exposed_soil" class="form-label fw-bold fs-5">Exposed soil
+                                            outside property (For termite problems):</label>
+                                        <p class="ps-2 mb-0 text-capitalize" id="ir_exposed_soil_display"></p>
+                                        <select name="exposed_soil" id="ir_exposed_soil" class="form-select d-none">
+                                            <option value="yes">Yes</option>
+                                            <option value="no">No</option>
+                                            <option value="no_termite">No termite</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md">
+                                        <label for="ir_pproblems_list" class="form-label fw-bold fs-5">Reported pest
+                                            problems:</label>
+                                        <ul class="list-group list-group-flush display-toggle w-50"
+                                            id="ir_pproblems_list">
+                                        </ul>
+                                        <div id="ir_pest_problem_container"
+                                            class="ps-2 d-none display-toggle d-flex justify-content-center gap-2 flex-wrap">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <label for="ir_location_seen" class="form-label fw-bold fs-5">Infestation
+                                            location
+                                            (First seen):</label>
+                                        <input type="text" name="location_seen" id="ir_location_seen"
+                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <!-- <label for="ir_existing_pc" class="form-label fw-bold fs-5">Existing pest
+                                            control
+                                            provider:</label> -->
+                                        <p class="fw-bold fs-5 mb-2">Existing pest control provider:</p>
+                                        <!-- <input type="text" name="existing_pc" id="ir_existing_pc"
+                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly> -->
+                                        <p id="ir_existing_pc" class="ps-2"></p>
+                                        <div class="btn-group mb-2 d-none" id="existing_btn_group">
+                                            <input type="radio" class="btn-check" name="existing_pc" value="yes"
+                                                id="ir_yes" autocomplete="off">
+                                            <label for="ir_yes" class="btn btn-outline-dark fw-medium">Yes</label>
+
+                                            <input type="radio" class="btn-check" name="existing_pc" value="no"
+                                                id="ir_no" autocomplete="off">
+                                            <label for="ir_no" class="btn btn-outline-dark fw-medium">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-2" id="ir_existing_pc_details">
+                                    <div class="col-md-6">
+                                        <label for="ir_latest_treatment" class="form-label fw-bold fs-5">Latest
+                                            treatment
+                                            type:</label>
+                                        <input type="text" name="latest_treatment" id="ir_latest_treatment"
+                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
+                                        <p class="ir-input ps-2 fw-light mb-0" id="ir_treatment_history_display"></p>
+                                        <div class="form-check form-check-inline d-flex flex-row align-items-center gap-2 d-none mt-1"
+                                            id="no_trt_history_chkbx">
+                                            <input class="form-check-input ps-2" name="no_treatment_history"
+                                                type="checkbox" id="ir_no_treatment_history">
+                                            <label class="form-check-label fw-light fs-5"
+                                                for="ir_no_treatment_history">No
+                                                treatment history</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="ir_last_treatment" class="form-label fw-bold fs-5">Last treatment
+                                            date:</label>
+                                        <p id="ir_last_treatment_display" class="ps-2 mb-0"></p>
+                                        <input type="text" name="last_treatment_date" id="ir_last_treatment"
+                                            class="form-control ps-2 d-none" autocomplete="off" readonly>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <label for="ir_note" class="form-label fw-bold fs-5">Additional notes:</label>
+                                        <textarea type="text" name="note" id="ir_note"
+                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly
+                                            style="resize: none;"></textarea>
+                                    </div>
+                                </div>
+                                <button type="button" class="w-75 mx-auto my-2 btn btn-grad ir-confirm-btn d-none"
+                                    data-bs-toggle="modal" data-bs-target="#ir_edit_confirm">Confirm
+                                    changes</button>
+                                <small class="m-0 text-muted fw-light" id="ir_metadata"></small>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" id="ir_back_btn"
+                                    data-bs-target="#inspection_report_modal" data-bs-toggle="modal">Back</button>
+                                <button type="button" class="btn btn-grad" id="ir_edit_toggle">Edit</button>
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="ir_edit_confirm" tabindex="0"
+                    aria-labelledby="confirmAdd" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Confirm report changes</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="ir_modify_pwd" class="form-label fw-light">Modify report? Enter
+                                        technician
+                                        <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="password" class="form-control" id="ir_modify_pwd">
+                                    </div>
+                                </div>
+                                <p class='text-center alert alert-info p-3 w-75 mx-auto my-0' style="display: none;"
+                                    id="ir_modify_alert"></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-target="#ir_details_modal"
+                                    data-bs-toggle="modal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Modify report</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- inspection report table -->
+            <div class="modal fade text-dark" data-bs-backdrop="static" id="inspection_report_modal" tabindex="-1"
+                aria-labelledby="create" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header bg-modal-title text-light">
+                            <h1 class="modal-title fs-5 fw-bold">
+                                Inspection Reports
+                            </h1>
+                            <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                    class="bi text-light bi-x"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive-sm d-flex justify-content-center">
+                                <table class="table align-middle table-hover m-3 mt-2 os-table w-100 text-light">
+                                    <caption class="text-muted">List of all available inspection reports within the
+                                        branch.</caption>
+                                    <thead class="text-center  align-middle">
+                                        <tr>
+                                            <th scope="row">Inspection ID</th>
+                                            <th>Customer Name</th>
+                                            <th>Property Type</th>
+                                            <th>Branch</th>
+                                            <th>Created At</th>
+                                            <th>Updated At</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ir_table">
+                                        <tr>
+                                            <td colspan="7">
+                                                <div class="d-flex justify-content-center">
+                                                    <div class="spinner-border" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="ir_pagination"></div>
+                        </div>
+                        <div class="modal-footer"> <button type="button" class="btn btn-grad"
+                                data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form id="new_inspection_report">
+                <div class="modal fade text-dark" data-bs-backdrop="static" id="inspection_select_modal" tabindex="-1"
+                    aria-labelledby="create" aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5 fw-bold">
+                                    Create Inspection Report
+                                </h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"><i
+                                        class="bi text-light bi-x"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="create_inspection_container">
+
+                                    <p
+                                        class="fs-4 bg-secondary bg-opacity-50 fw-bold rounded w-100 text-center text-light py-2">
+                                        New Inspection Report</p>
+
+                                    <div class="mb-2 w-50">
+                                        <label for="ir_customer_name" class="form-label fs-5 fw-bold">Customer
+                                            Name:</label>
+                                        <input type="text" class="form-control" name="customer_name"
+                                            id="ir_customer_name" autocomplete="off">
+                                    </div>
+
+                                    <p class="fw-bold fs-5">Property type:</p>
+                                    <div class="d-flex gap-2 justify-content-evenly align-content-center my-2">
+                                        <input type="radio" class="btn-check" name="property_type" value="residential"
+                                            id="residential_btn" autocomplete="off">
+                                        <label for="residential_btn" class="btn fw-medium btn-outline-dark">Residential
+                                            Property</label>
+                                        <p class="text-secondary fw-light fs-5 mb-0">or</p>
+                                        <input type="radio" class="btn-check" name="property_type" value="commercial"
+                                            id="commercial_btn" autocomplete="off">
+                                        <label for="commercial_btn" class="btn fw-medium btn-outline-dark">Commercial
+                                            Property</label>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-4">
+                                            <label for="floor_area" class="form-label fs-5 fw-bold">Total floor
+                                                area:</label>
+                                            <input type="number" id="floor_area" class="form-control ps-2" step="0.01"
+                                                min="0.00" name="total_area" autocomplete="off">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="floor_area_unit" class="form-label fs-5 fw-bold">Unit:</label>
+                                            <input type="text" class="form-control-plaintext ps-2" id="floor_area_unit"
+                                                value="sqm" readonly>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="total_floors" class="form-label fs-5 fw-bold">Total number of
+                                                floors:</label>
+                                            <input type="number" min="1" steps="1" name="total_floors"
+                                                class="form-control" id="total_floors">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="total_rooms" class="form-label fs-5 fw-bold">Total property
+                                                rooms:</label>
+                                            <input type="number" min="1" steps="1" name="total_rooms"
+                                                class="form-control" id="total_floors">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md">
+                                            <label for="location" class="form-label fs-5 fw-bold">Property
+                                                Location:</label>
+                                            <textarea name="property_location" id="location" rows="2"
+                                                class="form-control" autocomplete="off"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <p class="fs-5 fw-bold">Reported pest problem:</p>
+                                        <div class="col-md d-flex gap-2 justify-content-center flex-wrap"
+                                            id="reported_pest_container"></div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md d-flex flex-column gap-1">
+                                            <p class="fs-5 fw-bold m-0">For Termite Only:</p>
+                                            <p class="fw-light ps-2">Is there an exposed soil outside the property?</p>
+                                            <div class="btn-group mb-2">
+                                                <input type="radio" class="btn-check" name="exposed_soil_ans"
+                                                    value="yes" id="yes" autocomplete="off">
+                                                <label for="yes" class="btn btn-outline-dark fw-medium">Yes</label>
+
+                                                <input type="radio" class="btn-check" name="exposed_soil_ans" value="no"
+                                                    id="no" autocomplete="off">
+                                                <label for="no" class="btn btn-outline-dark fw-medium">No</label>
+                                            </div>
+                                            <div class="mx-auto">
+                                                <input type="radio" class="btn-check" name="exposed_soil_ans"
+                                                    value="no_termite" id="no_termite" autocomplete="off" checked>
+                                                <label for="no_termite" class="btn btn-outline-dark fw-medium">No
+                                                    Termite
+                                                    Reported</label>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="infestation_location" class="form-label fs-5 fw-bold">Infestation
+                                            Location (First seen):</label>
+                                        <input type="text" class="form-control ps-2" name="infestation_location"
+                                            id="infestation_" autocomplete="off">
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md">
+                                            <p class="fs-5 fw-bold mb-1">Existing Pest Control
+                                                Provider:</p>
+                                            <p class="ps-2 fw-light">Does this customer have an existing pest control
+                                                provider?
+                                            </p>
+                                            <div class="btn-group mb-3 d-flex">
+                                                <input type="radio" class="btn-check" name="existing_pc_provider"
+                                                    value="yes" id="existing_pc__yes" autocomplete="off">
+                                                <label for="existing_pc__yes"
+                                                    class="btn btn-outline-dark fw-medium">Yes</label>
+                                                <input type="radio" class="btn-check" name="existing_pc_provider"
+                                                    value="no" id="existing_pc__no" autocomplete="off">
+                                                <label for="existing_pc__no"
+                                                    class="btn btn-outline-dark fw-medium">No</label>
+                                            </div>
+                                            <p class="mb-1 fs-5 fw-light d-none existing_label" id="existing_label">
+                                                Please
+                                                state the
+                                                last/latest
+                                                treatment type and date.</p>
+                                            <div class="d-flex gap-2">
+                                                <div class="w-100">
+                                                    <label for="existing_provider_last_treatment"
+                                                        class=" form-label fw-bold fs-5">Latest
+                                                        treatment type:</label>
+                                                    <input type="text" name="existing_provider_last_treatment"
+                                                        id="existing_provider_last_treatment"
+                                                        class="existing-pc-form form-control ps-2" autocomplete="off"
+                                                        disabled>
+                                                    <div
+                                                        class="form-check form-check-inline existing_label d-none d-flex flex-row align-items-center gap-2">
+                                                        <input class="form-check-input" name="no_treatment_history"
+                                                            type="checkbox" id="no_treatment_history" value="true">
+                                                        <label class="form-check-label fw-light fs-5"
+                                                            for="no_treatment_history">No
+                                                            treatment history</label>
+                                                    </div>
+                                                </div>
+                                                <div class="w-100">
+                                                    <label for="last_treatment_date"
+                                                        class=" form-label fw-bold fs-5">Last
+                                                        treatment
+                                                        date:</label>
+                                                    <input type="text" name="last_treatment_date"
+                                                        class="existing-pc-form form-control" id="last_treatment_date"
+                                                        disabled>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-6">
+                                            <label for="note" class="form-label fs-5 fw-bold">Additional note:</label>
+                                            <textarea type="text" class="form-control ps-2" name="note"
+                                                id="note"></textarea>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-grad" data-bs-target="#ir_confirm"
+                                    data-bs-toggle="modal">Create Inspection
+                                    Report</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="ir_confirm" tabindex="0"
+                    aria-labelledby="confirmAdd" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5" id="verifyAdd">Verification</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-2">
+                                    <label for="ir_confirm_pwd" class="form-label fw-light">Add transaction? Enter
+                                        technician
+                                        <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
+                                    <div class="col-lg-6 mb-2">
+                                        <input type="password" name="password" class="form-control" id="ir_confirm_pwd">
+                                    </div>
+                                </div>
+                                <p class="alert alert-info py-2 w-75 my-3 mx-auto text-center fw-medium"
+                                    id="new_ir_alert" style="display: none;">
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-target="#inspection_select_modal"
+                                    data-bs-toggle="modal">Go back</button>
+                                <button type="submit" class="btn btn-grad">Create Report</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+
             <form id="addTransaction">
+
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="add_ir" tabindex="0"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                                <h1 class="modal-title fs-5">Add Transaction</h1>
+                                <button type="button" class="btn ms-auto p-0" data-bs-dismiss="modal"
+                                    aria-label="Close"><i class="bi bi-x text-light"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <label for="select_ir_trans" class="form-label fw-bold fs-5">Select inspection
+                                    report:</label>
+                                <select name="inspection_report" id="select_ir_trans" class="form-select w-50"></select>
+                                <p class="mb-1 text-muted ps-1">Inspection report is required in order to proceed.</p>
+                                <button type="button" class="btn btn-grad w-50 mx-auto mt-3" id="add_create_new_ir"
+                                    data-bs-target="#inspection_select_modal" data-bs-toggle="modal">Create new
+                                    report</button>
+                                <button type="button" class="btn btn-grad w-50 mx-auto d-none mt-3"
+                                    id="ir_add_proceed_btn">Proceed</button>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row g-2 text-dark m-0">
                     <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="addModal" tabindex="-1"
                         aria-labelledby="create" aria-hidden="true">
@@ -370,12 +876,23 @@ require("startsession.php");
                                                 class="form-control" rows="1"></textarea>
                                         </div>
                                     </div>
+                                    <div class="row mb-2">
+                                        <div class="col-lg-6 d-flex justify-content-between">
+                                            <div>
+                                                <p class="fw-bold mb-0 fs-5">Selected inspection report:</p>
+                                                <span class="ps-2 my-2" id="add_selected_ir"></span>
+                                            </div>
+                                            <button id="show_ir_details" class="btn btn-grad mt-auto me-3">View
+                                                report</button>
+                                        </div>
+                                    </div>
 
                                     <p class="text-center alert alert-info w-75 mx-auto visually-hidden"
                                         id="emptyInput"></p>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-grad" data-bs-toggle="modal"
+                                        data-bs-target="#confirm_close">Cancel</button>
                                     <button type="button" class="btn btn-grad" disabled-id="submitAdd"
                                         data-bs-toggle="modal" data-bs-target="#confirmAdd">Proceed &
                                         Confirm</button>
@@ -396,7 +913,7 @@ require("startsession.php");
                             </div>
                             <div class="modal-body">
                                 <div class="row mb-2">
-                                    <label for="addPwd" class="form-label fw-light">Add transaction? Enter manager
+                                    <label for="addPwd" class="form-label fw-light">Add transaction? Enter technician
                                         <?= $_SESSION['techUsn'] ?>'s password to proceed.</label>
                                     <div class="col-lg-6 mb-2">
                                         <input type="password" name="saPwd" class="form-control" id="addPwd">
@@ -409,6 +926,24 @@ require("startsession.php");
                                 <button type="button" class="btn btn-grad" data-bs-target="#addModal"
                                     data-bs-toggle="modal">Go back</button>
                                 <button type="submit" class="btn btn-grad" id="submitAdd">Add Transaction</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade text-dark modal-edit" data-bs-backdrop="static" id="confirm_close" tabindex="0"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-modal-title text-light">
+                            </div>
+                            <div class="modal-body">
+                                <p class="fs-5 text-center mb-0 fw-bold">Data input will get lost. Discard transaction
+                                    creation?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-grad" data-bs-target="#addModal"
+                                    data-bs-toggle="modal">Go back</button>
+                                <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Discard</button>
                             </div>
                         </div>
                     </div>
@@ -676,7 +1211,7 @@ require("startsession.php");
                                         <label for="view-transId" class="form-label fw-bold">Transaction ID:
                                         </label>
                                         <input type="text" name="edit-transId" id="view-transId"
-                                            class="form-control-plaintext form-add" readonly
+                                            class="form-control-plaintext form-add ps-2" readonly
                                             autocomplete="one-time-code">
                                     </div>
 
@@ -686,7 +1221,7 @@ require("startsession.php");
                                         </label>
                                         <!-- remove readonly in edit mode -->
                                         <input type="text" name="edit-customerName" id="view-customerName"
-                                            class="form-control-plaintext form-add" readonly
+                                            class="form-control-plaintext form-add ps-2" readonly
                                             autocomplete="one-time-code">
                                     </div>
 
@@ -696,14 +1231,9 @@ require("startsession.php");
 
                                     <div class="col-lg-6 mb-2" id='view-addCont'>
                                         <label for='view-address' class="form-label fw-bold">Address:</label>
-                                        <textarea type="text" id="view-address" class="form-control-plaintext form-add"
-                                            readonly style="resize: none !important;"></textarea>
-                                    </div>
-
-                                    <div class="col-lg-6 mb-2 d-none" id='edit-addCont'>
-                                        <label for='edit-address' class="form-label fw-bold">Address:</label>
-                                        <textarea type="text" name="edit-address" id="edit-address"
-                                            class="form-control form-add"></textarea>
+                                        <textarea type="text" id="view-address"
+                                            class="ps-2 form-control-plaintext form-add" readonly
+                                            style="resize: none !important;"></textarea>
                                     </div>
 
                                 </div>
@@ -738,18 +1268,8 @@ require("startsession.php");
                                     <div class="col-lg-3">
                                         <label for="edit-treatmentType" class="form-label fw-bold">Treatment
                                             Type:</label>
-                                        <p id="view-treatmentType" class="ps-3"></p>
-                                        <select name="edit-treatmentType" id="edit-treatmentType"
-                                            class="form-select d-none">
-                                            <option value="" selected>Select Treatment Type</option>
-                                            <option value="General Treatment">General Treatment
-                                            </option>
-                                            <option value="Follow-up Treatment">Follow-up Treatment
-                                            </option>
-                                            <option value="Quarterly Treatment">Quarterly Treatment</option>
-                                            <option value="Monthly Treatment">Monthly Treatment
-                                            </option>
-                                        </select>
+                                        <p id="view-treatmentType" class="ps-3 my-2"></p>
+
                                     </div>
 
                                     <!-- right side -->
@@ -847,25 +1367,25 @@ require("startsession.php");
                                     <div class="col-lg-6 mb-2" id="view-status-col">
                                         <label for="view-status" class="form-label mb-0 fw-bold p-0">Transaction
                                             Status:</label>
-                                        <p class="fw-light ps-3" id="view-status">
+                                        <p class="fw-light my-2 ps-3" id="view-status">
                                         </p>
                                     </div>
 
                                     <!-- placed under -- add button for rows toggle in edit mode as well. -->
-                                    <div class="col-lg-4  my-2 d-flex visually-hidden" id='btn-amountUsed'>
+                                    <!-- <div class="col-lg-4  my-2 d-flex visually-hidden" id='btn-amountUsed'>
                                         <button type="button" id="edit-addMoreChem"
                                             class="btn btn-grad mt-auto py-2 px-3 d-flex align-items-center">
                                             <p class="fw-light m-0 me-2">Add Chemical</p><i
                                                 class="bi bi-plus-circle text-light"></i>
                                         </button>
-                                    </div>
+                                    </div> -->
 
                                 </div>
                                 <p class="alert alert-warning py-1 mt-1 w-50 mx-auto text-center amt-used-alert"
                                     style="display: none;"></p>
 
                                 <div class="row mb-2">
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-4">
                                         <div class="dropdown-center col-lg-6 mb-2">
                                             <!-- list technician when in view mode. Handled in ajax -->
                                             <label for="view-technicians" id="view-technicians-label"
@@ -875,16 +1395,22 @@ require("startsession.php");
                                         </div>
 
                                     </div>
-                                    <div class="col-lg-6 mb-2" id="view-noteContainer">
+                                    <div class="col-lg-4 mb-2" id="view-noteContainer">
                                         <label for="view-note" class="form-label fw-bold">Additional
                                             Notes:</label>
-                                        <p class="ps-3 fw-light" id="view-note"></p>
+                                        <p class="ps-3 my-2 fw-light" id="view-note"></p>
+                                    </div>
+                                    <div class="col-lg-4 d-flex justify-content-between">
+                                        <div>
+                                            <p class="fw-bold fs-5 mb-0">Inspection Report ID:
+                                            </p>
+                                            <p id="view-label-ir" class="ps-2 my-3"></p>
+                                        </div>
+                                        <button type="button" id="view_inspection_report_btn"
+                                            class="btn btn-grad me-2 mt-auto">View report</button>
                                     </div>
                                 </div>
 
-                                <div class="p-0 m-0 mb-2" id="edit-chemContainer">
-                                    <!-- template add chemical -->
-                                </div>
 
                                 <p id="transvoidalert" class="alert alert-danger py-2 text-center w-50 mx-auto mb-0">
                                 </p>
@@ -1693,6 +2219,18 @@ require("startsession.php");
                 });
         }
 
+        $(document).on('click', '#view_inspection_report_btn', function () {
+            let id = $(this).data('ir-id');
+            // console.log(id);
+            load_report(id);
+            $("#details-modal").modal('hide');
+            $("#ir_details_modal").modal('show');
+        });
+
+        $(document).on('click', '#view_inspection_report_btn', function () {
+            $("#ir_details_modal #ir_back_btn").attr('data-bs-target', '#details-modal');
+        })
+
         async function view_transaction(transId) {
             try {
                 const details = await $.ajax({
@@ -1712,6 +2250,15 @@ require("startsession.php");
                     $('#view-customerName').val(d.customer_name ?? `Name not set.`);
                     $('#view-expiry').val(d.pack_exp ?? '--/--/--');
                     $('#list-status').empty();
+                    $("#view-label-ir").text("IR No. " + d.inspection_report);
+                    if (d.inspection_report == 0) {
+                        $("#view_inspection_report_btn").prop("disabled", true);
+                        $("#view_inspection_report_btn").removeAttr("data-ir-id");
+                        $("#view-label-ir").text("No IR reported.");
+                    } else {
+                        $("#view_inspection_report_btn").prop("disabled", false);
+                        $("#view_inspection_report_btn").attr("data-ir-id", d.inspection_report);
+                    }
                     $('#view-status').html(d.transaction_status);
                     $('#view-address').html(d.customer_address ?? 'Address not set.');
                     $('#edit-address').html(d.customer_address ?? '');
@@ -1963,8 +2510,61 @@ require("startsession.php");
                 console.log(error);
             }
         }
+        // inspection report changes 
+        $("#add_ir").on('change', '#select_ir_trans', function () {
+            const selected = $(this).find('option:selected');
+            if ($(this).val() !== '') {
+                $("#ir_add_proceed_btn").toggleClass('d-none', false);
+                $("#add_create_new_ir").toggleClass('d-none', true);
+                $("#add_selected_ir").text("IR No.: " + $(this).val());
+                $("button#show_ir_details").data("ir-id", $(this).val());
+                let customer_name = selected.data('c-name');
+                $("#add-customerName").val(customer_name);
+                let loc = selected.data('loc');
+                $("#add-customerAddress").val(loc);
+            } else {
+                $("#ir_add_proceed_btn").toggleClass('d-none', true);
+                $("#add_create_new_ir").toggleClass('d-none', false);
+                $("#add_selected_ir").text('No IR Selected');
+                $("button#show_ir_details").data("ir-id", '');
+            }
+        });
 
-        $(document).on('click', '#addbtn', async function () {
+        $(document).on('click', "#addbtn", function () {
+            $('#addTransaction')[0].reset();
+        })
+
+        $(document).on('shown.bs.modal', "#add_ir", function () {
+            $("#ir_add_proceed_btn").toggleClass('d-none', true);
+            $("#add_create_new_ir").toggleClass('d-none', false);
+            $("#add_selected_ir").text('');
+        });
+
+        $("#add_ir").on('click', '#ir_add_proceed_btn', function () {
+            $("#add_ir").modal('hide');
+            load_add_trans();
+        });
+        // add_selected_ir
+        $(document).on('shown.bs.modal', '#add_ir', function () {
+
+            $("#ir_add_proceed_btn").toggleClass('d-none', true);
+            $.get(dataurl, { get_ir: 'true' }, function (d) {
+                $("#select_ir_trans").empty();
+                $("#select_ir_trans").append(d);
+            }).fail(function (e) {
+                console.log(e);
+            });
+        });
+
+        $("#addModal").on('click', '#show_ir_details', async function () {
+            let id = $(this).data('ir-id');
+            console.log(id);
+            await load_report(id);
+            $("#addModal").modal('hide');
+            $("#ir_details_modal").modal('show');
+        });
+
+        async function load_add_trans() {
             let form = 'add';
             // console.log('add clicked');
             try {
@@ -1984,7 +2584,7 @@ require("startsession.php");
                     $("#add-packageStart, #add-packageStart + input[readonly='readonly']").attr('disabled', true);
                     $('#add-packageExpiry').attr('disabled', true);
 
-                    $('#addTransaction')[0].reset();
+                    // $('#addTransaction')[0].reset();
                     $('#addTechContainer').empty();
                     $('#add-chemContainer').empty();
                     $('#addModal').modal('show');
@@ -1995,7 +2595,7 @@ require("startsession.php");
             } catch (error) {
                 console.log('add get error.')
             }
-        });
+        }
 
         $('#addTransaction').on('submit', async function (e) {
             e.preventDefault();
@@ -2171,6 +2771,367 @@ require("startsession.php");
                 .fail(function (e) {
                     console.log(e);
                     $("#finalizingAlert").html(e.responseText).fadeIn(750).delay(2000).fadeOut(1000);
+                })
+        });
+
+
+        $(document).on('shown.bs.modal', '#inspection_select_modal', function () {
+            $("#new_inspection_report")[0].reset();
+            $.get(
+                dataurl,
+                {
+                    getProb: 'true'
+                },
+                function (d) {
+                    $("#reported_pest_container").empty();
+                    $("#reported_pest_container").append(d);
+                }).fail(function (e) {
+                    console.log(e);
+                });
+
+            $.get(
+                dataurl, {
+                get_branch: 'add_branch'
+            },
+                function (d) {
+                    $("#ir_branch").empty();
+                    $("#ir_branch").append(d);
+                }).fail(function (e) {
+                    console.log(e);
+                });
+
+            $.get(
+                dataurl,
+                {
+                    get_ir: 'true'
+                },
+                function (d) {
+                    $("#inspection_select").empty();
+                    $("#inspection_select").append(d);
+                },
+                'html'
+            )
+                .fail(function (e) {
+                    console.log(e);
+                })
+        });
+
+        $("#inspection_select_modal").on('change', '#existing_pc__yes, #existing_pc__no', function () {
+            let checked = $("#existing_pc__no").is(':checked');
+            let no_history_checked = $("#no_treatment_history").is(':checked');
+            $("#existing_provider_last_treatment, #last_treatment_date, #last_treatment_date + input").prop('disabled', function () {
+                if ((checked && no_history_checked) || !checked) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            $(".existing_label").toggleClass('d-none', !checked);
+        });
+
+        $(document).on('submit', '#new_inspection_report', function (e) {
+            e.preventDefault();
+            console.log($(this).serialize());
+
+            $.ajax({
+                method: "POST",
+                url: submiturl,
+                dataType: 'json',
+                data: $(this).serialize() + "&new_ir=true"
+            }).done(function (d) {
+                $("#new_inspection_report")[0].reset();
+
+                $.get(
+                    dataurl,
+                    {
+                        get_ir: 'true'
+                    },
+                    function (d) {
+                        $("#inspection_select").empty();
+                        $("#inspection_select").append(d);
+                    },
+                    'html'
+                )
+                    .fail(function (e) {
+                        console.log(e);
+                    })
+                $("#new_ir_alert").text(d.success).fadeIn().delay(5000).fadeOut(2000);
+            }).fail(function (e) {
+                console.log(e);
+                $("#new_ir_alert").text(e.responseText).fadeIn().delay(5000).fadeOut(2000);
+            })
+        });
+
+        let ltd = document.getElementById('last_treatment_date');
+        last_treatment_date = flatpickr(ltd, {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d"
+        });
+
+        let ltd_details = document.getElementById('ir_last_treatment');
+        details_ltd = flatpickr(ltd_details, {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d"
+        });
+
+        $(document).on("change", "select#inspection_select", function (e) {
+            let ir = $(this).val();
+            console.log(ir);
+            if (ir != '') {
+                $("#create_inspection_container").addClass('d-none');
+            } else {
+                $("#create_inspection_container").removeClass('d-none');
+            }
+        });
+
+        async function load_ir_table(page = 1) {
+            let branch = <?= $_SESSION['branch'] ?>;
+            await $.get(
+                'contents/trans.ir.pagination.php',
+                {
+                    table: 'true',
+                    branch: branch,
+                    currentpage: page
+                }, function (d) {
+                    $("#ir_table").empty();
+                    $("#ir_table").append(d);
+                    return true;
+                },
+                'html'
+            ).fail(function (e) {
+                console.log(e);
+                return false;
+            });
+        }
+
+        async function load_ir_pagination(page = 1) {
+            let branch = <?= $_SESSION['branch'] ?>;
+            await $.get('contents/trans.ir.pagination.php', {
+                paginate: 'true',
+                active: page,
+                branch: branch
+            }, function (d) {
+                $("#ir_pagination").empty();
+                $("#ir_pagination").append(d);
+                return true;
+            }, 'html').fail(function (e) {
+                console.log(e);
+                return false;
+            });
+        }
+
+        $("#inspection_report_modal").on('click', '.page-link', async function (e) {
+            e.preventDefault();
+            let branch = <?= $_SESSION['branch'] ?>;
+            let currentpage = $(this).data('page');
+
+            await load_ir_table(currentpage);
+            await load_ir_pagination(currentpage);
+        });
+
+        $(document).on('shown.bs.modal', '#inspection_report_modal', async function () {
+            await load_ir_table();
+            await load_ir_pagination();
+        });
+
+        let ir_toggled = false;
+        function toggle_ir() {
+            $(".ir-input").toggleClass('form-control-plaintext form-control');
+            $("#ir_last_treatment, #ir_last_treatment + input, #existing_btn_group").toggleClass('d-none', ir_toggled);
+            $(".ir-input").prop('readonly', ir_toggled);
+
+            // select inputs
+            $("#ir_property_type, #ir_exposed_soil").prop('disabled', ir_toggled);
+            $("#ir_property_type, #ir_property_type_display, #ir_exposed_soil, #ir_exposed_soil_display, #ir_existing_pc").toggleClass('d-none');
+
+            $("#no_trt_history_chkbx, #ir_treatment_history_display, .display-toggle, .ir-confirm-btn, #ir_last_treatment_display").toggleClass('d-none');
+            $("#ir_edit_toggle").text(ir_toggled ? 'Edit' : 'Cancel edit');
+            // $("")
+            return ir_toggled = !ir_toggled ? true : false;
+        }
+
+        $("#ir_details_modal").on('click', '#ir_edit_toggle', function () {
+            toggle_ir();
+        });
+
+        $("#ir_details_modal").on('change', '#ir_yes, #ir_no', function () {
+            let checked = $("#ir_yes").is(':checked');
+            let no_history_checked = $("#ir_no_treatment_history").is(':checked');
+
+            $("#ir_no_treatment_history, #ir_latest_treatment, #ir_last_treatment, #ir_last_treatment + input").prop('disabled', checked);
+            if (!checked) {
+                $("#ir_latest_treatment, #ir_last_treatment, #ir_last_treatment + input").prop('disabled', no_history_checked);
+            }
+        });
+
+        $("#ir_details_modal").on('change', '#ir_no_treatment_history', function () {
+            let checked = $(this).is(':checked');
+            $("#ir_latest_treatment, #ir_last_treatment, #ir_last_treatment + input").prop('disabled', checked);
+        })
+
+        async function load_report(ir_id) {
+            $.get(dataurl, { ir_details: 'true', id: ir_id }, function (d) {
+                console.log(d);
+                $("#ir_inspection_id").text(d.id);
+                $("#ir_customer").val(d.customer);
+                $("#ir_property_type").val(d.property_type);
+                $("#ir_floor_area").val(d.total_floor_area);
+                $("#ir_floor_area_unit").text(d.floor_area_unit);
+                $("#ir_total_floors").val(d.total_floor_num);
+                $("#ir_total_rooms").val(d.total_room);
+                $("#ir_property_type_display").text(d.property_type + ' Property');
+                $("#ir_exposed_soil_display").text(d.exposed_soil_outside_property == 'no_termite' ? 'No termite' : d.exposed_soil_outside_property);
+                $("#ir_location").val(d.property_location);
+                $("#ir_exposed_soil").val(d.exposed_soil_outside_property);
+                $("#ir_location_seen").val(d.reported_pest_problem_location);
+                let epc = d.existing_pest_provider;
+                $("#ir_existing_pc").text(epc == 1 ? "Yes" : "No");
+                if (epc == 1) {
+                    $("#ir_existing_pc").text("Yes");
+                    $("#ir_yes").prop('checked', 'checked');
+                    $("#ir_no").prop('checked', false);
+                    $("#ir_no_treatment_history").prop('disabled', true);
+                } else {
+                    $("#ir_no_treatment_history").prop('disabled', false);
+                    $("#ir_existing_pc").text("No");
+                    $("#ir_yes").prop('checked', false);
+                    $("#ir_no").prop('checked', 'checked');
+                }
+                let lt = d.last_treatment;
+                $("#ir_latest_treatment").val(lt == null ? "None" : lt);
+                let ltd = d.last_treatment_date;
+                if (ltd == null) {
+                    $("#ir_last_treatment_display").text('None');
+                    $("#ir_last_treatment + input").prop('placeholder', '--/--/--');
+                    details_ltd.clear();
+                } else {
+                    details_ltd.setDate(ltd);
+                    $("#ir_last_treatment_display").text(d.ltd);
+                }
+                // $("#ir_last_treatment").val(ltd == null ? "None" : details_ltd.setDate(ltd));
+                $("#ir_note").val(d.notes);
+                $("#ir_treatment_history_display").text(function () {
+                    if (lt == null && ltd == null) {
+                        $("#ir_no_treatment_history").prop('checked', 'checked');
+                        $("#ir_latest_treatment, #ir_last_treatment, #ir_last_treatment + input").prop('disabled', true);
+                        return "Note: This customer has no treatment history.";
+                    }
+                    $("#ir_latest_treatment, #ir_last_treatment, #ir_last_treatment + input").prop('disabled', false);
+                    $("#ir_no_treatment_history").prop('checked', false);
+                    return '';
+                });
+                d.created_by = d.created_by == '' ? 'No user recorded.' : d.created_by;
+                d.updated_by = d.updated_by == '' ? 'No user recorded.' : d.updated_by;
+                let addinfo = `Created at ${d.add_at} by ${d.created_by}` + (d.upat == d.add_at ? '' : `<br> Updated at ${d.up_at} by ${d.updated_by}`) + `<br> ${d.branch.name} - ${d.branch.location}`;
+                $("#ir_metadata").html(addinfo);
+            }, 'json')
+                .fail(function (e) {
+                    console.log(e);
+                })
+            if (ir_toggled) {
+                toggle_ir();
+            }
+
+            $.get(
+                dataurl,
+                {
+                    ir_pest_problems: 'true',
+                    id: ir_id
+                },
+                function (d) {
+                    $("#ir_pproblems_list").empty();
+                    $("#ir_pproblems_list").append(d);
+                },
+                'html'
+            )
+                .fail(function (e) {
+                    console.log(e);
+                });
+
+            $.get(dataurl, { ir_problems_array: 'true', id: ir_id }, function (d) {
+                $("#ir_pest_problem_container").empty();
+                $("#ir_pest_problem_container").append(d);
+                // console.log(d);
+            }, 'html')
+                .fail(function (e) {
+                    console.log(e);
+                });
+        }
+
+        $("#ir_table").on('click', '.ir-detail-btn', function () {
+            let ir_id = $(this).data('ir-id');
+            $("#ir_details_id").val(ir_id);
+            // console.log(ir_id);
+            load_report(ir_id);
+            $("#ir_back_btn").attr('data-bs-target', '#inspection_report_modal');
+
+            $("#inspection_report_modal").modal('hide');
+            $("#ir_details_modal").modal('show');
+        });
+
+        $("#addModal").on('click', "#show_ir_details", function () {
+            $("#ir_back_btn").attr("data-bs-target", "#addModal");
+        })
+
+        $("#inspection_select_modal").on('change', '#no_treatment_history', function () {
+            let checked = $(this).is(':checked');
+            $(".existing-pc-form").prop('disabled', checked);
+        });
+
+        $(document).on('submit', '#ir_edit_form', function (e) {
+            e.preventDefault();
+            console.log($(this).serializeArray());
+
+            $.ajax({
+                method: 'POST',
+                data: $(this).serialize() + "&modify_ir=true",
+                dataType: 'json',
+                url: submiturl
+            })
+                .done(function (d) {
+                    console.log(d);
+                    $("#ir_edit_confirm").modal('hide');
+                    toggle_ir();
+                    show_toast(d.success);
+                    load_report($("#ir_details_id").val());
+                    $("#ir_details_modal").modal('show');
+                    $("#ir_modify_alert").text(d.success).fadeIn().delay(5000).fadeOut();
+                })
+                .fail(function (e) {
+                    $("#ir_modify_alert").text(e.responseText).fadeIn().delay(5000).fadeOut();
+                    console.log(e);
+                })
+        });
+
+        $("#inspection_report_modal").on('click', '.ir-delete-btn', function () {
+            let id = $(this).data('ir-id-delete');
+            $("#ir_delete_id").val(id);
+            $("#inspection_report_modal").modal('hide');
+            $("#ir_delete_modal").modal('show');
+        });
+
+        $(document).on('submit', '#delete_ir_form', function (e) {
+            e.preventDefault();
+            console.log($(this).serializeArray());
+
+            $.ajax({
+                method: 'POST',
+                data: $(this).serialize() + "&delete_ir=true",
+                dataType: 'json',
+                url: submiturl
+            })
+                .done(function (d) {
+                    console.log(d);
+                    $("#ir_delete_modal").modal('hide');
+                    show_toast(d.success);
+                    $(this)[0].reset();
+                    $("#inspection_report_modal").modal('show');
+                })
+                .fail(function (e) {
+                    console.log(e);
+                    $("#ir_delete_alert").text(e.responseText).fadeIn().delay(5000).fadeOut();
                 })
         });
     </script>

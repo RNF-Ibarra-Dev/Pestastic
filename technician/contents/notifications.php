@@ -4,10 +4,13 @@ require_once("../../includes/dbh.inc.php");
 require_once('../../includes/functions.inc.php');
 
 if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
+    $last_count = $_SESSION['notif_last_count'] ?? 0;
+
     $response = [
         'notif' => '',
         'count' => 0,
-        'countbadge' => ''
+        'countbadge' => '',
+        'new' => false
     ];
 
 
@@ -29,7 +32,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 
@@ -51,7 +54,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 
@@ -74,7 +77,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 
@@ -95,7 +98,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 
@@ -116,7 +119,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 
@@ -137,7 +140,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 
@@ -158,19 +161,32 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                     </div>
                 </a>
             </li>";
-            $response['count']++;
+            $response['count'] += $num;
         }
     }
 
+    if ($last_count == 0) {
+        $last_count = $response['count'];
+        $_SESSION['notif_last_count'] = $response['count'];
+    }
+
+    if ($last_count < $response['count']) {
+        $response['new'] = true;
+    } else {
+        $response['new'] = false;
+    }
+
     $response['countbadge'] .= $response['countbadge'] == 0 ? '' : "<span class='position-absolute translate-middle badge rounded-pill bg-danger' style='top: unset !important' id='notifNum'>" . $response['count'];
-    if(empty($response['notif']) || $response['notif'] == ''){
+    if (empty($response['notif']) || $response['notif'] == '') {
         $response['notif'] .= " <li class='list-group-item p-0'>
                 <p
                     class='nav-link btn btn-sidebar m-0 fw-light d-flex align-items-center justify-content-center'>
-                   No alerts for now.
+                    No alerts for now.
                 </p>
             </li>";
     }
+
     echo json_encode($response);
+    mysqli_close($conn);
     exit();
 }

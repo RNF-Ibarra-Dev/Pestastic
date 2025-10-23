@@ -149,16 +149,10 @@
                 <input class="form-control form-custom me-auto py-2 align-middle px-3 rounded-pill text-light"
                     type="search" placeholder="Search transactions . . ." id="searchbar" name="searchTrans"
                     autocomplete="one-time-code">
-                <button id="ir_btn"
-                    class="btn btn-sidebar position-relative text-light py-2 w-25 px-2 bg-light bg-opacity-25"
-                    data-bs-target="#inspection_report_modal" data-bs-toggle="modal"><i
-                        class="bi bi-file-earmark-text"></i>
-                    <p class="mb-0">
-                        Inspection Reports
-                    </p>
-                </button>
+            </div>
+            <div class="hstack gap-2 mb-1 mt-2 mx-3">
                 <button id="voidreqbtn"
-                    class="btn btn-sidebar position-relative text-light py-2 w-25 px-2 bg-light bg-opacity-25"><i
+                    class="btn btn-sidebar position-relative text-light py-2 w-50 d-flex justify-content-center flex-wrap gap-2 px-2 bg-light bg-opacity-25"><i
                         class="bi bi-x-circle me-2"></i>
                     <p class="mb-0">Void
                         Requests</p>
@@ -166,19 +160,32 @@
                         class="position-absolute top-0 start-100 translate-middle p-2 bg-warning btn btn-sidebar rounded-circle visually-hidden">
                     </span>
                 </button>
-
+                <button id="ir_btn"
+                    class="btn btn-sidebar position-relative text-light py-2 w-50 d-flex justify-content-center gap-2 flex-wrap px-2 bg-light bg-opacity-25"
+                    data-bs-target="#inspection_report_modal" data-bs-toggle="modal"><i
+                        class="bi bi-file-earmark-text"></i>
+                    <p class="mb-0">
+                        Inspection Reports
+                    </p>
+                </button>
                 <button type="button" id="recentlyCompleted" data-bs-target="#finalizetransactionmodal"
                     data-bs-toggle="modal"
-                    class="btn rounded btn-sidebar bg-light bg-opacity-25 border-0 text-light py-2 px-3 "><i
-                        class="bi bi-calendar2-check me-2"></i>Finalizing Transactions</button>
+                    class="btn rounded btn-sidebar w-50 d-flex flex-wrap justify-content-center gap-2 bg-light bg-opacity-25 border-0 text-light py-2 px-3 "><i
+                        class="bi bi-calendar2-check me-2"></i>
+                    <p class="mb-0">Finalizing Transactions</p>
+                </button>
                 <div class="vr"></div>
-                <button type="button" id="addbtn" class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3"
+                <button type="button" id="addbtn"
+                    class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3 w-50 d-flex justify-content-center flex-wrap gap-2"
                     data-bs-toggle="modal" data-bs-target="#add_ir" title="Add Transaction"><i
-                        class="bi bi-file-earmark-plus"></i></button>
+                        class="bi bi-file-earmark-plus"></i>
+                    <p class="mb-0">Add Transaction</p>
+                </button>
                 <button type="button" title="Add Inspection Report"
-                    class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3" id="add_inspection"
-                    data-bs-target="#inspection_select_modal" data-bs-toggle="modal">
+                    class="btn btn-sidebar bg-light bg-opacity-25 text-light py-2 px-3 w-50 d-flex justify-content-center flex-wrap gap-2"
+                    id="add_inspection" data-bs-target="#inspection_select_modal" data-bs-toggle="modal">
                     <i class="bi bi-clipboard-plus"></i>
+                    <p class="mb-0">Add Inspection Report</p>
                 </button>
             </div>
 
@@ -207,7 +214,7 @@
 
                 <div class="modal fade text-dark" data-bs-backdrop="static" id="ir_details_modal" tabindex="-1"
                     aria-labelledby="create" aria-hidden="true">
-                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5 fw-bold">
@@ -372,8 +379,8 @@
                                 <small class="m-0 text-muted fw-light" id="ir_metadata"></small>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" id="ir_back_btn" class="btn btn-grad" data-bs-target="#inspection_report_modal"
-                                    data-bs-toggle="modal">Back</button>
+                                <button type="button" id="ir_back_btn" class="btn btn-grad"
+                                    data-bs-target="#inspection_report_modal" data-bs-toggle="modal">Back</button>
                                 <button type="button" class="btn btn-grad" id="ir_edit_toggle">Edit</button>
                                 <button type="button" class="btn btn-grad" data-bs-dismiss="modal">Close</button>
                             </div>
@@ -449,7 +456,7 @@
             <!-- inspection report table -->
             <div class="modal fade text-dark" data-bs-backdrop="static" id="inspection_report_modal" tabindex="-1"
                 aria-labelledby="create" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header bg-modal-title text-light">
                             <h1 class="modal-title fs-5 fw-bold">
@@ -498,7 +505,7 @@
             <form id="new_inspection_report">
                 <div class="modal fade text-dark" data-bs-backdrop="static" id="inspection_select_modal" tabindex="-1"
                     aria-labelledby="create" aria-hidden="true">
-                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header bg-modal-title text-light">
                                 <h1 class="modal-title fs-5 fw-bold">
@@ -2919,11 +2926,11 @@
                     $("#view-label-ir").text("IR No. " + d.inspection_report);
                     if (d.inspection_report == 0) {
                         $("#view_inspection_report_btn").prop("disabled", true);
-                        $("#view_inspection_report_btn").data("ir-id", '');
-                        $("#view-label-ir").text("IR No. " + d.inspection_report);
+                        $("#view_inspection_report_btn").removeAttr("data-ir-id");
+                        $("#view-label-ir").text("No IR reported.");
                     } else {
                         $("#view_inspection_report_btn").prop("disabled", false);
-                        $("#view_inspection_report_btn").data("ir-id", d.inspection_report);
+                        $("#view_inspection_report_btn").attr("data-ir-id", d.inspection_report);
                     }
                     $('#view-customerName').val(d.customer_name ?? `Name not set.`);
                     editTransDate.clear();

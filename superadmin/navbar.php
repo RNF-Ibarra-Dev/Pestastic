@@ -23,9 +23,9 @@
 
         <div class="gap-3 d-flex ms-auto border bg-dark bg-opacity-50 rounded-pill px-2 py-1">
             <button type="button" data-bs-target="#notifications" data-bs-toggle="modal"
-                class="navbar-brand btn user-icon rounded-circle m-0 shadow-lg p-0" id="notifbtn"><i alt="notification"
+                class="navbar-brand btn user-icon rounded-circle m-0 shadow-lg p-0"><i alt="notification"
                     class="rounded-circle bi bi-app-indicator ms-auto">
-                </i>
+                </i><span id="notifbtn"></span>
                 <!-- <span class="visually-hidden">unread messages</span> -->
             </button>
             <button type="button" data-bs-target="#settings" data-bs-toggle="modal"
@@ -113,9 +113,16 @@
                 notifications: true
             }
         })
-            .done(function (d) {
+            .done(async function (d) {
+                $("#notifContainer").empty();
+                $("#notifbtn").empty();
                 $('#notifContainer').append(d.notif);
                 $('#notifbtn').append(d.countbadge);
+                if (d.new) {
+                    await show_toast("New alert. Total alerts: " + d.count);
+                    notif_audio.play();
+                    showDesktopNotification("New alert. Total alerts: " + d.count);
+                }
             })
             .fail(function (e) {
                 console.log(e);
@@ -146,12 +153,26 @@
         });
     });
 
+    if (Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+
+    function showDesktopNotification(message) {
+        if (Notification.permission === "granted") {
+            new Notification("Pestastic Inventory", {
+                body: message,
+                icon: "../img/logo.svg"
+            });
+        }
+    }
+
     // let last_seen_id = 0;
     async function check_new_transactions() {
         $.get('tablecontents/polling.php', {}, function (d) {
             if (d.new) {
                 show_toast("New Transaction Added. Transaction ID: " + d.latest_id);
                 notif_audio.play();
+                showDesktopNotification("New Transaction Added. ID: " + d.latest_id);
             }
         }, 'json').fail(function (e) {
             console.log(e);
