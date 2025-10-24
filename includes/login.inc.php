@@ -13,10 +13,6 @@ if (isset($_POST["loginSubmit"])) {
         exit();
     }
 
-    // search log in credentials and role
-
-    // loginUser($conn, $uidEmail, $pwd);
-    
     loginMultiUser($conn, $uidEmail, $pwd);
 
 } else {

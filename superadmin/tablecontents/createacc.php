@@ -46,7 +46,7 @@ if (isset($_POST["createacc"]) && $_POST['createacc'] === 'true') {
         exit();
     }
 
-    if(strlen($contactNo) !== 11){
+    if (strlen($contactNo) !== 11) {
         http_response_code(400);
         echo 'Contact number should contain exactly 11 digits.';
         exit();
@@ -63,43 +63,43 @@ if (isset($_POST["createacc"]) && $_POST['createacc'] === 'true') {
         exit();
     }
 
-    if(strlen($empId) !== 3){
+    if (strlen($empId) !== 3) {
         http_response_code(400);
         echo 'Employee ID should only contain three digits.';
         exit();
     }
 
-    if(employeeIdCheck($conn, $empId) !== false) {
+    if (employeeIdCheck($conn, $empId) !== false) {
         http_response_code(400);
         echo 'Employee ID already exist.';
         exit();
     }
 
-    if(!validate($conn, $mpwd)){
+    if (!validate($conn, $mpwd)) {
         http_response_code(400);
         echo "Invalid password.";
         exit();
     }
 
-    if($account === 'tech'){
+    if ($account === 'tech') {
         $create = createTechAccount($conn, $firstName, $lastName, $username, $email, $pwd, $contactNo, $address, $empId, $birthdate, $branch);
-    } elseif($account === 'os'){
+    } elseif ($account === 'os') {
         $create = createOpSupAccount($conn, $firstName, $lastName, $username, $email, $pwd, $contactNo, $address, $empId, $birthdate, $branch);
-    } else{
+    } else {
         http_response_code(400);
         echo 'Invalid account type. Please try again.';
         exit();
     }
 
-    if(isset($create['error'])){
+    if (isset($create['error'])) {
         http_response_code(400);
         echo 'Error: ' . $create['error'];
         exit();
-    } else{
+    } else {
         echo json_encode(['success' => 'Account Created!']);
     }
 
-} 
+}
 
 if (isset($_POST["addmanager"]) && $_POST['addmanager'] === 'true') {
 
@@ -152,19 +152,19 @@ if (isset($_POST["addmanager"]) && $_POST['addmanager'] === 'true') {
         exit();
     }
 
-    if(strlen($empId) !== 3){
+    if (strlen($empId) !== 3) {
         http_response_code(400);
         echo 'Employee ID should only contain three digits.';
         exit();
     }
 
-    if(employeeIdCheck($conn, $empId) !== false) {
+    if (employeeIdCheck($conn, $empId) !== false) {
         http_response_code(400);
         echo 'Employee ID already exist.';
         exit();
     }
 
-    if(!validate($conn, $mpwd)){
+    if (!validate($conn, $mpwd)) {
         http_response_code(400);
         echo "Invalid password.";
         exit();
@@ -172,22 +172,22 @@ if (isset($_POST["addmanager"]) && $_POST['addmanager'] === 'true') {
 
     $create = createManager($conn, $firstName, $lastName, $username, $email, $pwd, $empId, $birthdate, $branch);
 
-    if(isset($create['error'])){
+    if (isset($create['error'])) {
         http_response_code(400);
         echo 'Error: ' . $create['error'];
         exit();
-    } else{
+    } else {
         echo json_encode(['success' => 'Account Created!']);
     }
 
-} 
+}
 
 
-if(isset($_GET['branches']) && $_GET['branches'] === 'true'){
+if (isset($_GET['branches']) && $_GET['branches'] === 'true') {
     $sql = "SELECT * FROM branches;";
     $result = mysqli_query($conn, $sql);
 
-     if (mysqli_num_rows($result) > 0) {
+    if (mysqli_num_rows($result) > 0) {
         echo "<option value='' selected class='text-dark'>Select User Branch</option>";
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id'];

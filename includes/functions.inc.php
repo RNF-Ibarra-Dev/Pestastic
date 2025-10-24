@@ -1938,7 +1938,6 @@ function finalize_transactions($conn, $ids, $author)
 
 function loginMultiUser($conn, $uidEmail, $pwd)
 {
-    // sets the row from the user exists check
     $userExists = multiUserExists($conn, $uidEmail, $uidEmail);
     $alg = PASSWORD_DEFAULT;
     $opt = ['cost' => 13];
@@ -1948,7 +1947,6 @@ function loginMultiUser($conn, $uidEmail, $pwd)
         exit();
     }
 
-    // technician
     if (isset($userExists['technicianId'])) {
 
         $pwdHashed = $userExists['techPwd'];
@@ -1979,7 +1977,6 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             exit();
         }
 
-        // branch admin - operations supervisor
     } elseif (isset($userExists['baID'])) {
 
         $pwdHashed = $userExists['baPwd'];
@@ -2013,7 +2010,6 @@ function loginMultiUser($conn, $uidEmail, $pwd)
             exit();
         }
 
-        // super admin = manager/owner
     } elseif (isset($userExists['saID'])) {
 
         $pwdHashed = $userExists['saPwd'];

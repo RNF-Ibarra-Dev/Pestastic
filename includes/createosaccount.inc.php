@@ -32,10 +32,6 @@ if (isset($_POST["submitCreateAcc"])) {
         header("location: ../superadmin/create.os.php?error=invalidusername");
         exit();
     }
-    // if (usernameExists($conn, $username) !== false) {
-    //     header("location: ../createAccount.php?error=usernametaken");
-    //     exit();
-    // }
     if (invalidEmail($email) !== false) {
         header("location: ../superadmin/create.os.php?error=invalidemail");
         exit();

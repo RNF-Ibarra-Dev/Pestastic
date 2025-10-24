@@ -157,6 +157,9 @@
         Notification.requestPermission();
     }
 
+    const pestastic_icon = "../img/logo.svg";
+    const icon_alert = "../img/logo-alert.svg";
+
     function showDesktopNotification(message) {
         if (Notification.permission === "granted") {
             new Notification("Pestastic Inventory", {
@@ -166,6 +169,7 @@
         }
     }
 
+
     // let last_seen_id = 0;
     async function check_new_transactions() {
         $.get('tablecontents/polling.php', {}, function (d) {
@@ -173,10 +177,17 @@
                 show_toast("New Transaction Added. Transaction ID: " + d.latest_id);
                 notif_audio.play();
                 showDesktopNotification("New Transaction Added. ID: " + d.latest_id);
+                $("link[rel='icon']").attr('href', icon_alert);
+                
             }
+            console.log(d.latest_id);
         }, 'json').fail(function (e) {
             console.log(e);
         });
     }
     setInterval(check_new_transactions, 3000);
+
+    $(window).on('focus', function () {
+        $("link[rel='icon']").attr('href', pestastic_icon);
+    })
 </script>

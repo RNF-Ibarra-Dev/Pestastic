@@ -50,5 +50,5 @@ if (isset($_POST["createacc"]) && $_POST['createacc'] === 'true') {
         exit();
     }
 
-    createTechAccount($conn, $firstName, $lastName, $username, $email, $pwd, $contactNo, $address, $empId, $birthdate);
+    createTechAccount($conn, $firstName, $lastName, $username, $email, $pwd, $contactNo, $address, $empId, $birthdate, $branch);
 } 
