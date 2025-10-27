@@ -40,13 +40,13 @@ require("startsession.php");
                     <p class="fs-4 text-light fw-bold text-center text-shadow">Primary Information</p>
 
                     <div class="form-floating col-md-4 form-custom mb-2">
-                        <input type="text" name="firstName" class="form-control" id="fname" autocomplete="off"
+                        <input type="text" name="firstName" class="form-control name-input" id="fname" autocomplete="off"
                             placeholder="First Name...">
                         <label for="fname" class="fw-bold">First Name</label>
                     </div>
 
                     <div class="form-floating col-md-4 form-custom mb-2">
-                        <input type="text" name="lastName" class="form-control" id="lname" autocomplete="off"
+                        <input type="text" name="lastName" class="form-control name-input" id="lname" autocomplete="off"
                             placeholder="Last Name...">
                         <label for="lname" class="fw-bold">Last Name</label>
                     </div>
@@ -78,13 +78,13 @@ require("startsession.php");
                     </div>
 
                     <div class="form-floating col-md-4 form-custom mb-2">
-                        <input type="number" maxlength="11" name="contactNo" class="form-control" id="contact"
+                        <input type="number" maxlength="11" name="contactNo" class="form-control contact-no-input" id="contact"
                             placeholder="Contact No..." autocomplete="off">
                         <label for="contact" class="fw-bold">Contact Number</label>
                     </div>
 
                     <div class="form-floating col-md-4 form-custom mb-2">
-                        <input type="number" name="empId" class="form-control" id="empid" placeholder="Employee ID..."
+                        <input type="number" name="empId" class="form-control empid-input" id="empid" placeholder="Employee ID..."
                             autocomplete="off">
                         <label for="empid" class="fw-bold">Employee ID</label>
                     </div>

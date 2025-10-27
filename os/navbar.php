@@ -156,16 +156,49 @@
         }
     }
 
+    const pestastic_icon = "../img/logo.svg";
+    const icon_alert = "../img/logo-alert.svg";
+
+    var bell = "\u{1F514}";
+    var og_title = document.title;
+    var title_blinking = false;
+    var blink_interval;
+    async function title_notify() {
+        if (!title_blinking) {
+            title_blinking = true;
+            blink_interval = setInterval(function () {
+                document.title = document.title == og_title ? `${bell} - New Notification | ${og_title}` : og_title;
+            }, 1500);
+        }
+    }
+
+    function stop_notif() {
+        if (title_blinking) {
+            title_blinking = false;
+            clearInterval(blink_interval);
+            document.title = og_title;
+        }
+    }
+
     async function check_new_transactions() {
         $.get('contents/polling.php', {}, function (d) {
             if (d.new) {
                 show_toast("New Transaction Added. Transaction ID: " + d.latest_id);
                 notif_audio.play();
                 showDesktopNotification("New Transaction Added. ID: " + d.latest_id);
+                $("link[rel='icon']").attr('href', icon_alert);
+                if (document.hasFocus()) {
+                    title_notify();
+                }
             }
         }, 'json').fail(function (e) {
             console.log(e);
         });
     }
     setInterval(check_new_transactions, 3000);
+
+    $(window).on('focus', function () {
+        $("link[rel='icon']").attr('href', pestastic_icon);
+        stop_notif();
+    });
 </script>

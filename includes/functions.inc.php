@@ -886,6 +886,74 @@ function log_transaction($conn, $transid, $chemids, $qty, $branch, $user_id, $ro
     }
 }
 
+// function get_
+
+function email_manager_alert($conn, $message, $subject = 'Pestastic Inventory')
+{
+
+    $m_emailsql = "SELECT saEmail FROM superadmin;";
+    $m_emailres = mysqli_query($conn, $m_emailsql);
+
+    if (mysqli_num_rows($m_emailres) > 0) {
+        // while ($row = mysqli_fetch_assoc($m_emailres)) {
+        // $email = $row['saEmail'];
+        // if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        //     return ['error' => "Invalid email at the database were found. Email found: '$email'"];
+        // }
+
+        $mail = require __DIR__ . "/../mailer.php";
+
+        $mail->setFrom("noreply@gmail.com", "Pestastic Inventory");
+        $mail->addAddress("rnnoleal@gmail.com");
+        $mail->Subject = $subject;
+        // $mail->Body = <<<END
+        //     test
+        // END;
+        $mail->Body = $message;
+
+        try {
+            $mail->send();
+        } catch (Exception $e) {
+            return ['error' => $mail->ErrorInfo];
+        }
+        // }
+    }
+    return true;
+}
+function email_os_alert($conn, $message, $subject = 'Pestastic Inventory')
+{
+    $m_emailsql = "SELECT baEmail FROM branchadmin;";
+    $m_emailres = mysqli_query($conn, $m_emailsql);
+
+    if (mysqli_num_rows($m_emailres) > 0) {
+        while ($row = mysqli_fetch_assoc($m_emailres)) {
+            $email = $row['saEmail'];
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return ['error' => "Invalid email at the database were found. Email found: '$email'"];
+            }
+
+            $mail = require __DIR__ . "/../mailer.php";
+
+            $mail->setFrom("noreply@gmail.com", "Pestastic Inventory");
+            $mail->addAddress($email);
+            $mail->Subject = $subject;
+            $mail->Body = $message;
+
+            try {
+                $mail->send();
+            } catch (Exception $e) {
+                return ['error' => $mail->ErrorInfo];
+            }
+        }
+    }
+    return true;
+}
+
+function email_tech($conn, $message, $email, $subject = "Pestastic Inventory")
+{
+
+}
+
 function newTransaction($conn, $customerName, $address, $technicianIds, $treatmentDate, $treatmentTime, $treatment, $chemUsed, $status, $pestProblem, $package, $type, $session, $note, $pstart, $pend, $addedby, $amtUsed, $user_id = 0, $user_role = '', $branch = 1, $inspection_report)
 {
 

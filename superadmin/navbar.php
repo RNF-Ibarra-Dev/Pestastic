@@ -169,8 +169,27 @@
         }
     }
 
+    var bell = "\u{1F514}";
+    var og_title = document.title;
+    var title_blinking = false;
+    var blink_interval;
+    async function title_notify() {
+        if (!title_blinking) {
+            title_blinking = true;
+            blink_interval = setInterval(function () {
+                document.title = document.title == og_title ? `${bell} - New Notification | ${og_title}` : og_title;
+            }, 1500);
+        }
+    }
 
-    // let last_seen_id = 0;
+    function stop_notif() {
+        if (title_blinking) {
+            title_blinking = false;
+            clearInterval(blink_interval);
+            document.title = og_title;
+        }
+    }
+
     async function check_new_transactions() {
         $.get('tablecontents/polling.php', {}, function (d) {
             if (d.new) {
@@ -178,16 +197,28 @@
                 notif_audio.play();
                 showDesktopNotification("New Transaction Added. ID: " + d.latest_id);
                 $("link[rel='icon']").attr('href', icon_alert);
-                
+                if(document.hasFocus()){
+                    title_notify();
+                }
             }
-            console.log(d.latest_id);
+            // console.log(d.latest_id);
         }, 'json').fail(function (e) {
             console.log(e);
         });
     }
-    setInterval(check_new_transactions, 3000);
+    setInterval(check_new_transactions, 5000);
 
     $(window).on('focus', function () {
         $("link[rel='icon']").attr('href', pestastic_icon);
-    })
+        stop_notif();
+    });
+
+    // $(document).ready(function(){
+    //     $.get('tablecontents/debug.php', {}, function(d){
+    //         alert(d);
+    //     }).fail(function(e){
+    //         alert(e);
+    //     })
+    // })
+
 </script>

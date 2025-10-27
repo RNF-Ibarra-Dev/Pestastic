@@ -233,7 +233,7 @@
                                     <div class="col-md-4">
                                         <label for="ir_customer" class="form-label fw-bold fs-5">Customer Name:</label>
                                         <input type="text" name="customer_name" id="ir_customer"
-                                            class="form-control-plaintext ir-input ps-2" autocomplete="off" readonly>
+                                            class="form-control-plaintext ir-input ps-2 name-input" autocomplete="off" readonly>
                                     </div>
                                     <div class="col-md-5">
                                         <label for="ir_property_type" class="form-label fw-bold fs-5">Property
@@ -533,7 +533,7 @@
                                     <div class="mb-2 w-50">
                                         <label for="ir_customer_name" class="form-label fs-5 fw-bold">Customer
                                             Name:</label>
-                                        <input type="text" class="form-control" name="customer_name"
+                                        <input type="text" class="form-control name-input" name="customer_name"
                                             id="ir_customer_name" autocomplete="off">
                                     </div>
 
@@ -771,7 +771,7 @@
                                             <label for="add-customerName" class="form-label fw-light">Customer Name
                                             </label>
                                             <input type="text" name="add-customerName" id="add-customerName"
-                                                class="form-control form-add" placeholder="Enter name"
+                                                class="form-control form-add name-input" placeholder="Enter name"
                                                 autocomplete="one-time-code">
                                             <div class="invalid-feedback">Invalid name. Should only require letters and
                                                 spaces.</div>
@@ -1079,7 +1079,7 @@
                                             </label>
                                             <!-- remove readonly in edit mode -->
                                             <input type="text" name="edit-customerName" id="view-customerName"
-                                                class="form-control-plaintext form-add" readonly
+                                                class="form-control-plaintext form-add name-input" readonly
                                                 autocomplete="one-time-code">
                                         </div>
 

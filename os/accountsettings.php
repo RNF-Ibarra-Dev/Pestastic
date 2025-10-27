@@ -38,12 +38,12 @@ require("startsession.php");
                             <div class="container two-part-inputs gap-3 p-0 d-flex flex-wrap justify-content-between">
                                 <div class="col p-0">
                                     <label for="fname" class="form-label fw-bold mb-1 text-shadow">First Name:</label>
-                                    <input type="text" class="form-control-plaintext text-light ps-2" id="fname"
+                                    <input type="text" class="form-control-plaintext text-light ps-2 name-input" id="fname"
                                         name="fname" autocomplete="off" readonly>
                                 </div>
                                 <div class="col p-0">
                                     <label for="lname" class="form-label fw-bold mb-1 text-shadow">Last Name:</label>
-                                    <input type="text" class="form-control-plaintext text-light ps-2" id="lname"
+                                    <input type="text" class="form-control-plaintext text-light ps-2 name-input" id="lname"
                                         name="lname" autocomplete="off" readonly>
                                 </div>
                             </div>

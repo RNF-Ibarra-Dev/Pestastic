@@ -90,13 +90,13 @@ require_once("startsession.php");
                                     <div class="col-lg-6 mb-2">
                                         <label for="fname" class="form-label fw-bold">First
                                             Name</label>
-                                        <input type="text" name="fname" class="form-control-plaintext" id="fname"
+                                        <input type="text" name="fname" class="form-control-plaintext name-input" id="fname"
                                             readonly>
                                     </div>
                                     <div class="col-lg-6 mb-2">
                                         <label for="lname" class="form-label fw-bold">Last
                                             Name</label>
-                                        <input type="text" name="lname" class="form-control-plaintext" id="lname"
+                                        <input type="text" name="lname" class="form-control-plaintext name-input" id="lname"
                                             readonly>
                                     </div>
                                 </div>
@@ -139,7 +139,7 @@ require_once("startsession.php");
                                     <div class="col-lg-3 mb-2">
                                         <label for="contact-number" class="form-label fw-bold">Contact
                                             Number</label>
-                                        <input type="number" name="contactNo" class="form-control-plaintext"
+                                        <input type="number" name="contactNo" class="form-control-plaintext contact-no-input"
                                             id="contact-number" readonly>
                                         <div class="form-text d-none">
                                             e.g. 09123456789
@@ -149,7 +149,7 @@ require_once("startsession.php");
                                     <div class="col-lg-3 mb-2">
                                         <label for="emp-id" class="form-label fw-bold">Employee
                                             ID</label>
-                                        <input type="number" name="empId" class="form-control-plaintext" id="emp-id"
+                                        <input type="number" name="empId" class="form-control-plaintext empid-input" id="emp-id"
                                             readonly>
                                         <div class="form-text d-none">
                                             e.g. 023

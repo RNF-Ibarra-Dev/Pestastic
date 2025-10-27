@@ -64,4 +64,34 @@
             document.activeElement.blur();
         });
     });
+
+    $(document).on('keydown', 'input[type="number"]', function (e) {
+        if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
+            e.preventDefault();
+        }
+    });
+
+    $(document).on('keydown', 'input.name-input', function (e) {
+        if (e.key.length > 1 || e.ctrlKey || e.metaKey) {
+            return;
+        }
+        let pattern = /^[a-zA-Z ]$/;
+
+        if (!pattern.test(e.key)) {
+            e.preventDefault();
+        }
+    });
+
+    $(document).on('keydown', 'input.empid-input', function (e) {
+        let input = $(this).val();
+        if (input.length >= 3 && e.key.length === 1) {
+            e.preventDefault();
+        }
+    });
+    $(document).on('keydown', 'input.contact-no-input', function (e) {
+        let input = $(this).val();
+        if (input.length >= 11 && e.key.length === 1) {
+            e.preventDefault();
+        }
+    });
 </script>

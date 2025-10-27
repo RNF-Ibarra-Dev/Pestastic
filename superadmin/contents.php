@@ -529,7 +529,7 @@ require("startsession.php");
                         <div class="modal-body">
                             <div class="row mb-2">
                                 <div class="col-6">
-                                    <label for="br_edit_input" class="form-label fw-light fs-5">Pest Problem:</label>
+                                    <label for="br_edit_input" class="form-label fw-light fs-5">Branch Name:</label>
                                     <input type="text" id="br_edit_input" name="branch" class="form-control"
                                         autocomplete="one-time-code">
                                 </div>
