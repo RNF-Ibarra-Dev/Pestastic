@@ -11,7 +11,8 @@ require("startsession.php");
     <title>Settings | Contents</title>
     <?php include('header.links.php'); ?>
     <style>
-        input, textarea {
+        input,
+        textarea {
             font-size: 1.25rem !important
         }
     </style>
@@ -38,13 +39,13 @@ require("startsession.php");
                             <div class="container two-part-inputs gap-3 p-0 d-flex flex-wrap justify-content-between">
                                 <div class="col p-0">
                                     <label for="fname" class="form-label fw-bold mb-1 text-shadow">First Name:</label>
-                                    <input type="text" class="form-control-plaintext text-light ps-2 name-input" id="fname"
-                                        name="fname" autocomplete="off" readonly>
+                                    <input type="text" class="form-control-plaintext text-light ps-2 name-input"
+                                        id="fname" name="fname" autocomplete="off" readonly>
                                 </div>
                                 <div class="col p-0">
                                     <label for="lname" class="form-label fw-bold mb-1 text-shadow">Last Name:</label>
-                                    <input type="text" class="form-control-plaintext text-light ps-2 name-input" id="lname"
-                                        name="lname" autocomplete="off" readonly>
+                                    <input type="text" class="form-control-plaintext text-light ps-2 name-input"
+                                        id="lname" name="lname" autocomplete="off" readonly>
                                 </div>
                             </div>
                             <div class="container two-part-inputs gap-3 p-0 d-flex flex-wrap justify-content-between">
@@ -59,12 +60,14 @@ require("startsession.php");
                                 </div>
                             </div>
                             <label for="address" class="form-label fw-bold mb-0 text-shadow">Address:</label>
-                            <textarea name="address" id="address" 
-                                class="form-control-plaintext text-light ps-2" style="resize: none;"
-                                readonly></textarea>
+                            <textarea name="address" id="address" class="form-control-plaintext text-light ps-2"
+                                style="resize: none;" readonly></textarea>
                             <label for="email" class="form-label fw-bold mb-0 text-shadow">Email:</label>
                             <input type="text" class="form-control-plaintext text-light ps-2" id="email" name="email"
                                 autocomplete="off" readonly>
+                            <label for="contact" class="form-label fw-bold mb-0 text-shadow">Contact No.:</label>
+                            <input type="number" class="form-control-plaintext text-light ps-2 contact-no-input"
+                                id="contact" name="contact" autocomplete="off" readonly>
                             <label for="oldpassword" class="form-label fw-bold mb-0 d-none pwd-label text-shadow">Old
                                 Password:</label>
                             <input type="password" class="form-control d-none" id="oldpassword" name="oldpassword"
@@ -158,7 +161,7 @@ require("startsession.php");
                 .done(function (d) {
                     // console.log(d);
                     let data = JSON.parse(d);
-                    // console.log(data);
+                    console.log(data);
                     $('#fname').val(data.fname);
                     $('#lname').val(data.lname);
                     $("#username").val(data.usn);
@@ -168,6 +171,7 @@ require("startsession.php");
                     $('#displaybd').html(data.displaydate);
                     $('#id').val(data.id);
                     $("#address").val(data.address);
+                    $("#contact").val(data.contact);
                 })
                 .fail(function (e) {
                     alert(e);
@@ -195,7 +199,8 @@ require("startsession.php");
                 await toggle_input('username'),
                 await toggle_input('email'),
                 // await toggle_input('empid'),
-                await toggle_input('address')
+                await toggle_input('address'),
+                await toggle_input('contact')
             ]);
             $("#displaybd, #password, #rpassword, #pwd-toggle, #oldpassword, #passwordlabel, .pwd-label, #birthdate, .notes-toggle, button[data-bs-target='#confirm_modal']").toggleClass('d-none');
             $("#editbtn").html(function (i, a) {

@@ -44,12 +44,14 @@ if (isset($_GET['acc']) && $_GET['acc'] === 'true') {
             $accountData['empId'] = $row['techEmpId'];
             $accountData['id'] = $row['technicianId'];
             $accountData['address'] = $row['techAddress'];
+            $accountData['contact'] = $row['techContact'];
         }
     } else {
         http_response_code(400);
         echo "No returned data. Error.";
         exit();
     }
+    http_response_code(200);
     echo json_encode($accountData);
     mysqli_stmt_close($stmt);
     exit();
@@ -68,8 +70,9 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
     // $empid = $_POST['empid'];
     $address= $_POST['address'];
     $cpwd = $_POST['confirm_pwd'];
+    $contact = $_POST['contact'];
 
-    if (empty($fname) || empty($lname) || empty($email) || empty($bd) || empty($username) || empty($address)) {
+    if (empty($fname) || empty($lname) || empty($email) || empty($bd) || empty($username) || empty($address) || empty($contact)) {
         http_response_code(400);
         echo "Required fields must not be empty.";
         exit();
@@ -79,6 +82,18 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
         http_response_code(400);
         echo "Invalid session ID. Refresh page and try again. " . $id . ' ' . $_SESSION['baID'];
         exit();
+    }
+
+    if(strlen($contact) !== 11){
+        http_response_code(400);
+        echo "Contact number should only contain 11 digits.";
+        exit;
+    }
+
+    if(!is_numeric($contact)){
+        http_response_code(400);
+        echo "Contact number should only contain digits.";
+        exit;
     }
 
     if (!empty($pwd) || !empty($opwd) || !empty($rpwd)) {
@@ -138,7 +153,7 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
         exit();
     }
 
-    $edit = modify_tech($conn, $fname, $lname, $username, $address, $email, $pwd, $bdd, $id);
+    $edit = modify_tech($conn, $fname, $lname, $username, $address, $email, $pwd, $bdd, $id, $contact);
 
     if (isset($edit['error'])) {
         http_response_code(400);

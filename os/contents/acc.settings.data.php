@@ -44,6 +44,8 @@ if (isset($_GET['acc']) && $_GET['acc'] === 'true') {
             $accountData['empId'] = $row['baEmpId'];
             $accountData['id'] = $row['baID'];
             $accountData['address'] = $row['baAddress'];
+            $accountData['contact'] = $row['baContact'];
+
         }
     } else {
         http_response_code(400);
@@ -68,11 +70,24 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
     // $empid = $_POST['empid'];
     $address = $_POST['address'];
     $cpwd = $_POST['confirm_pwd'];
+    $contact = $_POST['contact'];
 
-    if (empty($fname) || empty($lname) || empty($email) || empty($bd) || empty($username) || empty($address)) {
+    if (empty($fname) || empty($lname) || empty($email) || empty($bd) || empty($username) || empty($address) || empty($contact)) {
         http_response_code(400);
         echo "Required fields must not be empty.";
         exit();
+    }
+
+    if (strlen($contact) !== 11) {
+        http_response_code(400);
+        echo "Contact number should only contain 11 digits.";
+        exit;
+    }
+
+    if (!is_numeric($contact)) {
+        http_response_code(400);
+        echo "Contact number should only contain digits.";
+        exit;
     }
 
     if ($id != $_SESSION['baID']) {
@@ -132,13 +147,13 @@ if (isset($_POST['editacc']) && $_POST['editacc'] === 'true') {
         }
     }
 
-    if(!validateOS($conn, $cpwd)){
+    if (!validateOS($conn, $cpwd)) {
         http_response_code(400);
         echo "Invalid confirmation password.";
         exit();
     }
 
-    $edit = modify_ba($conn, $fname, $lname, $username, $address, $email, $pwd, $bdd, $id);
+    $edit = modify_ba($conn, $fname, $lname, $username, $address, $email, $pwd, $bdd, $id, $contact);
 
     if (isset($edit['error'])) {
         http_response_code(400);

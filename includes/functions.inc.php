@@ -519,17 +519,17 @@ function modify_sa($conn, $fname, $lname, $username, $email, $pwd = '', $bd, $em
         return ['error' => 'Update failed. Please make sure to check for new changes. ' . mysqli_stmt_error($stmt)];
     }
 }
-function modify_ba($conn, $fname, $lname, $username, $address, $email, $pwd = '', $bd, $id)
+function modify_ba($conn, $fname, $lname, $username, $address, $email, $pwd = '', $bd, $id, $contact)
 {
 
     mysqli_begin_transaction($conn);
     try {
 
-        $sql = "UPDATE branchadmin SET baUsn = ?, baFName = ?, baLName = ?, baEmail = ?, baBirthdate = ?, baAddress = ?";
+        $sql = "UPDATE branchadmin SET baUsn = ?, baFName = ?, baLName = ?, baEmail = ?, baBirthdate = ?, baAddress = ?, baContact = ?";
         $stmt = mysqli_stmt_init($conn);
 
-        $types = "ssssss";
-        $data = [$username, $fname, $lname, $email, $bd, $address];
+        $types = "sssssss";
+        $data = [$username, $fname, $lname, $email, $bd, $address, $contact];
         if (!empty($pwd)) {
             $sql .= ", baPwd = ?";
             $types .= 's';
@@ -564,17 +564,17 @@ function modify_ba($conn, $fname, $lname, $username, $address, $email, $pwd = ''
         ];
     }
 }
-function modify_tech($conn, $fname, $lname, $username, $address, $email, $pwd = '', $bd, $id)
+function modify_tech($conn, $fname, $lname, $username, $address, $email, $pwd = '', $bd, $id, $contact)
 {
 
     mysqli_begin_transaction($conn);
     try {
 
-        $sql = "UPDATE technician SET username = ?, firstName = ?, lastName = ?, techEmail = ?, techBirthdate = ?, techAddress = ?";
+        $sql = "UPDATE technician SET username = ?, firstName = ?, lastName = ?, techEmail = ?, techBirthdate = ?, techAddress = ?, techContact = ?";
         $stmt = mysqli_stmt_init($conn);
 
-        $types = "ssssss";
-        $data = [$username, $fname, $lname, $email, $bd, $address];
+        $types = "sssssss";
+        $data = [$username, $fname, $lname, $email, $bd, $address, $contact];
         if (!empty($pwd)) {
             $sql .= ", techPwd = ?";
             $types .= 's';

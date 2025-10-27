@@ -66,6 +66,9 @@ require("startsession.php");
                             <label for="email" class="form-label fw-bold mb-0 text-shadow">Email:</label>
                             <input type="text" class="form-control-plaintext text-light ps-2" id="email" name="email"
                                 autocomplete="off" readonly>
+                            <label for="contact" class="form-label fw-bold mb-0 text-shadow">Contact No.:</label>
+                            <input type="number" class="form-control-plaintext text-light ps-2 contact-no-input" id="contact" name="contact"
+                                autocomplete="off" readonly>
                             <label for="oldpassword" class="form-label fw-bold mb-0 d-none pwd-label text-shadow">Old
                                 Password:</label>
                             <input type="password" class="form-control d-none" id="oldpassword" name="oldpassword"
@@ -168,12 +171,10 @@ require("startsession.php");
                     $('#displaybd').html(data.displaydate);
                     $('#id').val(data.id);
                     $("#address").val(data.address);
-                })
+                    $("#contact").val(data.contact);
+                }, 'json')
                 .fail(function (e) {
                     alert(e);
-                })
-                .always(function (e) {
-                    console.log(e);
                 })
         }
 
@@ -195,7 +196,8 @@ require("startsession.php");
                 await toggle_input('username'),
                 await toggle_input('email'),
                 // await toggle_input('empid'),
-                await toggle_input('address')
+                await toggle_input('address'),
+                await toggle_input('contact')
             ]);
             $("#displaybd, #password, #rpassword, #oldpassword, #pwd-toggle, #passwordlabel, button[data-bs-target='#confirm_modal'], .pwd-label, #birthdate, .notes-toggle").toggleClass('d-none');
             $("#editbtn").html(function (i, a) {
