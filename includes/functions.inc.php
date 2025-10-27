@@ -2926,7 +2926,17 @@ function delete_branch($conn, $ids)
         }
         for ($i = 0; count($ids) > $i; $i++) {
             mysqli_stmt_bind_param($stmt, 'i', $ids[$i]);
-            mysqli_stmt_execute($stmt);
+            if (!mysqli_stmt_execute($stmt)) {
+                $error_code = mysqli_errno($conn);
+                $error_msg = mysqli_error($conn);
+
+                if ($error_code === 1451) {
+                    throw new Exception("Cannot delete this branch with ID ({$ids[$i]}) because it’s still linked to one or more branch admins or related records. Please remove those first.");
+                } else {
+                    throw new Exception("Database error ($error_code): $error_msg");
+                }
+            }
+
             if (!mysqli_stmt_affected_rows($stmt) > 0) {
                 throw new Exception("Error. Failed to delete id: $ids[$i]");
             }
@@ -2936,7 +2946,7 @@ function delete_branch($conn, $ids)
     } catch (Exception $e) {
         mysqli_rollback($conn);
         return [
-            'error' => $e->getMessage(),
+            'error' => $e->getMessage() . $e->getCode(),
             'line' => $e->getLine(),
             'file' => $e->getFile()
         ];
