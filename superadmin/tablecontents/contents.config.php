@@ -424,7 +424,8 @@ if (isset($_POST['branchdelete']) && $_POST['branchdelete'] === 'true') {
     $delete = delete_branch($conn, $id);
     if (isset($delete['error'])) {
         http_response_code(400);
-        echo $delete['error'] . ' at line ' . $delete['line'] . ' at file ' . $delete['file'];
+        // echo $delete['error'] . ' at line ' . $delete['line'] . ' at file ' . $delete['file'];
+        echo $delete['error'];
         exit();
     } elseif ($delete) {
         http_response_code(200);
