@@ -106,7 +106,7 @@ require("startsession.php");
                         <p class="text-muted mt-3 text-light">Note: Only those with data are displayed.</p>
                     </div>
                 </div>
-                <div class="col bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
+                <div class="col bg-light bg-opacity-25 rounded-3 p-3 pb-0 shadow " style="min-height: 30rem;">
                     <div class="d-flex flex-column h-100">
                         <div class="clearfix">
                             <i
@@ -124,7 +124,7 @@ require("startsession.php");
             </div>
 
             <div class="row m-2 gap-2 flex-wrap">
-                <div class="col-auto w-100 bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
+                <div class="col-sm bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow" style="min-height: 30rem;">
                     <div class="d-flex flex-column h-100">
                         <div class="clearfix">
                             <i
@@ -139,7 +139,7 @@ require("startsession.php");
                             displayed.</p>
                     </div>
                 </div>
-                <div class="col-auto w-100 bg-light bg-opacity-25  rounded-3 p-3 shadow">
+                <div class="col-sm bg-light bg-opacity-25  rounded-3 p-3 shadow">
                     <div class="clearfix">
                         <i
                             class="bi bi-arrow-repeat  fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
@@ -163,7 +163,7 @@ require("startsession.php");
             </div>
 
             <div class="row flex-wrap m-2 gap-2">
-                <div class="col-auto w-100 bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
+                <div class="col w-100 bg-light bg-opacity-25  rounded-3 p-3 pb-0 shadow">
                     <div class="d-flex flex-column h-100">
                         <div class="clearfix">
                             <i
@@ -175,7 +175,7 @@ require("startsession.php");
                         <p class="text-muted mt-3 text-light">Note: This displays data only for this month.</p>
                     </div>
                 </div>
-                <div class="col-auto w-100 bg-light bg-opacity-25  rounded-3 p-3 shadow d-flex flex-column">
+                <div class="col w-100 bg-light bg-opacity-25  rounded-3 p-3 shadow d-flex flex-column">
                     <div class="clearfix">
                         <i
                             class="bi bi-stopwatch-fill  fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
@@ -196,7 +196,7 @@ require("startsession.php");
                         <tbody id="pendingtrans" class="text-center align-middle"></tbody>
                     </table>
                 </div>
-                <div class="col-auto w-100 bg-light bg-opacity-25  rounded-3 p-3 shadow">
+                <div class="col w-100 bg-light bg-opacity-25  rounded-3 p-3 shadow">
                     <div class="clearfix">
                         <i
                             class="ms-2 fs-3 bi bi-clock-fill  float-start fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
@@ -220,7 +220,7 @@ require("startsession.php");
             </div>
 
             <div class="row flex-wrap m-2 gap-2">
-                <div class="col-auto w-100 bg-light bg-opacity-25  rounded-3 p-3 shadow">
+                <div class="col w-100 bg-light bg-opacity-25  rounded-3 p-3 shadow">
                     <div class="clearfix">
                         <i
                             class="bi bi-exclamation-circle  fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded-3 py-1"></i>
@@ -239,7 +239,7 @@ require("startsession.php");
                         <tbody id="lowchemicals"></tbody>
                     </table>
                 </div>
-                <div class="col-auto w-100 bg-light bg-opacity-25 rounded p-3 shadow">
+                <div class="col w-100 bg-light bg-opacity-25 rounded p-3 shadow">
                     <div class="clearfix">
                         <i
                             class="bi bi-exclamation-triangle-fill fs-4  shadow-sm float-start bg-light bg-opacity-25 px-2 rounded py-1"></i>

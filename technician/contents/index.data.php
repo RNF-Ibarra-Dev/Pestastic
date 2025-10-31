@@ -45,7 +45,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'pendingtrans') {
       <?php
     }
   } else {
-    echo "<tr><td scope='row' colspan='3' class='text-center'>No pending requests.</td></tr>";
+    echo "<tr><td scope='row' colspan='4' class='text-center'>No pending requests.</td></tr>";
     exit();
   }
 }
@@ -78,7 +78,7 @@ if (isset($_GET['append']) && $_GET['append'] === 'scheduled') {
       <?php
     }
   } else {
-    echo "<tr><td scope='row' colspan='3' class='text-center'>No pending requests.</td></tr>";
+    echo "<tr><td scope='row' colspan='4' class='text-center'>No pending requests.</td></tr>";
     exit();
   }
 }
