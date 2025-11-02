@@ -46,12 +46,13 @@ th {
 
 label.fw-bold,
 label.fw-light,
-.modal-body p.fw-bold.fs-5 {
+.modal-body p.fw-bold.fs-5:not(.bg-secondary) {
   font-size: 1.15rem !important;
   font-weight: 600 !important;
   color: #313131 !important;
   user-select: none !important;
 }
+
 
 #accountsettings label.fw-bold,
 #accountsettings label.fw-light {
