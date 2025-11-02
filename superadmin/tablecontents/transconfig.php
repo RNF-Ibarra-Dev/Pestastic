@@ -204,13 +204,13 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
     $note = $_POST['edit-note'] ?? null;
     $saPwd = $_POST['edit-saPwd'];
     $upby = $_SESSION['fname'] . ' ' . $_SESSION['lname'];
-    $inspection_report = $_POST['inspection_report'];
+    // $inspection_report = $_POST['inspection_report'];
 
-    if (!is_numeric($inspection_report)) {
-        http_response_code(400);
-        echo json_encode(['type' => 'error', 'errorMessage' => 'Invalid Inspection Report ID passed.']);
-        exit;
-    }
+    // if (!is_numeric($inspection_report)) {
+    //     http_response_code(400);
+    //     echo json_encode(['type' => 'error', 'errorMessage' => 'Invalid Inspection Report ID passed.']);
+    //     exit;
+    // }
 
     $allowedUpdateStatus = ['Pending', 'Accepted', 'Finalizing', 'Cancelled', 'Dispatched'];
 
@@ -314,7 +314,7 @@ if (isset($_POST['update']) && $_POST['update'] === 'true') {
         'branch' => $_SESSION['branch'],
         'userid' => $_SESSION['saID'],
         'role' => 'superadmin',
-        'inspection_report' => $inspection_report
+        // 'inspection_report' => $inspection_report
     ];
 
     if (!validate($conn, $saPwd)) {

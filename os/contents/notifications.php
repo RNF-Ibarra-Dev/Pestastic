@@ -113,7 +113,7 @@ if (isset($_GET['notifications']) && $_GET['notifications'] === 'true') {
                         <i class='bi bi-calendar2-x-fill text-body-tertiary fs-4 ms-3 fw-light account-settings-icon'></i> 
                         <div class='vr mx-5'></div>
                         <p class='m-0 p-0 text-start'><span class='text-danger '>$num</span>&nbsp;
-                            $unfinished_transactions are unfinished and needs update.</p>
+                            $msg are unfinished and needs update.</p>
                     </div>
                 </a>
             </li>";

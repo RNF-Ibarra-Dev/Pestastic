@@ -1401,7 +1401,7 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
         $transSql = "UPDATE transactions SET treatment_date = ?, customer_name = ?, 
         treatment = ?, transaction_status = ?, customer_address = ?, transaction_time = ?, 
-        treatment_type = ?, package_id = ?, pack_start = ?, pack_exp = ?, session_no = ?, notes = ?, updated_by = ?, branch = ?, inspection_report = ? WHERE id = ?;";
+        treatment_type = ?, package_id = ?, pack_start = ?, pack_exp = ?, session_no = ?, notes = ?, updated_by = ?, branch = ? WHERE id = ?;";
         $transStmt = mysqli_stmt_init($conn);
 
         if (!mysqli_stmt_prepare($transStmt, $transSql)) {
@@ -1410,25 +1410,24 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
 
         mysqli_stmt_bind_param(
             $transStmt,
-            'sssssssississiii',
-            $transData['treatmentDate'],
-            $transData['customer'],
-            $transData['treatment'],
-            $transData['status'],
-            $transData['address'],
-            $transData['treatmentTime'],
-            $transData['ttype'],
-            $transData['package'],
-            $transData['pstart'],
-            $transData['pexp'],
-            $transData['session'],
-            $transData['note'],
-            $transData['upby'],
-            $transData['branch'],
-            $transData['transId'],
-            $transData['inspection_report']
+            'sssssssississii',
+            $transData['treatmentDate'], //s
+            $transData['customer'], //s
+            $transData['treatment'], //s
+            $transData['status'], //s
+            $transData['address'], //s
+            $transData['treatmentTime'], //s
+            $transData['ttype'], //s
+            $transData['package'], //i
+            $transData['pstart'], //s
+            $transData['pexp'], //s
+            $transData['session'], //i
+            $transData['note'], //s
+            $transData['upby'], //s
+            $transData['branch'], //i
+            $transData['transId'] //i
         );
-        // throw new Exception($transData['treatment']);
+        // throw new Exception($transData['treatmentDate']);
         mysqli_stmt_execute($transStmt);
 
         $result = mysqli_stmt_affected_rows($transStmt);
@@ -1502,8 +1501,8 @@ function update_transaction($conn, $transData, $technicianIds, $chemUsed, $amtUs
                 }
                 mysqli_stmt_bind_param($chem_stmt, 'iis', $transData['transId'], $chemUsed[$i], $chemNames);
                 mysqli_stmt_execute($chem_stmt);
-                if (!mysqli_stmt_affected_rows($chem_stmt) > 0) {
-                    throw new Exception("Chemical transaction update failed. Please try again later.");
+                if (mysqli_stmt_errno($chem_stmt)) {
+                    throw new Exception("Chemical transaction update failed. Please try again later. Err no: " . mysqli_stmt_errno($chem_stmt));
                 }
             }
             mysqli_stmt_close($chem_stmt);
