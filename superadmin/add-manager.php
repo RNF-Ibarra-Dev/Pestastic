@@ -59,7 +59,7 @@ require("startsession.php");
                     <p class="fs-4 text-light fw-bold text-center text-shadow">Account Information</p>
 
                     <div class="form-floating col-md-4 form-custom mb-2">
-                        <input type="text" name="username" class="form-control" id="usn" autocomplete="username"
+                        <input type="text" name="username" class="form-control" id="usn" autocomplete="off"
                             placeholder="Username...">
                         <label for="usn" class="fw-bold">Username</label>
                     </div>

@@ -3028,6 +3028,7 @@
                         });
                         $('#edit-session, #view-expiry, #view-start').removeAttr('name');
                         $('#edit-session, #view-expiry, #view-start').attr('disabled', true);
+                        $('#edit-session, #view-expiry, #view-start').val('');
                     }
 
                     $('#edit-note').val(d.notes ?? '');
