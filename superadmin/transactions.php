@@ -36,7 +36,7 @@
         <!-- sidebar -->
         <?php include('sidenav.php'); ?>
         <!-- main content -->
-        <main class="sa-content col-sm-10 p-0 container-fluid">
+        <main class="sa-content col-sm-10 p-0 container-fluid" id="transaction_content">
             <!-- navbar -->
             <?php include('navbar.php'); ?>
 
@@ -44,7 +44,7 @@
             <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2">
                 <h1 class="display-6 text-light mb-0 fw-medium text-center">Manage Transactions</h1>
             </div>
-            <div class="d-flex gap-2 my-2 mx-3 user-select-none text-center">
+            <div class="d-flex gap-2 my-2 mx-3 user-select-none text-center information-summary">
                 <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
                     <div class="clearfix">
                         <i
@@ -79,7 +79,7 @@
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_dispatched"></p>
                 </div>
             </div>
-            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
+            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center information-summary">
                 <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
                     <div class="clearfix">
                         <i
@@ -127,7 +127,7 @@
 
             </div>
 
-            <div class="hstack gap-2 mt-2 mx-3">
+            <div class="hstack align-items-stretch gap-2 mt-2 mx-3">
                 <!-- <div class="vr"></div> -->
                 <select
                     class="form-select select-transparent bg-light bg-opacity-25 py-2 border-0 h-100 text-light w-25"
@@ -150,7 +150,7 @@
                     type="search" placeholder="Search transactions . . ." id="searchbar" name="searchTrans"
                     autocomplete="one-time-code">
             </div>
-            <div class="hstack gap-2 mb-1 mt-2 mx-3">
+            <div class="hstack align-items-stretch gap-2 mb-1 mt-2 mx-3">
                 <button id="voidreqbtn"
                     class="btn btn-sidebar position-relative text-light py-2 w-50 d-flex justify-content-center flex-wrap gap-2 px-2 bg-light bg-opacity-25"><i
                         class="bi bi-x-circle me-2"></i>
@@ -233,7 +233,8 @@
                                     <div class="col-md-4">
                                         <label for="ir_customer" class="form-label fw-bold fs-5">Customer Name:</label>
                                         <input type="text" name="customer_name" id="ir_customer"
-                                            class="form-control-plaintext ir-input ps-2 name-input" autocomplete="off" readonly>
+                                            class="form-control-plaintext ir-input ps-2 name-input" autocomplete="off"
+                                            readonly>
                                     </div>
                                     <div class="col-md-5">
                                         <label for="ir_property_type" class="form-label fw-bold fs-5">Property
@@ -2362,8 +2363,20 @@
                     get_branches('add_branch')
                 ]);
                 if (load) {
-                    let branch = $('#select_ir_trans').find('option:selected').data('branch');
-                    $('#add_branch').val(branch);
+                    let branch_id = $('#select_ir_trans').find('option:selected').data('branch');
+                    let form = 'add';
+
+                    const load = await Promise.all([
+                        get_chemical_brand(form, null, null, branch_id),
+                        get_technician(form, null, branch_id),
+                        get_problems(form, null, branch_id),
+                        // add_more_chem(),
+                        add_more_tech(branch_id),
+                        add_packages(branch_id),
+                        treatments(form, branch_id),
+                    ]);
+
+                    $('#add_branch').val(branch_id);
                     $('#add-session').attr('disabled', true);
                     $('#add-treatment').attr('disabled', false);
                     $('#add-packageStart, #add-packageStart + input.flatpickr-mobile').attr('disabled', true);
@@ -2379,6 +2392,13 @@
             }
         }
 
+        $(document).on('hidden.bs.modal', '#inspection_select_modal', function () {
+            $("#reported_pest_container").empty();
+        })
+
+        $(document).on('hidden.bs.modal', '#addModal', function () {
+            $("#add-probCheckbox").empty();
+        })
 
 
         async function add_packages(branch = null) {
@@ -2865,7 +2885,7 @@
                 $('#view-start').val('');
                 $('#view-expiry').val('');
                 $('#view-start, #view-expiry').removeAttr('name');
-                $('#view-start, #view-expiry').attr('disabled', true);
+                $('#view-start, #view-start + input.form-control, #view-expiry').attr('disabled', true);
             } else {
                 $('#edit-treatment').val(tval);
                 $('#edit-treatment').removeAttr('name');
@@ -2877,7 +2897,7 @@
 
                 $('#view-start').attr('name', 'edit-start');
                 $('#view-expiry').attr('name', 'edit-expiry');
-                $('#view-start, #view-expiry').attr('disabled', false);
+                $('#view-start, #view-start + input.form-control, #view-expiry').attr('disabled', false);
                 $('#view-start').val(wval);
                 $('#view-expiry').val(weval);
 
@@ -3027,8 +3047,8 @@
                             return a ? a : 'edit-treatment'
                         });
                         $('#edit-session, #view-expiry, #view-start').removeAttr('name');
-                        $('#edit-session, #view-expiry, #view-start').attr('disabled', true);
-                        $('#edit-session, #view-expiry, #view-start').val('');
+                        $('#edit-session, #view-expiry, #view-start, #view-start + input.form-control').attr('disabled', true);
+                        $('#edit-session, #view-expiry, #view-start, #view-start + input.form-control').val('');
                     }
 
                     $('#edit-note').val(d.notes ?? '');

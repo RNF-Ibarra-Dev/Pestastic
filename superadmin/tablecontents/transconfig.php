@@ -390,6 +390,9 @@ if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
             echo $voidreq['msg'];
             exit();
         }
+        http_response_code(200);
+        echo json_encode(['success' => $voidreq['success']]);
+        exit();
     }
 
     if (!empty($trans_reject)) {
@@ -399,11 +402,12 @@ if (isset($_POST['submitvoidreq']) && $_POST['submitvoidreq'] === 'true') {
             echo $reject['msg'];
             exit();
         }
+        http_response_code(200);
+        echo json_encode(['success' => $reject['success']]);
+        exit();
     }
+    exit;
 
-    http_response_code(200);
-    echo json_encode(['success' => $voidreq['success']]);
-    exit();
 }
 
 
