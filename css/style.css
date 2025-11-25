@@ -689,25 +689,26 @@ table.os-table {
   overflow: hidden;
   margin: 1.5rem;
 }
+@media (width > 425px) {
+  .tech-table thead tr:first-child th:first-child,
+  .os-table thead tr:first-child th:first-child {
+    border-top-left-radius: 0.5rem;
+  }
 
-.tech-table thead tr:first-child th:first-child,
-.os-table thead tr:first-child th:first-child {
-  border-top-left-radius: 0.5rem;
-}
+  .tech-table thead tr:first-child th:last-child,
+  .os-table thead tr:first-child th:last-child {
+    border-top-right-radius: 0.5rem;
+  }
 
-.tech-table thead tr:first-child th:last-child,
-.os-table thead tr:first-child th:last-child {
-  border-top-right-radius: 0.5rem;
-}
+  .tech-table tbody tr:last-child td:first-child,
+  .os-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 0.5rem;
+  }
 
-.tech-table tbody tr:last-child td:first-child,
-.os-table tbody tr:last-child td:first-child {
-  border-bottom-left-radius: 0.5rem;
-}
-
-.tech-table tbody tr:last-child td:last-child,
-.os-table tbody tr:last-child td:last-child {
-  border-bottom-right-radius: 0.5rem;
+  .tech-table tbody tr:last-child td:last-child,
+  .os-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 0.5rem;
+  }
 }
 
 #activecontainer > .flatpickr-calendar.animate.inline {
@@ -965,6 +966,17 @@ input.form-check-input {
     white-space: nowrap;
     width: 100%;
   }
+
+  /* modals */
+  .modal-dialog {
+    max-width: 90vw;
+  }
+}
+
+@media (width <= 576px) {
+  .modal-dialog {
+    max-width: unset !important;
+  }
 }
 
 @media (width <= 425px) {
@@ -1079,11 +1091,13 @@ input.form-check-input {
     display: flex;
     flex-direction: column;
   }
+
   tbody:not(#calendar tbody) {
     margin-top: auto;
     margin-bottom: auto;
   }
-  td[data-label="View: "]::before {
+  td[data-label="View: "]::before,
+  td[data-label="Check All: "]::before {
     content: unset !important;
   }
 
@@ -1132,8 +1146,14 @@ input.form-check-input {
     position: relative;
   }
 
+  div .modal-body table.table {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+
   div.modal-body table tr {
-    background: rgba(0, 0, 0, 0.4);
+    /* background: rgba(0, 0, 0, 0.4); */
+    background: linear-gradient(290deg, rgb(19 38 3) 0%, rgb(67 81 92) 100%);
     color: #fff !important;
     font-size: 1.25rem;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
@@ -1230,8 +1250,17 @@ input.form-check-input {
     color: #fff !important;
   }
 
-  #notifContainer li a div{
+  #notifContainer li a div {
     gap: 1.5rem;
+  }
+
+  #viewEditForm .modal-body #btn-amountUsed {
+    justify-content: center;
+    margin-top: 1.5rem !important;
+  }
+
+  .check-void-req-btn{
+    color: #fff !important;
   }
 }
 

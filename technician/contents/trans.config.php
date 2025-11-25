@@ -138,7 +138,7 @@ if (isset($_POST['addSubmit']) && $_POST['addSubmit'] === 'true') {
 
     if (isset($transaction['error'])) {
         http_response_code(400);
-        echo $transaction['error'];
+        echo $transaction['errorMessage'];
         exit();
     } else if ($transaction) {
         http_response_code(200);

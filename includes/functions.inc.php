@@ -784,7 +784,11 @@ function add_tech_trans($conn, $transId, $techId)
         exit();
     }
     mysqli_stmt_bind_param($stmt, 'iis', $transId, $techId, $techInfo);
-    mysqli_stmt_execute($stmt);
+    try {
+        mysqli_stmt_execute($stmt);
+    } catch (Exception $e) {
+        return $e->getMessage();
+    }
 
     if (mysqli_stmt_affected_rows($stmt) > 0) {
         mysqli_stmt_close($stmt);
@@ -1035,6 +1039,7 @@ function newTransaction($conn, $customerName, $address, $technicianIds, $treatme
             }
             // insert technicians to database
             for ($i = 0; $i < count($technicianIds); $i++) {
+                
                 $addTech = add_tech_trans($conn, $transId, $technicianIds[$i]);
                 if (!$addTech) {
                     throw new Exception('Addition of technicians failed: ' . $technicianIds[$i] . ' ' . mysqli_error($conn));

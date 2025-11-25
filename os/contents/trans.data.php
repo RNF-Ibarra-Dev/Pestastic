@@ -219,7 +219,7 @@ function get_more_chem($conn, $status = '')
     $id = uniqid();
     ?>
     <div class="row mb-2 addmorechem-row">
-        <div class="col-lg-6 dropdown-center d-flex flex-column">
+        <div class="col-lg-6 mb-2 dropdown-center d-flex flex-column">
             <select id="add-chemBrandUsed-<?= $id ?>" name="add_chemBrandUsed[]" class="form-select chem-brand-select">
                 <?= get_chem($conn); ?>
                 <!-- chem ajax -->
@@ -259,13 +259,13 @@ function add_more_tech($conn, $num, $active)
 
     ?>
     <div class="row mb-2">
-        <div class="dropdown-center d-flex col-lg-6 mb-2" id="row-<?= $num ?>">
+        <div class="dropdown-center d-flex col-10 col-lg-6" id="row-<?= $num ?>">
             <select id="add-technicianName" name="add-technicianName[]" class="form-select"
                 aria-label="Default select example">
                 <?= get_tech($conn, $active); ?>
             </select>
         </div>
-        <div class="col-2 p-0">
+        <div class="col-2 d-flex align-items-stretch p-0">
             <button type="button" id="deleteTech" class="btn btn-grad py-1 px-3"><i
                     class="bi bi-dash-circle text-light text-align-middle"></i></button>
         </div>

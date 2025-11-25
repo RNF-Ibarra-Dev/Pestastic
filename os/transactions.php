@@ -17,7 +17,7 @@
         <!-- sidebar -->
         <?php include('sidenav.php'); ?>
         <!-- main content -->
-        <main class="sa-content col-sm-10 p-0 container-fluid">
+        <main class="sa-content col-sm-10 p-0 container-fluid" id="transaction_content">
             <!-- navbar -->
             <?php include('navbar.php'); ?>
 
@@ -25,7 +25,7 @@
             <div class="bg-light bg-opacity-25 pt-2 rounded p-3 mx-3 mt-3 mb-2 ">
                 <h1 class="display-6 text-light mb-0 fw-medium text-center">Manage Transactions</h1>
             </div>
-            <div class="d-flex gap-2 my-2 mx-3 user-select-none text-center">
+            <div class="d-flex gap-2 my-2 mx-3 user-select-none text-center information-summary">
                 <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
                     <div class="clearfix">
                         <i
@@ -60,7 +60,7 @@
                     <p class="fs-4 fw-bold mb-0 mt-auto" id="count_dispatched"></p>
                 </div>
             </div>
-            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center">
+            <div class="d-flex gap-2 mb-2 mx-3 user-select-none text-center information-summary">
                 <div class="bg-light bg-opacity-25 rounded-2 px-3 py-2 flex-fill flex-wrap w-100 d-flex flex-column  ">
                     <div class="clearfix">
                         <i
@@ -108,7 +108,7 @@
 
             </div>
 
-            <div class="hstack gap-2 mt-2 mx-3">
+            <div class="hstack align-items-stretch gap-2 mt-2 mx-3">
                 <select
                     class="form-select select-transparent bg-light bg-opacity-25 rounded py-2 border-0 h-100 text-light w-25 "
                     id="sortstatus" aria-label="Default select example">
@@ -195,7 +195,8 @@
                                     <div class="col-md-4">
                                         <label for="ir_customer" class="form-label fw-bold fs-5">Customer Name:</label>
                                         <input type="text" name="customer_name" id="ir_customer"
-                                            class="form-control-plaintext ir-input ps-2 name-input" autocomplete="off" readonly>
+                                            class="form-control-plaintext ir-input ps-2 name-input" autocomplete="off"
+                                            readonly>
                                     </div>
                                     <div class="col-md-5">
                                         <label for="ir_property_type" class="form-label fw-bold fs-5">Property
@@ -552,8 +553,8 @@
                                                 state the
                                                 last/latest
                                                 treatment type and date.</p>
-                                            <div class="d-flex gap-2">
-                                                <div class="w-100">
+                                            <div class="d-flex gap-2 mb-2 flex-wrap">
+                                                <div class="w-100 mb-2">
                                                     <label for="existing_provider_last_treatment"
                                                         class=" form-label fw-bold fs-5">Latest
                                                         treatment type:</label>
@@ -570,7 +571,7 @@
                                                             treatment history</label>
                                                     </div>
                                                 </div>
-                                                <div class="w-100">
+                                                <div class="w-100 mb-2">
                                                     <label for="last_treatment_date"
                                                         class=" form-label fw-bold fs-5">Last
                                                         treatment
@@ -796,61 +797,77 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="row mb-2">
                                         <div class="col-lg-6 mb-2">
-                                            <label for="add-chemBrandUsed" class="form-label fw-light">Chemical
+                                            <label for="add-chemBrandUsed" class="form-label fw-light">Chemical / Item
                                                 Used</label>
+                                        </div>
+                                        <div class="col-lg-6 mb-2">
+                                            <label for="add-amountUsed" class="form-label fw-light">Amount
+                                                Used</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-2" id="first-chem">
+                                        <div class="col-lg-6 mb-2">
                                             <select id="add-chemBrandUsed" name="add_chemBrandUsed[]"
                                                 class="form-select chem-brand-select">
                                                 <!-- chem ajax -->
                                             </select>
-                                            <!-- <div class="form-check mt-auto">
-                                                <input class="form-check-input whole-container-chk" type="checkbox"
-                                                    value="" id="add-whole-chk">
-                                                <label class="form-check-label" for="add-whole-chk">
-                                                    Whole Container
-                                                </label>
-                                            </div> -->
                                         </div>
                                         <div class="col-lg-6 mb-2 ps-0 d-flex justify-content-evenly">
                                             <div class="d-flex flex-column">
-                                                <label for="add-amountUsed" class="form-label fw-light">Amount
-                                                    Used</label>
                                                 <input type="number" maxlength="4" id="add-amountUsed"
                                                     name="add-amountUsed[]" step="any"
                                                     class="form-control amt-used-input form-add me-3"
                                                     autocomplete="one-time-code">
                                             </div>
                                             <span class="form-text mt-auto mb-2">-</span>
-                                            <button type="button" id="addMoreChem"
-                                                class="btn btn-grad mt-auto py-2 px-3"><i
-                                                    class="bi bi-plus-circle text-light"></i></button>
+                                            <button type="button"
+                                                class="delete-chem-row btn btn-grad mb-auto py-2 px-3">
+                                                <i class="bi bi-dash-circle text-light"></i>
+                                            </button>
                                         </div>
                                     </div>
                                     <div class="mb-2" id="add-chemContainer">
                                         <!-- template add chemical -->
                                     </div>
+                                    <button type="button" id="addMoreChem"
+                                        class="btn btn-grad mt-auto d-flex gap-2 mb-2 mx-auto py-2 px-3">
+                                        <span class="text-shadow">Add Chemical / Item</span>
+                                        <i class="bi bi-plus-circle text-light"></i>
+                                    </button>
+
                                     <p class="alert alert-warning py-1 mt-1 w-50 mx-auto text-center amt-used-alert"
                                         style="display: none;"></p>
                                     <p class="text-muted fst-italic">Note: Amount used will not be reflected unless
                                         transaction is dispatched or completed.</p>
+
                                     <div class="row mb-2">
-                                        <div class="dropdown-center col-lg-6 mb-2">
-                                            <label for="add-technicianName" class="form-label fw-light">Technicians
-                                            </label>
+                                        <label for="add-technicianName" class="form-label fw-light">Technicians
+                                        </label>
+                                    </div>
+
+                                    <div class="row mb-2" id="firstTech">
+                                        <div class="dropdown-center col-10 col-lg-6">
+
                                             <select id="add-technicianName" name="add-technicianName[]" not-size="2"
                                                 class="form-select" aria-label="Default select example">
                                             </select>
                                         </div>
-                                        <div class="col-lg-2 mb-2 d-flex gap-1 p-0 justify-content-start">
-                                            <button type="button" id="addMoreTech"
-                                                class="btn btn-grad mt-auto py-1 px-3"><i
-                                                    class="bi bi-plus-circle text-light"></i></button>
+                                        <div class="col-2 p-0 d-flex align-items-stretch">
+                                            <button type="button" id="deleteTech" class="btn btn-grad mb-auto px-3"><i
+                                                    class="bi bi-dash-circle text-light text-align-middle"></i></button>
                                         </div>
                                     </div>
 
-                                    <div id="addTechContainer" class="row mb-2"></div>
+                                    <div id="addTechContainer" class="mb-2"></div>
+                                    <div class="mb-2 mt-3 d-flex gap-1 p-0 justify-content-center">
+                                        <button type="button" id="addMoreTech" class="btn btn-grad mt-auto py-2 px-3">
+                                            <span class="text-shadow">Add Technician</span>
+                                            <i class="bi bi-plus-circle text-light"></i>
+                                        </button>
+                                    </div>
                                     <div class="row mb-2 ">
                                         <div class="col-lg-6">
                                             <label for="add-status" class="form-label fw-light">Status</label>
@@ -3022,7 +3039,8 @@
                             return a ? a : 'edit-treatment'
                         });
                         $('#edit-session, #view-expiry, #view-start').removeAttr('name');
-                        $('#edit-session, #view-expiry, #view-start').attr('disabled', true);
+                        $('#edit-session, #view-expiry, #view-start, #view-start + input.form-control').attr('disabled', true);
+                        $('#edit-session, #view-expiry, #view-start, #view-start + input.form-control').val('');
                     }
 
                     $('#edit-note').val(d.notes ?? '');
@@ -3208,16 +3226,18 @@
         })
 
         $(document).on('click', '#deleteTech', async function () {
+            let firstTech = $("#firstTech").length;
             let rowId = $(this).data('row-id');
-            let row = $('#addTechContainer').length;
-            if (row === 0) {
-                alert('Transaction should have at least one technician.');
-            } else {
+            let row = $('#addTechContainer').children().length;
+            let totalTechs = row + firstTech;
+            if (totalTechs > 1) {
                 $(this).parent().parent().remove();
+            } else {
+                alert('Transaction should have at least one technician.');
                 // console.log('tech row removed');
                 // await check_emptyrow('technicianName');
             }
-        })
+        });
 
         $(document).on('change', '#edit-chemBrandUsed select.form-select, select.form-select.chem-brand-select', function () {
             let span = $(this).closest('.row').find('span');
@@ -3348,9 +3368,32 @@
         });
 
 
+
         $(document).on('click', '#deleteChem, .delete-chem-row', function () {
-            $(this).parent().parent().remove();
+            let firstChem = $("#first-chem").length;
+            let emptyAddContainer = $("#add-chemContainer").children().length;
+            let totalItems = firstChem + emptyAddContainer;
+            if (totalItems > 1) {
+                $(this).parent().parent().remove();
+            } else {
+                alert("Chemical / Item used should not be zero.");
+            }
         });
+
+        $(document).on("shown.bs.modal", "#addModal", function () {
+            $("#reported_pest_container").empty();
+            $("#edit-probCheckbox").empty();
+        });
+        $(document).on("shown.bs.modal", "#inspection_select_modal", function () {
+            $("#add-probCheckbox").empty();
+            $("#edit-probCheckbox").empty();
+        });
+        $(document).on("shown.bs.modal", "#details-modal", function () {
+            $("#add-probCheckbox").empty();
+            $("#reported_pest_container").empty();
+        });
+
+
 
         async function empty_form() {
             $('#viewEditForm')[0].reset();
@@ -3700,7 +3743,9 @@
         // });
 
 
-        $(document).on('shown.bs.modal', '#inspection_select_modal', function () {
+
+
+        $(document).on('click', '#add_create_new_ir, #add_inspection', function () {
             $("#new_inspection_report")[0].reset();
             $.get(
                 transUrl,
