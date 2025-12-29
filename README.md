@@ -1,23 +1,26 @@
 # Web-based Inventory Tracking and Management System
-**Capstone Project (Solo) | B.S. [cite_start]Information Technology** [cite: 5, 45]
+**Capstone Project | B.S. Information Technology**
 
 ## 📌 Project Overview
-[cite_start]This project is a comprehensive inventory solution designed to manage complex item lifecycles with real-time tracking[cite: 45]. [cite_start]It features an automated transaction and queue system to ensure data synchronization and auditability[cite: 48, 50].
+This project is a comprehensive inventory solution designed to manage complex item lifecycles with real-time tracking. 
+It features an automated transaction and queue system to ensure data synchronization and auditability.
 
 ## 🛠 Tech Stack
-* [cite_start]**Backend:** Native PHP [cite: 29, 47]
-* [cite_start]**Frontend:** HTML, CSS, JavaScript [cite: 21]
-* [cite_start]**Database:** MySQL [cite: 31, 47]
-* [cite_start]**Environment:** XAMPP [cite: 31, 47]
+* **Backend:** Native PHP (Procedural)
+* **Frontend:** HTML, CSS, JavaScript 
+* **Database:** MySQL
+* **Environment:** XAMPP 
 
 ## 🚀 Key Features
-* [cite_start]**Role-Based Access Control (RBAC):** Secure login and permissions for Technicians, Operations Supervisors, and Admin Managers[cite: 49].
-* [cite_start]**Automated Queue System:** Synchronizes item quantities automatically as transactions progress through the workflow[cite: 48].
-* [cite_start]**Audit Logging:** Detailed tracking of item entries, adjustments, and historical usage for business reporting[cite: 50].
+* **Role-Based Access Control (RBAC):** Secure login and permissions for Technicians, Operations Supervisors, and Admin Managers.
+* **Transaction Management System:** Tracks transaction information and progress.
+* **Automated Queue System:** Synchronizes item quantities automatically as transactions progress through the workflow.
+* **Audit Logging:** Detailed tracking of item entries, adjustments, and historical usage for business reporting.
+* **Simple Account Management:** Simple Technician and Operations Supervisor accounts management for Admin Managers.
 
 ## ⚙️ Installation & Setup
 1. **Clone the repository:**
-   [cite_start]`git clone https://github.com/RNF-Ibarra-Dev/Pestastic.git` [cite: 46]
+   `git clone https://github.com/RNF-Ibarra-Dev/Pestastic.git`
 2. **Move to XAMPP:** Place the folder in your `C:/xampp/htdocs/` directory.
 3. **Database Setup:** * Open XAMPP Control Panel and start **Apache** and **MySQL**.
    * Go to `localhost/phpmyadmin`.
